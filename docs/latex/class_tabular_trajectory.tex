@@ -1,0 +1,193 @@
+\hypertarget{class_tabular_trajectory}{}\doxysection{Tabular\+Trajectory$<$ fields $>$ Class Template Reference}
+\label{class_tabular_trajectory}\index{TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_tabular_trajectory_1_1_field_iterator}{Field\+Iterator}}
+\item 
+class \mbox{\hyperlink{class_tabular_trajectory_1_1_lookup_by_offset_fn}{Lookup\+By\+Offset\+Fn}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_ab7739615f6ede7fb1e2d579c35532d96}\label{class_tabular_trajectory_ab7739615f6ede7fb1e2d579c35532d96}} 
+typedef std\+::tuple$<$ fields... $>$ {\bfseries value\+\_\+type}
+\item 
+using \mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} = typename std\+::vector$<$ std\+::tuple$<$ fields... $>$ $>$\+::iterator
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a9e86f0a56a400893059a7f8edd1a31d2}\label{class_tabular_trajectory_a9e86f0a56a400893059a7f8edd1a31d2}} 
+using {\bfseries Const\+Trajectory\+Iterator} = typename std\+::vector$<$ std\+::tuple$<$ fields... $>$ $>$\+::const\+\_\+iterator
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_ae29c1cfd6182c31f953961e6d5a1202b}\label{class_tabular_trajectory_ae29c1cfd6182c31f953961e6d5a1202b}} 
+using {\bfseries Reverse\+Trajectory\+Iterator} = typename std\+::vector$<$ std\+::tuple$<$ fields... $>$ $>$\+::reverse\+\_\+iterator
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a0b50d14f57fb21195cb11c402e7ce20b}\label{class_tabular_trajectory_a0b50d14f57fb21195cb11c402e7ce20b}} 
+{\footnotesize template$<$int Field\+Idx$>$ }\\using {\bfseries Field\+Type} = std\+::tuple\+\_\+element\+\_\+t$<$ Field\+Idx, value\+\_\+type $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_abb6559534523ce35f10b51de85d0d178}\label{class_tabular_trajectory_abb6559534523ce35f10b51de85d0d178}} 
+{\bfseries Tabular\+Trajectory} (std\+::vector$<$ std\+::tuple$<$ fields... $>$$>$ points)
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a2a3d0afe87d3b1a1d0f7142468a966db}\label{class_tabular_trajectory_a2a3d0afe87d3b1a1d0f7142468a966db}} 
+{\bfseries Tabular\+Trajectory} (\mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} first, \mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} last)
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_ae2d782d408c8f71476e5ba707cf34898}\label{class_tabular_trajectory_ae2d782d408c8f71476e5ba707cf34898}} 
+{\bfseries Tabular\+Trajectory} (Reverse\+Trajectory\+Iterator first, Reverse\+Trajectory\+Iterator last)
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a1f8696211547aa84f3362fa728ee8b46}\label{class_tabular_trajectory_a1f8696211547aa84f3362fa728ee8b46}} 
+{\bfseries Tabular\+Trajectory} (std\+::initializer\+\_\+list$<$ \mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} $>$ points)
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a214b05c0e9f41160fc16d6a7a2cc0dd9}\label{class_tabular_trajectory_a214b05c0e9f41160fc16d6a7a2cc0dd9}} 
+std\+::size\+\_\+t {\bfseries size} ()
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_aee6b2be5a5d7d3e052b54747b703d50f}\label{class_tabular_trajectory_aee6b2be5a5d7d3e052b54747b703d50f}} 
+constexpr std\+::size\+\_\+t {\bfseries num\+\_\+fields} ()
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a1909e09116d0d52c535cad64c6c50ec1}\label{class_tabular_trajectory_a1909e09116d0d52c535cad64c6c50ec1}} 
+{\footnotesize template$<$int field\+\_\+idx$>$ }\\auto {\bfseries get} () -\/$>$ std\+::vector$<$ typename std\+::tuple\+\_\+element$<$ field\+\_\+idx, tuple$<$ fields... $>$$>$\+::type $>$
+\item 
+const std\+::vector$<$ std\+::tuple$<$ fields... $>$ $>$ \& \mbox{\hyperlink{class_tabular_trajectory_a9a734384e082e7192d7863d9961bee50}{data}} ()
+\begin{DoxyCompactList}\small\item\em Retrieves the vector of raw data points. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a7d5f48848e8f4eeabd575aef1c6c9ee0}\label{class_tabular_trajectory_a7d5f48848e8f4eeabd575aef1c6c9ee0}} 
+{\footnotesize template$<$int field\+\_\+idx$>$ }\\void {\bfseries update\+\_\+field} (std\+::vector$<$ typename std\+::tuple\+\_\+element$<$ field\+\_\+idx, tuple$<$ fields... $>$$>$\+::type $>$ \&new\+\_\+field\+\_\+values)
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a685663d7f96a25d67882708819b67590}\label{class_tabular_trajectory_a685663d7f96a25d67882708819b67590}} 
+\mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} {\bfseries begin} ()
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_ac488cea0d280409e1be1d8cde12fef54}\label{class_tabular_trajectory_ac488cea0d280409e1be1d8cde12fef54}} 
+\mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} {\bfseries end} ()
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_af12df67a929c2f53a4dc82ecaad68b2b}\label{class_tabular_trajectory_af12df67a929c2f53a4dc82ecaad68b2b}} 
+std\+::vector$<$ std\+::tuple$<$ fields... $>$ $>$\+::reverse\+\_\+iterator {\bfseries rbegin} ()
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a3372af3558b7cc8881c6596a0f8eaad3}\label{class_tabular_trajectory_a3372af3558b7cc8881c6596a0f8eaad3}} 
+std\+::vector$<$ std\+::tuple$<$ fields... $>$ $>$\+::reverse\+\_\+iterator {\bfseries rend} ()
+\item 
+{\footnotesize template$<$int timestamp\+\_\+idx$>$ }\\void \mbox{\hyperlink{class_tabular_trajectory_a548145570bd5f31535fcef63aaa95a03}{insert}} (Const\+Trajectory\+Iterator pos, \mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} first, \mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} last)
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_ad3ee6b5dd14c2c6822b1dd25a2423e7d}\label{class_tabular_trajectory_ad3ee6b5dd14c2c6822b1dd25a2423e7d}} 
+{\footnotesize template$<$class Geometry\+Traits , int Lat\+Idx, int Lon\+Idx$>$ }\\\mbox{\hyperlink{class_tabular_trajectory_1_1_lookup_by_offset_fn}{Lookup\+By\+Offset\+Fn}}$<$ Geometry\+Traits, Lat\+Idx, Lon\+Idx $>$ {\bfseries lookup\+\_\+offset\+\_\+fn} ()
+\item 
+{\footnotesize template$<$class Geometry\+Traits , int Lat\+Idx, int Lon\+Idx, class Interpolator\+\_\+2 $>$ }\\std\+::pair$<$ value\+\_\+type, \mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} $>$ \mbox{\hyperlink{class_tabular_trajectory_ae69971ff5425d59eb4d018768aebe5b1}{get\+Interpolated\+Point}} (double offset, Interpolator\+\_\+2 interpolator)
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_adcb154c982a75f20dcc9a1b9dab02375}\label{class_tabular_trajectory_adcb154c982a75f20dcc9a1b9dab02375}} 
+{\footnotesize template$<$int field\+\_\+idx$>$ }\\\mbox{\hyperlink{class_tabular_trajectory_1_1_field_iterator}{Field\+Iterator}}$<$ field\+\_\+idx $>$ {\bfseries begin} ()
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_af42d8bcbd5fae24d764da5154325d06e}\label{class_tabular_trajectory_af42d8bcbd5fae24d764da5154325d06e}} 
+{\footnotesize template$<$int field\+\_\+idx$>$ }\\\mbox{\hyperlink{class_tabular_trajectory_1_1_field_iterator}{Field\+Iterator}}$<$ field\+\_\+idx $>$ {\bfseries end} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a3c0a8b9fdcbdbaf2046148b71385ae2f}\label{class_tabular_trajectory_a3c0a8b9fdcbdbaf2046148b71385ae2f}} 
+constexpr static Storage\+Scheme {\bfseries storage\+\_\+scheme} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_tabular_trajectory_a6f00154156ae3f675b2ddc504400cec2}\label{class_tabular_trajectory_a6f00154156ae3f675b2ddc504400cec2}} 
+constexpr static int {\bfseries N\+U\+M\+\_\+\+F\+I\+E\+L\+DS} = sizeof...(fields)
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+std\+::ostream \& \mbox{\hyperlink{class_tabular_trajectory_ac10e5947fe58e5253b9afbabcbade8fb}{operator$<$$<$}} (std\+::ostream \&os, \mbox{\hyperlink{class_tabular_trajectory}{Tabular\+Trajectory}}$<$ fields... $>$ \&trajectory)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}\label{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}} 
+\index{TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}!TrajectoryIterator@{TrajectoryIterator}}
+\index{TrajectoryIterator@{TrajectoryIterator}!TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}}
+\doxysubsubsection{\texorpdfstring{TrajectoryIterator}{TrajectoryIterator}}
+{\footnotesize\ttfamily template$<$class... fields$>$ \\
+using \mbox{\hyperlink{class_tabular_trajectory}{Tabular\+Trajectory}}$<$ fields $>$\+::\mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}} =  typename std\+::vector$<$std\+::tuple$<$fields...$>$ $>$\+::iterator}
+
+Trajectory\+Iterator 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_tabular_trajectory_a9a734384e082e7192d7863d9961bee50}\label{class_tabular_trajectory_a9a734384e082e7192d7863d9961bee50}} 
+\index{TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}!data@{data}}
+\index{data@{data}!TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}}
+\doxysubsubsection{\texorpdfstring{data()}{data()}}
+{\footnotesize\ttfamily template$<$class... fields$>$ \\
+const std\+::vector$<$std\+::tuple$<$fields...$>$ $>$\& \mbox{\hyperlink{class_tabular_trajectory}{Tabular\+Trajectory}}$<$ fields $>$\+::data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Retrieves the vector of raw data points. 
+
+\begin{DoxyReturn}{Returns}
+Const reference to the data points 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_tabular_trajectory_ae69971ff5425d59eb4d018768aebe5b1}\label{class_tabular_trajectory_ae69971ff5425d59eb4d018768aebe5b1}} 
+\index{TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}!getInterpolatedPoint@{getInterpolatedPoint}}
+\index{getInterpolatedPoint@{getInterpolatedPoint}!TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}}
+\doxysubsubsection{\texorpdfstring{getInterpolatedPoint()}{getInterpolatedPoint()}}
+{\footnotesize\ttfamily template$<$class... fields$>$ \\
+template$<$class Geometry\+Traits , int Lat\+Idx, int Lon\+Idx, class Interpolator\+\_\+2 $>$ \\
+std\+::pair$<$value\+\_\+type, \mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}}$>$ \mbox{\hyperlink{class_tabular_trajectory}{Tabular\+Trajectory}}$<$ fields $>$\+::get\+Interpolated\+Point (\begin{DoxyParamCaption}\item[{double}]{offset,  }\item[{Interpolator\+\_\+2}]{interpolator }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Return the interpolated point and a trajectory iterator that comes after the interpolated point. This iterator can be used as an argument to the insert method. 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Lat\+Idx} & \\
+\hline
+{\em Lon\+Idx} & \\
+\hline
+{\em Interpolator\+\_\+2} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em offset} & \\
+\hline
+{\em interpolator} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_tabular_trajectory_a548145570bd5f31535fcef63aaa95a03}\label{class_tabular_trajectory_a548145570bd5f31535fcef63aaa95a03}} 
+\index{TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}!insert@{insert}}
+\index{insert@{insert}!TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}}
+{\footnotesize\ttfamily template$<$class... fields$>$ \\
+template$<$int timestamp\+\_\+idx$>$ \\
+void \mbox{\hyperlink{class_tabular_trajectory}{Tabular\+Trajectory}}$<$ fields $>$\+::insert (\begin{DoxyParamCaption}\item[{Const\+Trajectory\+Iterator}]{pos,  }\item[{\mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}}}]{first,  }\item[{\mbox{\hyperlink{class_tabular_trajectory_a76066731e998380ff06f5a4f615f8ec3}{Trajectory\+Iterator}}}]{last }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Insert points \mbox{[}first, last) before pos. 
+\begin{DoxyParams}{Parameters}
+{\em pos} & \\
+\hline
+{\em first} & \\
+\hline
+{\em last} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{class_tabular_trajectory_ac10e5947fe58e5253b9afbabcbade8fb}\label{class_tabular_trajectory_ac10e5947fe58e5253b9afbabcbade8fb}} 
+\index{TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!TabularTrajectory$<$ fields $>$@{TabularTrajectory$<$ fields $>$}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily template$<$class... fields$>$ \\
+std\+::ostream\& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{\mbox{\hyperlink{class_tabular_trajectory}{Tabular\+Trajectory}}$<$ fields... $>$ \&}]{trajectory }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+Write points as C\+SV 
+\begin{DoxyParams}{Parameters}
+{\em os} & \\
+\hline
+{\em trajectory} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/Tabular\+Trajectory.\+h\end{DoxyCompactItemize}

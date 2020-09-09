@@ -1,0 +1,75 @@
+\hypertarget{_trajectory_utils_8h}{}\doxysection{/\+Users/amitra/\+Documents/movetk/src/include/movetk/utils/\+Trajectory\+Utils.h File Reference}
+\label{_trajectory_utils_8h}\index{/Users/amitra/Documents/movetk/src/include/movetk/utils/TrajectoryUtils.h@{/Users/amitra/Documents/movetk/src/include/movetk/utils/TrajectoryUtils.h}}
+
+
+A collection of utility functions for trajectories.  
+
+
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classmovetk__core_1_1_segment_id_generator}{movetk\+\_\+core\+::\+Segment\+Id\+Generator$<$ Poly\+Line\+Idx\+Iterator, typename $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacemovetk__core}{movetk\+\_\+core}}
+\begin{DoxyCompactList}\small\item\em the core of movetk \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a3d0609bb92069e99009a98dce07b5cea}\label{namespacemovetk__core_a3d0609bb92069e99009a98dce07b5cea}} 
+{\footnotesize template$<$class Traits $>$ }\\Traits\+::\+Movetk\+Point {\bfseries movetk\+\_\+core\+::get\+\_\+point} (typename Traits\+::\+NT lat, typename Traits\+::\+NT lon, typename Traits\+::\+Geo\+Projection \&georef)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a30be44f22f771bc502822bb174d981e3}\label{namespacemovetk__core_a30be44f22f771bc502822bb174d981e3}} 
+{\footnotesize template$<$class Geometry\+Traits $>$ }\\Geometry\+Traits\+::\+NT {\bfseries movetk\+\_\+core\+::get\+\_\+x} (typename Geometry\+Traits\+::\+Movetk\+Vector \&v)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a1a117f5e837037a77ca1c884d0cf3e92}\label{namespacemovetk__core_a1a117f5e837037a77ca1c884d0cf3e92}} 
+{\footnotesize template$<$class Geometry\+Traits $>$ }\\Geometry\+Traits\+::\+NT {\bfseries movetk\+\_\+core\+::get\+\_\+x} (typename Geometry\+Traits\+::\+Movetk\+Point \&p)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a8f28a0f4de853bc4d638602d8cf670fc}\label{namespacemovetk__core_a8f28a0f4de853bc4d638602d8cf670fc}} 
+{\footnotesize template$<$class Geometry\+Traits $>$ }\\Geometry\+Traits\+::\+NT {\bfseries movetk\+\_\+core\+::get\+\_\+y} (typename Geometry\+Traits\+::\+Movetk\+Vector \&v)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_ac991b186441d911d9aa438cab950742f}\label{namespacemovetk__core_ac991b186441d911d9aa438cab950742f}} 
+{\footnotesize template$<$class Geometry\+Traits $>$ }\\Geometry\+Traits\+::\+NT {\bfseries movetk\+\_\+core\+::get\+\_\+y} (typename Geometry\+Traits\+::\+Movetk\+Point \&p)
+\item 
+{\footnotesize template$<$class Input\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+size\+\_\+t$<$                    typename Input\+Iterator\+::value\+\_\+type$>$$>$ }\\bool \mbox{\hyperlink{namespacemovetk__core_af1f92171c2caf7ec3d88fcbdee331f7e}{movetk\+\_\+core\+::is\+\_\+sequence}} (Input\+Iterator first, Input\+Iterator beyond)
+\begin{DoxyCompactList}\small\item\em checks if input values are a sequence \end{DoxyCompactList}\item 
+{\footnotesize template$<$class Geometry\+Traits , class Input\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Traits,                    typename Input\+Iterator\+::value\+\_\+type$>$$>$ }\\Input\+Iterator \mbox{\hyperlink{namespacemovetk__core_ad7788c6faac2e4e49de71689ddbeb0c8}{movetk\+\_\+core\+::min\+\_\+non\+\_\+zero\+\_\+element}} (Input\+Iterator first, Input\+Iterator beyond)
+\begin{DoxyCompactList}\small\item\em Finds the minimum non-\/zero element over a set of values. \end{DoxyCompactList}\item 
+{\footnotesize template$<$class Input\+Iterator , class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+date\+\_\+t$<$                    typename Input\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+output\+\_\+iterator$<$\+Output\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+size\+\_\+t$<$                    typename Output\+Iterator\+::value\+\_\+type$>$$>$ }\\void \mbox{\hyperlink{namespacemovetk__core_a9947fcacd7b9df537389e90b553141d0}{movetk\+\_\+core\+::get\+\_\+time\+\_\+diffs}} (Input\+Iterator first, Input\+Iterator beyond, Output\+Iterator iter)
+\begin{DoxyCompactList}\small\item\em Calculates the tdiff between two consecutive points for an input consisting of a set of ordered points. \end{DoxyCompactList}\item 
+{\footnotesize template$<$class Geometry\+Kernel , class Input\+Iterator , class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+output\+\_\+iterator$<$\+Output\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+movetk\+\_\+point$<$\+Geometry\+Kernel,                    typename Input\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Output\+Iterator\+::value\+\_\+type$>$$>$ }\\void \mbox{\hyperlink{namespacemovetk__core_a1f250e1e7a7b1f0cd03ca68c144f2270}{movetk\+\_\+core\+::get\+\_\+distances}} (Input\+Iterator first, Input\+Iterator beyond, Output\+Iterator iter)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a8cd577a3a4b3c99f033c6a387c4e643a}\label{namespacemovetk__core_a8cd577a3a4b3c99f033c6a387c4e643a}} 
+{\footnotesize template$<$class Traits , class Input\+Iterator , std\+::size\+\_\+t Lat\+Idx, std\+::size\+\_\+t Lon\+Idx, std\+::size\+\_\+t Dist\+Idx$>$ }\\void {\bfseries movetk\+\_\+core\+::get\+\_\+distances} (Input\+Iterator first, Input\+Iterator beyond)
+\item 
+{\footnotesize template$<$class Geometry\+Kernel , class T\+Diff\+Iterator , class Distance\+Iterator , class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+T\+Diff\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Distance\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+output\+\_\+iterator$<$\+Output\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+size\+\_\+t$<$                    typename T\+Diff\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Distance\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Output\+Iterator\+::value\+\_\+type $>$$>$ }\\void \mbox{\hyperlink{namespacemovetk__core_abfb27ac2474ab425d277191cda17d453}{movetk\+\_\+core\+::get\+\_\+speeds}} (T\+Diff\+Iterator Tdiff\+First, T\+Diff\+Iterator Tdiff\+Beyond, Distance\+Iterator Dist\+First, Output\+Iterator iter)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a397b0538d6288f4cfb7dfb87c49647ac}\label{namespacemovetk__core_a397b0538d6288f4cfb7dfb87c49647ac}} 
+{\footnotesize template$<$class Traits , class Input\+Iterator , std\+::size\+\_\+t Lat\+Idx, std\+::size\+\_\+t Lon\+Idx, std\+::size\+\_\+t Ts\+Idx, std\+::size\+\_\+t Speed\+Idx$>$ }\\void {\bfseries movetk\+\_\+core\+::get\+\_\+speeds} (Input\+Iterator first, Input\+Iterator beyond)
+\item 
+{\footnotesize template$<$class Geometry\+Kernel , class Input\+Iterator , class Points\+Iterator , class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Points\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+output\+\_\+iterator$<$\+Output\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+pair$<$typename Input\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+movetk\+\_\+point$<$\+Geometry\+Kernel,                    typename Points\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Output\+Iterator\+::value\+\_\+type $>$$>$ }\\void \mbox{\hyperlink{namespacemovetk__core_a4ba2ccd9fd0981543c81b85382b18e38}{movetk\+\_\+core\+::get\+\_\+headings}} (Input\+Iterator first, Input\+Iterator beyond, Points\+Iterator pfirst, Output\+Iterator iter)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a32d067535745ea7ac65225af69aa3ef2}\label{namespacemovetk__core_a32d067535745ea7ac65225af69aa3ef2}} 
+{\footnotesize template$<$class Traits , class Input\+Iterator , std\+::size\+\_\+t Lat\+Idx, std\+::size\+\_\+t Lon\+Idx, std\+::size\+\_\+t Heading\+Idx$>$ }\\void {\bfseries movetk\+\_\+core\+::get\+\_\+headings} (Input\+Iterator first, Input\+Iterator beyond)
+\item 
+{\footnotesize template$<$class Geometry\+Kernel , class Magnitude\+Iterator , class Direction\+Iterator , class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Magnitude\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Direction\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+output\+\_\+iterator$<$\+Output\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Magnitude\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Direction\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+movetk\+\_\+point$<$\+Geometry\+Kernel,                    typename Output\+Iterator\+::value\+\_\+type $>$$>$ }\\void \mbox{\hyperlink{namespacemovetk__core_a561fe757d7de59d12a4ec8180940aa4d}{movetk\+\_\+core\+::get\+\_\+velocities}} (Magnitude\+Iterator Mfirst, Magnitude\+Iterator Mbeyond, Direction\+Iterator D\+First, Output\+Iterator iter)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_a5a63d28321cf7022f9dc185c464a20a1}\label{namespacemovetk__core_a5a63d28321cf7022f9dc185c464a20a1}} 
+{\footnotesize template$<$class Geometry\+Traits $>$ }\\Geometry\+Traits\+::\+Movetk\+Vector {\bfseries movetk\+\_\+core\+::get\+\_\+velocity} (typename Geometry\+Traits\+::\+NT speed, typename Geometry\+Traits\+::\+NT heading)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_abd2f7836a83e6abaf8aee4ea0d04edc9}\label{namespacemovetk__core_abd2f7836a83e6abaf8aee4ea0d04edc9}} 
+{\footnotesize template$<$class Geometry\+Kernel , class Input\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+pair$<$typename Input\+Iterator\+::value\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Input\+Iterator\+::value\+\_\+type\+::first\+\_\+type$>$, typename  = movetk\+\_\+core\+::requires\+\_\+\+N\+T$<$\+Geometry\+Kernel,                    typename Input\+Iterator\+::value\+\_\+type\+::second\+\_\+type$>$$>$ }\\Input\+Iterator {\bfseries movetk\+\_\+core\+::merge\+\_\+intervals} (Input\+Iterator first, Input\+Iterator beyond, bool sorted=false)
+\item 
+\mbox{\Hypertarget{namespacemovetk__core_acdf0022809619b4147e46952be26fa4e}\label{namespacemovetk__core_acdf0022809619b4147e46952be26fa4e}} 
+{\footnotesize template$<$class Geometry\+Traits , class Norm , class Input\+Iterator , class Output\+Iterator $>$ }\\void {\bfseries movetk\+\_\+core\+::compute\+\_\+curve\+\_\+squared\+\_\+length} (Input\+Iterator first, Input\+Iterator beyond, Output\+Iterator result)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A collection of utility functions for trajectories. 
+
+\begin{DoxyAuthor}{Authors}
+Aniket Mitra (\href{mailto:aniket.mitra@here.com}{\texttt{ aniket.\+mitra@here.\+com}}), Mees van de Kerkhof (\href{mailto:m.a.vandekerkhof@uu.nl}{\texttt{ m.\+a.\+vandekerkhof@uu.\+nl}}) 
+\end{DoxyAuthor}

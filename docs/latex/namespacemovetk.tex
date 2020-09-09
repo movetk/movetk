@@ -1,0 +1,53 @@
+\hypertarget{namespacemovetk}{}\doxysection{movetk Namespace Reference}
+\label{namespacemovetk}\index{movetk@{movetk}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemovetk_a96f572eaf06bdb89528fd056915b5607}\label{namespacemovetk_a96f572eaf06bdb89528fd056915b5607}} 
+{\footnotesize template$<$class Geometry\+Traits , class Lat\+Iterator , class Lon\+Iterator , class Output\+Iterator , class Local\+Coord\+Ref , typename  = movetk\+\_\+core\+::requires\+\_\+movetk\+\_\+point$<$\+Geometry\+Traits,                                                    typename Output\+Iterator\+::value\+\_\+type$>$$>$ }\\Output\+Iterator {\bfseries to\+\_\+projected\+\_\+polyline} (\mbox{\hyperlink{structmovetk__core_1_1_make_point}{movetk\+\_\+core\+::\+Make\+Point}}$<$ Geometry\+Traits $>$ \&make\+\_\+point, Lat\+Iterator lat\+\_\+start, Lat\+Iterator lat\+\_\+beyond, Lon\+Iterator lon\+\_\+start, Output\+Iterator polyline\+\_\+first, Local\+Coord\+Ref \&ref)
+\item 
+\mbox{\Hypertarget{namespacemovetk_ad7f82487a62eee5440ab1494da107929}\label{namespacemovetk_ad7f82487a62eee5440ab1494da107929}} 
+{\footnotesize template$<$class Geometry\+Traits , class Lat\+Iterator , class Lon\+Iterator , class Output\+Iterator $>$ }\\Output\+Iterator {\bfseries to\+\_\+projected\+\_\+polyline} (\mbox{\hyperlink{structmovetk__core_1_1_make_point}{movetk\+\_\+core\+::\+Make\+Point}}$<$ Geometry\+Traits $>$ \&make\+\_\+point, Lat\+Iterator lat\+\_\+start, Lat\+Iterator lat\+\_\+beyond, Lon\+Iterator lon\+\_\+start, Output\+Iterator polyline\+\_\+first)
+\item 
+{\footnotesize template$<$class Geometry\+Traits , class Lat\+Iterator , class Lon\+Iterator , class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+movetk\+\_\+point$<$\+Geometry\+Traits,                                                    typename Output\+Iterator\+::value\+\_\+type$>$$>$ }\\Output\+Iterator \mbox{\hyperlink{namespacemovetk_ad6e4722dc7ac801aec91d86925975763}{to\+\_\+geocentered\+\_\+polyline}} (\mbox{\hyperlink{structmovetk__core_1_1_make_point}{movetk\+\_\+core\+::\+Make\+Point}}$<$ Geometry\+Traits $>$ \&make\+\_\+point, Lat\+Iterator lat\+\_\+start, Lat\+Iterator lat\+\_\+beyond, Lon\+Iterator lon\+\_\+start, Output\+Iterator polyline\+\_\+first)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Contains adapter functions to make Trajectory class work with agnostic geometry interface. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacemovetk_ad6e4722dc7ac801aec91d86925975763}\label{namespacemovetk_ad6e4722dc7ac801aec91d86925975763}} 
+\index{movetk@{movetk}!to\_geocentered\_polyline@{to\_geocentered\_polyline}}
+\index{to\_geocentered\_polyline@{to\_geocentered\_polyline}!movetk@{movetk}}
+\doxysubsubsection{\texorpdfstring{to\_geocentered\_polyline()}{to\_geocentered\_polyline()}}
+{\footnotesize\ttfamily template$<$class Geometry\+Traits , class Lat\+Iterator , class Lon\+Iterator , class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+movetk\+\_\+point$<$\+Geometry\+Traits,                                                    typename Output\+Iterator\+::value\+\_\+type$>$$>$ \\
+Output\+Iterator movetk\+::to\+\_\+geocentered\+\_\+polyline (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structmovetk__core_1_1_make_point}{movetk\+\_\+core\+::\+Make\+Point}}$<$ Geometry\+Traits $>$ \&}]{make\+\_\+point,  }\item[{Lat\+Iterator}]{lat\+\_\+start,  }\item[{Lat\+Iterator}]{lat\+\_\+beyond,  }\item[{Lon\+Iterator}]{lon\+\_\+start,  }\item[{Output\+Iterator}]{polyline\+\_\+first }\end{DoxyParamCaption})}
+
+Creates a vector of points from the given ranges of latitude and longitude also by converting them to geocentric coordinates. 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Geometry\+Traits} & \\
+\hline
+{\em Lat\+Iterator} & \\
+\hline
+{\em Lon\+Iterator} & \\
+\hline
+{\em Output\+Iterator} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em make\+\_\+point} & \\
+\hline
+{\em lat\+\_\+start} & \\
+\hline
+{\em lat\+\_\+beyond} & \\
+\hline
+{\em lon\+\_\+start} & \\
+\hline
+{\em polyline\+\_\+first} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}

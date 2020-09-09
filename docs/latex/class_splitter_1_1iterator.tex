@@ -1,0 +1,99 @@
+\hypertarget{class_splitter_1_1iterator}{}\doxysection{Splitter$<$ Predicate, Probe\+Input\+Iterator $>$\+::iterator Class Reference}
+\label{class_splitter_1_1iterator}\index{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator@{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator}}
+
+
+Iterator; just calls recursively Splitter\+::read\+\_\+segment and stores the result.  
+
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_aac2736161b7b3f9157c8e455e5f232bf}\label{class_splitter_1_1iterator_aac2736161b7b3f9157c8e455e5f232bf}} 
+typedef std\+::input\+\_\+iterator\+\_\+tag {\bfseries iterator\+\_\+category}
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_a2f21c24775120e969794f428f9d2a3d3}\label{class_splitter_1_1iterator_a2f21c24775120e969794f428f9d2a3d3}} 
+typedef Splitter\+::value\+\_\+type {\bfseries value\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_a79dd7cd9c76e5084ad3057949b2d99af}\label{class_splitter_1_1iterator_a79dd7cd9c76e5084ad3057949b2d99af}} 
+typedef std\+::size\+\_\+t {\bfseries difference\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_a9c2445e661a4e7ccf5c281cfe749f04c}\label{class_splitter_1_1iterator_a9c2445e661a4e7ccf5c281cfe749f04c}} 
+typedef Splitter\+::value\+\_\+type $\ast$ {\bfseries pointer}
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_a2523de1497c16dbd2152a30a5cdfda61}\label{class_splitter_1_1iterator_a2523de1497c16dbd2152a30a5cdfda61}} 
+typedef Splitter\+::value\+\_\+type \& {\bfseries reference}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_splitter_1_1iterator_a0703433e77fe77fe7179f73bcdd592e8}{iterator}} ()
+\begin{DoxyCompactList}\small\item\em Construct an empty/end iterator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_splitter_1_1iterator_ad56d28aeb235beb557786dc7c8fe9bce}{iterator}} (\mbox{\hyperlink{class_splitter}{Splitter}} \&parent)
+\begin{DoxyCompactList}\small\item\em Construct an iterator at the beginning of the {\ttfamily parent} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_splitter_1_1iterator}{iterator}} \& \mbox{\hyperlink{class_splitter_1_1iterator_a9715fd3373e391152be6fdcdae9029aa}{operator++}} ()
+\begin{DoxyCompactList}\small\item\em Read one segment, if possible. Set to end if parent is not good anymore. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_a6c47f604fa541907761bb05bf0ef7dde}\label{class_splitter_1_1iterator_a6c47f604fa541907761bb05bf0ef7dde}} 
+\mbox{\hyperlink{class_splitter_1_1iterator}{iterator}} {\bfseries operator++} (int)
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_ac3b75f136633c5fe651342cfd5c3b97a}\label{class_splitter_1_1iterator_ac3b75f136633c5fe651342cfd5c3b97a}} 
+const Splitter\+::value\+\_\+type \& {\bfseries operator$\ast$} () const
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_a6c0e7866ba7cd836a49ebfc3ba81c0d8}\label{class_splitter_1_1iterator_a6c0e7866ba7cd836a49ebfc3ba81c0d8}} 
+const Splitter\+::value\+\_\+type $\ast$ {\bfseries operator-\/$>$} () const
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_acd1777073ecefb1fc4c2b6214c1f7dbe}\label{class_splitter_1_1iterator_acd1777073ecefb1fc4c2b6214c1f7dbe}} 
+bool {\bfseries operator==} (\mbox{\hyperlink{class_splitter_1_1iterator}{iterator}} const \&other)
+\item 
+\mbox{\Hypertarget{class_splitter_1_1iterator_a6b9807c7506ab9a60a6434ee9c703935}\label{class_splitter_1_1iterator_a6b9807c7506ab9a60a6434ee9c703935}} 
+bool {\bfseries operator!=} (\mbox{\hyperlink{class_splitter_1_1iterator}{iterator}} const \&other)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class Predicate, class Probe\+Input\+Iterator$>$\newline
+class Splitter$<$ Predicate, Probe\+Input\+Iterator $>$\+::iterator}
+
+Iterator; just calls recursively Splitter\+::read\+\_\+segment and stores the result. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_splitter_1_1iterator_a0703433e77fe77fe7179f73bcdd592e8}\label{class_splitter_1_1iterator_a0703433e77fe77fe7179f73bcdd592e8}} 
+\index{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator@{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator}!iterator@{iterator}}
+\index{iterator@{iterator}!Splitter$<$ Predicate, ProbeInputIterator $>$::iterator@{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{iterator()}{iterator()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class Predicate, class Probe\+Input\+Iterator$>$ \\
+\mbox{\hyperlink{class_splitter}{Splitter}}$<$ Predicate, Probe\+Input\+Iterator $>$\+::iterator\+::iterator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct an empty/end iterator. 
+
+\mbox{\Hypertarget{class_splitter_1_1iterator_ad56d28aeb235beb557786dc7c8fe9bce}\label{class_splitter_1_1iterator_ad56d28aeb235beb557786dc7c8fe9bce}} 
+\index{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator@{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator}!iterator@{iterator}}
+\index{iterator@{iterator}!Splitter$<$ Predicate, ProbeInputIterator $>$::iterator@{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{iterator()}{iterator()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class Predicate, class Probe\+Input\+Iterator$>$ \\
+\mbox{\hyperlink{class_splitter}{Splitter}}$<$ Predicate, Probe\+Input\+Iterator $>$\+::iterator\+::iterator (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_splitter}{Splitter}} \&}]{parent }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct an iterator at the beginning of the {\ttfamily parent} object. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_splitter_1_1iterator_a9715fd3373e391152be6fdcdae9029aa}\label{class_splitter_1_1iterator_a9715fd3373e391152be6fdcdae9029aa}} 
+\index{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator@{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator}!operator++@{operator++}}
+\index{operator++@{operator++}!Splitter$<$ Predicate, ProbeInputIterator $>$::iterator@{Splitter$<$ Predicate, ProbeInputIterator $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{operator++()}{operator++()}}
+{\footnotesize\ttfamily template$<$class Predicate, class Probe\+Input\+Iterator$>$ \\
+\mbox{\hyperlink{class_splitter_1_1iterator}{iterator}}\& \mbox{\hyperlink{class_splitter}{Splitter}}$<$ Predicate, Probe\+Input\+Iterator $>$\+::iterator\+::operator++ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read one segment, if possible. Set to end if parent is not good anymore. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/Splitter.\+h\end{DoxyCompactItemize}

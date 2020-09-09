@@ -1,0 +1,46 @@
+\hypertarget{class_probe_reader}{}\doxysection{Probe\+Reader$<$ Probe\+Traits $>$ Class Template Reference}
+\label{class_probe_reader}\index{ProbeReader$<$ ProbeTraits $>$@{ProbeReader$<$ ProbeTraits $>$}}
+Inheritance diagram for Probe\+Reader$<$ Probe\+Traits $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_probe_reader}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_probe_reader_ad9180764fccb27f49d3e6b07d6a2be09}\label{class_probe_reader_ad9180764fccb27f49d3e6b07d6a2be09}} 
+typedef Probe\+Traits\+::\+Probe\+Csv {\bfseries Probe\+Csv}
+\item 
+\mbox{\Hypertarget{class_probe_reader_a04a30beabe1af90ce410df966f97374e}\label{class_probe_reader_a04a30beabe1af90ce410df966f97374e}} 
+typedef Probe\+Traits\+::\+Probe\+Input\+Iterator {\bfseries Probe\+Input\+Iterator}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_probe_reader_a583ab651d408e384de3b81d0161eec20}\label{class_probe_reader_a583ab651d408e384de3b81d0161eec20}} 
+{\bfseries Probe\+Reader} (std\+::unique\+\_\+ptr$<$ std\+::istream $>$ in)
+\item 
+\mbox{\Hypertarget{class_probe_reader_afd99ed5b84be80abbb9384ed2542c807}\label{class_probe_reader_afd99ed5b84be80abbb9384ed2542c807}} 
+virtual Probe\+Input\+Iterator {\bfseries begin} ()=0
+\item 
+\mbox{\Hypertarget{class_probe_reader_a2409a143bb667ae53525976962c38d37}\label{class_probe_reader_a2409a143bb667ae53525976962c38d37}} 
+virtual Probe\+Input\+Iterator {\bfseries end} ()
+\item 
+\mbox{\Hypertarget{class_probe_reader_aa46acfd90802af8b74974aeb9cd69fae}\label{class_probe_reader_aa46acfd90802af8b74974aeb9cd69fae}} 
+auto {\bfseries columns} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_probe_reader_aa63eb1e2fa9d1a363f67540900cb82b4}\label{class_probe_reader_aa63eb1e2fa9d1a363f67540900cb82b4}} 
+std\+::unique\+\_\+ptr$<$ std\+::istream $>$ {\bfseries \+\_\+in}
+\item 
+\mbox{\Hypertarget{class_probe_reader_a0c917c88f75a0800013944f56e668fe0}\label{class_probe_reader_a0c917c88f75a0800013944f56e668fe0}} 
+std\+::unique\+\_\+ptr$<$ Probe\+Csv $>$ {\bfseries \+\_\+table} = nullptr
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/io/Probe\+Reader.\+h\end{DoxyCompactItemize}

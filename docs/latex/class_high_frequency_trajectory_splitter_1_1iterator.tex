@@ -1,0 +1,99 @@
+\hypertarget{class_high_frequency_trajectory_splitter_1_1iterator}{}\doxysection{High\+Frequency\+Trajectory\+Splitter$<$ Trajectory\+Input\+Iterator, Date\+Idx, Lat\+Idx, Lon\+Idx $>$\+::iterator Class Reference}
+\label{class_high_frequency_trajectory_splitter_1_1iterator}\index{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator@{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator}}
+
+
+Iterator; just calls iteratively High\+Frequency\+Trajectory\+Splitter\+::read\+\_\+trajectory and stores the result.  
+
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a40515accc3f23758da1a3610095722f7}\label{class_high_frequency_trajectory_splitter_1_1iterator_a40515accc3f23758da1a3610095722f7}} 
+typedef std\+::input\+\_\+iterator\+\_\+tag {\bfseries iterator\+\_\+category}
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a545789c186d8621266106febf2cacbf0}\label{class_high_frequency_trajectory_splitter_1_1iterator_a545789c186d8621266106febf2cacbf0}} 
+typedef High\+Frequency\+Trajectory\+Splitter\+::trajectory\+\_\+type {\bfseries value\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a9a9c673fb2d66170a496467890dce6ca}\label{class_high_frequency_trajectory_splitter_1_1iterator_a9a9c673fb2d66170a496467890dce6ca}} 
+typedef std\+::size\+\_\+t {\bfseries difference\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a1a0b918bd94c104c7c9f1a845e7a5ef1}\label{class_high_frequency_trajectory_splitter_1_1iterator_a1a0b918bd94c104c7c9f1a845e7a5ef1}} 
+typedef High\+Frequency\+Trajectory\+Splitter\+::trajectory\+\_\+type $\ast$ {\bfseries pointer}
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a3d8ec7a3ba482ecca690d503f8be143d}\label{class_high_frequency_trajectory_splitter_1_1iterator_a3d8ec7a3ba482ecca690d503f8be143d}} 
+typedef High\+Frequency\+Trajectory\+Splitter\+::trajectory\+\_\+type \& {\bfseries reference}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator_a9820e08a0533405c9b32f6fbc6996985}{iterator}} ()
+\begin{DoxyCompactList}\small\item\em Construct an empty/end iterator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator_a09c812de4f7c94ef019bf2cdfafa61cd}{iterator}} (\mbox{\hyperlink{class_high_frequency_trajectory_splitter}{High\+Frequency\+Trajectory\+Splitter}} \&parent)
+\begin{DoxyCompactList}\small\item\em Construct an iterator at the beginning of the {\ttfamily parent} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator}{iterator}} \& \mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator_aa6d71e32210f8986a0c9bed303e06c46}{operator++}} ()
+\begin{DoxyCompactList}\small\item\em Read one segment, if possible. Set to end if parent is not good anymore. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a70bb259b5aaff2cccbe9d34631721cb8}\label{class_high_frequency_trajectory_splitter_1_1iterator_a70bb259b5aaff2cccbe9d34631721cb8}} 
+\mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator}{iterator}} {\bfseries operator++} (int)
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a5feef124cfc86e728ef2bff8e9d6afea}\label{class_high_frequency_trajectory_splitter_1_1iterator_a5feef124cfc86e728ef2bff8e9d6afea}} 
+value\+\_\+type const  \& {\bfseries operator$\ast$} () const
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_adb1525f59713815864b3d88e3242feb6}\label{class_high_frequency_trajectory_splitter_1_1iterator_adb1525f59713815864b3d88e3242feb6}} 
+value\+\_\+type const  $\ast$ {\bfseries operator-\/$>$} () const
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a0907ca68de1461050bdc68b6344acf28}\label{class_high_frequency_trajectory_splitter_1_1iterator_a0907ca68de1461050bdc68b6344acf28}} 
+bool {\bfseries operator==} (\mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator}{iterator}} const \&other)
+\item 
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_ab292a739d629e467f175d463ca8d8c47}\label{class_high_frequency_trajectory_splitter_1_1iterator_ab292a739d629e467f175d463ca8d8c47}} 
+bool {\bfseries operator!=} (\mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator}{iterator}} const \&other)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class Trajectory\+Input\+Iterator, int Date\+Idx, int Lat\+Idx, int Lon\+Idx$>$\newline
+class High\+Frequency\+Trajectory\+Splitter$<$ Trajectory\+Input\+Iterator, Date\+Idx, Lat\+Idx, Lon\+Idx $>$\+::iterator}
+
+Iterator; just calls iteratively High\+Frequency\+Trajectory\+Splitter\+::read\+\_\+trajectory and stores the result. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a9820e08a0533405c9b32f6fbc6996985}\label{class_high_frequency_trajectory_splitter_1_1iterator_a9820e08a0533405c9b32f6fbc6996985}} 
+\index{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator@{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator}!iterator@{iterator}}
+\index{iterator@{iterator}!HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator@{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{iterator()}{iterator()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class Trajectory\+Input\+Iterator , int Date\+Idx, int Lat\+Idx, int Lon\+Idx$>$ \\
+\mbox{\hyperlink{class_high_frequency_trajectory_splitter}{High\+Frequency\+Trajectory\+Splitter}}$<$ Trajectory\+Input\+Iterator, Date\+Idx, Lat\+Idx, Lon\+Idx $>$\+::iterator\+::iterator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct an empty/end iterator. 
+
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_a09c812de4f7c94ef019bf2cdfafa61cd}\label{class_high_frequency_trajectory_splitter_1_1iterator_a09c812de4f7c94ef019bf2cdfafa61cd}} 
+\index{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator@{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator}!iterator@{iterator}}
+\index{iterator@{iterator}!HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator@{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{iterator()}{iterator()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class Trajectory\+Input\+Iterator , int Date\+Idx, int Lat\+Idx, int Lon\+Idx$>$ \\
+\mbox{\hyperlink{class_high_frequency_trajectory_splitter}{High\+Frequency\+Trajectory\+Splitter}}$<$ Trajectory\+Input\+Iterator, Date\+Idx, Lat\+Idx, Lon\+Idx $>$\+::iterator\+::iterator (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_high_frequency_trajectory_splitter}{High\+Frequency\+Trajectory\+Splitter}} \&}]{parent }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct an iterator at the beginning of the {\ttfamily parent} object. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_high_frequency_trajectory_splitter_1_1iterator_aa6d71e32210f8986a0c9bed303e06c46}\label{class_high_frequency_trajectory_splitter_1_1iterator_aa6d71e32210f8986a0c9bed303e06c46}} 
+\index{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator@{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator}!operator++@{operator++}}
+\index{operator++@{operator++}!HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator@{HighFrequencyTrajectorySplitter$<$ TrajectoryInputIterator, DateIdx, LatIdx, LonIdx $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{operator++()}{operator++()}}
+{\footnotesize\ttfamily template$<$class Trajectory\+Input\+Iterator , int Date\+Idx, int Lat\+Idx, int Lon\+Idx$>$ \\
+\mbox{\hyperlink{class_high_frequency_trajectory_splitter_1_1iterator}{iterator}}\& \mbox{\hyperlink{class_high_frequency_trajectory_splitter}{High\+Frequency\+Trajectory\+Splitter}}$<$ Trajectory\+Input\+Iterator, Date\+Idx, Lat\+Idx, Lon\+Idx $>$\+::iterator\+::operator++ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read one segment, if possible. Set to end if parent is not good anymore. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/High\+Frequency\+Trajectory\+Splitter.\+h\end{DoxyCompactItemize}

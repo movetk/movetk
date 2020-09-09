@@ -1,0 +1,99 @@
+\hypertarget{class_trajectory_reader_1_1iterator}{}\doxysection{Trajectory\+Reader$<$ Trajectory\+Traits, Probe\+Input\+Iterator, Sort\+Trajectory, Remove\+Duplicates $>$\+::iterator Class Reference}
+\label{class_trajectory_reader_1_1iterator}\index{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator@{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator}}
+
+
+Iterator; just calls recursively Trajectory\+Reader\+::read\+\_\+trajectory and stores the result.  
+
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_abc3ce3347f589ee1e6bcac3e73cb7283}\label{class_trajectory_reader_1_1iterator_abc3ce3347f589ee1e6bcac3e73cb7283}} 
+typedef std\+::input\+\_\+iterator\+\_\+tag {\bfseries iterator\+\_\+category}
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_ada02c9dca83254d81a6936febbcf7af8}\label{class_trajectory_reader_1_1iterator_ada02c9dca83254d81a6936febbcf7af8}} 
+typedef Trajectory\+Reader\+::value\+\_\+type {\bfseries value\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_aca6a86f5852b601af13b9bdcbc65f39e}\label{class_trajectory_reader_1_1iterator_aca6a86f5852b601af13b9bdcbc65f39e}} 
+typedef std\+::size\+\_\+t {\bfseries difference\+\_\+type}
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a007396917c57cf4a45a9dd8f58042b84}\label{class_trajectory_reader_1_1iterator_a007396917c57cf4a45a9dd8f58042b84}} 
+typedef Trajectory\+Reader\+::value\+\_\+type $\ast$ {\bfseries pointer}
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a6ad46ae83402ebe7038a23b4a8314cfe}\label{class_trajectory_reader_1_1iterator_a6ad46ae83402ebe7038a23b4a8314cfe}} 
+typedef Trajectory\+Reader\+::value\+\_\+type \& {\bfseries reference}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_trajectory_reader_1_1iterator_a0bac24f86fa5223325226cc4cbf0c42a}{iterator}} ()
+\begin{DoxyCompactList}\small\item\em Construct an empty/end iterator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_trajectory_reader_1_1iterator_a8ae2adf9ec6d1c6307f53de59b03fa8f}{iterator}} (\mbox{\hyperlink{class_trajectory_reader}{Trajectory\+Reader}} \&parent)
+\begin{DoxyCompactList}\small\item\em Construct an iterator at the beginning of the {\ttfamily parent} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_trajectory_reader_1_1iterator}{iterator}} \& \mbox{\hyperlink{class_trajectory_reader_1_1iterator_a51c3765fce6a6f8cba3798a6d4e69f6e}{operator++}} ()
+\begin{DoxyCompactList}\small\item\em Read one segment, if possible. Set to end if parent is not good anymore. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a488dd58a2b56de4bcdb3876f17296dcf}\label{class_trajectory_reader_1_1iterator_a488dd58a2b56de4bcdb3876f17296dcf}} 
+\mbox{\hyperlink{class_trajectory_reader_1_1iterator}{iterator}} {\bfseries operator++} (int)
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a1f0dbeb55898316bcb379430d1ed9e3c}\label{class_trajectory_reader_1_1iterator_a1f0dbeb55898316bcb379430d1ed9e3c}} 
+Trajectory\+Reader\+::value\+\_\+type \& {\bfseries operator$\ast$} ()
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_af8fae4cfab94ef44088ae44659fc9e90}\label{class_trajectory_reader_1_1iterator_af8fae4cfab94ef44088ae44659fc9e90}} 
+Trajectory\+Reader\+::value\+\_\+type $\ast$ {\bfseries operator-\/$>$} ()
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a33ef31b3e059034f4d1e78a26583f6d1}\label{class_trajectory_reader_1_1iterator_a33ef31b3e059034f4d1e78a26583f6d1}} 
+bool {\bfseries operator==} (\mbox{\hyperlink{class_trajectory_reader_1_1iterator}{iterator}} const \&other)
+\item 
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a0adc00a472675afbd45211ba4388fe4d}\label{class_trajectory_reader_1_1iterator_a0adc00a472675afbd45211ba4388fe4d}} 
+bool {\bfseries operator!=} (\mbox{\hyperlink{class_trajectory_reader_1_1iterator}{iterator}} const \&other)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class Trajectory\+Traits, class Probe\+Input\+Iterator, bool Sort\+Trajectory = true, bool Remove\+Duplicates = true$>$\newline
+class Trajectory\+Reader$<$ Trajectory\+Traits, Probe\+Input\+Iterator, Sort\+Trajectory, Remove\+Duplicates $>$\+::iterator}
+
+Iterator; just calls recursively Trajectory\+Reader\+::read\+\_\+trajectory and stores the result. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a0bac24f86fa5223325226cc4cbf0c42a}\label{class_trajectory_reader_1_1iterator_a0bac24f86fa5223325226cc4cbf0c42a}} 
+\index{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator@{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator}!iterator@{iterator}}
+\index{iterator@{iterator}!TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator@{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{iterator()}{iterator()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class Trajectory\+Traits , class Probe\+Input\+Iterator , bool Sort\+Trajectory = true, bool Remove\+Duplicates = true$>$ \\
+\mbox{\hyperlink{class_trajectory_reader}{Trajectory\+Reader}}$<$ Trajectory\+Traits, Probe\+Input\+Iterator, Sort\+Trajectory, Remove\+Duplicates $>$\+::iterator\+::iterator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct an empty/end iterator. 
+
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a8ae2adf9ec6d1c6307f53de59b03fa8f}\label{class_trajectory_reader_1_1iterator_a8ae2adf9ec6d1c6307f53de59b03fa8f}} 
+\index{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator@{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator}!iterator@{iterator}}
+\index{iterator@{iterator}!TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator@{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{iterator()}{iterator()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class Trajectory\+Traits , class Probe\+Input\+Iterator , bool Sort\+Trajectory = true, bool Remove\+Duplicates = true$>$ \\
+\mbox{\hyperlink{class_trajectory_reader}{Trajectory\+Reader}}$<$ Trajectory\+Traits, Probe\+Input\+Iterator, Sort\+Trajectory, Remove\+Duplicates $>$\+::iterator\+::iterator (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_trajectory_reader}{Trajectory\+Reader}} \&}]{parent }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct an iterator at the beginning of the {\ttfamily parent} object. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_trajectory_reader_1_1iterator_a51c3765fce6a6f8cba3798a6d4e69f6e}\label{class_trajectory_reader_1_1iterator_a51c3765fce6a6f8cba3798a6d4e69f6e}} 
+\index{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator@{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator}!operator++@{operator++}}
+\index{operator++@{operator++}!TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator@{TrajectoryReader$<$ TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates $>$::iterator}}
+\doxysubsubsection{\texorpdfstring{operator++()}{operator++()}}
+{\footnotesize\ttfamily template$<$class Trajectory\+Traits , class Probe\+Input\+Iterator , bool Sort\+Trajectory = true, bool Remove\+Duplicates = true$>$ \\
+\mbox{\hyperlink{class_trajectory_reader_1_1iterator}{iterator}}\& \mbox{\hyperlink{class_trajectory_reader}{Trajectory\+Reader}}$<$ Trajectory\+Traits, Probe\+Input\+Iterator, Sort\+Trajectory, Remove\+Duplicates $>$\+::iterator\+::operator++ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read one segment, if possible. Set to end if parent is not good anymore. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/Trajectory\+Reader.\+h\end{DoxyCompactItemize}

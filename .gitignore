@@ -9,11 +9,7 @@ build_Xcode/
 Coverage_build/
 cmake-build-debug/
 docs/.DS_Store
-docs/html/
 docs/images/.DS_Store
-docs/images/Type Definition Flow.jpg
-docs/images/geometry_agnostic_design_small.jpg
-docs/latex/
 src/.DS_Store
 src/include/.DS_Store
 src/include/third_party/.DS_Store
