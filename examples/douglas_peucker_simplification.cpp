@@ -1,0 +1,66 @@
+/*
+ * Copyright (C) 2018-2020 HERE Europe B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
+
+//
+// Created by Mitra, Aniket on 2019-02-21.
+//
+
+
+#include "GeometryBackendTraits.h"
+#include "movetk/algo/Simplification.h"
+#include "movetk/utils/Iterators.h"
+
+
+int main(int argc, char **argv){
+#if CGAL_BACKEND_ENABLED
+    std::cerr<<"Using CGAL Backend for Geometry\n";
+#else
+    std::cerr<<"Using Boost Backend for Geometry\n";
+#endif
+    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    typedef std::vector<GeometryKernel::MovetkGeometryKernel::MovetkPoint> PolyLine;
+    PolyLine polyline({
+                                 make_point({-6.19, -3.46}), make_point({-4.99, 1.16}),
+                                 make_point({-2.79, -2.22}), make_point({-1.87, 0.58}),
+                                 make_point({0.77, 0.22}), make_point({-1.15, 3.06}),
+                                 make_point({5.33, -1.12})
+    });
+
+    std::cout<<"Polyline to be simplified: ";
+    std::cout<<"{";
+    for (auto vertex: polyline){
+        cout<<vertex;
+        std::cout<<";";
+    }
+    std::cout<<"}\n";
+
+    std::vector<PolyLine::const_iterator> result;
+    typedef movetk_algorithms::FindFarthest<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm> FindFarthest;
+    movetk_algorithms::DouglasPeucker<GeometryKernel::MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
+    DouglasPeucker(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+    std::cout<<"Simplified polyline has: "<<result.size()<<" vertices\n";
+    std::cout<<"Simplified Polyline: ";
+    std::cout<<"{";
+    for (auto reference: result){
+        cout<<*reference;
+        std::cout<<";";
+    }
+    std::cout<<"}\n";
+    return 0;
+}

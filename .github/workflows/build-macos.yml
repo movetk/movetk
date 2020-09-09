@@ -1,0 +1,19 @@
+name: MoveTK-CI-macOS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:   
+        - uses: actions/checkout@v2
+        - name: install dependencies
+          run: brew install boost cgal gdal geographiclib gsl doxygen
+        - name: build movetk
+          run: GEOGRPAHICLIB_VER=$(find /usr/local/Cellar/geographiclib/  -name "lib" | awk -F"/" '{print $7}'); GEOGRPHICLIB_LDPATH=/usr/local/Cellar/geographiclib/$GEOGRPAHICLIB_VER/lib/;GDAL_VER=$(find /usr/local/Cellar/gdal/  -name "lib" | awk -F"/" '{print $7}');GDAL_LDPATH=/usr/local/Cellar/gdal/$GDAL_VER/lib/; GSL_VER=$(find /usr/local/Cellar/gsl/  -name "lib" | awk -F"/" '{print $7}');GSL_LDPATH=/usr/local/Cellar/gsl/$GSL_VER/lib/; export LIBRARY_PATH=$GEOGRPHICLIB_LDPATH:$GDAL_LDPATH:$GSL_LDPATH && echo $LIBRARY_PATH && ./ci.sh

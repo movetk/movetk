@@ -1,0 +1,25 @@
+SPDXID: "SPDXRef-DOCUMENT"
+spdxVersion: "SPDX-2.2"
+creationInfo:
+  created: "2020-09-04T16:00:00Z"
+  creators:
+  - "Organization: HERE Europe B.V."
+  - "Person: Thomas Steenbergen"
+  licenseListVersion: "3.9"
+name: "boost-future-1.70.0"
+dataLicense: "CC0-1.0"
+documentNamespace: "http://spdx.org/spdxdocs/spdx-document-boost-geometry"
+documentDescribes:
+- "SPDXRef-Package-boost-geometry"
+packages:
+- SPDXID: "SPDXRef-Package-boost-geometry"
+  copyrightText: "NOASSERTION"
+  description: "Boost.Geometry, part of collection of the Boost C++ Libraries, defines concepts, primitives and algorithms for solving geometry problems."
+  downloadLocation: "git+github.com/boostorg/geometry@aa470306304d7ac5144d09c76d8e52a9af273ab4"
+  filesAnalyzed: false
+  homepage: "https://www.boost.org/"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "BSL-1.0"
+  name: "Boost.Geometry"
+  sourceInfo: "Package only includes discrete_frechet_distance.hpp and discrete_hausdorff_distance.hpp from larger Boost.Geometry."
+  versionInfo: "1.70.0"

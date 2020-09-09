@@ -1,0 +1,25 @@
+SPDXID: "SPDXRef-DOCUMENT"
+spdxVersion: "SPDX-2.2"
+creationInfo:
+  created: "2020-09-07T12:30:00Z"
+  creators:
+  - "Organization: HERE Europe B.V."
+  - "Person: Thomas Steenbergen"
+  licenseListVersion: "3.9"
+name: "miniball-1.0.3"
+dataLicense: "CC0-1.0"
+documentNamespace: "http://spdx.org/spdxdocs/spdx-document-miniball"
+documentDescribes:
+- "SPDXRef-Package-miniball"
+packages:
+- SPDXID: "SPDXRef-Package-miniball"
+  copyrightText: "NOASSERTION"
+  description: "A C++ and Java library to compute the [miniball](http://en.wikipedia.org/wiki/Bounding_sphere) (a.k.a. _min-circle_, _min-sphere_, _smallest enclosing sphere_, etc.) of a point set."
+  downloadLocation: "git+github.com/hbf/miniball@f07c470cebdbc326e7c78977ed8c131d49886bc5"
+  filesAnalyzed: false
+  homepage: "http://hbf.github.io/miniball/"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "Apache-2.0 "
+  name: "Miniball"
+  sourceInfo: "This is a fork of the miniball repository. Only relevant files are kept"
+  versionInfo: "1.0.3"

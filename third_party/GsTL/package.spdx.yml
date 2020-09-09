@@ -1,0 +1,25 @@
+SPDXID: "SPDXRef-DOCUMENT"
+spdxVersion: "SPDX-2.2"
+creationInfo:
+  created: "2020-09-07T13:30:00Z"
+  creators:
+  - "Organization: HERE Europe B.V."
+  - "Person: Thomas Steenbergen"
+  licenseListVersion: "3.9"
+name: "GsTL-1.2.1"
+dataLicense: "CC0-1.0"
+documentNamespace: "http://spdx.org/spdxdocs/spdx-document-GsTL"
+documentDescribes:
+- "SPDXRef-Package-GsTL"
+packages:
+- SPDXID: "SPDXRef-Package-GsTL"
+  copyrightText: "NOASSERTION"
+  description: "GsTL is a C++ library that provides a comprehensive set of tools and algorithms for geostatistics."
+  downloadLocation: "http://prdownloads.sourceforge.net/gstl/GsTL-1.2.1.tgz?download"
+  filesAnalyzed: false
+  homepage: "http://gstl.sourceforge.net/"
+  licenseConcluded: "NOASSERTION"
+  licenseDeclared: "BSD-4-Clause"
+  name: "GsTL"
+  sourceInfo: ""
+  versionInfo: "1.2.1"

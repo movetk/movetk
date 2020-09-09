@@ -1,0 +1,18 @@
+excludes:
+  paths:
+  - pattern: "cmake/**"
+    reason: "BUILD_TOOL_OF"
+    comment: "Directory is only used for building the code. Not included in released artifacts."
+  - pattern: "docs/**"
+    reason: "DOCUMENTATION_OF"
+    comment: "Directory is only used for documentation. Not included in released artifacts."
+  - pattern: "examples/**"
+    reason: "EXAMPLE_OF"
+    comment: "Directory is only used for examples. Not included in released artifacts."
+  - pattern: "tests/**"
+    reason: "TEST_OF"
+    comment: "Directory is only used for testing. Not included in released artifacts."
+  - pattern: "tutorials/**"
+    reason: "DOCUMENTATION_OF"
+    comment: "Directory is only used for tutorials. Not included in released artifacts."
+
