@@ -13,7 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: install dependencies
-      run: C:\vcpkg\vcpkg.exe install boost gdal gsl cgal geographiclib --triplet x64-windows
+    - uses: seanmiddleditch/gha-setup-ninja@master	
+    #- name: install dependencies
+    #  run: C:\vcpkg\vcpkg.exe install boost gdal gsl cgal geographiclib --triplet x64-windows
     - name: build movetk
       run: .\ci.cmd 	 
