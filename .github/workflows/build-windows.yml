@@ -2,7 +2,7 @@ name:  MoveTK-CI-Windows
 
 on:
   push:
-    branches: [ master ]
+    branches: [ add-documentation ]
   pull_request:
     branches: [ master ]
 
@@ -15,4 +15,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: install dependencies
       run: C:\vcpkg\vcpkg.exe install boost gdal cgal geographiclib --triplet x64-windows
-   
+    - name: build movetk
+      run: ci.cmd 	 
