@@ -1,7 +1,7 @@
 # MoveTK: the movement toolkit
 ![MoveTK-CI-Ubuntu](https://github.com/heremaps/movetk/workflows/MoveTK-CI-Ubuntu/badge.svg?branch=master&event=push) ![MoveTK-CI-macOS](https://github.com/heremaps/movetk/workflows/MoveTK-CI-macOS/badge.svg?branch=master&event=push) ![MoveTK-CI-Windows](https://github.com/heremaps/movetk/workflows/MoveTK-CI-Windows/badge.svg?branch=master&event=push)
 
-MoveTK is a library for computational movement analysis written in C++.
+MoveTK is a library for computational movement analysis written in C++. The library has been developed as part of a collaboration between [HERE Technologies](https://www.here.com/) , [Eindhoven University of Technology](https://www.tue.nl/en/) and [Utrecht University](https://www.uu.nl/en) under the [Commit2Data](https://commit2data.nl/en/commit2data-program/data-handling/data-science-voor-veranderende-data-2/analysis-and-visualization-of-heterogeneous-spatio-temporal-data) program.
 
 ## Overview
 MoveTK is a reusable, well tested, high performant, feature-rich library that incorporates state of the art algorithms for understanding movement.
@@ -16,6 +16,22 @@ You can use this library to:
 Some examples are shown below:
 
 ![movetk_algorithm_visualization](docs/images/algorithm_visualization.png)
+
+The following table lists some of the algorithms available in MoveTK
+
+| Feature | Algorithm |
+| ------- | --------- |
+| Trajectory Segmentation | Monotone Segmentation [Buchin et al. 2011, Alewijnse  et al. 2014]|
+|                         | Model Based Segmentation [Alewijnse et al. 2018] |
+| Trajectory Simplification | Douglas-Peucker Simplification [Hershberger et al. 1992,1998] |
+|                           | Imai-Iri Simplification [Chan et al. 1996] |
+| Trajectory Similarity     | Longest Common Subsequence [Vlachos et al. 2002] |
+|                           | Hausdorff & Fréchet  Metric [Eiter et al. 1994, Alt et al. 1995] |
+| Trajectory Outlier Detection | Optimal Speed Bounded [Custers et al. 2019] |
+|                           | Greedy / Smart Greedy / Local Greedy [Custers et al. 2019] |
+| Trajectory Clustering | Sub-trajectory Clustering [Buchin et al. 2008] |
+| Trajectory Interpolation | Kinematic Interpolation [Long 2016] |
+|                          | Random Trajectory Generator [Technitis et al. 2015] |
 
 ## Quick Start
 1. Install Docker on your machine see the installation instructions for instance, for [Windows](https://docs.docker.com/docker-for-windows/install/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/).
