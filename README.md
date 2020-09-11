@@ -21,17 +21,17 @@ The following table lists some of the algorithms available in MoveTK
 
 | Feature | Algorithm |
 | ------- | --------- |
-| Trajectory Segmentation | Monotone Segmentation [Buchin et al. 2011, Alewijnse  et al. 2014]|
-|                         | Model Based Segmentation [Alewijnse et al. 2018] |
-| Trajectory Simplification | Douglas-Peucker Simplification [Hershberger et al. 1992,1998] |
-|                           | Imai-Iri Simplification [Chan et al. 1996] |
-| Trajectory Similarity     | Longest Common Subsequence [Vlachos et al. 2002] |
-|                           | Hausdorff & Fréchet  Metric [Eiter et al. 1994, Alt et al. 1995] |
-| Trajectory Outlier Detection | Optimal Speed Bounded [Custers et al. 2019] |
-|                           | Greedy / Smart Greedy / Local Greedy [Custers et al. 2019] |
-| Trajectory Clustering | Sub-trajectory Clustering [Buchin et al. 2008] |
-| Trajectory Interpolation | Kinematic Interpolation [Long 2016] |
-|                          | Random Trajectory Generator [Technitis et al. 2015] |
+| **Trajectory Segmentation** | Monotone Segmentation [[Buchin et al. 2011](http://josis.org/index.php/josis/article/view/66), [Alewijnse  et al. 2014](https://dl.acm.org/doi/10.1145/2666310.2666415)]|
+|                         | Model Based Segmentation [[Alewijnse et al. 2018](https://link.springer.com/article/10.1007%2Fs00453-017-0329-x)] |
+| **Trajectory Simplification** | Douglas-Peucker Simplification [[Hershberger et al. 1992,1998](https://dl.acm.org/doi/book/10.5555/902273)] |
+|                           | Imai-Iri Simplification [[Chan et al. 1996](https://www.worldscientific.com/doi/abs/10.1142/S0218195996000058)] |
+| **Trajectory Similarity**     | Longest Common Subsequence [[Vlachos et al. 2002](https://ieeexplore.ieee.org/document/994784)] |
+|                           | Hausdorff & Fréchet  Metric [[Eiter et al. 1994, Alt et al. 1995](https://www.worldscientific.com/doi/abs/10.1142/S0218195995000064)] |
+| **Trajectory Outlier Detection** | Optimal Speed Bounded [[Custers et al. 2019](https://dl.acm.org/doi/10.1145/3347146.3359363)] |
+|                           | Greedy / Smart Greedy / Local Greedy [[Custers et al. 2019](https://dl.acm.org/doi/10.1145/3347146.3359363)] |
+| **Trajectory Clustering** | Sub-trajectory Clustering [[Buchin et al. 2008](https://link.springer.com/chapter/10.1007%2F978-3-540-92182-0_57)] |
+| **Trajectory Interpolation** | Kinematic Interpolation [[Long 2016](https://www.tandfonline.com/doi/abs/10.1080/13658816.2015.1081909?journalCode=tgis20)] |
+|                          | Random Trajectory Generator [[Technitis et al. 2015](https://www.tandfonline.com/doi/abs/10.1080/13658816.2014.999682?journalCode=tgis20)] |
 
 ## Quick Start
 1. Install Docker on your machine see the installation instructions for instance, for [Windows](https://docs.docker.com/docker-for-windows/install/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/).
