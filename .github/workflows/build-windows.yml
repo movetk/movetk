@@ -2,7 +2,7 @@ name:  MoveTK-CI-Windows
 
 on:
   push:
-    branches: [ add-documentation ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
