@@ -1,0 +1,43 @@
+\hypertarget{struct_transpose}{}\doxysection{Transpose$<$ fields $>$ Struct Template Reference}
+\label{struct_transpose}\index{Transpose$<$ fields $>$@{Transpose$<$ fields $>$}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_transpose_aa01ed5112767fe671ae846c47beb4336}\label{struct_transpose_aa01ed5112767fe671ae846c47beb4336}} 
+typedef tuple$<$ fields... $>$ {\bfseries row\+\_\+tuple\+\_\+type}
+\item 
+\mbox{\Hypertarget{struct_transpose_a9fc328cd24203433b95ef882ebab4889}\label{struct_transpose_a9fc328cd24203433b95ef882ebab4889}} 
+typedef tuple$<$ vector$<$ fields $>$... $>$ {\bfseries tuple\+\_\+of\+\_\+vectors\+\_\+type}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_transpose_a8abcc5e214cf23cd66538c974e8feef5}\label{struct_transpose_a8abcc5e214cf23cd66538c974e8feef5}} 
+{\bfseries Transpose} (vector$<$ row\+\_\+tuple\+\_\+type $>$ \&inp)
+\item 
+\mbox{\Hypertarget{struct_transpose_ab3c0ce8ee996b1063e225fff7d543c51}\label{struct_transpose_ab3c0ce8ee996b1063e225fff7d543c51}} 
+{\footnotesize template$<$std\+::size\+\_\+t idx$>$ }\\vector$<$ typename std\+::tuple\+\_\+element$<$ idx, tuple$<$ fields... $>$ $>$\+::type $>$ {\bfseries convert\+\_\+rows\+\_\+to\+\_\+column} ()
+\item 
+\mbox{\Hypertarget{struct_transpose_a3f1d55e8162b14e1ff9c4cf7c0033cb9}\label{struct_transpose_a3f1d55e8162b14e1ff9c4cf7c0033cb9}} 
+{\footnotesize template$<$std\+::size\+\_\+t... idx$>$ }\\tuple\+\_\+of\+\_\+vectors\+\_\+type {\bfseries convert\+\_\+rows\+\_\+to\+\_\+columns} (std\+::index\+\_\+sequence$<$ idx... $>$)
+\item 
+\mbox{\Hypertarget{struct_transpose_a7e085aad504d2daab46d7a3b5264b0a0}\label{struct_transpose_a7e085aad504d2daab46d7a3b5264b0a0}} 
+tuple\+\_\+of\+\_\+vectors\+\_\+type {\bfseries operator()} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_transpose_a65c6e027fed3c629d6dae471023f741b}\label{struct_transpose_a65c6e027fed3c629d6dae471023f741b}} 
+vector$<$ row\+\_\+tuple\+\_\+type $>$ \& {\bfseries \+\_\+inp}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_transpose_a40aae174e0ef38b5d4a895bc2bdc8fec}\label{struct_transpose_a40aae174e0ef38b5d4a895bc2bdc8fec}} 
+constexpr static std\+::size\+\_\+t {\bfseries N} = sizeof...(fields)
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/utils/Transpose.\+h\end{DoxyCompactItemize}

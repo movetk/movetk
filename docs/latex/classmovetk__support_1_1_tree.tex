@@ -1,0 +1,130 @@
+\hypertarget{classmovetk__support_1_1_tree}{}\doxysection{movetk\+\_\+support\+::Tree$<$ Node\+Type $>$ Class Template Reference}
+\label{classmovetk__support_1_1_tree}\index{movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmovetk__support_1_1_tree_a5ac374d285cfcd0b0194cd43af0a2786}\label{classmovetk__support_1_1_tree_a5ac374d285cfcd0b0194cd43af0a2786}} 
+reference {\bfseries get\+\_\+root} ()
+\item 
+\mbox{\hyperlink{classmovetk__support_1_1_tree_aea7fc501f4813b9b84df39a6bbb6915e}{Tree}} (std\+::unique\+\_\+ptr$<$ Node\+Type $>$ nd)
+\item 
+\mbox{\Hypertarget{classmovetk__support_1_1_tree_a2c0b69a6feefb827c24276364cbb2f40}\label{classmovetk__support_1_1_tree_a2c0b69a6feefb827c24276364cbb2f40}} 
+\mbox{\hyperlink{classmovetk__support_1_1_tree}{Tree}} \& {\bfseries operator=} (\mbox{\hyperlink{classmovetk__support_1_1_tree}{Tree}} \&rhs)
+\item 
+{\footnotesize template$<$class Input\+Iterator , class Value\+Type , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+arithmetic$<$                        typename Input\+Iterator\+::value\+\_\+type $>$$>$ }\\void \mbox{\hyperlink{classmovetk__support_1_1_tree_a0c2f8d6eacc82d593fe5b6ed7f3b78aa}{insert}} (Input\+Iterator first, Input\+Iterator beyond, Value\+Type \&val)
+\item 
+{\footnotesize template$<$class Input\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+arithmetic$<$                        typename Input\+Iterator\+::value\+\_\+type $>$$>$ }\\reference \mbox{\hyperlink{classmovetk__support_1_1_tree_a9e1307c590f9379543a25d2096f38652}{find}} (Input\+Iterator first, Input\+Iterator beyond)
+\item 
+{\footnotesize template$<$class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+output\+\_\+iterator$<$\+Output\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+pair$<$                        typename Output\+Iterator\+::value\+\_\+type $>$$>$ }\\void \mbox{\hyperlink{classmovetk__support_1_1_tree_a3b2bfcf5ec5096ed8e131af2e35e05b1}{find}} (Output\+Iterator iter)
+\item 
+size\+\_\+t \mbox{\hyperlink{classmovetk__support_1_1_tree_abc2c3431959536002579d917f3a86dcf}{get\+\_\+match\+\_\+size}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class Node\+Type$>$\newline
+class movetk\+\_\+support\+::\+Tree$<$ Node\+Type $>$}
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Node\+Type} & \\
+\hline
+\end{DoxyTemplParams}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classmovetk__support_1_1_tree_aea7fc501f4813b9b84df39a6bbb6915e}\label{classmovetk__support_1_1_tree_aea7fc501f4813b9b84df39a6bbb6915e}} 
+\index{movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}!Tree@{Tree}}
+\index{Tree@{Tree}!movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}}
+\doxysubsubsection{\texorpdfstring{Tree()}{Tree()}}
+{\footnotesize\ttfamily template$<$class Node\+Type $>$ \\
+\mbox{\hyperlink{classmovetk__support_1_1_tree}{movetk\+\_\+support\+::\+Tree}}$<$ Node\+Type $>$\+::\mbox{\hyperlink{classmovetk__support_1_1_tree}{Tree}} (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ Node\+Type $>$}]{nd }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em nd} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmovetk__support_1_1_tree_a9e1307c590f9379543a25d2096f38652}\label{classmovetk__support_1_1_tree_a9e1307c590f9379543a25d2096f38652}} 
+\index{movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}!find@{find}}
+\index{find@{find}!movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}}
+\doxysubsubsection{\texorpdfstring{find()}{find()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class Node\+Type $>$ \\
+template$<$class Input\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+arithmetic$<$                        typename Input\+Iterator\+::value\+\_\+type $>$$>$ \\
+reference \mbox{\hyperlink{classmovetk__support_1_1_tree}{movetk\+\_\+support\+::\+Tree}}$<$ Node\+Type $>$\+::find (\begin{DoxyParamCaption}\item[{Input\+Iterator}]{first,  }\item[{Input\+Iterator}]{beyond }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Input\+Iterator} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em first} & \\
+\hline
+{\em beyond} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classmovetk__support_1_1_tree_a3b2bfcf5ec5096ed8e131af2e35e05b1}\label{classmovetk__support_1_1_tree_a3b2bfcf5ec5096ed8e131af2e35e05b1}} 
+\index{movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}!find@{find}}
+\index{find@{find}!movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}}
+\doxysubsubsection{\texorpdfstring{find()}{find()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class Node\+Type $>$ \\
+template$<$class Output\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+output\+\_\+iterator$<$\+Output\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+pair$<$                        typename Output\+Iterator\+::value\+\_\+type $>$$>$ \\
+void \mbox{\hyperlink{classmovetk__support_1_1_tree}{movetk\+\_\+support\+::\+Tree}}$<$ Node\+Type $>$\+::find (\begin{DoxyParamCaption}\item[{Output\+Iterator}]{iter }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Output\+Iterator} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em iter} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classmovetk__support_1_1_tree_abc2c3431959536002579d917f3a86dcf}\label{classmovetk__support_1_1_tree_abc2c3431959536002579d917f3a86dcf}} 
+\index{movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}!get\_match\_size@{get\_match\_size}}
+\index{get\_match\_size@{get\_match\_size}!movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}}
+\doxysubsubsection{\texorpdfstring{get\_match\_size()}{get\_match\_size()}}
+{\footnotesize\ttfamily template$<$class Node\+Type $>$ \\
+size\+\_\+t \mbox{\hyperlink{classmovetk__support_1_1_tree}{movetk\+\_\+support\+::\+Tree}}$<$ Node\+Type $>$\+::get\+\_\+match\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{classmovetk__support_1_1_tree_a0c2f8d6eacc82d593fe5b6ed7f3b78aa}\label{classmovetk__support_1_1_tree_a0c2f8d6eacc82d593fe5b6ed7f3b78aa}} 
+\index{movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}!insert@{insert}}
+\index{insert@{insert}!movetk\_support::Tree$<$ NodeType $>$@{movetk\_support::Tree$<$ NodeType $>$}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}}
+{\footnotesize\ttfamily template$<$class Node\+Type $>$ \\
+template$<$class Input\+Iterator , class Value\+Type , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Input\+Iterator$>$, typename  = movetk\+\_\+core\+::requires\+\_\+arithmetic$<$                        typename Input\+Iterator\+::value\+\_\+type $>$$>$ \\
+void \mbox{\hyperlink{classmovetk__support_1_1_tree}{movetk\+\_\+support\+::\+Tree}}$<$ Node\+Type $>$\+::insert (\begin{DoxyParamCaption}\item[{Input\+Iterator}]{first,  }\item[{Input\+Iterator}]{beyond,  }\item[{Value\+Type \&}]{val }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Input\+Iterator} & \\
+\hline
+{\em Value\+Type} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em first} & \\
+\hline
+{\em beyond} & \\
+\hline
+{\em val} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/ds/\mbox{\hyperlink{_tree_8h}{Tree.\+h}}\end{DoxyCompactItemize}

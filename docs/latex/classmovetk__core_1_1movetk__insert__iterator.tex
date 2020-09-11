@@ -1,0 +1,76 @@
+\hypertarget{classmovetk__core_1_1movetk__insert__iterator}{}\doxysection{movetk\+\_\+core\+::movetk\+\_\+insert\+\_\+iterator$<$ Container $>$ Class Template Reference}
+\label{classmovetk__core_1_1movetk__insert__iterator}\index{movetk\_core::movetk\_insert\_iterator$<$ Container $>$@{movetk\_core::movetk\_insert\_iterator$<$ Container $>$}}
+
+
+an adaptor to std\+::iterator for inserting into a container at a given position  
+
+
+Inheritance diagram for movetk\+\_\+core\+::movetk\+\_\+insert\+\_\+iterator$<$ Container $>$\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classmovetk__core_1_1movetk__insert__iterator}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_a27ac0fb3885b5893b258b1edfcccff5e}\label{classmovetk__core_1_1movetk__insert__iterator_a27ac0fb3885b5893b258b1edfcccff5e}} 
+typedef Container {\bfseries container\+\_\+type}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_a7ae26900a14cc2db8f16024ba7e7aaf5}\label{classmovetk__core_1_1movetk__insert__iterator_a7ae26900a14cc2db8f16024ba7e7aaf5}} 
+typedef Container\+::value\+\_\+type {\bfseries value\+\_\+type}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_a6df7548598a2095a21578c2c6f2ae9fc}\label{classmovetk__core_1_1movetk__insert__iterator_a6df7548598a2095a21578c2c6f2ae9fc}} 
+typedef void {\bfseries difference\+\_\+type}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_aa21aa3079a3f37708c09031e0bdcceed}\label{classmovetk__core_1_1movetk__insert__iterator_aa21aa3079a3f37708c09031e0bdcceed}} 
+typedef void {\bfseries reference}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_aebbbac1cc207cdd249fbef48cb093b8e}\label{classmovetk__core_1_1movetk__insert__iterator_aebbbac1cc207cdd249fbef48cb093b8e}} 
+typedef void {\bfseries pointer}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_a93471c524167c7b9b9f6a773d0bec5b4}\label{classmovetk__core_1_1movetk__insert__iterator_a93471c524167c7b9b9f6a773d0bec5b4}} 
+{\bfseries movetk\+\_\+insert\+\_\+iterator} (Container \&x, typename Container\+::iterator \+\_\+iter)
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_ad036f5b80435a032343804abae4746a7}\label{classmovetk__core_1_1movetk__insert__iterator_ad036f5b80435a032343804abae4746a7}} 
+\mbox{\hyperlink{classmovetk__core_1_1movetk__insert__iterator}{movetk\+\_\+insert\+\_\+iterator}} \& {\bfseries operator=} (const typename Container\+::value\+\_\+type \&value)
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_a938ba26d7fb2b6767aa619bf8eef7de8}\label{classmovetk__core_1_1movetk__insert__iterator_a938ba26d7fb2b6767aa619bf8eef7de8}} 
+\mbox{\hyperlink{classmovetk__core_1_1movetk__insert__iterator}{movetk\+\_\+insert\+\_\+iterator}} \& {\bfseries operator$\ast$} ()
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_abf8337728ac49552aad0526f7c73be9c}\label{classmovetk__core_1_1movetk__insert__iterator_abf8337728ac49552aad0526f7c73be9c}} 
+\mbox{\hyperlink{classmovetk__core_1_1movetk__insert__iterator}{movetk\+\_\+insert\+\_\+iterator}} \& {\bfseries operator++} ()
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_a8f87bffab28f37f1bef9c9ce9d9bc7be}\label{classmovetk__core_1_1movetk__insert__iterator_a8f87bffab28f37f1bef9c9ce9d9bc7be}} 
+\mbox{\hyperlink{classmovetk__core_1_1movetk__insert__iterator}{movetk\+\_\+insert\+\_\+iterator}} {\bfseries operator++} (int)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_aa03e17d8f6591614ffa9de67e676e7b1}\label{classmovetk__core_1_1movetk__insert__iterator_aa03e17d8f6591614ffa9de67e676e7b1}} 
+Container $\ast$ {\bfseries container}
+\item 
+\mbox{\Hypertarget{classmovetk__core_1_1movetk__insert__iterator_a9d6b07257f0acfa01470179109bcfb87}\label{classmovetk__core_1_1movetk__insert__iterator_a9d6b07257f0acfa01470179109bcfb87}} 
+Container\+::iterator {\bfseries iter}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class Container$>$\newline
+class movetk\+\_\+core\+::movetk\+\_\+insert\+\_\+iterator$<$ Container $>$}
+
+an adaptor to std\+::iterator for inserting into a container at a given position 
+
+unlike the std\+::inserter, ths iterator has a value\+\_\+type. Increment operator has no effect. The assignment operator extends the size of the container by inserting an element at a given position 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Container} & \\
+\hline
+\end{DoxyTemplParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/utils/\mbox{\hyperlink{_iterators_8h}{Iterators.\+h}}\end{DoxyCompactItemize}

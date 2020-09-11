@@ -1,0 +1,68 @@
+\hypertarget{struct_categorical_field}{}\doxysection{Categorical\+Field$<$ T, C\+R\+TP $>$ Struct Template Reference}
+\label{struct_categorical_field}\index{CategoricalField$<$ T, CRTP $>$@{CategoricalField$<$ T, CRTP $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_categorical_field_ac5f5434ccc92c7fd495dd071dc5321cb}\label{struct_categorical_field_ac5f5434ccc92c7fd495dd071dc5321cb}} 
+std\+::size\+\_\+t {\bfseries idx} () const
+\item 
+\mbox{\Hypertarget{struct_categorical_field_ae52f1f624a4c8a7f45deda3795887b73}\label{struct_categorical_field_ae52f1f624a4c8a7f45deda3795887b73}} 
+double {\bfseries operator-\/} (\mbox{\hyperlink{struct_categorical_field}{Categorical\+Field}}$<$ T, C\+R\+TP $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{struct_categorical_field_a4e25329dbbd10e6c3af0d3bb9b4033ad}\label{struct_categorical_field_a4e25329dbbd10e6c3af0d3bb9b4033ad}} 
+bool {\bfseries operator$<$} (\mbox{\hyperlink{struct_categorical_field}{Categorical\+Field}}$<$ T, C\+R\+TP $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{struct_categorical_field_ad426a46a374cee3c1c28a5593da228cf}\label{struct_categorical_field_ad426a46a374cee3c1c28a5593da228cf}} 
+bool {\bfseries operator$>$} (\mbox{\hyperlink{struct_categorical_field}{Categorical\+Field}}$<$ T, C\+R\+TP $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{struct_categorical_field_a318086752cbb4d04e2021726cabe982e}\label{struct_categorical_field_a318086752cbb4d04e2021726cabe982e}} 
+bool {\bfseries operator$<$=} (\mbox{\hyperlink{struct_categorical_field}{Categorical\+Field}}$<$ T, C\+R\+TP $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{struct_categorical_field_a97d13c2ff0be530cdf7c744866ccd62a}\label{struct_categorical_field_a97d13c2ff0be530cdf7c744866ccd62a}} 
+bool {\bfseries operator$>$=} (\mbox{\hyperlink{struct_categorical_field}{Categorical\+Field}}$<$ T, C\+R\+TP $>$ \&rhs)
+\item 
+\mbox{\Hypertarget{struct_categorical_field_a2260578e3ee490f83e920b2c7046651d}\label{struct_categorical_field_a2260578e3ee490f83e920b2c7046651d}} 
+void {\bfseries add} (T \&\&t)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_categorical_field_a188d0708260e0f437af3002b3c96f84b}\label{struct_categorical_field_a188d0708260e0f437af3002b3c96f84b}} 
+std\+::size\+\_\+t {\bfseries \+\_\+idx}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_categorical_field_ab9d7b7786be5ed2eea1edfe75cbe00e4}\label{struct_categorical_field_ab9d7b7786be5ed2eea1edfe75cbe00e4}} 
+static std\+::vector$<$ T $>$ {\bfseries \+\_\+values}
+\item 
+\mbox{\Hypertarget{struct_categorical_field_aee62d7cb9eb1dd18ec210d2d15e2d447}\label{struct_categorical_field_aee62d7cb9eb1dd18ec210d2d15e2d447}} 
+static std\+::unordered\+\_\+map$<$ T, std\+::size\+\_\+t $>$ {\bfseries \+\_\+index\+Of}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_categorical_field_a9ba0f5314e597f2154eb82950672ebbf}\label{struct_categorical_field_a9ba0f5314e597f2154eb82950672ebbf}} 
+std\+::istream \& {\bfseries operator$>$$>$} (std\+::istream \&is, \mbox{\hyperlink{struct_categorical_field}{Categorical\+Field}}$<$ T, C\+R\+TP $>$ \&field)
+\item 
+\mbox{\Hypertarget{struct_categorical_field_a8b3f7a83a2caa527f11d1415c04c6c69}\label{struct_categorical_field_a8b3f7a83a2caa527f11d1415c04c6c69}} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&os, const \mbox{\hyperlink{struct_categorical_field}{Categorical\+Field}}$<$ T, C\+R\+TP $>$ \&field)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class T, class C\+R\+TP$>$\newline
+struct Categorical\+Field$<$ T, C\+R\+T\+P $>$}
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & type of the field \\
+\hline
+{\em C\+R\+TP} & When subclassed, C\+R\+TP parameter should be given the name of the subclass. (Using the \char`\"{}\+Curiously recurring template pattern\char`\"{} to enforce separate static variables for each subclass) \\
+\hline
+\end{DoxyTemplParams}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/io/csv/Categorical\+Field.\+h\end{DoxyCompactItemize}

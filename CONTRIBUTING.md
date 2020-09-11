@@ -88,9 +88,14 @@ When you create a commit message, follow these guidelines:
 
 ## Contributors
 
-We like to thank the following contributors:
+*Aniket Mitra* and *Onur Derin* have been responsible for the design and implementation of the core components of the library. 
 
- 1.  Wouter Jongeling - Model Based Segmentation Algorithm
- 2.  Ping Zhou - Dockerization of MoveTK
- 3.  Mees van de Kerkhof - Trajectory Outlier Detection Algorithms
- 4.  Matei Stroila - Dockerization with JupyterLab
+We also like to thank the following contributors:
+
+ 1.  *Wouter Jongeling* - Model Based Segmentation Algorithm
+ 2.  *Ping Zhou* - Dockerization of MoveTK
+ 3.  *Mees van de Kerkhof* - Trajectory Outlier Detection Algorithms
+ 4.  *Bram Custers* - Trajectory Statistics Algorithms   
+ 5.  *Matei Stroila* - Dockerization with JupyterLab
+ 6.  *Sian Teesdale* - Testing of the Monotone Segmentation Algorithm
+

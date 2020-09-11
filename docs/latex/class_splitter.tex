@@ -1,0 +1,50 @@
+\hypertarget{class_splitter}{}\doxysection{Splitter$<$ Predicate, Probe\+Input\+Iterator $>$ Class Template Reference}
+\label{class_splitter}\index{Splitter$<$ Predicate, ProbeInputIterator $>$@{Splitter$<$ Predicate, ProbeInputIterator $>$}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_splitter_1_1iterator}{iterator}}
+\begin{DoxyCompactList}\small\item\em Iterator; just calls recursively Splitter\+::read\+\_\+segment and stores the result. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_splitter_aba98689f2d079294484133623b89ca33}\label{class_splitter_aba98689f2d079294484133623b89ca33}} 
+using {\bfseries Probe\+Point} = typename std\+::iterator\+\_\+traits$<$ Probe\+Input\+Iterator $>$\+::value\+\_\+type
+\item 
+\mbox{\Hypertarget{class_splitter_a163c7b62c48f22d4285a5c62294a7776}\label{class_splitter_a163c7b62c48f22d4285a5c62294a7776}} 
+typedef vector$<$ Probe\+Point $>$ {\bfseries value\+\_\+type}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_splitter_a5c1341fc0ff7ebc6c8e1990bcb12235e}\label{class_splitter_a5c1341fc0ff7ebc6c8e1990bcb12235e}} 
+{\bfseries Splitter} (Probe\+Input\+Iterator start, Probe\+Input\+Iterator beyond)
+\item 
+\mbox{\Hypertarget{class_splitter_af81fefeb5a529f20db7ba9c8932cded8}\label{class_splitter_af81fefeb5a529f20db7ba9c8932cded8}} 
+{\bfseries Splitter} (Probe\+Input\+Iterator start, Probe\+Input\+Iterator beyond, Predicate predicate)
+\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_splitter_ab06631b0532edc235bd63e5c8fa53664}{good}} ()
+\item 
+\mbox{\Hypertarget{class_splitter_a74277277802360d14ca996c2657dd1f6}\label{class_splitter_a74277277802360d14ca996c2657dd1f6}} 
+\mbox{\hyperlink{class_splitter_1_1iterator}{iterator}} {\bfseries begin} ()
+\item 
+\mbox{\Hypertarget{class_splitter_a162482b46086e1f8fb905ebc08863558}\label{class_splitter_a162482b46086e1f8fb905ebc08863558}} 
+\mbox{\hyperlink{class_splitter_1_1iterator}{iterator}} {\bfseries end} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_splitter_ab06631b0532edc235bd63e5c8fa53664}\label{class_splitter_ab06631b0532edc235bd63e5c8fa53664}} 
+\index{Splitter$<$ Predicate, ProbeInputIterator $>$@{Splitter$<$ Predicate, ProbeInputIterator $>$}!good@{good}}
+\index{good@{good}!Splitter$<$ Predicate, ProbeInputIterator $>$@{Splitter$<$ Predicate, ProbeInputIterator $>$}}
+\doxysubsubsection{\texorpdfstring{good()}{good()}}
+{\footnotesize\ttfamily template$<$class Predicate, class Probe\+Input\+Iterator$>$ \\
+bool \mbox{\hyperlink{class_splitter}{Splitter}}$<$ Predicate, Probe\+Input\+Iterator $>$\+::good (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Status of the underlying stream 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/Splitter.\+h\end{DoxyCompactItemize}

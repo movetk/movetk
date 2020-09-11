@@ -1,0 +1,59 @@
+\hypertarget{structmovetk__core_1_1_make_point}{}\doxysection{movetk\+\_\+core\+::Make\+Point$<$ Geometry\+Traits $>$ Struct Template Reference}
+\label{structmovetk__core_1_1_make_point}\index{movetk\_core::MakePoint$<$ GeometryTraits $>$@{movetk\_core::MakePoint$<$ GeometryTraits $>$}}
+
+
+Constructs a point from a set of input Cartesian coordinates.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class Coordinate\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Coordinate\+Iterator$>$$>$ }\\Geometry\+Traits\+::\+Movetk\+Point \mbox{\hyperlink{structmovetk__core_1_1_make_point_aa62ecca7a0bc11239297577d3083ea3e}{operator()}} (Coordinate\+Iterator first, Coordinate\+Iterator beyond)
+\item 
+\mbox{\Hypertarget{structmovetk__core_1_1_make_point_a06853c55a2afe2a7a1903a2c581be2b7}\label{structmovetk__core_1_1_make_point_a06853c55a2afe2a7a1903a2c581be2b7}} 
+Geometry\+Traits\+::\+Movetk\+Point {\bfseries operator()} (std\+::initializer\+\_\+list$<$ typename Geometry\+Traits\+::\+NT $>$ l)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class Geometry\+Traits$>$\newline
+struct movetk\+\_\+core\+::\+Make\+Point$<$ Geometry\+Traits $>$}
+
+Constructs a point from a set of input Cartesian coordinates. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Geometry\+Traits} & -\/ A traits class that defines movetk geometry types \\
+\hline
+\end{DoxyTemplParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structmovetk__core_1_1_make_point_aa62ecca7a0bc11239297577d3083ea3e}\label{structmovetk__core_1_1_make_point_aa62ecca7a0bc11239297577d3083ea3e}} 
+\index{movetk\_core::MakePoint$<$ GeometryTraits $>$@{movetk\_core::MakePoint$<$ GeometryTraits $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!movetk\_core::MakePoint$<$ GeometryTraits $>$@{movetk\_core::MakePoint$<$ GeometryTraits $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$class Geometry\+Traits$>$ \\
+template$<$class Coordinate\+Iterator , typename  = movetk\+\_\+core\+::requires\+\_\+random\+\_\+access\+\_\+iterator$<$\+Coordinate\+Iterator$>$$>$ \\
+Geometry\+Traits\+::\+Movetk\+Point \mbox{\hyperlink{structmovetk__core_1_1_make_point}{movetk\+\_\+core\+::\+Make\+Point}}$<$ Geometry\+Traits $>$\+::operator() (\begin{DoxyParamCaption}\item[{Coordinate\+Iterator}]{first,  }\item[{Coordinate\+Iterator}]{beyond }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Infers the dimensions of the point from the input and creates a point with Cartesian coordinates $[first,beyond)$ 
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Coordinate\+Iterator} & -\/ A random access iterator over a set of Cartesian coordinates where each coordinate is of type Geometry\+Traits\+::\+NT \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em first} & -\/ Iterator to the first Cartesian coordinate \\
+\hline
+{\em beyond} & -\/ Iterator to the end of the last Cartesian coordinate \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A movetk point 
+\end{DoxyReturn}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/geom/Geometry\+Interface.\+h\end{DoxyCompactItemize}
