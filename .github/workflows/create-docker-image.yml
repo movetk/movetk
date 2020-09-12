@@ -1,0 +1,21 @@
+name: MoveTK-CI-Ubuntu
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:   
+        - uses: actions/checkout@v2
+        - name: install dependencies
+          run: sudo apt-get install libboost-all-dev cmake libcgal-dev doxygen gcc g++ libgdal-dev libgsl-dev libgslcblas0 gsl-bin libgsl23 make libmpfr-dev git 
+        - name: install Geographiclib
+          run: wget https://sourceforge.net/projects/geographiclib/files/distrib/GeographicLib-1.50.1.zip/download && mv download GeographicLib-1.50.1.zip && unzip GeographicLib-1.50.1.zip && cd GeographicLib-1.50.1 && mkdir BUILD && cd BUILD && cmake .. && make && make test && sudo make install
+        - name: build movetk
+          run: export LIBRARY_PATH=/usr/local/lib/ && echo $LIBRARY_PATH && ./ci.sh
