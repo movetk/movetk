@@ -79,8 +79,8 @@ RUN pip3 --no-cache-dir install jupyterlab
 # RUN jupyter kernelspec install /miniconda/share/jupyter/kernels/xcpp11
 # RUN jupyter kernelspec install /miniconda/share/jupyter/kernels/xcpp14
 RUN jupyter kernelspec install /miniconda/share/jupyter/kernels/xcpp17
-RUN cp /usr/src/movetk/docker_config/with_jupyterlab/kernel.json /usr/local/share/jupyter/kernels/xcpp17/
-RUN cp /usr/src/movetk/docker_config/with_jupyterlab/movetk.json /miniconda/etc/xeus-cling/tags.d/
+RUN cp /usr/src/movetk/docker/with_jupyterlab/kernel.json /usr/local/share/jupyter/kernels/xcpp17/
+RUN cp /usr/src/movetk/docker/with_jupyterlab/movetk.json /miniconda/etc/xeus-cling/tags.d/
 RUN cp /usr/src/movetk/docs/movetk.tag /miniconda/share/xeus-cling/tagfiles/
 RUN mkdir /usr/local/include/GeographicLib
 RUN cp /usr/include/GeographicLib/* /usr/local/include/GeographicLib/ 
