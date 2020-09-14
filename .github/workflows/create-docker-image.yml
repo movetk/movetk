@@ -11,13 +11,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:   
+    steps:
+        - name: Git checkout
         - uses: actions/checkout@v2
         - name: Get version
         - run: echo "${{ github.ref }}"
         - name: Build docker image
         - run:  docker build -t movetk -f  ./docker/with_jupyterlab/Dockerfile .
-            - name: Login to Github Package
+        - name: Login to Github Package
               uses: docker/login-action@v1
               with:
                 username: ${{ secrets.DOCKER_USER }}
