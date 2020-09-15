@@ -33,72 +33,22 @@ The following table lists some of the algorithms available in MoveTK
 | **Trajectory Interpolation** | Kinematic Interpolation [[Long 2016](https://www.tandfonline.com/doi/abs/10.1080/13658816.2015.1081909?journalCode=tgis20)] |
 |                          | Random Trajectory Generator [[Technitis et al. 2015](https://www.tandfonline.com/doi/abs/10.1080/13658816.2014.999682?journalCode=tgis20)] |
 
+
 ## Quick Start
 1. Install Docker on your machine see the installation instructions for instance, for [Windows](https://docs.docker.com/docker-for-windows/install/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/).
 
-2. Clone the repository 
-
-```
-git clone https://github.com/heremaps/movetk.git
-```
-
-3. Build the docker image
-
-On Mac/Linux
+2. Pull the Docker image
 
 ```bash
-docker build -t movetk -f  ./docker/vanilla/Dockerfile .
+docker pull aniketmitra001/movetk
 ```
-
-On Windows
-
-```bash
-docker build -t movetk -f  .\docker\vanilla\Dockerfile .
-```
-
-4. Run the container
-
-```bash
-docker run -p -it movetk
-```
-
-5. Inside the container, navigate to `/usr/src/movetk/Release/examples`
-Here you can run some of the examples that are built and shipped with MoveTK.
-For example, to convert raw (geo) spatial movement data to trajectories run:
-
-```
-./probe2trajectories [path-to-raw-probe.csv[.gz]]
-```
-    
-## Tutorials
-1. Install Docker on your machine see the installation instructions for instance, for [Windows](https://docs.docker.com/docker-for-windows/install/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/).
-
-2. Clone the repository
-
-```bash
-git clone https://github.com/heremaps/movetk.git
-```
-
-3. Build the Docker image
-
-On Mac/Linux
-
-```bash
-docker build -t movetk_with_jupyterlab -f  ./docker/with_jupyterlab/Dockerfile .
-```
-On Windows
-
-```bash
-docker build -t movetk_with_jupyterlab -f  .\docker\with_jupyterlab\Dockerfile .
-```
-
-4. Run the container
+3. Run the container
 
 ```bash
 docker run -p 6013:8888 -p 80:80 -it movetk_with_jupyterlab
 ```
 
-5. Follow instructions in the output of step 4 to open Jupyter Notebook in a web browser
+4. Follow instructions in the output of step 4 to open Jupyter Notebook in a web browser
 
 ```
 Copy/paste this URL into your browser when you connect for the first time,
@@ -106,7 +56,7 @@ Copy/paste this URL into your browser when you connect for the first time,
        http://(fa5fc67ed6ea or 127.0.0.1):8888/?token=...
 ```
 
-6. Replace the part in parentheses "()" in step 5 with the IP address and replace port number 8888 with 6013 (or another port depending on your configuration)
+5. Replace the part in parentheses "()" in step 5 with the IP address and replace port number 8888 with 6013 (or another port depending on your configuration)
 
 Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to
 

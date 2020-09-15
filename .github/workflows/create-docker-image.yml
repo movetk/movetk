@@ -2,7 +2,7 @@ name: MoveTK-create-docker-image
 
 on:
   push:
-    branches: [ create-build-artifacts ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
