@@ -23,6 +23,6 @@ jobs:
           with:
               username: ${{ secrets.DOCKER_USER }}
               password: ${{ secrets.DOCKER_PASSWORD }}
-              registry: "docker.pkg.github.com"
+              registry: "docker.io"
         - name: Docker push
-          run:  docker push movetk:latest
+          run:  docker push aniketmitra001/movetk:latest
