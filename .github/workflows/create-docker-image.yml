@@ -18,11 +18,11 @@ jobs:
           run: echo "${{ github.ref }}"
         - name: Docker build
           run:  docker build -t movetk -f  ./docker/with_jupyterlab/Dockerfile .
-        - name: Login to Github Package
+        - name: Login to Docker Hub
           uses: docker/login-action@v1
           with:
               username: ${{ secrets.DOCKERHUB_USER }}
               password: ${{ secrets.DOCKERHUB_PASSWORD }}
               registry: "docker.io"
         - name: Docker push
-          run:  docker push aniketmitra001/movetk:latest
+          run:  docker tag movetk:latest aniketmitra001/movetk:latest && docker push aniketmitra001/movetk:latest

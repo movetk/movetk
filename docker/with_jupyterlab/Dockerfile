@@ -95,4 +95,4 @@ RUN cp -R movetk/docs/html/* /var/www/html/movetk.reference/
 
 ENTRYPOINT httpd && jupyter lab --ip 0.0.0.0 --allow-root && /bin/bash
 
-LABEL Name=movetk Version=0.0.1
+LABEL Name=movetk Version=0.6.0
