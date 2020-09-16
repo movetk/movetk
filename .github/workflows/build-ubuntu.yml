@@ -20,8 +20,10 @@ jobs:
         - name: build movetk
           run: export LIBRARY_PATH=/usr/local/lib/ && echo $LIBRARY_PATH && ./ci.sh
         - uses: actions/upload-artifact@v2
-          with: movetk.rpm
-          path: /home/runner/work/movetk/movetk/Release/movetk-0.0.1-Linux.rpm
+          with:
+            name: Upload rpm package
+            path: /home/runner/work/movetk/movetk/Release/movetk-0.0.1-Linux.rpm
         - uses: actions/upload-artifact@v2
-          with: movetk.deb
-          path: /home/runner/work/movetk/movetk/Release/movetk-0.0.1-Linux.deb
+          with:
+            name: Upload debian package
+            path: /home/runner/work/movetk/movetk/Release/movetk-0.0.1-Linux.deb
