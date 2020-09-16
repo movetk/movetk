@@ -21,9 +21,9 @@ jobs:
           run: export LIBRARY_PATH=/usr/local/lib/ && echo $LIBRARY_PATH && ./ci.sh
         - uses: actions/upload-artifact@v2
           with:
-            name: Upload rpm package
+            name: RPM package
             path: /home/runner/work/movetk/movetk/Release/movetk-0.0.1-Linux.rpm
         - uses: actions/upload-artifact@v2
           with:
-            name: Upload debian package
+            name: DEB package
             path: /home/runner/work/movetk/movetk/Release/movetk-0.0.1-Linux.deb
