@@ -37,32 +37,19 @@ The following table lists some of the algorithms available in MoveTK
 ## Quick Start
 1. Install Docker on your machine see the installation instructions for instance, for [Windows](https://docs.docker.com/docker-for-windows/install/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/).
 
-2. Pull the Docker image
+2. Run the container
 
 ```bash
-docker pull aniketmitra001/movetk
-```
-3. Run the container
-
-```bash
-docker run -p 6013:8888 -p 80:80 -it movetk_with_jupyterlab
+docker run -p 6013:8888 -p 80:80 -it aniketmitra001/movetk
 ```
 
-4. Follow instructions in the output of step 4 to open Jupyter Notebook in a web browser
+3. Follow instructions in the output of step 2 to open Jupyter Notebook in a web browser. Replace port number 8888 with 6013 (or another port depending on your configuration)
 
-```
-Copy/paste this URL into your browser when you connect for the first time,
-   to login with a token:
-       http://(fa5fc67ed6ea or 127.0.0.1):8888/?token=...
-```
 
-5. Replace the part in parentheses "()" in step 5 with the IP address and replace port number 8888 with 6013 (or another port depending on your configuration)
+4. Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to ```/tutorials ```  using the navigation pane in JupyterLab 
 
-Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to
+**Note** : On Mac it is important to start Docker from Docker Desktop , so that ```localhost``` of the container gets mapped to the ```localhost``` of the host machine. This will allow the documentation to be rendered in Jupyter notebooks.  
 
-```
-/tutorials (using the navigation pane in JupyterLab) 
-```
 
 ## Artifacts 
 
