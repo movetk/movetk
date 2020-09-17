@@ -73,6 +73,28 @@ git clone https://github.com/heremaps/movetk.git
 
     -[Ubuntu](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-ubuntu.yml)
 
+## Artifacts 
+
+A push event to the master branch of MoveTK triggers a set of continuous integration (CI) [workflows](https://github.com/heremaps/movetk/actions). If the worflows are sucessful, this results in the following artifacts to be generated
+
+- A Docker image. Do ```docker pull aniketmitra001/movetk:latest``` to get the image
+- A RPM & DEB package. If the latest run of the CI workflow for [MoveTK-CI-Ubuntu](https://github.com/heremaps/movetk/actions?query=workflow%3AMoveTK-CI-Ubuntu+branch%3Amaster) is successful, select the last run. The packages can be found on the *Artifacts* section.   
+
+## Installation with cmake
+
+1. Clone the repository.
+```bash
+git clone https://github.com/heremaps/movetk.git
+```
+
+2. Replicate the  steps in corresponding YAML files
+
+    -[Mac](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-macos.yml)
+
+    -[Windows](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-windows.yml)
+
+    -[Ubuntu](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-ubuntu.yml)
+
 ## Third Party Libraries Included In MoveTK
 
 MoveTK utilizes some open source components including:
