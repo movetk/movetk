@@ -51,7 +51,7 @@ docker run -p 6013:8888 -p 80:80 -it aniketmitra001/movetk
 **Note** : On Mac it is important to start Docker from Docker Desktop , so that ```localhost``` of the container gets mapped to the ```localhost``` of the host machine. This will allow the documentation to be rendered in Jupyter notebooks.  
 
 
-## Artifacts 
+##  Build Artifacts 
 
 A push event to the master branch of MoveTK triggers a set of continuous integration (CI) [workflows](https://github.com/heremaps/movetk/actions). If the worflows are sucessful, this results in the following artifacts to be generated
 
@@ -73,27 +73,9 @@ git clone https://github.com/heremaps/movetk.git
 
     -[Ubuntu](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-ubuntu.yml)
 
-## Artifacts 
+## Using MoveTK in your App
 
-A push event to the master branch of MoveTK triggers a set of continuous integration (CI) [workflows](https://github.com/heremaps/movetk/actions). If the worflows are sucessful, this results in the following artifacts to be generated
-
-- A Docker image. Do ```docker pull aniketmitra001/movetk:latest``` to get the image
-- A RPM & DEB package. If the latest run of the CI workflow for [MoveTK-CI-Ubuntu](https://github.com/heremaps/movetk/actions?query=workflow%3AMoveTK-CI-Ubuntu+branch%3Amaster) is successful, select the last run. The packages can be found on the *Artifacts* section.   
-
-## Installation with cmake
-
-1. Clone the repository.
-```bash
-git clone https://github.com/heremaps/movetk.git
-```
-
-2. Replicate the  steps in corresponding YAML files
-
-    -[Mac](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-macos.yml)
-
-    -[Windows](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-windows.yml)
-
-    -[Ubuntu](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-ubuntu.yml)
+Please refer to this [example](https://github.com/aniketmitra001/movetk-app-template) for a template on how to use MoveTK in your app 
 
 ## Third Party Libraries Included In MoveTK
 
