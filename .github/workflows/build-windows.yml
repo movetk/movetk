@@ -14,10 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: seanmiddleditch/gha-setup-ninja@master
-    - name: list directories recursively
-      run: dir "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\*"
-    # 
-    #- name: install dependencies
-    #  run: C:\vcpkg\vcpkg.exe install boost gdal gsl cgal geographiclib --triplet x64-windows
-    #- name: build movetk
-    #  run: .\ci.cmd 	 
+    - name: install dependencies
+      run: C:\vcpkg\vcpkg.exe install boost gdal gsl cgal geographiclib --triplet x64-windows
+    - name: build movetk
+      run: .\ci.cmd 	 
