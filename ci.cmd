@@ -3,6 +3,6 @@ REM call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.ba
 RD /S /Q build
 MKDIR build
 CD build
-cmake -GNinja -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DWITH_CGAL_BACKEND=OFF -DCMAKE_CXX_COMPILER=cl.exe -DCMAKE_C_COMPILER=cl.exe -DBUILD_DOC=ON ..
+cmake -GNinja -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DWITH_CGAL_BACKEND=OFF -DCMAKE_CXX_COMPILER=C:/Program\ Files\ (x86)/Microsoft\ Visual\ Studio\ 14.0/VC/bin/cl.exe -DCMAKE_C_COMPILER=C:/Program\ Files\ (x86)/Microsoft\ Visual\ Studio\ 14.0/VC/bin/cl.exe -DBUILD_DOC=ON ..
 cmake --build .
 ctest -VV
