@@ -1,7 +1,7 @@
 # MoveTK: the movement toolkit
 ![MoveTK-CI-Ubuntu](https://github.com/heremaps/movetk/workflows/MoveTK-CI-Ubuntu/badge.svg?branch=master&event=push) ![MoveTK-CI-macOS](https://github.com/heremaps/movetk/workflows/MoveTK-CI-macOS/badge.svg?branch=master&event=push) ![MoveTK-create-docker-image](https://github.com/heremaps/movetk/workflows/MoveTK-create-docker-image/badge.svg?branch=master)
 
-MoveTK is a library for computational movement analysis written in C++. The library has been developed as part of a collaboration between [HERE Technologies](https://www.here.com/) , [Eindhoven University of Technology](https://www.tue.nl/en/) and [Utrecht University](https://www.uu.nl/en) under the [Commit2Data](https://commit2data.nl/en/commit2data-program/data-handling/data-science-voor-veranderende-data-2/analysis-and-visualization-of-heterogeneous-spatio-temporal-data) program.
+MoveTK is a library for computational movement analysis written in C++. The library has been developed as part of a collaboration between [HERE Technologies](https://www.here.com/) , [Eindhoven University of Technology](https://alga.win.tue.nl/) and [Utrecht University](https://www.uu.nl/en/research/algorithms/geometric-computing) under the [Commit2Data](https://commit2data.nl/en/commit2data-program/data-handling/data-science-voor-veranderende-data-2/analysis-and-visualization-of-heterogeneous-spatio-temporal-data) program.
 
 ## Overview
 MoveTK is a reusable, well tested, high performant, feature-rich library that incorporates state of the art algorithms for understanding movement.
