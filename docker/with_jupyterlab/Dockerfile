@@ -20,6 +20,7 @@ RUN dnf -y update \
     mpfr-devel \
     python3 \
     python3-pip \
+    python3-pybind11 \
     bzip2 \
     wget \
     nodejs \

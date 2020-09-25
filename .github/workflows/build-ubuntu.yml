@@ -17,7 +17,7 @@ jobs:
           run: |
             sudo apt-get update
             sudo apt-get install libboost-all-dev cmake libcgal-dev doxygen gcc g++ 
-            sudo apt-get install libgdal-dev libgsl-dev libgslcblas0 gsl-bin libgsl23 make libmpfr-dev git pybind11
+            sudo apt-get install libgdal-dev libgsl-dev libgslcblas0 gsl-bin libgsl23 make libmpfr-dev git python-pybind11
         - name: install Geographiclib
           run: |
             wget https://sourceforge.net/projects/geographiclib/files/distrib/GeographicLib-1.50.1.zip/download 

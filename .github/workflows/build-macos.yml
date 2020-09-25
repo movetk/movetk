@@ -25,5 +25,4 @@ jobs:
             GSL_LDPATH=/usr/local/Cellar/gsl/$GSL_VER/lib/
             export LIBRARY_PATH=$GEOGRPHICLIB_LDPATH:$GDAL_LDPATH:$GSL_LDPATH
             echo $LIBRARY_PATH
-            cd movetk
             ./ci.sh
