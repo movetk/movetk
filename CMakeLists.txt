@@ -52,3 +52,6 @@ add_subdirectory(tests)
 
 # add usage example
 add_subdirectory(examples)
+
+# add python bindings
+add_subdirectory(py)
