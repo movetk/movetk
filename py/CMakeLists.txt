@@ -4,27 +4,41 @@ project(movepy
         VERSION 0.1
         )
 
-# set path to custom cmake modules
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
-# Add OS specific tools.
-if(UNIX)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/unix")
-elseif(MSVC)
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/msvc")
-endif()
-
-# include common tools and workarounds
-include(tools)
 
 # run cmake with -DCMAKE_PREFIX_PATH=path-to-installed-cmake-dir-of-movetk
 #find_package(movetk CONFIG REQUIRED)  ##enable only if movepy is being built as a separate project
 
-find_package(Boost REQUIRED COMPONENTS iostreams log)
-find_package(Threads REQUIRED)
-find_package(GDAL 2.2 REQUIRED)
-find_package(GeographicLib REQUIRED)
+# add dependencies
+if (NOT TARGET c2d::movetk)
+    find_package(movetk CONFIG REQUIRED)
+endif()
+
+
+set(PYBIND11_CPP_STANDARD -std=c++1z)
+
 find_package(pybind11 REQUIRED)
 
 #find_package(movetk REQUIRED) ##enable only if movepy is being built as a separate project
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
+
+add_library(movetk_geometry MODULE movetk_geometry.cpp)
+
+target_include_directories(movetk_geometry
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:include>
+        )
+
+
+target_link_libraries(movetk_geometry
+        PUBLIC
+        ${GDAL_LIBRARY}
+        ${GeographicLib_LIBRARIES}
+        c2d::movetk
+        pybind11::module
+        )
+
+set_target_properties(movetk_geometry PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
+        SUFFIX "${PYTHON_MODULE_EXTENSION}")
