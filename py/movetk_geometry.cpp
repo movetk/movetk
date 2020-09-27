@@ -21,7 +21,7 @@
 // Created by Mitra, Aniket on 26/09/2020.
 //
 
-#include "movetk/geom/CGALTraits.h"
+//#include "movetk/geom/CGALTraits.h"
 #include "movetk/geom/BoostGeometryTraits.h"
 #include "movetk/geom/GeometryInterface.h"
 #include <pybind11/pybind11.h>
