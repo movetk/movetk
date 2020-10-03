@@ -48,7 +48,10 @@ docker run -p 6013:8888 -p 80:80 -it aniketmitra001/movetk
 
 4. Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to ```/tutorials ```  using the navigation pane in JupyterLab 
 
-**Note** : On Mac it is important to start Docker from Docker Desktop , so that ```localhost``` of the container gets mapped to the ```localhost``` of the host machine. This will allow the documentation to be rendered in Jupyter notebooks.  
+**Notes** : 
+
+- On Mac it is important to start Docker from Docker Desktop , so that ```localhost``` of the container gets mapped to the ```localhost``` of the host machine. This will allow the documentation to be rendered in Jupyter notebooks.  
+- If you are running a ```docker build``` yourself, it it important to ensure that at least 4GB of memory has been allocated to the docker container 
 
 
 ##  Build Artifacts 
