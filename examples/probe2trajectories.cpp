@@ -21,7 +21,7 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/HereTrajectoryTraits.h"
+#include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/TrajectoryReader.h"
 
@@ -33,7 +33,8 @@
  *          - adding a unique trajectory identifier to each point in the trajectories
  *          - writing processed trajectories to a CSV file.
  */
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     std::ios_base::sync_with_stdio(false);
     init_logging(logging::trivial::trace);
 
@@ -43,11 +44,13 @@ int main(int argc, char** argv) {
 
     // Create trajectory reader
     std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
-    if(argc < 2) {
+    if (argc < 2)
+    {
         // Use built-in test data if a file is not specified
         probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
     }
-    else {
+    else
+    {
         // Example: Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
         probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
@@ -63,8 +66,9 @@ int main(int argc, char** argv) {
 
     // Process trajectories in a streaming fashion
     std::size_t count = 0;
-    for (auto trajectory: trajectory_reader) {
-		constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
+    for (auto trajectory : trajectory_reader)
+    {
+        constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
         BOOST_LOG_TRIVIAL(trace) << "New trajectory: " << trajectory.get<PROBE_ID>()[0];
 
         // Create the new column
@@ -81,7 +85,8 @@ int main(int argc, char** argv) {
         ofcsv << new_trajectory;
 
         // Accessing the new field
-        for (const auto& trajectory_id : new_trajectory.get<TRAJ_ID>()) {
+        for (const auto &trajectory_id : new_trajectory.get<TRAJ_ID>())
+        {
             BOOST_LOG_TRIVIAL(trace) << trajectory_id;
         }
 

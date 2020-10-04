@@ -28,7 +28,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 #include "movetk/metric/Norm.h"

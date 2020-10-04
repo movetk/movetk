@@ -26,7 +26,7 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/HereTrajectoryTraits.h"
+#include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/SortedProbeReader.h"
 #include "movetk/TrajectoryReader.h"
@@ -42,7 +42,7 @@
  *          - retaining only high frequency pieces (with time and distance threshold)
  *          - writing trajectories to a CSV file.
  */
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
     init_logging(logging::trivial::trace);
@@ -57,11 +57,13 @@ int main(int argc, char** argv)
 
     // Create trajectory reader
     std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
-    if (argc<2) {
+    if (argc < 2)
+    {
         // Use built-in test data if a file is not specified
         probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
     }
-    else {
+    else
+    {
         // Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
         probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
@@ -71,18 +73,18 @@ int main(int argc, char** argv)
     // a) already grouped into sessions (trajectories)
     // auto trajectory_reader = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
     // b) not grouped
-	constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
+    constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
     SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
     using SortedProbeInputIterator = decltype(sorted_probe_reader.begin());
     auto trajectory_reader = TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
-            sorted_probe_reader.end());
+                                                                                          sorted_probe_reader.end());
 
     using TrajectoryInputIterator = decltype(trajectory_reader.begin());
     auto hifreq_splitter = HighFrequencyTrajectorySplitter<TrajectoryInputIterator,
                                                            ProbeTraits::ProbeColumns::SAMPLE_DATE,
                                                            ProbeTraits::ProbeColumns::LAT,
                                                            ProbeTraits::ProbeColumns::LON>(
-            trajectory_reader.begin(), trajectory_reader.end(), 30.0, 900.0, 2);
+        trajectory_reader.begin(), trajectory_reader.end(), 30.0, 900.0, 2);
 
     auto t_start = std::chrono::high_resolution_clock::now();
 
@@ -95,7 +97,8 @@ int main(int argc, char** argv)
 
     // Write trajectories
     std::size_t trajectory_count = 0;
-    for (auto trajectory: hifreq_splitter) {
+    for (auto trajectory : hifreq_splitter)
+    {
         // std::cout << "New trajectory:\n";
 
         // Create the new trajectory id column
@@ -104,7 +107,8 @@ int main(int argc, char** argv)
         // Create the timestamp column
         std::vector<ProbeTraits::ProbeParseDate> dates = trajectory.get<ProbeTraits::ProbeColumns::SAMPLE_DATE>();
         std::vector<std::time_t> ts_col;
-        for (auto& d: dates) {
+        for (auto &d : dates)
+        {
             ts_col.push_back(d.ts());
         }
 

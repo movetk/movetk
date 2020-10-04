@@ -26,7 +26,7 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/HereProbeTraits.h"
+#include "movetk/utils/HereProbeTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/Splitter.h"
 #include "movetk/SplitByField.h"
@@ -43,7 +43,7 @@
  *          - sorting each trajectoy points by SAMPLE_DATE
  *          - writing trajectories to a CSV file.
  */
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
     init_logging(logging::trivial::trace);
@@ -57,11 +57,13 @@ int main(int argc, char** argv)
 
     // Create trajectory reader
     std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
-    if (argc<2) {
+    if (argc < 2)
+    {
         // Use built-in test data if a file is not specified
         probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
     }
-    else {
+    else
+    {
         // Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
         probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
@@ -70,7 +72,8 @@ int main(int argc, char** argv)
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<ProbeTraits::ProbePoint> buffered_probe;
     std::size_t probe_count = 0;
-    for (const auto& probe_point : *probe_reader) {
+    for (const auto &probe_point : *probe_reader)
+    {
         buffered_probe.push_back(probe_point);
         ++probe_count;
     }
@@ -92,11 +95,11 @@ int main(int argc, char** argv)
     end = std::chrono::high_resolution_clock::now();
     display("sort", start, end);
 
-//    // Write sorted probe
-//    for (const auto& point: buffered_probe) {
-//        print_tuple(ofcsv, point);
-//        ofcsv << '\n';
-//    }
+    //    // Write sorted probe
+    //    for (const auto& point: buffered_probe) {
+    //        print_tuple(ofcsv, point);
+    //        ofcsv << '\n';
+    //    }
 
     start = std::chrono::high_resolution_clock::now();
 
@@ -111,21 +114,22 @@ int main(int argc, char** argv)
     // Write the header
     print_tuple(ofcsv, probe_reader->columns());
     ofcsv << ",RAW_TRAJID\n";
-//    ofcsv << '\n';
+    //    ofcsv << '\n';
 
     // Write time-sorted trajectories
-	constexpr int SAMPLE_DATE = ProbeTraits::ProbeColumns::SAMPLE_DATE;
+    constexpr int SAMPLE_DATE = ProbeTraits::ProbeColumns::SAMPLE_DATE;
     using ProbePoint = typename ProbeTraits::ProbePoint;
     std::size_t trajectory_count = 0;
-    for (auto trajectory_points: splitter) {
+    for (auto trajectory_points : splitter)
+    {
         // Sort trajectory by SAMPLE_DATE
         SortByField<SAMPLE_DATE, ProbePoint> sort_by_date_asc;
         std::sort(trajectory_points.begin(), trajectory_points.end(), sort_by_date_asc);
 
-//        for(const auto& point: trajectory_points) {
-//            print_tuple(ofcsv, point);
-//            ofcsv << '\n';
-//        }
+        //        for(const auto& point: trajectory_points) {
+        //            print_tuple(ofcsv, point);
+        //            ofcsv << '\n';
+        //        }
 
         using SplitByTimeDiff = SplitByDifferenceThreshold<SAMPLE_DATE, ProbePoint>;
         SplitByTimeDiff split_by_time_diff(30.0);
@@ -134,7 +138,7 @@ int main(int argc, char** argv)
                                                          ProbePoint>;
         std::function<double(float, float, float, float)> distancefn = distance_exact;
         SplitByDistance split_by_dist(900.0, distancefn);
-        auto split_by_time_diff_or_distance = [&](const ProbeTraits::ProbePoint& p) {
+        auto split_by_time_diff_or_distance = [&](const ProbeTraits::ProbePoint &p) {
             bool t = split_by_time_diff(p);
             bool d = split_by_dist(p);
             return (t || d);
@@ -142,19 +146,21 @@ int main(int argc, char** argv)
 
         using ProbeInputIterator = decltype(trajectory_points.begin());
         Splitter<decltype(split_by_time_diff_or_distance), ProbeInputIterator> hf_splitter(trajectory_points.begin(),
-                trajectory_points.end(), split_by_time_diff_or_distance);
-//        Splitter<decltype(split_by_dist), ProbeInputIterator> hf_splitter(trajectory_points.begin(), trajectory_points.end(), split_by_dist);
-//        Splitter<SplitByTimeDiff, ProbeInputIterator> hf_splitter(trajectory_points.begin(), trajectory_points.end(), split_by_time_diff);
+                                                                                           trajectory_points.end(), split_by_time_diff_or_distance);
+        //        Splitter<decltype(split_by_dist), ProbeInputIterator> hf_splitter(trajectory_points.begin(), trajectory_points.end(), split_by_dist);
+        //        Splitter<SplitByTimeDiff, ProbeInputIterator> hf_splitter(trajectory_points.begin(), trajectory_points.end(), split_by_time_diff);
 
-        for (auto hf_trajectory_points: hf_splitter) {
-            for (const auto& point: hf_trajectory_points) {
+        for (auto hf_trajectory_points : hf_splitter)
+        {
+            for (const auto &point : hf_trajectory_points)
+            {
                 print_tuple(ofcsv, point);
                 ofcsv << ',' << trajectory_count << '\n';
             }
             ++trajectory_count;
         }
 
-//        ++trajectory_count;
+        //        ++trajectory_count;
     }
     end = std::chrono::high_resolution_clock::now();
     display("rest", start, end);

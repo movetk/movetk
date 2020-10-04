@@ -20,7 +20,7 @@
 //
 // Created by Mitra, Aniket on 08/01/2019.
 //
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
 int main(int argc, char **argv) {

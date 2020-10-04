@@ -27,7 +27,7 @@
 #include "movetk/io/csv/ParseDate.h"
 #include "movetk/io/csv/CategoricalField.h"
 #include "movetk/io/csv/csv.h"
-#include "ProbeTraits.h"
+#include "movetk/ProbeTraits.h"
 
 namespace here { namespace c2d { namespace raw {
 

@@ -28,12 +28,12 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/HereTrajectoryTraits.h"
+#include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/TrajectoryReader.h"
 #include "movetk/algo/Statistics.h"
 #include "movetk/geo/geo.h"
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
  /**
   * Example: Process a stream of probe points to create a trajectory. Then,

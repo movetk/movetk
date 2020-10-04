@@ -21,37 +21,42 @@
 // Created by Mitra, Aniket on 26/09/2020.
 //
 
-//#include "movetk/geom/CGALTraits.h"
-#include "movetk/geom/BoostGeometryTraits.h"
-#include "movetk/geom/GeometryInterface.h"
+#include <movetk/utils/GeometryBackendTraits.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 
 namespace py = pybind11;
 
+typedef typename GeometryKernel::MovetkGeometryKernel MovetkGeometryKernel;
+typedef typename movetk_core::movetk_basic_iterator<const typename MovetkGeometryKernel::NT> CoordinateIterator;
 
+PYBIND11_MODULE(movetk_geometry, m)
+{
 
-struct BoostGeometry2{
-
-    const static size_t dimensions = 2;
-    typedef movetk_support::BoostGeometryTraits<long double, dimensions> Boost_Geometry_Backend;
-    typedef movetk_core::MovetkGeometryKernel<typename Boost_Geometry_Backend::Wrapper_Boost_Geometry> MovetkGeometryKernel;
-    typedef movetk_core::MakePoint<typename BoostGeometry2::MovetkGeometryKernel> MakePoint;
-    typedef MovetkGeometryKernel::MovetkPoint MovetkPoint;
-    typedef MovetkGeometryKernel::NT NT;
-};
-
-PYBIND11_MODULE(movetk_geometry, m) {
-    py::class_<typename BoostGeometry2::MakePoint>(m, "make_point")
-        .def(py::init<>())
-        .def("__call__",[](typename BoostGeometry2::MakePoint& f,
-                std::array<typename BoostGeometry2::NT, BoostGeometry2::dimensions> arr) {
-                    return f(std::cbegin(arr), std::cend(arr));
+    py::class_<typename MovetkGeometryKernel::MovetkPoint>(m, "point", py::buffer_protocol())
+        .def(py::init([](py::array_t<typename MovetkGeometryKernel::NT,
+                                     MovetkGeometryKernel::dim> const buf) {
+            py::buffer_info info = buf.request();
+            CoordinateIterator first(
+                static_cast<const typename MovetkGeometryKernel::NT *>(info.ptr));
+            CoordinateIterator beyond(
+                static_cast<const typename MovetkGeometryKernel::NT *>(info.ptr) + MovetkGeometryKernel::dim);
+            typename MovetkGeometryKernel::MovetkPoint pt(first, beyond);
+            return pt;
+        }))
+        .def("__getitem__", [](const typename MovetkGeometryKernel::MovetkPoint &m, std::size_t idx) -> typename MovetkGeometryKernel::NT {
+            if (idx > MovetkGeometryKernel::dim)
+                throw std::runtime_error("Index out of bounds!");
+            return m[idx];
         });
-    py::class_<typename BoostGeometry2::MovetkPoint>(m, "movetk_point")
-            .def(py::init<>())
-            .def("__repr__",[](const typename BoostGeometry2::MovetkPoint& self){
-                auto it =  self.begin();
-                return "[ " + std::to_string(*it) + "," + std::to_string(*(it + 1)) + " ]\n";
-            });
+
+    py::class_<typename MovetkGeometryKernel::MovetkSegment>(m, "segment")
+        .def(py::init<typename MovetkGeometryKernel::MovetkPoint,
+                      typename MovetkGeometryKernel::MovetkPoint>())
+        .def("__getitem__", [](const typename MovetkGeometryKernel::MovetkSegment &m, std::size_t idx) -> typename MovetkGeometryKernel::MovetkPoint {
+            if (idx > 2)
+                throw std::runtime_error("Index out of bounds!");
+            return m[idx];
+        });
 }

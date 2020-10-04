@@ -39,17 +39,17 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/HereTrajectoryTraits.h"
+#include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/SortedProbeReader.h"
 #include "movetk/TrajectoryReader.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/algo/SegmentationTraits.h"
 #include "movetk/utils/Iterators.h"
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
-
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     std::ios_base::sync_with_stdio(false);
     std::cout.setf(std::ios::fixed);
     init_logging(logging::trivial::trace);
@@ -58,9 +58,9 @@ int main(int argc, char **argv) {
     BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
 #endif
 #if CGAL_BACKEND_ENABLED
-    BOOST_LOG_TRIVIAL(info) <<"Using CGAL Backend for Geometry";
+    BOOST_LOG_TRIVIAL(info) << "Using CGAL Backend for Geometry";
 #else
-    BOOST_LOG_TRIVIAL(info) <<"Using Boost Backend for Geometry";
+    BOOST_LOG_TRIVIAL(info) << "Using Boost Backend for Geometry";
 #endif
 
     // Specializations for the Commit2Data raw probe format
@@ -68,19 +68,22 @@ int main(int argc, char **argv) {
     using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 
     // Create trajectory reader
-    std::unique_ptr<ProbeReader < ProbeTraits>>
-    probe_reader;
-    if (argc < 2) {
+    std::unique_ptr<ProbeReader<ProbeTraits>>
+        probe_reader;
+    if (argc < 2)
+    {
         // Use built-in test data if a file is not specified
         probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
-    } else {
+    }
+    else
+    {
         // Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
         probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
     using ProbeInputIterator = decltype(probe_reader->begin());
 
     constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
-    SortedProbeReader <ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
+    SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
     using SortedProbeInputIterator = decltype(sorted_probe_reader.begin());
     auto trajectory_reader = TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
                                                                                           sorted_probe_reader.end());
@@ -96,7 +99,8 @@ int main(int argc, char **argv) {
 
     // Write time-sorted trajectories and segment them using Monotone MEB Criteria
     typedef movetk_algorithms::SegmentationTraits<long double,
-            typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions> SegmentationTraits;
+                                                  typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
+        SegmentationTraits;
     typedef GeometryKernel::MovetkGeometryKernel::NT NT;
     typedef vector<SegmentationTraits::Point> PolyLine;
     typedef std::vector<PolyLine::const_iterator> SegmentIdx;
@@ -104,7 +108,8 @@ int main(int argc, char **argv) {
     std::array<NT, 2> pt;
 
     std::size_t trajectory_count = 0;
-    for (auto trajectory: trajectory_reader) {
+    for (auto trajectory : trajectory_reader)
+    {
         BOOST_LOG_TRIVIAL(trace) << "New trajectory: \n";
 
         PolyLine polyline;
@@ -124,7 +129,8 @@ int main(int argc, char **argv) {
         movetk_core::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
 
         std::vector<std::size_t> segment_id_col;
-        for (auto plit = std::begin(polyline); plit != std::end(polyline); ++plit) {
+        for (auto plit = std::begin(polyline); plit != std::end(polyline); ++plit)
+        {
             auto id = make_segment.getSegmentID(plit);
             segment_id_col.push_back(id);
             BOOST_LOG_TRIVIAL(trace) << "Segment Ids: " << id;
@@ -150,4 +156,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-

@@ -505,6 +505,14 @@
     </member>
   </compound>
   <compound kind="struct">
+    <name>BBMMTraits</name>
+    <filename>struct_b_b_m_m_traits.html</filename>
+    <templarg></templarg>
+    <templarg></templarg>
+    <templarg></templarg>
+    <templarg></templarg>
+  </compound>
+  <compound kind="struct">
     <name>BBParameterTraits</name>
     <filename>struct_b_b_parameter_traits.html</filename>
   </compound>
@@ -973,8 +981,12 @@
   <compound kind="struct">
     <name>movetk_algorithms::FindFarthest</name>
     <filename>structmovetk__algorithms_1_1_find_farthest.html</filename>
-    <templarg></templarg>
-    <templarg></templarg>
+    <templarg>GeometryTraits</templarg>
+    <templarg>Norm</templarg>
+  </compound>
+  <compound kind="class">
+    <name>FindFarthest&lt; MovetkGeometryKernel, Norm &gt;</name>
+    <filename>structmovetk__algorithms_1_1_find_farthest.html</filename>
   </compound>
   <compound kind="class">
     <name>movetk_support::FiniteNorm</name>
@@ -1044,6 +1056,10 @@
   <compound kind="struct">
     <name>geo_coordinates_tag</name>
     <filename>structgeo__coordinates__tag.html</filename>
+  </compound>
+  <compound kind="struct">
+    <name>GeometryKernel</name>
+    <filename>struct_geometry_kernel.html</filename>
   </compound>
   <compound kind="struct">
     <name>greedy_outlier_detector_tag</name>
@@ -1186,6 +1202,11 @@
     <name>movetk_core::IntersectionTraits&lt; _GeometryTraits, _Norm, sphere_sphere_intersection_tag &gt;</name>
     <filename>structmovetk__core_1_1_intersection_traits_3_01___geometry_traits_00_01___norm_00_01sphere__sphere__intersection__tag_01_4.html</filename>
     <templarg></templarg>
+    <templarg></templarg>
+  </compound>
+  <compound kind="struct">
+    <name>IPTraits</name>
+    <filename>struct_i_p_traits.html</filename>
     <templarg></templarg>
   </compound>
   <compound kind="struct">
@@ -1763,10 +1784,10 @@
   <compound kind="class">
     <name>movetk_algorithms::brownian_bridge::MLE</name>
     <filename>classmovetk__algorithms_1_1brownian__bridge_1_1_m_l_e.html</filename>
-    <templarg></templarg>
-    <templarg></templarg>
-    <templarg></templarg>
-    <templarg></templarg>
+    <templarg>GeometryTraits</templarg>
+    <templarg>ParameterTraits</templarg>
+    <templarg>Norm</templarg>
+    <templarg>InputIterator</templarg>
     <templarg>MaxIter</templarg>
     <templarg></templarg>
     <templarg></templarg>
@@ -2323,13 +2344,13 @@
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
-    <name>movetk_kernel::ProbeParseDate</name>
-    <filename>classmovetk__kernel_1_1_probe_parse_date.html</filename>
+    <name>geolife::c2d::raw::ProbeParseDate</name>
+    <filename>classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
-    <name>geolife::c2d::raw::ProbeParseDate</name>
-    <filename>classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
+    <name>movetk_kernel::ProbeParseDate</name>
+    <filename>classmovetk__kernel_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
@@ -2342,13 +2363,13 @@
     <filename>class_probe_reader_factory.html</filename>
   </compound>
   <compound kind="class">
-    <name>geolife::c2d::raw::ProviderCategoricalField</name>
-    <filename>classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
+    <name>here::c2d::raw::ProviderCategoricalField</name>
+    <filename>classhere_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
     <base>CategoricalField&lt; std::string, ProviderCategoricalField &gt;</base>
   </compound>
   <compound kind="class">
-    <name>here::c2d::raw::ProviderCategoricalField</name>
-    <filename>classhere_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
+    <name>geolife::c2d::raw::ProviderCategoricalField</name>
+    <filename>classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
     <base>CategoricalField&lt; std::string, ProviderCategoricalField &gt;</base>
   </compound>
   <compound kind="struct">
@@ -2962,8 +2983,8 @@
   <compound kind="class">
     <name>movetk_core::Wedge</name>
     <filename>classmovetk__core_1_1_wedge.html</filename>
-    <templarg></templarg>
-    <templarg></templarg>
+    <templarg>GeometryTraits</templarg>
+    <templarg>Norm</templarg>
     <templarg></templarg>
     <templarg></templarg>
     <member kind="function">
@@ -3227,6 +3248,13 @@
       <anchorfile>classmovetk__support_1_1_wrapper___c_g_a_l___segment.html</anchorfile>
       <anchor>a1cbb55ad6fdecce47aec1c9dd727e677</anchor>
       <arglist>(Wrapper_CGAL_Point&lt; Kernel &gt; &amp;p1, Wrapper_CGAL_Point&lt; Kernel &gt; &amp;p2)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>Wrapper_CGAL_Segment</name>
+      <anchorfile>classmovetk__support_1_1_wrapper___c_g_a_l___segment.html</anchorfile>
+      <anchor>afd209d53da44e7f9a7c89bf3c8f03ceb</anchor>
+      <arglist>(Wrapper_CGAL_Point&lt; Kernel &gt; &amp;&amp;p1, Wrapper_CGAL_Point&lt; Kernel &gt; &amp;&amp;p2)</arglist>
     </member>
     <member kind="function">
       <type>NT</type>

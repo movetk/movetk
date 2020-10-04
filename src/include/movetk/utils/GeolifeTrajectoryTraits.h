@@ -30,10 +30,10 @@
 #ifndef MOVETK_GEOLIFETRAJECTORYTRAITS_H
 #define MOVETK_GEOLIFETRAJECTORYTRAITS_H
 
-#include "TrajectoryTraits.h"
+#include "movetk/TrajectoryTraits.h"
 #include "GeolifeProbeTraits.h"
-#include "ColumnarTrajectory.h"
-#include "TabularTrajectory.h"
+#include "movetk/ColumnarTrajectory.h"
+#include "movetk/TabularTrajectory.h"
 
 namespace geolife {
 	namespace c2d {

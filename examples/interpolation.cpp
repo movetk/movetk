@@ -45,73 +45,96 @@
 #include "movetk/algo/SegmentationTraits.h"
 #include "movetk/algo/Interpolation.h"
 
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
-namespace dl {
+namespace dl
+{
 
-    namespace raw {
-        enum InputColumns {
-            _ORIGFILEROW, _RAW_SOURCE, _RAW_DEVICEID, _RAW_GPSTIME,
-            _RAW_LAT, _RAW_LON, _RAW_HEADING, _RAW_SPEED
+    namespace raw
+    {
+        enum InputColumns
+        {
+            _ORIGFILEROW,
+            _RAW_SOURCE,
+            _RAW_DEVICEID,
+            _RAW_GPSTIME,
+            _RAW_LAT,
+            _RAW_LON,
+            _RAW_HEADING,
+            _RAW_SPEED
         };
 
-        enum ProbeColumns {
-            ORIGFILEROW, RAW_SOURCE, RAW_DEVICEID, RAW_GPSTIME,
-            RAW_LAT, RAW_LON, RAW_HEADING, RAW_SPEED
+        enum ProbeColumns
+        {
+            ORIGFILEROW,
+            RAW_SOURCE,
+            RAW_DEVICEID,
+            RAW_GPSTIME,
+            RAW_LAT,
+            RAW_LON,
+            RAW_HEADING,
+            RAW_SPEED
         };
 
-        typedef csv <std::tuple<long, string, string, std::time_t,
-                float, float, float, float>,
-        _ORIGFILEROW, _RAW_SOURCE, _RAW_DEVICEID, _RAW_GPSTIME,
-        _RAW_LAT, _RAW_LON, _RAW_HEADING, _RAW_SPEED
-        > ProbeCsv;
+        typedef csv<std::tuple<long, string, string, std::time_t,
+                               float, float, float, float>,
+                    _ORIGFILEROW, _RAW_SOURCE, _RAW_DEVICEID, _RAW_GPSTIME,
+                    _RAW_LAT, _RAW_LON, _RAW_HEADING, _RAW_SPEED>
+            ProbeCsv;
 
         typedef typename ProbeCsv::value_type ProbePoint;
         typedef int Dummy;
-        typedef _ProbeTraits <ProbeColumns, Dummy, ProbeCsv, ProbePoint> ProbeTraits;
+        typedef _ProbeTraits<ProbeColumns, Dummy, ProbeCsv, ProbePoint> ProbeTraits;
 
         constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::RAW_DEVICEID;
         constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::RAW_GPSTIME;
         using trajectory_type = TabularTrajectory<long, string, string, std::time_t,
-                float, float, float, float>;
+                                                  float, float, float, float>;
 
         using TrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, trajectory_type>;
 
         using HighFrequencyTrajectoryTraits = _HighFrequencyTrajectoryTraits<
-                TrajectoryTraits,ProbeTraits::ProbeColumns::RAW_GPSTIME,
-                ProbeTraits::ProbeColumns::RAW_LAT,ProbeTraits::ProbeColumns::RAW_LON>;
+            TrajectoryTraits, ProbeTraits::ProbeColumns::RAW_GPSTIME,
+            ProbeTraits::ProbeColumns::RAW_LAT, ProbeTraits::ProbeColumns::RAW_LON>;
 
-    }  // namespace raw
+    } // namespace raw
 } // namespace dl
 
 using MovetkGeometryKernel = typename GeometryKernel::MovetkGeometryKernel;
 
 using namespace std;
 
-namespace Interpolation{
-    struct ProbeTraits{
-        enum ProbeColumns {
-            SAMPLE_DATE, LAT, LON, HEADING, SPEED
+namespace Interpolation
+{
+    struct ProbeTraits
+    {
+        enum ProbeColumns
+        {
+            SAMPLE_DATE,
+            LAT,
+            LON,
+            HEADING,
+            SPEED
         };
         typedef MovetkGeometryKernel::NT NT;
         typedef std::tuple<std::time_t, NT, NT, NT, NT> ProbePoint;
     };
     using Norm = typename GeometryKernel::Norm;
     typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-    typedef movetk_algorithms::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>  InterpolationTraits;
+    typedef movetk_algorithms::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
     typedef movetk_algorithms::Interpolator<movetk_algorithms::kinematic_interpolator_tag,
-            InterpolationTraits, ProbeTraits::ProbeColumns::LAT,
-            ProbeTraits::ProbeColumns::LON,ProbeTraits::ProbeColumns::SAMPLE_DATE,
-            ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING> Interpolator;
-}
+                                            InterpolationTraits, ProbeTraits::ProbeColumns::LAT,
+                                            ProbeTraits::ProbeColumns::LON, ProbeTraits::ProbeColumns::SAMPLE_DATE,
+                                            ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING>
+        Interpolator;
+} // namespace Interpolation
 
+int main(int argc, char **argv)
+{
 
-
-int main(int argc, char **argv) {
-
-     // ALTERNATIVE 2: Read already grouped trajectories with high frequency filtering
-     //                HighFrequencyTrajectoryReader<HighFrequencyTrajectoryTraits, trajectories_are_grouped> tr(hifreq_time_diff_thr_s, hifreq_dist_diff_thr_m, hifreq_min_num_pts);
-     //                tr.init(*file_it);
+    // ALTERNATIVE 2: Read already grouped trajectories with high frequency filtering
+    //                HighFrequencyTrajectoryReader<HighFrequencyTrajectoryTraits, trajectories_are_grouped> tr(hifreq_time_diff_thr_s, hifreq_dist_diff_thr_m, hifreq_min_num_pts);
+    //                tr.init(*file_it);
 
     std::ios_base::sync_with_stdio(false);
     std::cout.setf(std::ios::fixed);
@@ -121,18 +144,18 @@ int main(int argc, char **argv) {
     BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
 #endif
 
-    if (argc<2) {
+    if (argc < 2)
+    {
         // Use built-in test data if a file is not specified
-       return 1;
+        return 1;
     }
-
 
     double hifreq_time_diff_thr_s = 1.1;
     double hifreq_dist_diff_thr_m = 10000.0;
     std::size_t hifreq_min_num_pts = 6;
 
     HighFrequencyTrajectoryReader<dl::raw::HighFrequencyTrajectoryTraits, false> tr(hifreq_time_diff_thr_s,
-            hifreq_dist_diff_thr_m, hifreq_min_num_pts);
+                                                                                    hifreq_dist_diff_thr_m, hifreq_min_num_pts);
     tr.init(argv[1]);
 
     //BOOST_LOG_TRIVIAL(trace) <<"Number of filtered trajectories: "<<std::distance(tr.begin(),tr.end());
@@ -151,34 +174,36 @@ int main(int argc, char **argv) {
 
     typename Interpolation::Norm norm;
     constexpr int IN_FILEROW = dl::raw::ProbeColumns::ORIGFILEROW;
-    constexpr int IN_SOURCE =  dl::raw::ProbeColumns::RAW_SOURCE;
+    constexpr int IN_SOURCE = dl::raw::ProbeColumns::RAW_SOURCE;
     constexpr int IN_DEVICEID = dl::raw::ProbeColumns::RAW_DEVICEID;
     constexpr int IN_SAMPLE_DATE = dl::raw::ProbeColumns::RAW_GPSTIME;
-    constexpr int IN_LAT =  dl::raw::ProbeColumns::RAW_LAT;
+    constexpr int IN_LAT = dl::raw::ProbeColumns::RAW_LAT;
     constexpr int IN_LON = dl::raw::ProbeColumns::RAW_LON;
     constexpr int IN_HEADING = dl::raw::ProbeColumns::RAW_HEADING;
     constexpr int IN_SPEED = dl::raw::ProbeColumns::RAW_SPEED;
     using ProbePoint = Interpolation::ProbeTraits::ProbePoint;
 
     constexpr int OUT_SAMPLE_DATE = Interpolation::ProbeTraits::ProbeColumns::SAMPLE_DATE;
-    constexpr int OUT_LAT =  Interpolation::ProbeTraits::ProbeColumns::LAT;
+    constexpr int OUT_LAT = Interpolation::ProbeTraits::ProbeColumns::LAT;
     constexpr int OUT_LON = Interpolation::ProbeTraits::ProbeColumns::LON;
     constexpr int OUT_HEADING = Interpolation::ProbeTraits::ProbeColumns::HEADING;
     constexpr int OUT_SPEED = Interpolation::ProbeTraits::ProbeColumns::SPEED;
 
     std::size_t trajectory_count = 0;
-    for(auto trajectory: tr){
+    for (auto trajectory : tr)
+    {
 
         auto timestamps = trajectory.get<IN_SAMPLE_DATE>();
 
         std::vector<std::size_t> ts;
-        std::copy(timestamps.begin(),timestamps.end(), std::back_insert_iterator(ts));
+        std::copy(timestamps.begin(), timestamps.end(), std::back_insert_iterator(ts));
         std::vector<decltype(ts)::const_iterator> segIdx;
         segment_by_tdiff(std::cbegin(ts), std::cend(ts), movetk_core::movetk_back_insert_iterator(segIdx));
         movetk_core::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
 
         std::vector<std::size_t> segment_id_col;
-        for (auto plit = std::begin(ts); plit != std::end(ts); ++plit) {
+        for (auto plit = std::begin(ts); plit != std::end(ts); ++plit)
+        {
             auto id = make_segment.getSegmentID(plit);
             segment_id_col.push_back(id);
         }
@@ -190,14 +215,15 @@ int main(int argc, char **argv) {
 
         using SegmentIdType = typename decltype(segmented_trajectory)::value_type;
         using SplitBySegmentId = SplitByField<9, SegmentIdType>;
-        Splitter<SplitBySegmentId, decltype(segmented_trajectory.begin())> segment_splitter(segmented_trajectory.begin(),segmented_trajectory.end());
+        Splitter<SplitBySegmentId, decltype(segmented_trajectory.begin())> segment_splitter(segmented_trajectory.begin(), segmented_trajectory.end());
         auto ref = (segment_splitter.begin())->begin();
         MovetkGeometryKernel::NT lat0 = std::get<IN_LAT>(*ref);
         MovetkGeometryKernel::NT lon0 = std::get<IN_LON>(*ref);
         typename Interpolation::Interpolator interpolator(lat0, lon0);
-        for (const auto& rows : segment_splitter) {
+        for (const auto &rows : segment_splitter)
+        {
 
-            if (std::distance(rows.begin(),rows.end()) != 6)
+            if (std::distance(rows.begin(), rows.end()) != 6)
                 continue;
 
             auto first = rows.begin();
@@ -205,19 +231,18 @@ int main(int argc, char **argv) {
             std::vector<ProbePoint> interpolated_pts;
             std::vector<std::time_t> ts;
             ProbePoint p_u = std::make_tuple(
-                        std::get<IN_SAMPLE_DATE>(*first), std::get<IN_LAT>(*first),
-                        std::get<IN_LON>(*first), std::get<IN_HEADING>(*first),
-                        std::get<IN_SPEED>(*first) * 0.277778
-                   );
+                std::get<IN_SAMPLE_DATE>(*first), std::get<IN_LAT>(*first),
+                std::get<IN_LON>(*first), std::get<IN_HEADING>(*first),
+                std::get<IN_SPEED>(*first) * 0.277778);
 
             ProbePoint p_v = std::make_tuple(
-                    std::get<IN_SAMPLE_DATE>(*last), std::get<IN_LAT>(*last),
-                    std::get<IN_LON>(*last), std::get<IN_HEADING>(*last),
-                    std::get<IN_SPEED>(*last) * 0.277778
-            );
+                std::get<IN_SAMPLE_DATE>(*last), std::get<IN_LAT>(*last),
+                std::get<IN_LON>(*last), std::get<IN_HEADING>(*last),
+                std::get<IN_SPEED>(*last) * 0.277778);
             auto it = first + 1;
             ts.push_back(std::get<IN_SAMPLE_DATE>(*first));
-            while (it != last){
+            while (it != last)
+            {
                 ts.push_back(std::get<IN_SAMPLE_DATE>(*it));
                 it++;
             }
@@ -228,9 +253,10 @@ int main(int argc, char **argv) {
             //result = p_v;
 
             auto rit = std::begin(interpolated_pts);
-            for (const auto& row: rows) {
+            for (const auto &row : rows)
+            {
                 std::get<OUT_SPEED>(*rit) = std::get<OUT_SPEED>(*rit) * 3.6;
-                auto t = std::tuple_cat(row,*rit);
+                auto t = std::tuple_cat(row, *rit);
                 print_tuple(ofcsv_traj, t);
                 ofcsv_traj << "\n";
                 rit++;
@@ -240,4 +266,3 @@ int main(int argc, char **argv) {
         ++trajectory_count;
     }
 }
-

@@ -31,7 +31,7 @@
 #include "movetk/SplitByField.h"
 #include "movetk/SplitByDifferenceThreshold.h"
 #include "movetk/SplitByDistanceThreshold.h"
-#include "movetk/HereProbeTraits.h"
+#include "movetk/utils/HereProbeTraits.h"
 #include "movetk/geo/geo.h"
 
 

@@ -21,7 +21,7 @@
 // Created by Mitra, Aniket on 2019-03-05.
 //
 
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
 

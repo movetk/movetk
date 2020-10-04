@@ -19,7 +19,7 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/HereTrajectoryTraits.h"
+#include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/TrajectoryReader.h"
 #include "movetk/geom/trajectory_gdal.h"

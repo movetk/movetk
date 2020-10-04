@@ -726,7 +726,7 @@ $(function() {
 <div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    };</div>
 <div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160; </div>
 <div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">class</span> GeometryTraits, <span class="keyword">class</span> Norm&gt;</div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, Wedge&lt;GeometryTraits, Norm&gt; &amp;wedge) {</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    std::ostream &amp;operator&lt;&lt;(std::ostream &amp;out, <a class="code" href="classmovetk__core_1_1_wedge.html">Wedge&lt;GeometryTraits, Norm&gt;</a> &amp;wedge) {</div>
 <div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;        MakePoint&lt;GeometryTraits&gt; make_point;</div>
 <div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;        <span class="keyword">typename</span> GeometryTraits::MovetkPoint ORIGIN = make_point({0, 0});</div>
 <div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;        <span class="keyword">typename</span> GeometryTraits::MovetkVector e1 = make_point({1, 0}) - ORIGIN;</div>

@@ -23,13 +23,14 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/GeolifeTrajectoryTraits.h"
+#include "movetk/utils/GeolifeTrajectoryTraits.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/TrajectoryReader.h"
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     std::ios_base::sync_with_stdio(false);
     init_logging(logging::trivial::trace);
 
@@ -39,33 +40,39 @@ int main(int argc, char** argv) {
 
     // Create trajectory reader
     std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
-    if(argc < 2) {
+    if (argc < 2)
+    {
         // Use built-in test data if a file is not specified
         probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::geolife_raw_csv);
     }
-    else {
+    else
+    {
         // Example: Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
         probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
     using ProbeInputIterator = decltype(probe_reader->begin());
     auto trajectory_reader = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
 
-    for (auto trajectory: trajectory_reader) {
+    for (auto trajectory : trajectory_reader)
+    {
         double prev_lat, prev_lon;
         bool first = true;
 
-		constexpr int LAT = ProbeTraits::ProbeColumns::LAT;
-		constexpr int LON = ProbeTraits::ProbeColumns::LON;
+        constexpr int LAT = ProbeTraits::ProbeColumns::LAT;
+        constexpr int LON = ProbeTraits::ProbeColumns::LON;
         //auto lons = trajectory.get<ProbeTraits::ProbeColumns::LON>();
         //auto lats = trajectory.get<ProbeTraits::ProbeColumns::LAT>();
 
-        for (auto probe: trajectory){
-            if(first) {
+        for (auto probe : trajectory)
+        {
+            if (first)
+            {
                 prev_lat = get<LAT>(probe);
                 prev_lon = get<LON>(probe);
                 first = false;
             }
-            else {
+            else
+            {
                 double curr_lat = get<LAT>(probe);
                 double curr_lon = get<LON>(probe);
                 double d = distance_exact(prev_lat, prev_lon, curr_lat, curr_lon);

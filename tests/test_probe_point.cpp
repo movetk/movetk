@@ -24,7 +24,7 @@
 using std::string;
 #include <tuple>
 #include "movetk/io/csv/ParseDate.h"
-#include "movetk/HereProbeTraits.h"
+#include "movetk/utils/HereProbeTraits.h"
 #include "movetk/TuplePrinter.h"
 #include "movetk/SortByField.h"
 

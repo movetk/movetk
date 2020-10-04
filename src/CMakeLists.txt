@@ -39,6 +39,7 @@ message(STATUS "import_prefix ${_IMPORT_PREFIX}/third_party/GsTL/include/")
 
 set(GsTL_INCLUDE_DIR "${_IMPORT_PREFIX}/third_party/GsTL/include/")
 
+
 message(STATUS "GsTL_include ${GsTL_INCLUDE_DIR} ")
 
 if (WITH_CGAL_BACKEND)
@@ -71,10 +72,11 @@ endif()
 if (WITH_CGAL_BACKEND)
     message(STATUS "CGAL_BACKEND ${WITH_CGAL_BACKEND}")
     add_library(movetk
-            include/movetk/GeolifeProbeTraits.h
-            include/movetk/GeolifeTrajectoryTraits.h
-            include/movetk/HereProbeTraits.h
-            include/movetk/HereTrajectoryTraits.h
+            include/movetk/utils/GeolifeProbeTraits.h
+            include/movetk/utils/GeolifeTrajectoryTraits.h
+            include/movetk/utils/HereProbeTraits.h
+            include/movetk/utils/HereTrajectoryTraits.h
+            include/movetk/utils/GeometryBackendTraits.h
             include/movetk/logging.h
             include/movetk/ProbeTraits.h
             include/movetk/SortByField.h
@@ -144,8 +146,11 @@ if (WITH_CGAL_BACKEND)
     else()
     message(STATUS "CGAL_BACKEND ${WITH_CGAL_BACKEND}")
     add_library(movetk
-            include/movetk/HereProbeTraits.h
-            include/movetk/HereTrajectoryTraits.h
+            include/movetk/utils/GeolifeProbeTraits.h
+            include/movetk/utils/GeolifeTrajectoryTraits.h
+            include/movetk/utils/HereProbeTraits.h
+            include/movetk/utils/HereTrajectoryTraits.h
+            include/movetk/utils/GeometryBackendTraits.h
             include/movetk/logging.h
             include/movetk/ProbeTraits.h
             include/movetk/SortByField.h

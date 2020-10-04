@@ -1,0 +1,49 @@
+\hypertarget{struct_geometry_kernel}{}\doxysection{Geometry\+Kernel Struct Reference}
+\label{struct_geometry_kernel}\index{GeometryKernel@{GeometryKernel}}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a1b35235b90e0eb8aff8a4e08530863b6}\label{struct_geometry_kernel_a1b35235b90e0eb8aff8a4e08530863b6}} 
+typedef long double {\bfseries NT}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_accae496a292b96e138f85f3f020aa73b}\label{struct_geometry_kernel_accae496a292b96e138f85f3f020aa73b}} 
+typedef \mbox{\hyperlink{structmovetk__support_1_1_boost_geometry_traits}{movetk\+\_\+support\+::\+Boost\+Geometry\+Traits}}$<$ long double, dimensions $>$ {\bfseries Boost\+\_\+\+Geometry\+\_\+\+Backend}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a772ec416628f8cb853b5e7dfc5b87352}\label{struct_geometry_kernel_a772ec416628f8cb853b5e7dfc5b87352}} 
+typedef \mbox{\hyperlink{structmovetk__core_1_1_movetk_geometry_kernel}{movetk\+\_\+core\+::\+Movetk\+Geometry\+Kernel}}$<$ typename \mbox{\hyperlink{structmovetk__support_1_1_wrapper___boost___kernel}{Boost\+\_\+\+Geometry\+\_\+\+Backend\+::\+Wrapper\+\_\+\+Boost\+\_\+\+Geometry}} $>$ {\bfseries Movetk\+Geometry\+Kernel}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a84b0941afde8e3ed40d12a81e480c18e}\label{struct_geometry_kernel_a84b0941afde8e3ed40d12a81e480c18e}} 
+typedef \mbox{\hyperlink{classmovetk__support_1_1_finite_norm}{movetk\+\_\+support\+::\+Finite\+Norm}}$<$ \mbox{\hyperlink{structmovetk__core_1_1_movetk_geometry_kernel}{Movetk\+Geometry\+Kernel}}, 2 $>$ {\bfseries Norm}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a70fa1f21947817a79f120cecd67c8342}\label{struct_geometry_kernel_a70fa1f21947817a79f120cecd67c8342}} 
+typedef \mbox{\hyperlink{structmovetk__core_1_1_intersection_traits}{movetk\+\_\+core\+::\+Intersection\+Traits}}$<$ \mbox{\hyperlink{structmovetk__core_1_1_movetk_geometry_kernel}{Movetk\+Geometry\+Kernel}}, \mbox{\hyperlink{classmovetk__support_1_1_finite_norm}{Norm}}, movetk\+\_\+core\+::sphere\+\_\+segment\+\_\+intersection\+\_\+tag $>$ {\bfseries Sph\+Seg\+Intersection\+Traits}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_aea191ef87a6bd9e6afcc3b2158ed021a}\label{struct_geometry_kernel_aea191ef87a6bd9e6afcc3b2158ed021a}} 
+using {\bfseries Intersection\+Attributes} = Sph\+Seg\+Intersection\+Traits\+::\+Attributes
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a30f7246a01441b603ee8ab57eafeb253}\label{struct_geometry_kernel_a30f7246a01441b603ee8ab57eafeb253}} 
+typedef \mbox{\hyperlink{structmovetk__core_1_1_intersection_traits}{movetk\+\_\+core\+::\+Intersection\+Traits}}$<$ \mbox{\hyperlink{structmovetk__core_1_1_movetk_geometry_kernel}{Movetk\+Geometry\+Kernel}}, \mbox{\hyperlink{classmovetk__support_1_1_finite_norm}{Norm}}, movetk\+\_\+core\+::sphere\+\_\+sphere\+\_\+intersection\+\_\+tag $>$ {\bfseries Sph\+Sph\+Intersection\+Traits}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a53b3a6fd620015a2c69c04d90783adf1}\label{struct_geometry_kernel_a53b3a6fd620015a2c69c04d90783adf1}} 
+typedef \mbox{\hyperlink{structmovetk__support_1_1_free_space_cell_traits}{movetk\+\_\+support\+::\+Free\+Space\+Cell\+Traits}}$<$ \mbox{\hyperlink{structmovetk__core_1_1_intersection_traits}{Sph\+Seg\+Intersection\+Traits}} $>$ {\bfseries Free\+Space\+Cell\+Traits}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_ac3d039d2dfcff5e745f06ddb80aa92b1}\label{struct_geometry_kernel_ac3d039d2dfcff5e745f06ddb80aa92b1}} 
+typedef \mbox{\hyperlink{classmovetk__support_1_1_free_space_cell}{movetk\+\_\+support\+::\+Free\+Space\+Cell}}$<$ \mbox{\hyperlink{structmovetk__support_1_1_free_space_cell_traits}{Free\+Space\+Cell\+Traits}} $>$ {\bfseries Free\+Space\+Cell}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a0fc69d7d31e6d9130f6e8e5650c22f6b}\label{struct_geometry_kernel_a0fc69d7d31e6d9130f6e8e5650c22f6b}} 
+typedef \mbox{\hyperlink{structmovetk__support_1_1_free_space_diagram_traits}{movetk\+\_\+support\+::\+Free\+Space\+Diagram\+Traits}}$<$ \mbox{\hyperlink{classmovetk__support_1_1_free_space_cell}{Free\+Space\+Cell}} $>$ {\bfseries Free\+Space\+Diagram\+Traits}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_aefdc16a42f2c64f7af93753efbb91292}\label{struct_geometry_kernel_aefdc16a42f2c64f7af93753efbb91292}} 
+typedef \mbox{\hyperlink{classmovetk__support_1_1_free_space_diagram}{movetk\+\_\+support\+::\+Free\+Space\+Diagram}}$<$ \mbox{\hyperlink{structmovetk__support_1_1_free_space_diagram_traits}{Free\+Space\+Diagram\+Traits}} $>$ {\bfseries Free\+Space\+Diagram}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_geometry_kernel_a805ffc8548b393ebac5a9784efa02f10}\label{struct_geometry_kernel_a805ffc8548b393ebac5a9784efa02f10}} 
+const static size\+\_\+t {\bfseries dimensions} = 2
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/amitra/\+Documents/movetk/src/include/movetk/utils/Geometry\+Backend\+Traits.\+h\end{DoxyCompactItemize}

@@ -29,7 +29,7 @@
 #include "movetk/algo/SegmentationTraits.h"
 #include "movetk/ds/StartStopMatrix.h"
 #include "movetk/utils/Iterators.h"
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
 
 using namespace std;

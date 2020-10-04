@@ -17,7 +17,7 @@
  * License-Filename: LICENSE
  */
 
-#include "movetk/GeolifeTrajectoryTraits.h"
+#include "GeolifeTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/TrajectoryReader.h"
 #include "movetk/io/GeoJSONUtils.h"
@@ -26,12 +26,11 @@
 using TrajectoryTraits = geolife::c2d::raw::TabularTrajectoryTraits;
 using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 
-bool ends_with(std::string const & value, std::string const & ending)
+bool ends_with(std::string const &value, std::string const &ending)
 {
-    if (ending.size() > value.size()) return false;
+    if (ending.size() > value.size())
+        return false;
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
 #pragma cling load("libboost_iostreams.so")
-
-

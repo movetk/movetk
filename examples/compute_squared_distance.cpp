@@ -21,7 +21,7 @@
 // Created by Mitra, Aniket on 2019-02-19.
 //
 
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
 int main(int argc, char **argv){
 #if CGAL_BACKEND_ENABLED

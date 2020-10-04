@@ -26,7 +26,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include "GeometryBackendTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 #include  "movetk/geo/geo.h"
 #include "movetk/algo/Interpolation.h"
 #include "movetk/io/csv/ParseDate.h"

@@ -451,7 +451,19 @@ namespace movetk_support {
                 seg = CGAL_Segment(p1.get(), p2.get());
             }
 
-            Wrapper_Point operator[](size_t idx){
+            /*!
+              * Creates a CGAL segment and a generic interface to a Segment as defined
+              * by this class.
+              * @param p1 - A wrapped CGAL point that defines one end-point of
+              * a wrapped CGAL segment
+              * @param p2 - A wrapped CGAL point that defines the other end-point of
+              * a wrapped CGAL segment
+              */
+            Wrapper_CGAL_Segment(Wrapper_CGAL_Point<Kernel>&& p1, Wrapper_CGAL_Point<Kernel>&& p2) {
+                seg = CGAL_Segment(p1.get(), p2.get());
+            }
+
+            Wrapper_Point operator[](size_t idx) const{
                   return seg[idx];
             }
 
