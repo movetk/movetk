@@ -94,7 +94,6 @@ struct GeometryKernel
     typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
                                             movetk_core::sphere_segment_intersection_tag>
         SphSegIntersectionTraits;
-    using IntersectionAttributes = SphSegIntersectionTraits::Attributes;
 
     typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
                                             movetk_core::sphere_sphere_intersection_tag>
