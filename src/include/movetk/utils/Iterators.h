@@ -34,7 +34,8 @@
 /*!
  * @brief the core of movetk
  */
-namespace movetk_core {
+namespace movetk_core
+{
     /*!
      * @brief an adaptor to std::iterator for for inserting at the end of a container
      * @details unlike the std::back_inserter, ths iterator has a value_type.
@@ -42,16 +43,17 @@ namespace movetk_core {
      * by inserting an element at the end and returns an iterator to the end
      * @tparam Container
      */
-    template<class Container>
+    template <class Container>
     class movetk_back_insert_iterator : public std::iterator<std::output_iterator_tag,
-            void,
-            void,
-            void,
-            void> {
+                                                             void,
+                                                             void,
+                                                             void,
+                                                             void>
+    {
     protected:
         Container *container;
-    public:
 
+    public:
         typedef Container container_type;
         typedef typename Container::value_type value_type;
         typedef void difference_type;
@@ -69,12 +71,14 @@ namespace movetk_core {
          * @param value
          * @return
          */
-        movetk_back_insert_iterator &operator=(const typename Container::value_type &value) {
+        movetk_back_insert_iterator &operator=(const typename Container::value_type &value)
+        {
             container->push_back(value);
             return *this;
         }
 
-        movetk_back_insert_iterator &operator-=(const typename Container::value_type &value) {
+        movetk_back_insert_iterator &operator-=(const typename Container::value_type &value)
+        {
             container->pop_back();
             container->push_back(value);
             return *this;
@@ -97,7 +101,6 @@ namespace movetk_core {
          * @return
          */
         movetk_back_insert_iterator operator++(int) { return *this; }
-
     };
 
     /*!
@@ -107,17 +110,18 @@ namespace movetk_core {
  * by inserting an element at a given position
  * @tparam Container
  */
-    template<class Container>
+    template <class Container>
     class movetk_insert_iterator : public std::iterator<std::output_iterator_tag,
-            void,
-            void,
-            void,
-            void> {
+                                                        void,
+                                                        void,
+                                                        void,
+                                                        void>
+    {
     protected:
         Container *container;
         typename Container::iterator iter;
-    public:
 
+    public:
         typedef Container container_type;
         typedef typename Container::value_type value_type;
         typedef void difference_type;
@@ -125,10 +129,11 @@ namespace movetk_core {
         typedef void pointer;
 
         explicit movetk_insert_iterator(Container &x, typename Container::iterator _iter) : container(
-                std::addressof(x)),
+                                                                                                std::addressof(x)),
                                                                                             iter(_iter) {}
 
-        movetk_insert_iterator &operator=(const typename Container::value_type &value) {
+        movetk_insert_iterator &operator=(const typename Container::value_type &value)
+        {
             iter = container->insert(iter, value);
             ++iter;
             return *this;
@@ -141,27 +146,28 @@ namespace movetk_core {
         movetk_insert_iterator operator++(int) { return *this; }
     };
 
-
-    template<class T>
+    template <class T>
     class movetk_basic_iterator : public std::iterator<std::random_access_iterator_tag,
-            T,
-            std::size_t,
-            T *,
-            T &> {
+                                                       T,
+                                                       std::size_t,
+                                                       T *,
+                                                       T &>
+    {
     protected:
         T *it;
-    public:
 
+    public:
         typedef typename movetk_basic_iterator::reference reference;
         typedef typename movetk_basic_iterator::pointer pointer;
         typedef typename movetk_basic_iterator::difference_type difference_type;
-
+        typedef typename movetk_basic_iterator::value_type value_type;
 
         explicit movetk_basic_iterator(pointer value) : it(value) {}
 
         pointer base() const { return it; }
 
-        movetk_basic_iterator &operator=(const T *iter) {
+        movetk_basic_iterator &operator=(const T *iter)
+        {
             it = iter;
             return *this;
         }
@@ -170,66 +176,76 @@ namespace movetk_core {
 
         pointer operator->() const { return it; }
 
-        movetk_basic_iterator &operator++() {
+        movetk_basic_iterator &operator++()
+        {
             it++;
             return *this;
         }
 
-        movetk_basic_iterator operator+(difference_type d) {
+        movetk_basic_iterator operator+(difference_type d)
+        {
             movetk_basic_iterator iter(this->base() + d);
             return iter;
         }
 
-        movetk_basic_iterator operator++(int) {
+        movetk_basic_iterator operator++(int)
+        {
             movetk_basic_iterator iter(this->base());
             ++(*this);
             return iter;
         }
 
-        bool operator==(movetk_basic_iterator const &other) const {
+        bool operator==(movetk_basic_iterator const &other) const
+        {
             return (this->base() == other.base());
         }
 
-        bool operator!=(movetk_basic_iterator const &other) const {
+        bool operator!=(movetk_basic_iterator const &other) const
+        {
             return (this->base() != other.base());
         }
 
-        auto operator-(movetk_basic_iterator const &other) const {
+        auto operator-(movetk_basic_iterator const &other) const
+        {
             return (this->base() - other.base());
         }
     };
 
-
-    template<class Container,
-            typename = movetk_core::requires_random_access_iterator<
-                    typename Container::value_type::const_iterator>>
+    template <class Container,
+              typename = movetk_core::requires_random_access_iterator<
+                  typename Container::value_type::const_iterator>>
     class movetk_grid_iterator : public std::iterator<std::random_access_iterator_tag,
-            Container,
-            std::size_t,
-            typename Container::const_iterator,
-            typename Container::reference> {
+                                                      Container,
+                                                      std::size_t,
+                                                      typename Container::const_iterator,
+                                                      typename Container::reference>
+    {
     protected:
         typename Container::const_iterator rit;
         typename Container::value_type::const_iterator cit;
-    public:
 
+    public:
         typedef typename movetk_grid_iterator::reference reference;
         typedef typename movetk_grid_iterator::pointer pointer;
         typedef typename movetk_grid_iterator::difference_type difference_type;
 
-        explicit movetk_grid_iterator(pointer value) : rit(value) {
+        explicit movetk_grid_iterator(pointer value) : rit(value)
+        {
             cit = rit->cbegin();
         }
 
         pointer base() const { return rit; }
 
-        movetk_grid_iterator &operator++() {
-            if (std::distance(rit->cbegin(), rit->cend()) == 0){
+        movetk_grid_iterator &operator++()
+        {
+            if (std::distance(rit->cbegin(), rit->cend()) == 0)
+            {
                 rit++;
                 cit = rit->cbegin();
                 return *this;
             }
-            if ( cit == (rit->cend() - 1) ) {
+            if (cit == (rit->cend() - 1))
+            {
                 rit++;
                 cit = rit->cbegin();
             }
@@ -238,49 +254,55 @@ namespace movetk_core {
             return *this;
         }
 
-
-        movetk_grid_iterator operator++(int) {
+        movetk_grid_iterator operator++(int)
+        {
             movetk_grid_iterator iter(this->base());
             ++(*this);
             return iter;
         }
 
-        movetk_grid_iterator operator+(difference_type d) {
+        movetk_grid_iterator operator+(difference_type d)
+        {
             movetk_grid_iterator iter(this->base());
             difference_type idx = 1;
-            while (idx < ( d + 1)){
+            while (idx < (d + 1))
+            {
                 iter++;
                 idx++;
             }
             return iter;
-
         }
 
-        typename Container::value_type::value_type operator*() const {return *cit;}
+        typename Container::value_type::value_type operator*() const { return *cit; }
 
         typename Container::value_type::const_iterator operator->() const { return cit; }
 
-        bool operator==(movetk_grid_iterator const &other) {
+        bool operator==(movetk_grid_iterator const &other)
+        {
             return (this->base() == other.base());
         }
 
-        bool operator!=(movetk_grid_iterator const &other) {
+        bool operator!=(movetk_grid_iterator const &other)
+        {
             return (this->base() != other.base());
         }
 
-        std::size_t operator-(movetk_grid_iterator const &other) const {
+        std::size_t operator-(movetk_grid_iterator const &other) const
+        {
             auto it = other.base();
             std::size_t count = 0;
-            while (it != this->base()){
+            while (it != this->base())
+            {
                 auto jit = it->cbegin();
-                while (jit != it->cend()){
-                    count++;jit++;
+                while (jit != it->cend())
+                {
+                    count++;
+                    jit++;
                 }
                 it++;
             }
             return count;
         }
-
     };
-}
+} // namespace movetk_core
 #endif //MOVETK_ITERATORS_H

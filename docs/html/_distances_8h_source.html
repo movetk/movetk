@@ -109,7 +109,7 @@ $(function() {
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">typename</span> Kernel::NT operator()(<span class="keyword">typename</span> Kernel::MovetkPoint &amp;p,</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                       <span class="keyword">typename</span> Kernel::MovetkLine &amp;l) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            Norm n;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <a class="code" href="classmovetk__support_1_1_finite_norm.html">Norm</a> n;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="keyword">typename</span> Kernel::MovetkVector v = l[1] - l[0];</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keyword">typename</span> Kernel::MovetkVector u = p - l[0];</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="keyword">typename</span> Kernel::NT uv = u * v;</div>
@@ -123,7 +123,7 @@ $(function() {
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keyword">typename</span> Kernel::NT operator()(<span class="keyword">typename</span> Kernel::MovetkPoint &amp;p,</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                       <span class="keyword">typename</span> Kernel::MovetkSegment &amp;s) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            Norm n;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <a class="code" href="classmovetk__support_1_1_finite_norm.html">Norm</a> n;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keyword">typename</span> Kernel::MovetkVector v = s[1] - s[0];</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keyword">typename</span> Kernel::MovetkVector u = p - s[0];</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            <span class="keyword">typename</span> Kernel::MovetkVector v1 = p - s[1];</div>
@@ -144,7 +144,7 @@ $(function() {
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keyword">typename</span> Kernel::NT operator()(<span class="keyword">typename</span> Kernel::MovetkPoint &amp;p1,</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                       <span class="keyword">typename</span> Kernel::MovetkPoint &amp;p2) {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            Norm n;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            <a class="code" href="classmovetk__support_1_1_finite_norm.html">Norm</a> n;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <span class="keyword">typename</span> Kernel::MovetkVector v = p2 - p1;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <span class="keywordflow">return</span> n(v);</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        }</div>
@@ -162,7 +162,7 @@ $(function() {
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keyword">typename</span> Kernel::NT discrete_husdorff(InputIterator a_first, InputIterator a_beyond,</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                                       InputIterator b_first, InputIterator b_beyond) {</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            Norm norm;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;            <a class="code" href="classmovetk__support_1_1_finite_norm.html">Norm</a> norm;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;            InputIterator it_a = a_first;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            <span class="keyword">typename</span> Kernel::NT max_dist = 0;</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="keywordflow">while</span> (it_a !=  a_beyond){</div>
@@ -223,7 +223,7 @@ $(function() {
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;                <span class="keyword">typename</span> = <a class="code" href="namespacemovetk__core.html#a3419c3fc687241dade3c82db464c44e1">movetk_core::requires_movetk_point</a>&lt;Kernel,</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                <span class="keyword">typename</span> InputIterator::value_type&gt;&gt;</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        NT distance(InputIterator iter_a, InputIterator iter_b){</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            Norm norm;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;            <a class="code" href="classmovetk__support_1_1_finite_norm.html">Norm</a> norm;</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;            <span class="keyword">typename</span> Kernel::MovetkVector v = *iter_b - *iter_a;</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;            <span class="keywordflow">return</span> norm(v);</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        }</div>
@@ -293,6 +293,7 @@ $(function() {
 <div class="ttc" id="aclassmovetk__support_1_1_discrete___hausdorff_html"><div class="ttname"><a href="classmovetk__support_1_1_discrete___hausdorff.html">movetk_support::Discrete_Hausdorff</a></div><div class="ttdef"><b>Definition:</b> Distances.h:82</div></div>
 <div class="ttc" id="anamespacemovetk__support_html"><div class="ttname"><a href="namespacemovetk__support.html">movetk_support</a></div><div class="ttdoc">support system of movetk</div><div class="ttdef"><b>Definition:</b> FreeSpaceDiagram.h:41</div></div>
 <div class="ttc" id="astructmovetk__support_1_1squared__distance__d_html"><div class="ttname"><a href="structmovetk__support_1_1squared__distance__d.html">movetk_support::squared_distance_d</a></div><div class="ttdef"><b>Definition:</b> Distances.h:35</div></div>
+<div class="ttc" id="aclassmovetk__support_1_1_finite_norm_html"><div class="ttname"><a href="classmovetk__support_1_1_finite_norm.html">movetk_support::FiniteNorm</a></div><div class="ttdef"><b>Definition:</b> Norm.h:37</div></div>
 <div class="ttc" id="a_asserts_8h_html"><div class="ttname"><a href="_asserts_8h.html">Asserts.h</a></div><div class="ttdoc">Collection of compile time checks for movetk.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

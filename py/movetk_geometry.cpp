@@ -31,9 +31,12 @@ namespace py = pybind11;
 typedef typename GeometryKernel::MovetkGeometryKernel MovetkGeometryKernel;
 typedef typename movetk_core::movetk_basic_iterator<const typename MovetkGeometryKernel::NT> CoordinateIterator;
 
+PYBIND11_MAKE_OPAQUE(std::vector<MovetkGeometryKernel::MovetkPoint, std::allocator<MovetkGeometryKernel::MovetkPoint>>);
+
+using Points = std::vector<MovetkGeometryKernel::MovetkPoint, std::allocator<MovetkGeometryKernel::MovetkPoint>>;
+
 PYBIND11_MODULE(movetk_geometry, m)
 {
-
     py::class_<typename MovetkGeometryKernel::MovetkPoint>(m, "point", py::buffer_protocol())
         .def(py::init([](py::array_t<typename MovetkGeometryKernel::NT,
                                      MovetkGeometryKernel::dim> const buf) {
@@ -59,4 +62,30 @@ PYBIND11_MODULE(movetk_geometry, m)
                 throw std::runtime_error("Index out of bounds!");
             return m[idx];
         });
+
+    py::class_<Points>(m, "points")
+        .def(py::init<>())
+        .def("push_back", (void (Points::*)(const MovetkGeometryKernel::MovetkPoint &)) & Points::push_back)
+        .def("__len__", [](const Points &v) { return v.size(); })
+        .def(
+            "__iter__", [](Points &v) {
+                return py::make_iterator(v.begin(), v.end());
+            },
+            py::keep_alive<0, 1>());
+
+    py::class_<typename MovetkGeometryKernel::MovetkPolygon>(m, "polygon", py::buffer_protocol())
+        .def(py::init<>())
+        .def(py::init([](Points &p) {
+            typename MovetkGeometryKernel::MovetkPolygon poly(p.cbegin(), p.cend());
+            return poly;
+        }))
+        .def(
+            "__getitem__", [](typename MovetkGeometryKernel::MovetkPolygon &polygon, std::size_t idx) -> typename MovetkGeometryKernel::MovetkPoint {
+                std::size_t num_vertices = std::distance(polygon.v_begin(), polygon.v_end());
+                if (idx >= num_vertices)
+                    throw std::runtime_error("Index out of bounds!");
+                auto it = polygon.v_begin() + idx;
+                typename MovetkGeometryKernel::MovetkPoint pt(*it);
+                return pt;
+            });
 }

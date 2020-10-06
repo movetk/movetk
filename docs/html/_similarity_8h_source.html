@@ -145,7 +145,7 @@ $(function() {
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            std::fill( std::begin(dp_row), std::begin(dp_row) + size_polyline_b + 1, 0 );</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            InputIterator it_a = polyline_a_first;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            std::size_t i = 1, prev_value = 0, prev_cell = 0;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            Norm norm;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            <a class="code" href="classmovetk__support_1_1_finite_norm.html">Norm</a> norm;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            <span class="keywordflow">while</span> (it_a != polyline_a_beyond){</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                std::size_t j = 1, previous = 0, current = 0;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                InputIterator it_b = polyline_b_first;</div>
@@ -197,6 +197,7 @@ $(function() {
 <div class="ttc" id="anamespacemovetk__core_html_a509e9d52c86339907ba5bbc1c4001700"><div class="ttname"><a href="namespacemovetk__core.html#a509e9d52c86339907ba5bbc1c4001700">movetk_core::requires_equality</a></div><div class="ttdeci">typename std::enable_if&lt; movetk_core::is_equal_to&lt; T1, T2 &gt;::value, T2 &gt;::type requires_equality</div><div class="ttdoc">Requirement for template T2 to be equal to template T1.</div><div class="ttdef"><b>Definition:</b> Requirements.h:131</div></div>
 <div class="ttc" id="aclassmovetk__algorithms_1_1_dynamic_time_warping_html"><div class="ttname"><a href="classmovetk__algorithms_1_1_dynamic_time_warping.html">movetk_algorithms::DynamicTimeWarping</a></div><div class="ttdef"><b>Definition:</b> Similarity.h:111</div></div>
 <div class="ttc" id="aclassmovetk__algorithms_1_1_longest_common_sub_sequence_html"><div class="ttname"><a href="classmovetk__algorithms_1_1_longest_common_sub_sequence.html">movetk_algorithms::LongestCommonSubSequence</a></div><div class="ttdef"><b>Definition:</b> Similarity.h:40</div></div>
+<div class="ttc" id="aclassmovetk__support_1_1_finite_norm_html"><div class="ttname"><a href="classmovetk__support_1_1_finite_norm.html">movetk_support::FiniteNorm</a></div><div class="ttdef"><b>Definition:</b> Norm.h:37</div></div>
 <div class="ttc" id="a_requirements_8h_html"><div class="ttname"><a href="_requirements_8h.html">Requirements.h</a></div><div class="ttdoc">An collection of requirements for types used in movetk.</div></div>
 <div class="ttc" id="anamespacemovetk__core_html_a3a66cac37ab51fd7df229337566c5f1c"><div class="ttname"><a href="namespacemovetk__core.html#a3a66cac37ab51fd7df229337566c5f1c">movetk_core::requires_pair</a></div><div class="ttdeci">typename std::enable_if&lt; movetk_core::is_pair&lt; T &gt;::value, T &gt;::type requires_pair</div><div class="ttdoc">Requirement for template T to be a std::pair.</div><div class="ttdef"><b>Definition:</b> Requirements.h:123</div></div>
 <!-- start footer part -->

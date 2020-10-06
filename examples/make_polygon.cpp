@@ -22,13 +22,13 @@
 //
 #include "movetk/utils/GeometryBackendTraits.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
-
 
     //==============================
     // Declare the data structure that will hold a set of points
@@ -40,32 +40,32 @@ int main(int argc, char **argv) {
     // Create a  Movetk polygon and print its vertices
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
 
-    points.push_back(make_point({1,1}));
+    points.push_back(make_point({1, 1}));
 
-    std::cout<<"Point 1:"<<std::endl;
+    std::cout << "Point 1:" << std::endl;
     std::cout << points.back();
     std::cout << std::endl;
 
-    points.push_back(make_point({2,2}));
+    points.push_back(make_point({2, 2}));
 
-    std::cout<<"Point 2:"<<std::endl;
+    std::cout << "Point 2:" << std::endl;
     std::cout << points.back();
     std::cout << std::endl;
 
-    points.push_back(make_point({3,3}));
+    points.push_back(make_point({3, 3}));
 
-    std::cout<<"Point 3: "<<std::endl;
+    std::cout << "Point 3: " << std::endl;
     std::cout << points.back();
     std::cout << std::endl;
 
     movetk_core::MakePolygon<GeometryKernel::MovetkGeometryKernel> make_polygon;
 
     GeometryKernel::MovetkGeometryKernel::MovetkPolygon polygon = make_polygon(std::cbegin(points),
-                                                              std::cend(points));
+                                                                               std::cend(points));
 
-    std::cout<<"Polygon: "<<std::endl;
-    std::cout<<polygon;
-    std::cout<<"\n";
+    std::cout << "Polygon: " << std::endl;
+    std::cout << polygon;
+    std::cout << "\n";
     //====================================
 
     return 0;

@@ -1784,10 +1784,10 @@
   <compound kind="class">
     <name>movetk_algorithms::brownian_bridge::MLE</name>
     <filename>classmovetk__algorithms_1_1brownian__bridge_1_1_m_l_e.html</filename>
-    <templarg>GeometryTraits</templarg>
-    <templarg>ParameterTraits</templarg>
-    <templarg>Norm</templarg>
-    <templarg>InputIterator</templarg>
+    <templarg></templarg>
+    <templarg></templarg>
+    <templarg></templarg>
+    <templarg></templarg>
     <templarg>MaxIter</templarg>
     <templarg></templarg>
     <templarg></templarg>
