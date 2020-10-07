@@ -45,9 +45,15 @@ PYBIND11_MODULE(movetk_geometry, m)
                 static_cast<const typename MovetkGeometryKernel::NT *>(info.ptr));
             CoordinateIterator beyond(
                 static_cast<const typename MovetkGeometryKernel::NT *>(info.ptr) + MovetkGeometryKernel::dim);
+            std::size_t size = std::distance(first, beyond);
+            if (size != MovetkGeometryKernel::dim)
+                throw std::runtime_error("Size of input does not satisfy the predefined diemension of MovetkPoint!");
             typename MovetkGeometryKernel::MovetkPoint pt(first, beyond);
             return pt;
         }))
+        .def("__len__", [](const typename MovetkGeometryKernel::MovetkPoint &m) {
+            return std::distance(m.begin(), m.end());
+        })
         .def("__getitem__", [](const typename MovetkGeometryKernel::MovetkPoint &m, std::size_t idx) -> typename MovetkGeometryKernel::NT {
             if (idx > MovetkGeometryKernel::dim)
                 throw std::runtime_error("Index out of bounds!");
@@ -87,5 +93,8 @@ PYBIND11_MODULE(movetk_geometry, m)
                 auto it = polygon.v_begin() + idx;
                 typename MovetkGeometryKernel::MovetkPoint pt(*it);
                 return pt;
-            });
+            })
+        .def("num_vertices", [](MovetkGeometryKernel::MovetkPolygon &polygon) {
+            return std::distance(polygon.v_begin(), polygon.v_end());
+        });
 }
