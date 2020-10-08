@@ -25,6 +25,7 @@
 #define MOVETK_DISTANCES_H
 
 #include <iostream>
+#include <limits>
 #include "movetk/utils/Asserts.h"
 
 namespace movetk_support {
@@ -211,5 +212,133 @@ namespace movetk_support {
         }
 
     };
+
+    template<class Kernel, class Norm>
+    class Dynamic_Time_Warping {
+
+    //based on https://en.wikipedia.org/wiki/Dynamic_time_warping
+
+    private:
+
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<Kernel,
+                        typename InputIterator::value_type> >
+        typename Kernel::NT dynamic_time_warping(InputIterator a_first, InputIterator a_beyond,
+                                       InputIterator b_first, InputIterator b_beyond) {
+
+            typedef typename Kernel::NT NT;
+            Norm norm;
+
+            std::size_t size_a = std::distance(a_first, a_beyond);
+            std::size_t size_b = std::distance(b_first, b_beyond);
+            std::vector< std::vector<NT> > DTW(size_a + 1, std::vector<NT>(size_b + 1));
+
+            for(auto i = 0; i < size_a + 1; i++) {
+                for(auto j = 0; j < size_b + 1; j++){
+                    DTW[i][j] = std::numeric_limits<NT>::max();
+                }
+            }
+            DTW[0][0] = 0;
+            InputIterator it_a = a_first;
+            it_a++;
+            InputIterator it_b = b_first;
+            it_b++;
+            for(auto i = 1; i < size_a + 1; i++){
+                for(auto j = 1; j < size_b + 1; j++){
+
+                    typename Kernel::MovetkVector v = *it_b - *it_a;
+                    NT cost = norm(v);
+                    DTW[i][j] = cost + std::min({DTW[i-1][j],    // insertion
+                                        DTW[i][j-1],    // deletion
+                                        DTW[i-1][j-1]});    // match
+                    it_b++;
+                }
+                it_a++;
+            } 
+            return  DTW[size_a][size_b];
+        }
+
+
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<Kernel,
+                        typename InputIterator::value_type> >
+        typename Kernel::NT dynamic_time_warping(InputIterator a_first, InputIterator a_beyond,
+                                       InputIterator b_first, InputIterator b_beyond, std::size_t window) {
+
+            typedef typename Kernel::NT NT;
+            Norm norm;
+
+            std::size_t size_a = std::distance(a_first, a_beyond);
+            std::size_t size_b = std::distance(b_first, b_beyond);
+            std::vector< std::vector<NT> > DTW(size_a + 1, std::vector<NT>(size_b + 1));
+
+            std::size_t diff = (size_a - size_b > 0)? size_a - size_b : size_b - size_a;
+            std::size_t w = std::max({window, diff}); // adapt window size
+
+            for(auto i = 0; i < size_a + 1; i++) {
+                for(auto j = 0; j < size_b + 1; j++){
+                    DTW[i][j] = std::numeric_limits<NT>::max();
+                }
+            }
+            DTW[0][0] = 0;
+
+            for(int i = 1; i < size_a + 1; i++) {
+                for(int j = std::max<int>({1, i - w}); j < std::min<int>({size_b + 1, i + w}); j++){
+                    DTW[i][j] = 0;
+                }
+            }
+
+            InputIterator it_a = a_first;
+            it_a++;
+            InputIterator it_b = b_first;
+            it_b++;
+            for(int i = 1; i < size_a + 1; i++){
+                for(int j = std::max<int>({1, i-w}); j < std::min<int>({size_b + 1, i + w}); j++){
+                    typename Kernel::MovetkVector v = *it_b - *it_a;
+                    NT cost = norm(v);
+                    DTW[i][j] = cost + std::min({DTW[i-1][j],    // insertion
+                                        DTW[i][j-1],    // deletion
+                                        DTW[i-1][j-1]});    // match
+                    it_b++;
+                }
+                it_a++;
+            } 
+            return  DTW[size_a][size_b];
+        }
+
+
+
+    public:
+
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<Kernel,
+                        typename InputIterator::value_type> >
+        typename Kernel::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                       InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+
+            return dynamic_time_warping(polyline_a_first, polyline_a_beyond,
+                                                          polyline_b_first, polyline_b_beyond);
+
+        }
+
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<Kernel,
+                        typename InputIterator::value_type> >
+        typename Kernel::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                       InputIterator polyline_b_first, InputIterator polyline_b_beyond, std::size_t window) {
+
+            return dynamic_time_warping(polyline_a_first, polyline_a_beyond,
+                                                          polyline_b_first, polyline_b_beyond, window);
+
+        }
+
+
+
+    };
+
 }
 #endif //MOVETK_DISTANCES_H
