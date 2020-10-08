@@ -17,7 +17,6 @@
  * License-Filename: LICENSE
  */
 
-
 /*! @file Interface.h
  *  @brief  An interface for movetk  geometry
  *  @details A collection of classes that provide a generic
@@ -48,9 +47,9 @@
  *  @namespace movetk_core
  *  @brief the core of movetk
  */
-namespace movetk_core {
+namespace movetk_core
+{
     // the support library for Movetk
-
 
     /*!
    * @brief converts from degree to radians
@@ -58,7 +57,7 @@ namespace movetk_core {
    * @param degrees
    * @return
    */
-    template<class NT>
+    template <class NT>
     NT deg2radians(const NT degrees) { return degrees * PI / 180.0; }
 
     /*!
@@ -67,16 +66,16 @@ namespace movetk_core {
      * @param radians
      * @return
      */
-    template<class NT>
+    template <class NT>
     NT rad2deg(const NT radians) { return radians * 180.0 / PI; }
-
 
     /*!@struct MakePoint
      * @brief Constructs a point from a set of input Cartesian coordinates
      * @tparam GeometryTraits - A traits class that defines movetk geometry types
      */
-    template<class GeometryTraits>
-    struct MakePoint {
+    template <class GeometryTraits>
+    struct MakePoint
+    {
         /*!
          * @details Infers the dimensions of the point from the input
          * and creates a point with Cartesian coordinates \f$[first,beyond)\f$
@@ -86,10 +85,11 @@ namespace movetk_core {
          * @param beyond - Iterator to the end of the last Cartesian coordinate
          * @return A movetk point
          */
-        template<class CoordinateIterator,
-                typename = movetk_core::requires_random_access_iterator<CoordinateIterator> >
+        template <class CoordinateIterator,
+                  typename = movetk_core::requires_random_access_iterator<CoordinateIterator>>
         typename GeometryTraits::MovetkPoint operator()(CoordinateIterator first,
-                                                        CoordinateIterator beyond) {
+                                                        CoordinateIterator beyond)
+        {
             //ASSERT_RANDOM_ACCESS_ITERATOR(CoordinateIterator);
             ASSERT_NUMBER_TYPE(GeometryTraits, first);
             typename GeometryTraits::MovetkPoint p(first, beyond);
@@ -97,7 +97,9 @@ namespace movetk_core {
         }
 
         typename GeometryTraits::MovetkPoint operator()(std::initializer_list<
-                typename GeometryTraits::NT> l) {
+                                                        typename GeometryTraits::NT>
+                                                            l)
+        {
             typename GeometryTraits::MovetkPoint p(l.begin(), l.end());
             return p;
         }
@@ -107,8 +109,9 @@ namespace movetk_core {
      * @brief Constructs a line form two input points
      * @tparam GeometryTraits - A traits class that defines movetk geometry types
      */
-    template<class GeometryTraits>
-    struct MakeLine {
+    template <class GeometryTraits>
+    struct MakeLine
+    {
         /*!
          *
          * @param p1 - A movetk point
@@ -116,7 +119,8 @@ namespace movetk_core {
          * @return A movetk line
          */
         typename GeometryTraits::MovetkLine operator()(typename GeometryTraits::MovetkPoint p1,
-                                                       typename GeometryTraits::MovetkPoint p2) {
+                                                       typename GeometryTraits::MovetkPoint p2)
+        {
             typename GeometryTraits::MovetkLine l(p1, p2);
             return l;
         }
@@ -126,8 +130,9 @@ namespace movetk_core {
      * @brief  Computes the euclidean distance between two points
      * @tparam GeometryTraits - A traits class that defines movetk geometry types
      */
-    template<class GeometryTraits>
-    struct ComputeLength {
+    template <class GeometryTraits>
+    struct ComputeLength
+    {
         /*!
          * @details Constructs a segment which has an associated measure of length
          * i.e euclidean distance between two points
@@ -136,27 +141,31 @@ namespace movetk_core {
          * @return Length of a segment
          */
         typename GeometryTraits::NT operator()(typename GeometryTraits::MovetkPoint p1,
-                                               typename GeometryTraits::MovetkPoint p2) {
+                                               typename GeometryTraits::MovetkPoint p2)
+        {
             typename GeometryTraits::MovetkSegment l(p1, p2);
             return sqrt(l());
         }
 
-        typename GeometryTraits::NT operator()(typename GeometryTraits::MovetkSegment l) {
+        typename GeometryTraits::NT operator()(typename GeometryTraits::MovetkSegment l)
+        {
             return sqrt(l());
         }
     };
 
-
-    template<class GeometryTraits>
-    struct MakeSegment {
+    template <class GeometryTraits>
+    struct MakeSegment
+    {
         typename GeometryTraits::MovetkSegment operator()(typename GeometryTraits::MovetkPoint p1,
-                                                          typename GeometryTraits::MovetkPoint p2) {
+                                                          typename GeometryTraits::MovetkPoint p2)
+        {
             typename GeometryTraits::MovetkSegment s(p1, p2);
             return s;
         }
 
         typename GeometryTraits::MovetkSegment operator()(std::initializer_list<typename GeometryTraits::NT> l1,
-                                                          std::initializer_list<typename GeometryTraits::NT> l2) {
+                                                          std::initializer_list<typename GeometryTraits::NT> l2)
+        {
             MakePoint<GeometryTraits> make_point;
             typename GeometryTraits::MovetkPoint p1 = make_point(l1);
             typename GeometryTraits::MovetkPoint p2 = make_point(l2);
@@ -165,32 +174,35 @@ namespace movetk_core {
         }
     };
 
-    template<class GeometryTraits>
-    struct MakeSphere {
+    template <class GeometryTraits>
+    struct MakeSphere
+    {
         typename GeometryTraits::MovetkSphere
         operator()(typename GeometryTraits::MovetkPoint center, typename GeometryTraits::NT radius,
-                bool square = true) {
+                   bool square = true)
+        {
             typename GeometryTraits::MovetkSphere s(center, radius, square);
             return s;
         }
 
         typename GeometryTraits::MovetkSphere
         operator()(std::initializer_list<typename GeometryTraits::NT> l,
-                typename GeometryTraits::NT radius,
-                bool square = true) {
+                   typename GeometryTraits::NT radius,
+                   bool square = true)
+        {
             typename GeometryTraits::MovetkPoint center(l.begin(), l.end());
             typename GeometryTraits::MovetkSphere s(center, radius, square);
             return s;
         }
-
     };
 
     /*!@struct MakePolygon
      * @brief  Constructs a Polygon  from a set of Movetk points
      * @tparam GeometryTraits - A traits class that defines movetk geometry types
      */
-    template<class GeometryTraits>
-    struct MakePolygon {
+    template <class GeometryTraits>
+    struct MakePolygon
+    {
 
         /*!
          *
@@ -199,12 +211,13 @@ namespace movetk_core {
          * @param beyond - Iterator to the last point in a set of Movetk points
          * @return A movetk polygon
          */
-        template<class PointIterator,
-                typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits,
-                        typename PointIterator::value_type> >
+        template <class PointIterator,
+                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                                                                typename PointIterator::value_type>>
         typename GeometryTraits::MovetkPolygon operator()(PointIterator first,
-                                                          PointIterator beyond) {
+                                                          PointIterator beyond)
+        {
             //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
             //ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
             typename GeometryTraits::MovetkPolygon polygon(first, beyond);
@@ -212,13 +225,13 @@ namespace movetk_core {
         }
     };
 
-
     /*! @struct MakeMinSphere
      *  @brief Constructs a minimum enclolsing ball from a set of Movetk points
      *  @tparam GeometryTraits - A traits class that defines movetk geometry types
      */
-    template<class GeometryTraits>
-    struct MakeMinSphere {
+    template <class GeometryTraits>
+    struct MakeMinSphere
+    {
         typename GeometryTraits::MovetkMinSphere make_min_sphere;
 
         /*!
@@ -228,11 +241,12 @@ namespace movetk_core {
          * @param beyond - Iterator to the last point in a set of Movetk points
          * @return Radius of the Minimum Enclosing Ball
          */
-        template<class PointIterator,
-                typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits,
-                        typename PointIterator::value_type> >
-        typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond) {
+        template <class PointIterator,
+                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                                                                typename PointIterator::value_type>>
+        typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond)
+        {
             //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
             //ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
             typename GeometryTraits::NT Radius = make_min_sphere(first, beyond);
@@ -249,48 +263,49 @@ namespace movetk_core {
          * @param iter - Iterator to the location where a value has to be inserted
          * @return Radius of the Minimum Enclosing Ball
          */
-        template<class PointIterator, class CenterIterator,
-                typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits,
-                        typename PointIterator::value_type>,
-                typename = movetk_core::requires_output_iterator<CenterIterator>,
-                typename = movetk_core::requires_NT<GeometryTraits,
-                        typename CenterIterator::value_type> >
+        template <class PointIterator, class CenterIterator,
+                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                                                                typename PointIterator::value_type>,
+                  typename = movetk_core::requires_output_iterator<CenterIterator>,
+                  typename = movetk_core::requires_NT<GeometryTraits,
+                                                      typename CenterIterator::value_type>>
         typename GeometryTraits::NT operator()(PointIterator first,
-                                               PointIterator beyond, CenterIterator iter) {
+                                               PointIterator beyond, CenterIterator iter)
+        {
             //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
             //ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
             //ASSERT_OUTPUT_ITERATOR(CenterIterator);
             typename GeometryTraits::NT Radius = make_min_sphere(first, beyond, iter);
             return Radius;
         }
-
     };
 
-
-    template<class GeometryTraits, class Norm, class T>
-    struct squared_distance_algorithm {
+    template <class GeometryTraits, class Norm, class T>
+    struct squared_distance_algorithm
+    {
         typedef T square_distance;
     };
 
-    template<class GeometryTraits, class Norm>
-    struct squared_distance_algorithm<GeometryTraits, Norm, void> {
+    template <class GeometryTraits, class Norm>
+    struct squared_distance_algorithm<GeometryTraits, Norm, void>
+    {
         typedef movetk_support::squared_distance_d<GeometryTraits, Norm> square_distance;
     };
 
-
-    template<class GeometryTraits, class Norm>
-    struct ComputeSquaredDistance {
-        template<class T1, class T2>
-        typename GeometryTraits::NT operator()(T1 &object1, T2 &object2) {
+    template <class GeometryTraits, class Norm>
+    struct ComputeSquaredDistance
+    {
+        template <class T1, class T2>
+        typename GeometryTraits::NT operator()(T1 &object1, T2 &object2)
+        {
             typedef squared_distance_algorithm<GeometryTraits, Norm,
-                    typename GeometryTraits::MovetkSquaredDistance> algorithm;
+                                               typename GeometryTraits::MovetkSquaredDistance>
+                algorithm;
             typename algorithm::square_distance distance;
             return distance(object1, object2);
         }
-
     };
-
 
     struct sphere_segment_intersection_tag;
 
@@ -298,56 +313,67 @@ namespace movetk_core {
 
     struct sphere_sphere_intersection_tag;
 
-    template<class _GeometryTraits, class _Norm, class Tag>
-    struct IntersectionTraits {
-
+    template <class _GeometryTraits, class _Norm, class Tag>
+    struct IntersectionTraits
+    {
     };
 
-    template<class _GeometryTraits, class _Norm>
-    struct IntersectionTraits<_GeometryTraits, _Norm, sphere_segment_intersection_tag> {
-        enum Attributes {
-            ID, SIGN_DISCRIMINANT, SQUARED_RATIO, POINT
+    template <class _GeometryTraits, class _Norm>
+    struct IntersectionTraits<_GeometryTraits, _Norm, sphere_segment_intersection_tag>
+    {
+        enum Attributes
+        {
+            ID,
+            SIGN_DISCRIMINANT,
+            SQUARED_RATIO,
+            POINT
         };
         typedef std::tuple<std::size_t, int,
-                typename _GeometryTraits::NT,
-                typename _GeometryTraits::MovetkPoint> value_type;
+                           typename _GeometryTraits::NT,
+                           typename _GeometryTraits::MovetkPoint>
+            value_type;
         typedef _GeometryTraits GeometryTraits;
         typedef _Norm Norm;
     };
 
-    template<class _GeometryTraits, class _Norm>
-    struct IntersectionTraits<_GeometryTraits, _Norm, polylines_instersection_tag> {
+    template <class _GeometryTraits, class _Norm>
+    struct IntersectionTraits<_GeometryTraits, _Norm, polylines_instersection_tag>
+    {
         typedef _GeometryTraits GeometryTraits;
         typedef _Norm Norm;
     };
 
-    template<class _GeometryTraits,class _Norm>
-    struct IntersectionTraits<_GeometryTraits, _Norm, sphere_sphere_intersection_tag>  {
+    template <class _GeometryTraits, class _Norm>
+    struct IntersectionTraits<_GeometryTraits, _Norm, sphere_sphere_intersection_tag>
+    {
         typedef _GeometryTraits GeometryTraits;
         typedef _Norm Norm;
     };
 
-    template<class IntersectionTraits>
-    class ComputeIntersections {
+    template <class IntersectionTraits>
+    class ComputeIntersections
+    {
 
     public:
-        template<class PointIterator,
-                typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                typename = movetk_core::requires_movetk_point<
-                        typename IntersectionTraits::GeometryTraits,
-                        typename PointIterator::value_type> >
-        std::size_t operator()(PointIterator first, PointIterator beyond) {
+        template <class PointIterator,
+                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
+                  typename = movetk_core::requires_movetk_point<
+                      typename IntersectionTraits::GeometryTraits,
+                      typename PointIterator::value_type>>
+        std::size_t operator()(PointIterator first, PointIterator beyond)
+        {
             typename IntersectionTraits::GeometryTraits::MovetkCurveIntersection compute_curve_intersections;
             return compute_curve_intersections(first, beyond);
         }
 
-        template<class OutputIterator,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_tuple<
-                        typename OutputIterator::value_type>,
-                typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm > >
+        template <class OutputIterator,
+                  typename = movetk_core::requires_output_iterator<OutputIterator>,
+                  typename = movetk_core::requires_tuple<
+                      typename OutputIterator::value_type>,
+                  typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm>>
         void operator()(typename IntersectionTraits::GeometryTraits::MovetkSphere &sphere,
-                        typename IntersectionTraits::GeometryTraits::MovetkSegment &segment, OutputIterator result) {
+                        typename IntersectionTraits::GeometryTraits::MovetkSegment &segment, OutputIterator result)
+        {
             typename IntersectionTraits::Norm norm;
             typedef typename IntersectionTraits::GeometryTraits::NT NT;
             typedef typename IntersectionTraits::GeometryTraits::MovetkVector MovetkVector;
@@ -359,7 +385,8 @@ namespace movetk_core {
             NT q2 = squared_length_v2 - sphere.squared_radius();
             if (q1 < q2)
                 result = std::make_tuple(0, -1, -1.0, sphere.center());
-            else if ((q1 - q2) > (MOVETK_EPS * 1000)) {
+            else if ((q1 - q2) > (MOVETK_EPS * 1000))
+            {
                 NT n = 0.5;
                 NT root = std::pow(squared_length_v1 * (q1 - q2), n);
                 NT translation1 = -1 * (v1 * v2) + root;
@@ -369,11 +396,16 @@ namespace movetk_core {
                 NT direction = v3 * v1;
                 NT length = norm(v3);
                 NT ratio = length / squared_length_v1;
-                if ((direction > 0) && (ratio <= 1)) {
+                if ((direction > 0) && (ratio <= 1))
+                {
                     result = std::make_tuple(0, 1, ratio, segment[0] + v3);
-                } else if (direction < 0) {
+                }
+                else if (direction < 0)
+                {
                     result = std::make_tuple(0, -1, ratio, segment[0]);
-                } else if (ratio > 1) {
+                }
+                else if (ratio > 1)
+                {
                     result = std::make_tuple(0, -1, ratio, segment[1]);
                 }
 
@@ -382,31 +414,39 @@ namespace movetk_core {
                 direction = v3 * v1;
                 length = norm(v3);
                 ratio = length / squared_length_v1;
-                if ((direction > 0) && (ratio <= 1)) {
+                if ((direction > 0) && (ratio <= 1))
+                {
                     result = std::make_tuple(0, 1, ratio, segment[0] + v3);
-                } else if (direction < 0) {
+                }
+                else if (direction < 0)
+                {
                     result = std::make_tuple(0, -1, ratio, segment[0]);
-                } else if (ratio > 1) {
+                }
+                else if (ratio > 1)
+                {
                     result = std::make_tuple(0, -1, ratio, segment[1]);
                 }
-
-            } else {
+            }
+            else
+            {
                 NT translation = -1 * (v1 * v2);
                 MovetkVector v3 = v1;
                 v3 *= (translation / squared_length_v1);
                 NT direction = v3 * v1;
                 NT length = norm(v3);
                 NT ratio = length / squared_length_v1;
-                if ((direction > 0) && (ratio <= 1)) {
+                if ((direction > 0) && (ratio <= 1))
+                {
                     result = std::make_tuple(0, 0, ratio, segment[0] + v3);
                 }
             }
         }
 
-        template<typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm> >
+        template <typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm>>
         typename IntersectionTraits::GeometryTraits::MovetkSphere
         operator()(typename IntersectionTraits::GeometryTraits::MovetkSphere &sphere_a,
-                   typename IntersectionTraits::GeometryTraits::MovetkSphere &sphere_b) {
+                   typename IntersectionTraits::GeometryTraits::MovetkSphere &sphere_b)
+        {
             // based on https://hal.archives-ouvertes.fr/hal-01955983/document
             typename IntersectionTraits::Norm norm;
             typedef typename IntersectionTraits::GeometryTraits GeometryTraits;
@@ -417,18 +457,19 @@ namespace movetk_core {
             MakeSphere<GeometryTraits> make_sphere;
             MovetkPoint ORIGIN = make_point({0, 0});
             NT squared_r_a = sphere_a.squared_radius();
-            NT r_a = std::pow(squared_r_a, 0.5) ;
+            NT r_a = std::pow(squared_r_a, 0.5);
             NT squared_r_b = sphere_b.squared_radius();
-            NT r_b = std::pow(squared_r_b, 0.5) ;
+            NT r_b = std::pow(squared_r_b, 0.5);
             MovetkVector v = sphere_b.center() - sphere_a.center();
             MovetkVector v1 = (sphere_b.center() - ORIGIN) +
-                    (sphere_a.center() - ORIGIN);
+                              (sphere_a.center() - ORIGIN);
             NT squared_length = norm(v);
             NT sum_squared_radius = squared_r_a + squared_r_b;
             NT squared_diff_radius = sum_squared_radius - 2 * r_a * r_b;
             NT squared_sum_radius = sum_squared_radius + 2 * r_a * r_b;
             bool disjoint = (squared_sum_radius - squared_length < 0) || (squared_diff_radius - squared_length > 0);
-            if (!disjoint) {
+            if (!disjoint)
+            {
                 v *= (squared_r_a - squared_r_b) / (2 * squared_length);
                 v1 *= 0.5;
                 MovetkVector v2 = v1 + v;
@@ -438,83 +479,95 @@ namespace movetk_core {
                 NT op2 = 0.25 * numerator / squared_length;
                 NT squared_radius = op1 - op2 - 0.25 * squared_length;
                 return make_sphere(center, squared_radius, false);
-            } else {
+            }
+            else
+            {
                 return make_sphere(ORIGIN, 0);
             }
-
         }
     };
 
-
-    template<class GeometryTraits, class Norm, class T>
-    struct discrete_hausdorff_distance_algorithm {
+    template <class GeometryTraits, class Norm, class T>
+    struct discrete_hausdorff_distance_algorithm
+    {
         typedef T discrete_hausdorff_distance;
     };
 
-    template<class GeometryTraits, class Norm>
-    struct discrete_hausdorff_distance_algorithm<GeometryTraits, Norm, void> {
+    template <class GeometryTraits, class Norm>
+    struct discrete_hausdorff_distance_algorithm<GeometryTraits, Norm, void>
+    {
         typedef movetk_support::Discrete_Hausdorff<GeometryTraits, Norm> discrete_hausdorff_distance;
     };
 
-    template<class GeometryTraits, class Norm>
-    struct ComputeDiscreteHausdorffDistance {
-        template<class InputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits,
-                        typename InputIterator::value_type>>
+    template <class GeometryTraits, class Norm>
+    struct ComputeDiscreteHausdorffDistance
+    {
+        template <class InputIterator,
+                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                                                                typename InputIterator::value_type>>
         typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
-                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond)
+        {
             typedef discrete_hausdorff_distance_algorithm<GeometryTraits, Norm,
-                    typename GeometryTraits::MovetkDiscreteHausdorffDistance> algorithm;
+                                                          typename GeometryTraits::MovetkDiscreteHausdorffDistance>
+                algorithm;
             typename algorithm::discrete_hausdorff_distance distance;
             return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
         }
-
     };
 
-
-    template<class GeometryTraits, class Norm, class T>
-    struct discrete_frechet_distance_algorithm {
+    template <class GeometryTraits, class Norm, class T>
+    struct discrete_frechet_distance_algorithm
+    {
         typedef T discrete_frechet_distance;
     };
 
-    template<class GeometryTraits, class Norm>
-    struct discrete_frechet_distance_algorithm<GeometryTraits, Norm, void> {
+    template <class GeometryTraits, class Norm>
+    struct discrete_frechet_distance_algorithm<GeometryTraits, Norm, void>
+    {
         typedef movetk_support::Discrete_Frechet<GeometryTraits, Norm> discrete_frechet_distance;
     };
 
-    template<class GeometryTraits, class Norm>
-    struct ComputeDiscreteFrechetDistance {
-        template<class InputIterator, typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits,
-                        typename InputIterator::value_type>>
+    template <class GeometryTraits, class Norm>
+    struct ComputeDiscreteFrechetDistance
+    {
+        template <class InputIterator, typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                                                                typename InputIterator::value_type>>
         typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
-                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond)
+        {
             typedef discrete_frechet_distance_algorithm<GeometryTraits, Norm,
-                    typename GeometryTraits::MovetkDiscreteFrechetDistance> algorithm;
+                                                        typename GeometryTraits::MovetkDiscreteFrechetDistance>
+                algorithm;
             typename algorithm::discrete_frechet_distance distance;
             return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
         }
 
-        template<class DistanceMatrix, class InputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_random_access_iterator<typename InputIterator::value_type::iterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits, typename InputIterator::value_type::value_type>,
-                typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::iterator>,
-                typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::value_type::iterator>,
-                typename = movetk_core::requires_NT<GeometryTraits, typename DistanceMatrix::value_type::value_type> >
+        template <class DistanceMatrix, class InputIterator,
+                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                  typename = movetk_core::requires_random_access_iterator<typename InputIterator::value_type::iterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits, typename InputIterator::value_type::value_type>,
+                  typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::iterator>,
+                  typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::value_type::iterator>,
+                  typename = movetk_core::requires_NT<GeometryTraits, typename DistanceMatrix::value_type::value_type>>
         typename GeometryTraits::NT
-        operator()(InputIterator first, InputIterator beyond, DistanceMatrix &upper_triag_mat) {
+        operator()(InputIterator first, InputIterator beyond, DistanceMatrix &upper_triag_mat)
+        {
             typedef discrete_frechet_distance_algorithm<GeometryTraits, Norm,
-                    typename GeometryTraits::MovetkDiscreteFrechetDistance> algorithm;
+                                                        typename GeometryTraits::MovetkDiscreteFrechetDistance>
+                algorithm;
             typename algorithm::discrete_frechet_distance distance;
             movetk_core::movetk_back_insert_iterator bit(upper_triag_mat);
             auto it = first;
-            while (it != beyond) {
+            while (it != beyond)
+            {
                 auto nit = it + 1;
                 typename DistanceMatrix::value_type node;
                 movetk_core::movetk_back_insert_iterator node_bit(node);
-                while (nit != beyond) {
+                while (nit != beyond)
+                {
                     node_bit = distance(std::cbegin(*it), std::cend(*it), std::cbegin(*nit), std::cend(*nit));
                     nit++;
                 }
@@ -525,36 +578,46 @@ namespace movetk_core {
             typename GeometryTraits::NT min_sum = 1 / MOVETK_EPS;
             std::size_t num_columns = std::distance(std::begin(*rit), std::end(*rit));
             std::size_t row_id = 0;
-            while (rit != std::end(upper_triag_mat)) {
+            while (rit != std::end(upper_triag_mat))
+            {
                 typename GeometryTraits::NT max = MOVETK_EPS;
                 typename GeometryTraits::NT second_max = MOVETK_EPS;
                 auto vit = std::begin(*rit);
                 std::size_t num_cols_right = std::distance(std::begin(*rit), std::end(*rit));
                 std::size_t num_cols_left = num_columns - num_cols_right;
                 std::size_t counter = 0;
-                while (counter != num_cols_left) {
+                while (counter != num_cols_left)
+                {
                     auto row_it = std::begin(upper_triag_mat) + counter;
                     std::size_t offset = row_id - counter - 1;
                     auto column_it = std::begin(*row_it) + offset;
-                    if (*column_it > max) {
+                    if (*column_it > max)
+                    {
                         second_max = max;
                         max = *column_it;
-                    } else if (*column_it > second_max && *column_it < max) {
+                    }
+                    else if (*column_it > second_max && *column_it < max)
+                    {
                         second_max = *column_it;
                     }
                     counter++;
                 }
-                while (vit != std::end(*rit)) {
-                    if (*vit > max) {
+                while (vit != std::end(*rit))
+                {
+                    if (*vit > max)
+                    {
                         second_max = max;
                         max = *vit;
-                    } else if (*vit > second_max && *vit < max) {
+                    }
+                    else if (*vit > second_max && *vit < max)
+                    {
                         second_max = *vit;
                     }
                     vit++;
                 }
                 typename GeometryTraits::NT sum = max + second_max;
-                if (sum < min_sum) {
+                if (sum < min_sum)
+                {
                     min_sum = sum;
                 }
                 rit++;
@@ -564,17 +627,17 @@ namespace movetk_core {
         }
     };
 
-
     /*!
      *
      * @tparam GeometryTraits
      * @tparam Norm
      */
-    template<class GeometryTraits,
-            class Norm,
-            typename = movetk_core::requires_planar_geometry<GeometryTraits>,
-            typename = movetk_core::requires_L2_norm<Norm> >
-    class Wedge {
+    template <class GeometryTraits,
+              class Norm,
+              typename = movetk_core::requires_planar_geometry<GeometryTraits>,
+              typename = movetk_core::requires_L2_norm<Norm>>
+    class Wedge
+    {
     private:
         typedef typename GeometryTraits::NT NT;
         Norm norm;
@@ -588,41 +651,51 @@ namespace movetk_core {
         bool degenerate = false;
         bool upper_right = false, lower_left = false;
         bool lower_right = false, upper_left = false;
+
     public:
         Wedge() = default;
 
         Wedge(typename GeometryTraits::MovetkPoint &p,
               typename GeometryTraits::MovetkPoint &center,
-              typename GeometryTraits::NT radius) {
+              typename GeometryTraits::NT radius)
+        {
             NT m1, m2, c1, c2, tanA, tanB;
             NT squared_radius = radius * radius;
             typename GeometryTraits::MovetkVector _slope_ray = center - p;
             NT v_x = _slope_ray * e1;
             NT v_y = _slope_ray * e2;
             NT segment_squared_length = norm(_slope_ray);
-            NT root = norm ^1;
-            if (segment_squared_length < squared_radius) {
+            NT root = norm ^ 1;
+            if (segment_squared_length < squared_radius)
+            {
                 degenerate = true;
             }
-            if (root < MOVETK_EPS) {
+            if (root < MOVETK_EPS)
+            {
                 degenerate = true;
             }
-            if (abs(v_x) < MOVETK_EPS) {
+            if (abs(v_x) < MOVETK_EPS)
+            {
                 vertical = true;
             }
-            if (abs(v_y) < MOVETK_EPS) {
+            if (abs(v_y) < MOVETK_EPS)
+            {
                 horizontal = true;
             }
-            if (v_x >= 0 && v_y >= 0) {
+            if (v_x >= 0 && v_y >= 0)
+            {
                 upper_right = true;
             }
-            if (v_y <= 0 && v_x >= 0) {
+            if (v_y <= 0 && v_x >= 0)
+            {
                 lower_right = true;
             }
-            if (v_y >= 0 && v_x <= 0) {
+            if (v_y >= 0 && v_x <= 0)
+            {
                 upper_left = true;
             }
-            if (v_x <= 0 && v_y <= 0) {
+            if (v_x <= 0 && v_y <= 0)
+            {
                 lower_left = true;
             }
             NT tangent_squared_length = segment_squared_length - squared_radius;
@@ -630,14 +703,19 @@ namespace movetk_core {
                 degenerate = true;
             else
                 tanB = radius / sqrt(tangent_squared_length);
-            if (degenerate) {
+            if (degenerate)
+            {
                 _slope = ORIGIN - ORIGIN;
-            } else if (horizontal) {
+            }
+            else if (horizontal)
+            {
                 if (upper_right || lower_right)
                     _slope = make_point({tanB, -tanB}) - ORIGIN;
                 else if (upper_left || lower_left)
                     _slope = make_point({-tanB, tanB}) - ORIGIN;
-            } else if (vertical) {
+            }
+            else if (vertical)
+            {
                 tanA = tan(PI / 2 - MOVETK_EPS * 0.001);
                 if ((tanA * tanB) == 1)
                     m1 = (tanA + tanB) / MOVETK_EPS;
@@ -645,15 +723,22 @@ namespace movetk_core {
                     m1 = (tanA + tanB) / (1 - tanA * tanB);
                 m2 = -m1;
                 _slope = make_point({m1, m2}) - ORIGIN;
-            } else {
+            }
+            else
+            {
                 tanA = v_y / v_x; // slope of the ray
-                if ((tanA * tanB) == 1) {
+                if ((tanA * tanB) == 1)
+                {
                     m1 = (tanA + tanB) / MOVETK_EPS;
                     m2 = (tanA - tanB) / (1 + tanA * tanB);
-                } else if ((tanA * tanB) == -1) {
+                }
+                else if ((tanA * tanB) == -1)
+                {
                     m1 = (tanA + tanB) / (1 - tanA * tanB);
                     m2 = (tanA - tanB) / (-1 * MOVETK_EPS);
-                } else {
+                }
+                else
+                {
                     m1 = (tanA + tanB) / (1 - tanA * tanB);
                     m2 = (tanA - tanB) / (1 + tanA * tanB);
                 }
@@ -662,7 +747,6 @@ namespace movetk_core {
                     _slope = make_point({m1, m2}) - ORIGIN;
                 else if (upper_left || lower_left)
                     _slope = make_point({m2, m1}) - ORIGIN;
-
             }
 
             c1 = (make_point({-1 * (_slope * e1), 1}) - ORIGIN) * (p - ORIGIN); // (y - y0) = m * (x - x0)
@@ -670,22 +754,26 @@ namespace movetk_core {
             _intercept = make_point({c1, c2}) - ORIGIN;
         }
 
-
         Wedge(typename GeometryTraits::MovetkVector &slope,
               typename GeometryTraits::MovetkVector &intercept) : _slope(slope),
                                                                   _intercept(intercept) {}
 
-        typename GeometryTraits::MovetkVector &slope() {
+        typename GeometryTraits::MovetkVector &slope()
+        {
             return _slope;
         }
 
-        typename GeometryTraits::MovetkVector &intercept() {
+        typename GeometryTraits::MovetkVector &intercept()
+        {
             return _intercept;
         }
 
-        bool is_empty() {
-            if (_slope == (ORIGIN - ORIGIN)) {
-                if (_intercept == (ORIGIN - ORIGIN)) {
+        bool is_empty()
+        {
+            if (_slope == (ORIGIN - ORIGIN))
+            {
+                if (_intercept == (ORIGIN - ORIGIN))
+                {
                     return true;
                 }
             }
@@ -697,7 +785,8 @@ namespace movetk_core {
          * @param w
          * @return
          */
-        Wedge operator*(Wedge &w) {
+        Wedge operator*(Wedge &w)
+        {
             constexpr std::size_t size = 2 * Norm::P;
             std::array<std::size_t, size> positions = {0, 1, 2, 3};
             std::size_t sum = *(positions.end() - 1) + *(positions.end() - 2);
@@ -722,15 +811,19 @@ namespace movetk_core {
             NT WedgeAngle_this = 2 * movetk_core::rad2deg(diff_this);
             NT WedgeAngle_that = 2 * movetk_core::rad2deg(diff_that);
 
-            if ((*start + *(start + 1) == sum) || (*(end - 1) + *(end - 2) == sum)) {
+            if ((*start + *(start + 1) == sum) || (*(end - 1) + *(end - 2) == sum))
+            {
                 if ((abs(WedgeAngle_this) < 90) || (abs(WedgeAngle_that) < 90))
                     return Wedge();
             }
 
-            if (slopes[0] > slopes[1]) {
+            if (slopes[0] > slopes[1])
+            {
                 that_slope = make_point({*(sit + *(start + 2)), *(sit + *(start + 1))}) - ORIGIN;
                 that_intercept = make_point({*(it + *(start + 2)), *(it + *(start + 1))}) - ORIGIN;
-            } else {
+            }
+            else
+            {
                 that_slope = make_point({*(sit + *(start + 1)), *(sit + *(start + 2))}) - ORIGIN;
                 that_intercept = make_point({*(it + *(start + 1)), *(it + *(start + 2))}) - ORIGIN;
             }
@@ -742,7 +835,8 @@ namespace movetk_core {
          * @param p
          * @return
          */
-        bool operator*(typename GeometryTraits::MovetkPoint &p) {
+        bool operator*(typename GeometryTraits::MovetkPoint &p)
+        {
             NT mx1 = (make_point({this->_slope * this->e1, -1}) - ORIGIN) * (p - ORIGIN);
             NT mx2 = (make_point({this->_slope * this->e2, -1}) - ORIGIN) * (p - ORIGIN);
             typename GeometryTraits::MovetkVector v = make_point({mx1, mx2}) - ORIGIN;
@@ -756,11 +850,11 @@ namespace movetk_core {
 
             return false;
         }
-
     };
 
-    template<class GeometryTraits, class Norm>
-    std::ostream &operator<<(std::ostream &out, Wedge<GeometryTraits, Norm> &wedge) {
+    template <class GeometryTraits, class Norm>
+    std::ostream &operator<<(std::ostream &out, Wedge<GeometryTraits, Norm> &wedge)
+    {
         MakePoint<GeometryTraits> make_point;
         typename GeometryTraits::MovetkPoint ORIGIN = make_point({0, 0});
         typename GeometryTraits::MovetkVector e1 = make_point({1, 0}) - ORIGIN;
@@ -776,17 +870,19 @@ namespace movetk_core {
         return out;
     }
 
-    template<class GeometryTraits, class Norm,
-            typename = movetk_core::requires_planar_geometry<GeometryTraits>,
-            typename = movetk_core::requires_L2_norm<Norm>>
-    class MBR{
+    template <class GeometryTraits, class Norm,
+              typename = movetk_core::requires_planar_geometry<GeometryTraits>,
+              typename = movetk_core::requires_L2_norm<Norm>>
+    class MBR
+    {
     private:
         typedef typename GeometryTraits::NT NT;
         typedef typename GeometryTraits::MovetkPoint Point;
         typedef typename GeometryTraits::MovetkVector Vector;
         typedef typename GeometryTraits::MovetkSphere Sphere;
-        typedef movetk_core::IntersectionTraits<GeometryTraits,Norm,
-                movetk_core::sphere_sphere_intersection_tag> IntersectionTraits;
+        typedef movetk_core::IntersectionTraits<GeometryTraits, Norm,
+                                                movetk_core::sphere_sphere_intersection_tag>
+            IntersectionTraits;
         typename IntersectionTraits::Norm norm;
 
         movetk_core::MakePoint<GeometryTraits> make_point;
@@ -795,56 +891,65 @@ namespace movetk_core {
 
         Point ORIGIN = make_point({0, 0});
 
-        NT get_x(Vector &v) {
+        NT get_x(Vector &v)
+        {
             return v * v.basis(0);
         }
 
-
-        NT get_x(Point &p) {
+        NT get_x(Point &p)
+        {
             Vector v = p - ORIGIN;
             return v * v.basis(0);
         }
 
-        NT get_y(Vector &v) {
+        NT get_y(Vector &v)
+        {
             return v * v.basis(1);
         }
 
-        NT get_y(Point &p) {
+        NT get_y(Point &p)
+        {
             Vector v = p - ORIGIN;
             return v * v.basis(1);
         }
 
-        NT get_length(Point& p_u, Point& p_v){
+        NT get_length(Point &p_u, Point &p_v)
+        {
             Vector direction = p_v - p_u;
             norm(direction);
-            NT length = norm^1;
+            NT length = norm ^ 1;
             return length;
         }
 
-        NT get_length(Vector& direction){
+        NT get_length(Vector &direction)
+        {
             norm(direction);
-            NT length = norm^1;
+            NT length = norm ^ 1;
             return length;
         }
 
-        Vector get_direction_vector(Point& p_u, Point& p_v){
-            return ( (p_v - p_u) *=(1 / get_length(p_u, p_v)) );
+        Vector get_direction_vector(Point &p_u, Point &p_v)
+        {
+            return ((p_v - p_u) *= (1 / get_length(p_u, p_v)));
         }
 
-        Vector get_direction_vector(Vector & v){
+        Vector get_direction_vector(Vector &v)
+        {
             Vector direction = v;
-            return (   v *=(1 / get_length(direction)) );
+            return (v *= (1 / get_length(direction)));
         }
 
-        Point translate(Vector unit_vector, Point& start, NT translation_length){
+        Point translate(Vector unit_vector, Point &start, NT translation_length)
+        {
             unit_vector *= translation_length;
             return start + unit_vector;
         }
 
     public:
-        std::pair<Point,Point> operator()(Point &p_u, Point& p_v, NT radius_u, NT radius_v){
-            Sphere sphere_u = make_sphere(p_u,radius_u);
-            Sphere sphere_v = make_sphere(p_v,radius_v);
+        std::pair<Point, Point> operator()(Point &p_u, Point &p_v, NT radius_u, NT radius_v)
+        {
+            Sphere sphere_u = make_sphere(p_u, radius_u);
+            Sphere sphere_v = make_sphere(p_v, radius_v);
             Sphere intersection_sphere = compute_intersections(sphere_u,
                                                                sphere_v);
             Point center = intersection_sphere.center();
@@ -852,57 +957,62 @@ namespace movetk_core {
             if (intersection_sphere.squared_radius() == 0)
                 return std::make_pair(center, center);
 
-            NT half_length = std::pow(intersection_sphere.squared_radius(),0.5);
+            NT half_length = std::pow(intersection_sphere.squared_radius(), 0.5);
 
             Vector direction_uv = get_direction_vector(p_u, p_v);
             Point point_sphere_u = translate(direction_uv, p_u, radius_u);
             Point point_sphere_v = translate(direction_uv, p_v, -radius_v);
 
             //counterclockwise rotation by pi/2
-            Vector direction_p = make_point({ -1 * get_y(direction_uv) , get_x(direction_uv) }) - ORIGIN;
+            Vector direction_p = make_point({-1 * get_y(direction_uv), get_x(direction_uv)}) - ORIGIN;
 
-            Point p1 =  translate(direction_p, point_sphere_u,  half_length);
-            Point p2 =  translate(direction_p, point_sphere_v,  -half_length);
+            Point p1 = translate(direction_p, point_sphere_u, half_length);
+            Point p2 = translate(direction_p, point_sphere_v, -half_length);
 
-            return std::make_pair(p1,p2);
+            return std::make_pair(p1, p2);
         }
     };
 
-    template<class GeometryTraits, class Norm, class T>
-    struct mbr_selector {
+    template <class GeometryTraits, class Norm, class T>
+    struct mbr_selector
+    {
         typedef T MinimumBoundingRectangle;
     };
 
-    template<class GeometryTraits, class Norm>
-    struct mbr_selector<GeometryTraits, Norm, void> {
+    template <class GeometryTraits, class Norm>
+    struct mbr_selector<GeometryTraits, Norm, void>
+    {
         typedef MBR<GeometryTraits, Norm> MinimumBoundingRectangle;
     };
 
-
-    template<class GeometryTraits>
-    struct Scaling {
+    template <class GeometryTraits>
+    struct Scaling
+    {
 
         typename GeometryTraits::MovetkVector operator()(typename GeometryTraits::MovetkPoint p1,
                                                          typename GeometryTraits::MovetkPoint p2,
-                                                         typename GeometryTraits::NT eps){
+                                                         typename GeometryTraits::NT eps)
+        {
             typename GeometryTraits::MovetkVector v = p2 - p1;
             v *= eps;
             return v;
         }
 
         typename GeometryTraits::MovetkVector operator()(typename GeometryTraits::MovetkVector v,
-                                                         typename GeometryTraits::NT eps){
+                                                         typename GeometryTraits::NT eps)
+        {
             v *= eps;
             return v;
         }
-
     };
 
-    template<class GeometryTraits>
-    struct Translation {
+    template <class GeometryTraits>
+    struct Translation
+    {
 
         typename GeometryTraits::MovetkPoint operator()(typename GeometryTraits::MovetkPoint p,
-                                                        typename GeometryTraits::MovetkVector v){
+                                                        typename GeometryTraits::MovetkVector v)
+        {
             typename GeometryTraits::MovetkPoint p1 = p + v;
             return p1;
         }
@@ -913,8 +1023,9 @@ namespace movetk_core {
      * @tparam WrapperGeometryKernel - The traits class of a wrapper to a geometry
      * backend
      */
-    template<class WrapperGeometryKernel>
-    struct MovetkGeometryKernel {
+    template <class WrapperGeometryKernel>
+    struct MovetkGeometryKernel
+    {
     public:
         /*!*
          * @typedef ::NT
@@ -975,10 +1086,6 @@ namespace movetk_core {
         typedef typename WrapperGeometryKernel::Wrapper_Minimum_Bounding_Rectangle MovetkMinimumBoundingRectangle;
     };
 
-
-
-}; //namespace TSL
+}; // namespace movetk_core
 
 #endif //MOVETK_INTERFACE_H
-
-

@@ -1338,6 +1338,11 @@
     <templarg></templarg>
   </compound>
   <compound kind="struct">
+    <name>movetk_core::is_NT&lt; Kernel, const typename Kernel::NT &gt;</name>
+    <filename>structmovetk__core_1_1is___n_t_3_01_kernel_00_01const_01typename_01_kernel_1_1_n_t_01_4.html</filename>
+    <templarg></templarg>
+  </compound>
+  <compound kind="struct">
     <name>movetk_core::is_NT&lt; Kernel, typename Kernel::NT &gt;</name>
     <filename>structmovetk__core_1_1is___n_t_3_01_kernel_00_01typename_01_kernel_1_1_n_t_01_4.html</filename>
     <templarg></templarg>
@@ -2339,11 +2344,6 @@
     <filename>structboost_1_1geometry_1_1detail_1_1discrete__hausdorff__distance_1_1point__range.html</filename>
   </compound>
   <compound kind="class">
-    <name>here::c2d::raw::ProbeParseDate</name>
-    <filename>classhere_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
-    <base>ParseDate</base>
-  </compound>
-  <compound kind="class">
     <name>geolife::c2d::raw::ProbeParseDate</name>
     <filename>classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
@@ -2351,6 +2351,11 @@
   <compound kind="class">
     <name>movetk_kernel::ProbeParseDate</name>
     <filename>classmovetk__kernel_1_1_probe_parse_date.html</filename>
+    <base>ParseDate</base>
+  </compound>
+  <compound kind="class">
+    <name>here::c2d::raw::ProbeParseDate</name>
+    <filename>classhere_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
@@ -3464,6 +3469,7 @@
     <class kind="struct">movetk_core::is_MovetkSegment&lt; Kernel, typename Kernel::MovetkSegment &gt;</class>
     <class kind="struct">movetk_core::is_NT</class>
     <class kind="struct">movetk_core::is_NT&lt; Kernel, const typename Kernel::NT &amp; &gt;</class>
+    <class kind="struct">movetk_core::is_NT&lt; Kernel, const typename Kernel::NT &gt;</class>
     <class kind="struct">movetk_core::is_NT&lt; Kernel, typename Kernel::NT &gt;</class>
     <class kind="struct">movetk_core::is_output_iterator</class>
     <class kind="struct">movetk_core::is_output_iterator&lt; std::output_iterator_tag &gt;</class>

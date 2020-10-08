@@ -128,9 +128,9 @@ namespace movetk_core
         typedef void reference;
         typedef void pointer;
 
-        explicit movetk_insert_iterator(Container &x, typename Container::iterator _iter) : container(
-                                                                                                std::addressof(x)),
-                                                                                            iter(_iter) {}
+        explicit movetk_insert_iterator(Container &x,
+                                        typename Container::iterator _iter) : container(std::addressof(x)),
+                                                                              iter(_iter) {}
 
         movetk_insert_iterator &operator=(const typename Container::value_type &value)
         {
@@ -161,6 +161,7 @@ namespace movetk_core
         typedef typename movetk_basic_iterator::pointer pointer;
         typedef typename movetk_basic_iterator::difference_type difference_type;
         typedef typename movetk_basic_iterator::value_type value_type;
+        typedef typename movetk_basic_iterator::iterator iterator;
 
         explicit movetk_basic_iterator(pointer value) : it(value) {}
 

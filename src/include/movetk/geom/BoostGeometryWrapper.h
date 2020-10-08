@@ -526,6 +526,8 @@ namespace movetk_support
         NT _squared_radius;
 
     public:
+        Wrapper_Boost_Sphere() = default;
+
         Wrapper_Boost_Sphere(Wrapper_Point &center, NT radius,
                              bool square = true)
         {
