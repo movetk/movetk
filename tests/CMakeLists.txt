@@ -42,6 +42,7 @@ add_executable(movetk_tests
         test_LCS.cpp
         test_discrete_hausdorff.cpp
         test_discrete_frechet.cpp
+        test_dynamic_time_warping.cpp
         test_brownian_bridge.cpp
         test_model_based_segmentation.cpp
         test_outlier_detection.cpp

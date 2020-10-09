@@ -242,9 +242,9 @@ namespace movetk_support {
             DTW[0][0] = 0;
             InputIterator it_a = a_first;
             it_a++;
-            InputIterator it_b = b_first;
-            it_b++;
             for(auto i = 1; i < size_a + 1; i++){
+                InputIterator it_b = b_first;
+                it_b++;
                 for(auto j = 1; j < size_b + 1; j++){
 
                     typename Kernel::MovetkVector v = *it_b - *it_a;
@@ -274,8 +274,8 @@ namespace movetk_support {
             std::size_t size_b = std::distance(b_first, b_beyond);
             std::vector< std::vector<NT> > DTW(size_a + 1, std::vector<NT>(size_b + 1));
 
-            std::size_t diff = (size_a - size_b > 0)? size_a - size_b : size_b - size_a;
-            std::size_t w = std::max({window, diff}); // adapt window size
+            int diff = std::abs((int)size_a = (int)size_b);
+            std::size_t w = std::max({window, (size_t) diff}); // adapt window size
 
             for(auto i = 0; i < size_a + 1; i++) {
                 for(auto j = 0; j < size_b + 1; j++){
@@ -292,9 +292,9 @@ namespace movetk_support {
 
             InputIterator it_a = a_first;
             it_a++;
-            InputIterator it_b = b_first;
-            it_b++;
             for(int i = 1; i < size_a + 1; i++){
+                InputIterator it_b = b_first;
+                it_b++;
                 for(int j = std::max<int>({1, i-w}); j < std::min<int>({size_b + 1, i + w}); j++){
                     typename Kernel::MovetkVector v = *it_b - *it_a;
                     NT cost = norm(v);

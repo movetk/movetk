@@ -472,6 +472,32 @@ namespace movetk_core {
 
     };
 
+    template<class GeometryTraits, class Norm, class T>
+    struct dynamic_time_warping_algorithm {
+        typedef T dynamic_time_warping;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct dynamic_time_warping_algorithm<GeometryTraits, Norm, void> {
+        typedef movetk_support::Dynamic_Time_Warping<GeometryTraits, Norm> dynamic_time_warping;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct ComputeDynamicTimeWarpingDistance {
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<GeometryTraits,
+                        typename InputIterator::value_type>>
+        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+            typedef dynamic_time_warping_algorithm<GeometryTraits, Norm,
+                    typename GeometryTraits::MovetkDynamicTimeWarpingDistance> algorithm;
+            typename algorithm::dynamic_time_warping distance;
+            return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
+        }
+
+    };
+
 
     template<class GeometryTraits, class Norm, class T>
     struct discrete_frechet_distance_algorithm {
@@ -965,6 +991,10 @@ namespace movetk_core {
          * @typedef ::MovetkDiscreteHausdorffDistance
          * */
         typedef typename WrapperGeometryKernel::Wrapper_Discrete_Hausdorff_Distance MovetkDiscreteHausdorffDistance;
+        /*!*
+         * @typedef ::MovetkDynamicTimeWarpingDistance
+         * */
+        typedef typename WrapperGeometryKernel::Wrapper_Dynamic_Time_Warping_Distance MovetkDynamicTimeWarpingDistance;
         /*!*
          * @typedef ::MovetkDiscreteFrechetDistance
          * */
