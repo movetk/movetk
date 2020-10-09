@@ -652,12 +652,9 @@ namespace movetk_core
         bool upper_right = false, lower_left = false;
         bool lower_right = false, upper_left = false;
 
-    public:
-        Wedge() = default;
-
-        Wedge(typename GeometryTraits::MovetkPoint &p,
-              typename GeometryTraits::MovetkPoint &center,
-              typename GeometryTraits::NT radius)
+        void construct(typename GeometryTraits::MovetkPoint &p,
+                       typename GeometryTraits::MovetkPoint &center,
+                       typename GeometryTraits::NT radius)
         {
             NT m1, m2, c1, c2, tanA, tanB;
             NT squared_radius = radius * radius;
@@ -752,6 +749,23 @@ namespace movetk_core
             c1 = (make_point({-1 * (_slope * e1), 1}) - ORIGIN) * (p - ORIGIN); // (y - y0) = m * (x - x0)
             c2 = (make_point({-1 * (_slope * e2), 1}) - ORIGIN) * (p - ORIGIN);
             _intercept = make_point({c1, c2}) - ORIGIN;
+        }
+
+    public:
+        Wedge() = default;
+
+        Wedge(typename GeometryTraits::MovetkPoint &p,
+              typename GeometryTraits::MovetkPoint &center,
+              typename GeometryTraits::NT radius)
+        {
+            construct(p, center, radius);
+        }
+
+        Wedge(typename GeometryTraits::MovetkPoint &&p,
+              typename GeometryTraits::MovetkPoint &&center,
+              typename GeometryTraits::NT radius)
+        {
+            construct(p, center, radius);
         }
 
         Wedge(typename GeometryTraits::MovetkVector &slope,

@@ -28,18 +28,19 @@
  * @version 0.1
  * @date 2020-09-26
  * 
- * 
  */
 
 #include <movetk/utils/GeometryBackendTraits.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <pybind11/operators.h>
 
 namespace py = pybind11;
 
 typedef typename GeometryKernel::MovetkGeometryKernel MovetkGeometryKernel;
 typedef typename movetk_core::movetk_basic_iterator<const typename MovetkGeometryKernel::NT> CoordinateIterator;
+typedef typename movetk_core::Wedge<MovetkGeometryKernel, GeometryKernel::Norm> Wedge;
 
 PYBIND11_MAKE_OPAQUE(std::vector<MovetkGeometryKernel::MovetkPoint, std::allocator<MovetkGeometryKernel::MovetkPoint>>);
 
@@ -85,7 +86,23 @@ PYBIND11_MODULE(movetk_geometry, m)
             if (idx > MovetkGeometryKernel::dim)
                 throw std::runtime_error("Index out of bounds!");
             return m[idx];
-        });
+        })
+
+        /**
+         * @brief 
+         * 
+         */
+        .def("__plus__", ([](typename MovetkGeometryKernel::MovetkPoint &p, typename MovetkGeometryKernel::MovetkVector &v) -> typename MovetkGeometryKernel::MovetkPoint {
+                 return p + v;
+             }))
+
+        /**
+         * @brief 
+         * 
+         */
+        .def("__sub__", ([](typename MovetkGeometryKernel::MovetkPoint pt1, typename MovetkGeometryKernel::MovetkPoint pt2) -> typename MovetkGeometryKernel::MovetkVector {
+                 return pt1 - pt2;
+             }));
 
     /**
      * @brief 
@@ -106,6 +123,15 @@ PYBIND11_MODULE(movetk_geometry, m)
              [](const typename MovetkGeometryKernel::MovetkSegment &m) -> typename MovetkGeometryKernel::NT {
                  movetk_core::ComputeLength<MovetkGeometryKernel> compute_length;
                  return compute_length(m);
+             })
+        .def("distance",
+             [](typename MovetkGeometryKernel::MovetkSegment &m,
+                typename MovetkGeometryKernel::MovetkPoint &p) {
+                 movetk_core::ComputeSquaredDistance<MovetkGeometryKernel,
+                                                     GeometryKernel::Norm>
+                     squared_dist;
+                 typename MovetkGeometryKernel::NT dist = squared_dist(p, m);
+                 return std::sqrt(dist);
              })
         /**
          * @brief 
@@ -228,5 +254,55 @@ PYBIND11_MODULE(movetk_geometry, m)
             MovetkGeometryKernel::MovetkSphere sphere(center, radius);
             s = sphere;
             return s;
+        })
+        .def("intersection", ([](typename MovetkGeometryKernel::MovetkSphere &sp, typename MovetkGeometryKernel::MovetkSegment &seg) {
+                 movetk_core::ComputeIntersections<GeometryKernel::SphSegIntersectionTraits> compute_sphere_segment_intersections;
+                 std::vector<GeometryKernel::SphSegIntersectionTraits::value_type> sphere_segment_intersections;
+                 compute_sphere_segment_intersections(sp, seg,
+                                                      movetk_core::movetk_back_insert_iterator(sphere_segment_intersections));
+                 return sphere_segment_intersections;
+             }))
+        .def("intersection", ([](typename MovetkGeometryKernel::MovetkSphere &sp1, typename MovetkGeometryKernel::MovetkSphere &sp2) -> MovetkGeometryKernel::MovetkSphere {
+                 movetk_core::ComputeIntersections<GeometryKernel::SphSegIntersectionTraits> compute_sphere_segment_intersections;
+                 typename MovetkGeometryKernel::MovetkSphere sp = compute_sphere_segment_intersections(sp1, sp2);
+                 return sp;
+             }));
+
+    /**
+    * @brief 
+    * 
+    */
+    py::class_<MovetkGeometryKernel::MovetkVector>(m, "vector")
+        .def(py::init<>())
+        .def(py::self *= float())
+        .def("norm", ([](typename MovetkGeometryKernel::MovetkVector &v) -> typename MovetkGeometryKernel::NT {
+                 typename GeometryKernel::Norm norm;
+                 norm(v);
+                 MovetkGeometryKernel::NT result = norm ^ 1;
+                 return result;
+             }))
+        .def("__mul__", ([](typename MovetkGeometryKernel::MovetkVector &v1,
+                            typename MovetkGeometryKernel::MovetkVector &v2) -> typename MovetkGeometryKernel::NT {
+                 return v1 * v2;
+             }));
+
+    /**
+    * @brief 
+    * 
+    */
+    py::class_<Wedge>(m, "wedge")
+        .def(py::init<typename MovetkGeometryKernel::MovetkPoint,
+                      typename MovetkGeometryKernel::MovetkPoint,
+                      typename MovetkGeometryKernel::NT>())
+        .def("slope", [](Wedge &w) -> typename MovetkGeometryKernel::MovetkVector {
+            return w.slope();
+        })
+        .def("intercept", [](Wedge &w) -> typename MovetkGeometryKernel::MovetkVector {
+            return w.intercept();
         });
+
+    /**
+         * @brief 
+         * 
+         */
 }
