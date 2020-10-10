@@ -105,13 +105,8 @@ TEST_CASE("Check Dynamic Time Warping 1","[dynamic_time_warping_1]") {
     });
 
     movetk_core::ComputeDynamicTimeWarpingDistance<MovetkGeometryKernel, Norm> dynamic_time_warping;
-#if CGAL_BACKEND_ENABLED
-    MovetkGeometryKernel::NT distance =  dynamic_time_warping(std::begin(polyline1), std::end(polyline1),
-            std::begin(polyline2), std::end(polyline2));
-#else
     MovetkGeometryKernel::NT distance = dynamic_time_warping(std::begin(polyline1), std::end(polyline1),
                                                             std::begin(polyline2), std::end(polyline2)); 
-#endif
     std::cout<< distance<<"\n";
     REQUIRE(distance == 1);
 }
@@ -136,13 +131,8 @@ TEST_CASE("Check Dynamic Time Warping 2","[dynamic_time_warping_2]") {
                        });
 
     movetk_core::ComputeDynamicTimeWarpingDistance<MovetkGeometryKernel, Norm> dynamic_time_warping;
-#if CGAL_BACKEND_ENABLED
-    MovetkGeometryKernel::NT distance =  dynamic_time_warping(std::begin(polyline1), std::end(polyline1),
-                                                           std::begin(polyline2), std::end(polyline2));
-#else
     MovetkGeometryKernel::NT distance = dynamic_time_warping(std::begin(polyline1), std::end(polyline1),
                                                             std::begin(polyline2), std::end(polyline2));
-#endif
     std::cout<<  distance<<"\n";
     REQUIRE(std::abs(distance - 0.37114) < MOVETK_EPS);
 }
@@ -176,13 +166,8 @@ TEST_CASE("Check Dynamic Time Warping 3","[dynamic_time_warping_3]") {
                        });
 
     movetk_core::ComputeDynamicTimeWarpingDistance<MovetkGeometryKernel, Norm> dynamic_time_warping;
-#if CGAL_BACKEND_ENABLED
-    MovetkGeometryKernel::NT distance =  dynamic_time_warping(std::begin(polyline1), std::end(polyline1),
-                                                           std::begin(polyline2), std::end(polyline2));
-#else
     MovetkGeometryKernel::NT distance = dynamic_time_warping(std::begin(polyline1), std::end(polyline1),
                                                             std::begin(polyline2), std::end(polyline2));
-#endif
     std::cout<<  distance<<"\n";
     REQUIRE(std::abs(distance - 2.93282) < MOVETK_EPS);
 }

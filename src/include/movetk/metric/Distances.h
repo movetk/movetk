@@ -270,12 +270,12 @@ namespace movetk_support {
             typedef typename Kernel::NT NT;
             Norm norm;
 
-            std::size_t size_a = std::distance(a_first, a_beyond);
-            std::size_t size_b = std::distance(b_first, b_beyond);
+            int size_a = std::distance(a_first, a_beyond);
+            int size_b = std::distance(b_first, b_beyond);
             std::vector< std::vector<NT> > DTW(size_a + 1, std::vector<NT>(size_b + 1));
 
-            int diff = std::abs((int)size_a = (int)size_b);
-            std::size_t w = std::max({window, (size_t) diff}); // adapt window size
+            int diff = std::abs((int)size_a - (int)size_b);
+            int w = std::max({window, (size_t) diff}); // adapt window size
 
             for(auto i = 0; i < size_a + 1; i++) {
                 for(auto j = 0; j < size_b + 1; j++){

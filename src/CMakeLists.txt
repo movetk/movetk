@@ -57,7 +57,6 @@ if (WITH_CGAL_BACKEND)
         message(STATUS "mpfr_include ${MPFR_INCLUDE_DIR}")
         message(STATUS "mpfr_lib ${MPFR_LIBRARIES}")
         message(STATUS "cgal_include ${CGAL_INCLUDE_DIR}")
-        message(STATUS "cgal_lib ${CGAL_LIBRARIES}")
         message(STATUS "gsl_include ${GSL_INCLUDE_DIR}")
         message(STATUS "gsl_lib ${GSL_LIBRARY}")
     else()
@@ -261,7 +260,6 @@ if (WITH_CGAL_BACKEND)
             Boost::iostreams
             gdal
             Geographic
-            ${CGAL_LIBRARY}
             gsl
 	    gslcblas
             GMP::GMP
