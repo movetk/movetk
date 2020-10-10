@@ -300,7 +300,13 @@ namespace movetk_algorithms {
             auto predecessorsMap = boost::make_iterator_property_map(predecessors.begin(), boost::get(boost::vertex_index, freeSpaceGraph));
 
             // Find min max path, uses default less comparison for weights and custom combine fucntion
-            boost::dijkstra_shortest_paths(freeSpaceGraph, boost::vertex(0, freeSpaceGraph), boost::distance_zero(0).distance_map(distanceMap).distance_combine(MiniMaxCombineDistance()));
+            boost::dijkstra_shortest_paths(freeSpaceGraph, boost::vertex(0, freeSpaceGraph),
+                // Named arguments
+                boost::distance_zero(0)
+                .distance_map(distanceMap)
+                .distance_combine(MiniMaxCombineDistance())
+                .predecessor_map(predecessorsMap)
+            );
 
             const auto freeSpaceMatchDist = distances[boost::num_vertices(freeSpaceGraph) - 1];
 
@@ -320,10 +326,10 @@ namespace movetk_algorithms {
             while(true)
             {
                 auto prev = curr;
-                auto curr = predecessors[curr];
+                curr = predecessors[curr];
                 auto edge = boost::edge(curr, prev, freeSpaceGraph);
-                auto weight = weightMap[edge];
-                *matchingInserter = std::make_pair(vertDescToIndices(curr), weight);
+                auto weight = weightMap[edge.first];
+                *matchingInserter = std::make_pair(vertDescToIndices(curr), std::sqrt(weight));
                 if (curr == boost::vertex(0, freeSpaceGraph)) break;
             }
             // Add the start matching
