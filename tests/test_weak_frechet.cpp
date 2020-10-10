@@ -44,11 +44,8 @@
 
 using namespace std;
 
-#if CGAL_BACKEND_ENABLED
-    typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
-#else
-    typedef void Norm;
-#endif
+// The norm to be used in weak Frechet distance computations.
+typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
 
 
 TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
@@ -222,7 +219,7 @@ TEST_CASE("Check Weak frechet matching between polylines", "[weak_frechet]") {
         NT maxDist = std::numeric_limits<NT>::min();
         for(const auto& el : matching)
         {
-            REQUIRE(std::abs(expectedDist - el.second) < MOVETK_EPS);
+            REQUIRE(el.second <= expectedDist + MOVETK_EPS);
             maxDist = std::max(maxDist, el.second);
         }
         // Maximum distance should be approximately the expected distance
