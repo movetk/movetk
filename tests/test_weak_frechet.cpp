@@ -65,8 +65,6 @@ TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
         384 448 l
         </path>
         )IPE", polyA);
-        std::ostream_iterator<MovetkGeometryKernel::MovetkPoint> out(std::cout, ",");
-        std::copy(polyA.begin(), polyA.end(), out);
         std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
         test_helpers::parseIpePath(R"IPE(<path>
         96 448 m
@@ -151,6 +149,96 @@ TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
 
         auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 
+        REQUIRE(abs(dist - expectedDist) < MOVETK_EPS);
+    }
+}
+TEST_CASE("Check Weak frechet matching between polylines", "[weak_frechet]") {
+    movetk_algorithms::WeakFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>> wfr{};
+    movetk_support::squared_distance_d<MovetkGeometryKernel, Norm> sqDist;
+
+    SECTION("Interweaved grid example")
+    {
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
+        test_helpers::parseIpePath(R"IPE(<ipeselection pos="160 384">
+        <path stroke="darkred" pen="heavier" arrow="normal/normal">
+        128 384 m
+        320 384 l
+        320 352 l
+        128 352 l
+        128 320 l
+        320 320 l
+        320 288 l
+        128 288 l
+        128 256 l
+        320 256 l
+        320 224 l
+        128 224 l
+        128 192 l
+        320 192 l
+        </path>
+        </ipeselection>)IPE", polyA);
+
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
+        test_helpers::parseIpePath(R"IPE( <ipeselection>
+        <path>
+        128 384 m
+        128 192 l
+        160 192 l
+        160 384 l
+        192 384 l
+        192 192 l
+        224 192 l
+        224 384 l
+        256 384 l
+        256 192 l
+        288 192 l
+        288 384 l
+        320 384 l
+        320 192 l
+        </path>
+        </ipeselection>
+        )IPE", polyB);
+
+        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
+        test_helpers::parseIpePath(R"IPE( <ipeselection>
+        <path>
+        352 384 m
+        352 192 l
+        </path>
+        </ipeselection>
+        )IPE", expectedDistLine);
+
+        auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
+
+        // Get the matching with the output
+        std::vector<std::pair<std::pair<int, int>, NT>> matching;
+
+        auto dist = wfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end(), movetk_core::movetk_back_insert_iterator(matching));
+
+        // Non-empty matching
+        REQUIRE(!matching.empty());
+
+        // All distances should be correct
+        NT maxDist = std::numeric_limits<NT>::min();
+        for(const auto& el : matching)
+        {
+            REQUIRE(std::abs(expectedDist - el.second) < MOVETK_EPS);
+            maxDist = std::max(maxDist, el.second);
+        }
+        // Maximum distance should be approximately the expected distance
+        REQUIRE(std::abs(maxDist - expectedDist) < MOVETK_EPS);
+
+        //We can not really reason about the matching since there are multiple ways to go about this.
+        // But we atleast check that there is some place where we temporarily move backwards
+        int backwardsMatchMoveCount = 0;
+        for(int i = 2; i < matching.size(); ++i)
+        {
+            auto currMatch = matching[i];
+            auto prevMatch = matching[i-1];
+            if (currMatch.first.first < prevMatch.first.first || currMatch.first.second < prevMatch.first.second) ++backwardsMatchMoveCount;
+        }
+        REQUIRE(backwardsMatchMoveCount > 0);
+        // The resulting weak Frechet distance should be correct.
         REQUIRE(abs(dist - expectedDist) < MOVETK_EPS);
     }
 }
