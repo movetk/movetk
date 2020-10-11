@@ -26,18 +26,17 @@
 
 #include <iterator>
 #include <stdlib.h>
+#include <vector>
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/geom/GeometryInterface.h"
 
-using namespace std;
-
-
-namespace movetk_algorithms {
-
+namespace movetk_algorithms
+{
 
     template <class GeometryTraits, class Norm>
-    class LongestCommonSubSequence{
+    class LongestCommonSubSequence
+    {
         //based on doi=10.1.1.78.240
         //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.78.240&rep=rep1&type=pdf
     private:
@@ -45,51 +44,61 @@ namespace movetk_algorithms {
         NT eps;
         std::size_t del;
         template <class T>
-        T abs(T& a, T& b){
+        T abs(T &a, T &b)
+        {
             return a > b ? a - b : b - a;
         }
+
     public:
-        LongestCommonSubSequence(NT epsilon, std::size_t delta){
+        LongestCommonSubSequence(NT epsilon, std::size_t delta)
+        {
             eps = epsilon;
             del = delta;
         }
 
         template <class InputIterator, class OutputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits,
-                        typename InputIterator::value_type>,
-                typename = movetk_core::requires_pair<typename OutputIterator::value_type>,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
-                        typename OutputIterator::value_type::first_type::value_type >,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
-                        typename OutputIterator::value_type::second_type::value_type > >
+                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                  typename = movetk_core::requires_output_iterator<OutputIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                                                                typename InputIterator::value_type>,
+                  typename = movetk_core::requires_pair<typename OutputIterator::value_type>,
+                  typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                                                            typename OutputIterator::value_type::first_type::value_type>,
+                  typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                                                            typename OutputIterator::value_type::second_type::value_type>>
         std::size_t operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
-                        InputIterator polyline_b_first, InputIterator polyline_b_beyond, OutputIterator result){
+                               InputIterator polyline_b_first, InputIterator polyline_b_beyond, OutputIterator result)
+        {
 
-            std::size_t size_polyline_b = std::distance( polyline_b_first, polyline_b_beyond );
-            std::vector<std::size_t> dp_row (size_polyline_b + 1);
-            std::fill( std::begin(dp_row), std::begin(dp_row) + size_polyline_b + 1, 0 );
+            std::size_t size_polyline_b = std::distance(polyline_b_first, polyline_b_beyond);
+            std::vector<std::size_t> dp_row(size_polyline_b + 1);
+            std::fill(std::begin(dp_row), std::begin(dp_row) + size_polyline_b + 1, 0);
             InputIterator it_a = polyline_a_first;
             std::size_t i = 1, prev_value = 0, prev_cell = 0;
             Norm norm;
-            while (it_a != polyline_a_beyond){
+            while (it_a != polyline_a_beyond)
+            {
                 std::size_t j = 1, previous = 0, current = 0;
                 InputIterator it_b = polyline_b_first;
-                while (it_b != polyline_b_beyond){
+                while (it_b != polyline_b_beyond)
+                {
                     typename GeometryTraits::MovetkVector v = *it_a - *it_b;
                     NT distance = norm(v);
-                    if ( distance < eps && this->abs(i,j) < del ) {
+                    if (distance < eps && this->abs(i, j) < del)
+                    {
                         current = dp_row[j - 1] + 1;
-                        if ( current != prev_value ){
+                        if (current != prev_value)
+                        {
                             prev_value = current;
                             prev_cell = j;
-                            *result = std::make_pair(it_a,it_b);
+                            *result = std::make_pair(it_a, it_b);
                         }
-                        else{
-                            if(j < prev_cell){
+                        else
+                        {
+                            if (j < prev_cell)
+                            {
                                 prev_cell = j;
-                                *result -= std::make_pair(it_a,it_b);
+                                *result -= std::make_pair(it_a, it_b);
                             }
                         }
                     }
@@ -108,10 +117,10 @@ namespace movetk_algorithms {
         }
     };
 
-    class DynamicTimeWarping{
-
+    class DynamicTimeWarping
+    {
     };
 
-}
+} // namespace movetk_algorithms
 
 #endif //MOVETK_SIMILARITY_H

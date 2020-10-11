@@ -17,7 +17,6 @@
  * License-Filename: LICENSE
  */
 
-
 //
 // Created by onur on 9/21/18.
 //
@@ -26,13 +25,9 @@
 #define MOVETK_PROBEREADER_H
 
 #include <string>
-using std::string;
 #include <fstream>
-using std::ifstream;
 #include <iostream>
-using std::cout, std::istream;
 #include <iomanip>
-using std::setprecision;
 #include <utility> // for move
 #include <exception>
 
@@ -41,25 +36,27 @@ using std::setprecision;
 #include <boost/iostreams/filter/gzip.hpp>
 
 #include "movetk/io/csv/csv.h"
-#include "movetk/utils/text.h"  // for ends_with
-
+#include "movetk/utils/text.h" // for ends_with
 
 template <class ProbeTraits>
-class ProbeReader {
+class ProbeReader
+{
 
 public:
     typedef typename ProbeTraits::ProbeCsv ProbeCsv;
     typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
 
-    explicit ProbeReader(std::unique_ptr<std::istream> in) : _in(std::move(in)) { }
+    explicit ProbeReader(std::unique_ptr<std::istream> in) : _in(std::move(in)) {}
 
     virtual ProbeInputIterator begin() = 0;
 
-    inline virtual ProbeInputIterator end() {
+    inline virtual ProbeInputIterator end()
+    {
         return ProbeInputIterator();
     }
 
-    inline auto columns() {
+    inline auto columns()
+    {
         return _table->columns();
     }
 
@@ -70,38 +67,42 @@ protected:
     std::unique_ptr<ProbeCsv> _table = nullptr;
 };
 
-
 template <class ProbeTraits>
-class CsvProbeReader : public ProbeReader<ProbeTraits> {
+class CsvProbeReader : public ProbeReader<ProbeTraits>
+{
 
 public:
     typedef typename ProbeTraits::ProbeCsv ProbeCsv;
     typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
 
-    explicit CsvProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in)) {
+    explicit CsvProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in))
+    {
         this->_table = std::make_unique<ProbeCsv>(*this->_in, ProbeTraits::delimiter, ProbeTraits::header);
     }
 
-    inline virtual ProbeInputIterator begin() {
+    inline virtual ProbeInputIterator begin()
+    {
         return ProbeInputIterator(*this->_table);
     }
 };
 
-
 template <class ProbeTraits>
-class ZippedProbeReader : public ProbeReader<ProbeTraits> {
+class ZippedProbeReader : public ProbeReader<ProbeTraits>
+{
 
 public:
     typedef typename ProbeTraits::ProbeCsv ProbeCsv;
     typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
 
-    explicit ZippedProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in)) {
+    explicit ZippedProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in))
+    {
         flt_in.push(boost::iostreams::gzip_decompressor());
         flt_in.push(*this->_in);
         this->_table = std::make_unique<ProbeCsv>(flt_in, ProbeTraits::delimiter, ProbeTraits::header);
     }
 
-    inline virtual ProbeInputIterator begin() {
+    inline virtual ProbeInputIterator begin()
+    {
         return ProbeInputIterator(*this->_table);
     }
 
@@ -109,29 +110,32 @@ private:
     boost::iostreams::filtering_stream<boost::iostreams::input> flt_in;
 };
 
-
-class ProbeReaderFactory {
+class ProbeReaderFactory
+{
 
 public:
     template <class ProbeTraits>
-    static std::unique_ptr<ProbeReader<ProbeTraits>> create(const char* file_name)
+    static std::unique_ptr<ProbeReader<ProbeTraits>> create(const char *file_name)
     {
         // TODO: check if file exists
-        if(ends_with(file_name, ".csv")) {
+        if (ends_with(file_name, ".csv"))
+        {
             auto fin = std::make_unique<std::ifstream>(file_name);
             return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(fin));
         }
-        else if(ends_with(file_name, ".gz")) {
+        else if (ends_with(file_name, ".gz"))
+        {
             auto fin = std::make_unique<std::ifstream>(file_name, std::ios_base::in | std::ios_base::binary);
             return std::make_unique<ZippedProbeReader<ProbeTraits>>(std::move(fin));
         }
-        else {
+        else
+        {
             throw std::invalid_argument("Unsupported probe file extension!");
         }
     }
 
     template <class ProbeTraits>
-    static std::unique_ptr<ProbeReader<ProbeTraits>> create_from_string(const char* csv_string)
+    static std::unique_ptr<ProbeReader<ProbeTraits>> create_from_string(const char *csv_string)
     {
         auto ss = std::make_unique<std::istringstream>(csv_string);
         return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(ss));

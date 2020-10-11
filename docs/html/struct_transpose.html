@@ -76,22 +76,22 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aa01ed5112767fe671ae846c47beb4336"><td class="memItemLeft" align="right" valign="top"><a id="aa01ed5112767fe671ae846c47beb4336"></a>
-typedef tuple&lt; fields... &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>row_tuple_type</b></td></tr>
-<tr class="separator:aa01ed5112767fe671ae846c47beb4336"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fc328cd24203433b95ef882ebab4889"><td class="memItemLeft" align="right" valign="top"><a id="a9fc328cd24203433b95ef882ebab4889"></a>
-typedef tuple&lt; vector&lt; fields &gt;... &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tuple_of_vectors_type</b></td></tr>
-<tr class="separator:a9fc328cd24203433b95ef882ebab4889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef43991f482ccd3107e86efb154c84ac"><td class="memItemLeft" align="right" valign="top"><a id="aef43991f482ccd3107e86efb154c84ac"></a>
+typedef std::tuple&lt; fields... &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>row_tuple_type</b></td></tr>
+<tr class="separator:aef43991f482ccd3107e86efb154c84ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0b8399487a25636454a605b066e885b"><td class="memItemLeft" align="right" valign="top"><a id="aa0b8399487a25636454a605b066e885b"></a>
+typedef std::tuple&lt; std::vector&lt; fields &gt;... &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tuple_of_vectors_type</b></td></tr>
+<tr class="separator:aa0b8399487a25636454a605b066e885b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8abcc5e214cf23cd66538c974e8feef5"><td class="memItemLeft" align="right" valign="top"><a id="a8abcc5e214cf23cd66538c974e8feef5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Transpose</b> (vector&lt; row_tuple_type &gt; &amp;inp)</td></tr>
-<tr class="separator:a8abcc5e214cf23cd66538c974e8feef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3c0ce8ee996b1063e225fff7d543c51"><td class="memTemplParams" colspan="2"><a id="ab3c0ce8ee996b1063e225fff7d543c51"></a>
+<tr class="memitem:a34ccf2052b7b2e0766a0081c2f73f9aa"><td class="memItemLeft" align="right" valign="top"><a id="a34ccf2052b7b2e0766a0081c2f73f9aa"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Transpose</b> (std::vector&lt; row_tuple_type &gt; &amp;inp)</td></tr>
+<tr class="separator:a34ccf2052b7b2e0766a0081c2f73f9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecca74d2d8510a250d07ee61524178ff"><td class="memTemplParams" colspan="2"><a id="aecca74d2d8510a250d07ee61524178ff"></a>
 template&lt;std::size_t idx&gt; </td></tr>
-<tr class="memitem:ab3c0ce8ee996b1063e225fff7d543c51"><td class="memTemplItemLeft" align="right" valign="top">vector&lt; typename std::tuple_element&lt; idx, tuple&lt; fields... &gt; &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>convert_rows_to_column</b> ()</td></tr>
-<tr class="separator:ab3c0ce8ee996b1063e225fff7d543c51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecca74d2d8510a250d07ee61524178ff"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; typename std::tuple_element&lt; idx, std::tuple&lt; fields... &gt; &gt;::type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>convert_rows_to_column</b> ()</td></tr>
+<tr class="separator:aecca74d2d8510a250d07ee61524178ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f1d55e8162b14e1ff9c4cf7c0033cb9"><td class="memTemplParams" colspan="2"><a id="a3f1d55e8162b14e1ff9c4cf7c0033cb9"></a>
 template&lt;std::size_t... idx&gt; </td></tr>
 <tr class="memitem:a3f1d55e8162b14e1ff9c4cf7c0033cb9"><td class="memTemplItemLeft" align="right" valign="top">tuple_of_vectors_type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>convert_rows_to_columns</b> (std::index_sequence&lt; idx... &gt;)</td></tr>
@@ -102,9 +102,9 @@ tuple_of_vectors_type&#160;</td><td class="memItemRight" valign="bottom"><b>oper
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a65c6e027fed3c629d6dae471023f741b"><td class="memItemLeft" align="right" valign="top"><a id="a65c6e027fed3c629d6dae471023f741b"></a>
-vector&lt; row_tuple_type &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_inp</b></td></tr>
-<tr class="separator:a65c6e027fed3c629d6dae471023f741b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2884fd75cccb42a3cee238f2419ea8f0"><td class="memItemLeft" align="right" valign="top"><a id="a2884fd75cccb42a3cee238f2419ea8f0"></a>
+std::vector&lt; row_tuple_type &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>_inp</b></td></tr>
+<tr class="separator:a2884fd75cccb42a3cee238f2419ea8f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
