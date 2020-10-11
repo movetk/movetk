@@ -97,56 +97,73 @@ $(function() {
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">// Created by Wouter Jongeling (wouter.jongeling@gmail.com)</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#ifndef MOVETK_GEOLIFEPROBETRAITS_H</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#define MOVETK_GEOLIFEPROBETRAITS_H</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;movetk/io/csv/ParseDate.h&quot;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &quot;movetk/io/csv/CategoricalField.h&quot;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &quot;movetk/io/csv/csv.h&quot;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &quot;ProbeTraits.h&quot;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">namespace </span>geolife {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">namespace </span>c2d {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">namespace </span>raw {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keyword">enum</span> InputColumns {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                _LAT, _LON, _ALTITUDE, _DATETIME, _TRAJID, _MODEID</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            };</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="comment">// Fields of interest</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="keyword">enum</span> ProbeColumns {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                LAT, LON, ALTITUDE, DATETIME, TRAJID, MODEID</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            };</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">   50</a></span>&#160;            <span class="keyword">class </span><a class="code" href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">ProbeParseDate</a> : <span class="keyword">public</span> <a class="code" href="class_parse_date.html">ParseDate</a> {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                <span class="keyword">explicit</span> <a class="code" href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">ProbeParseDate</a>(std::time_t ts = 0, <span class="keywordtype">string</span> date_format = <span class="stringliteral">&quot;%Y-%m-%d %H:%M:%S&quot;</span>)</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                    :<a class="code" href="class_parse_date.html">ParseDate</a>(ts, std::move(date_format)) { }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            };</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html">   56</a></span>&#160;            <span class="keyword">class </span><a class="code" href="classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html">ProviderCategoricalField</a> : <span class="keyword">public</span> <a class="code" href="struct_categorical_field.html">CategoricalField</a>&lt;std::string, ProviderCategoricalField&gt; {};</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            <span class="keyword">typedef</span> <a class="code" href="classcsv.html">csv&lt;std::tuple&lt;double, double, double, std::time_t, std::string, std::string&gt;</a>,</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                _LAT, _LON, _ALTITUDE, _DATETIME, _TRAJID, _MODEID&gt; <a class="code" href="classcsv.html">ProbeCsv</a>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <span class="keyword">typedef</span> <span class="keyword">typename</span> ProbeCsv::value_type ProbePoint;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#ifndef MOVETK_GEOLIFEPROBETRAITS_H</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#define MOVETK_GEOLIFEPROBETRAITS_H</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;movetk/io/csv/ParseDate.h&quot;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;movetk/io/csv/CategoricalField.h&quot;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;movetk/io/csv/csv.h&quot;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &quot;ProbeTraits.h&quot;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">namespace </span>geolife</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">namespace </span>c2d</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="keyword">namespace </span>raw</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <span class="keyword">enum</span> InputColumns</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                _LAT,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                _LON,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                _ALTITUDE,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                _DATETIME,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                _TRAJID,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                _MODEID</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            };</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="comment">// Fields of interest</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="keyword">enum</span> ProbeColumns</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                LAT,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                LON,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                ALTITUDE,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                DATETIME,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                TRAJID,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                MODEID</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            };</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <span class="keyword">typedef</span> <a class="code" href="struct___probe_traits.html">_ProbeTraits&lt;ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint&gt;</a> <a class="code" href="struct___probe_traits.html">ProbeTraits</a>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        }  <span class="comment">// namespace raw</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }  <span class="comment">// namespace c2d</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}  <span class="comment">// namespace here</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif //MOVETK_GEOLIFEPROBETRAITS_H</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">   63</a></span>&#160;            <span class="keyword">class </span><a class="code" href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">ProbeParseDate</a> : <span class="keyword">public</span> <a class="code" href="class_parse_date.html">ParseDate</a></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                <span class="keyword">explicit</span> <a class="code" href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">ProbeParseDate</a>(std::time_t ts = 0, std::string date_format = <span class="stringliteral">&quot;%Y-%m-%d %H:%M:%S&quot;</span>)</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                    : <a class="code" href="class_parse_date.html">ParseDate</a>(ts, std::move(date_format)) {}</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;            };</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html">   70</a></span>&#160;            <span class="keyword">class </span><a class="code" href="classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html">ProviderCategoricalField</a> : <span class="keyword">public</span> <a class="code" href="struct_categorical_field.html">CategoricalField</a>&lt;std::string, ProviderCategoricalField&gt;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;            {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            };</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;            <span class="keyword">typedef</span> <a class="code" href="classcsv.html">csv&lt;std::tuple&lt;double, double, double, std::time_t, std::string, std::string&gt;</a>,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                        _LAT, _LON, _ALTITUDE, _DATETIME, _TRAJID, _MODEID&gt;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                <a class="code" href="classcsv.html">ProbeCsv</a>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            <span class="keyword">typedef</span> <span class="keyword">typename</span> ProbeCsv::value_type ProbePoint;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;            <span class="keyword">typedef</span> <a class="code" href="struct___probe_traits.html">_ProbeTraits&lt;ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint&gt;</a> <a class="code" href="struct___probe_traits.html">ProbeTraits</a>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        } <span class="comment">// namespace raw</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    }     <span class="comment">// namespace c2d</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;} <span class="comment">// namespace geolife</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif //MOVETK_GEOLIFEPROBETRAITS_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="aclassgeolife_1_1c2d_1_1raw_1_1_probe_parse_date_html"><div class="ttname"><a href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">geolife::c2d::raw::ProbeParseDate</a></div><div class="ttdef"><b>Definition:</b> GeolifeProbeTraits.h:50</div></div>
+<div class="ttc" id="aclassgeolife_1_1c2d_1_1raw_1_1_probe_parse_date_html"><div class="ttname"><a href="classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html">geolife::c2d::raw::ProbeParseDate</a></div><div class="ttdef"><b>Definition:</b> GeolifeProbeTraits.h:63</div></div>
 <div class="ttc" id="aclasscsv_html"><div class="ttname"><a href="classcsv.html">csv</a></div><div class="ttdef"><b>Definition:</b> csv.h:80</div></div>
-<div class="ttc" id="aclass_parse_date_html"><div class="ttname"><a href="class_parse_date.html">ParseDate</a></div><div class="ttdef"><b>Definition:</b> ParseDate.h:39</div></div>
-<div class="ttc" id="astruct_categorical_field_html"><div class="ttname"><a href="struct_categorical_field.html">CategoricalField</a></div><div class="ttdef"><b>Definition:</b> CategoricalField.h:43</div></div>
+<div class="ttc" id="aclass_parse_date_html"><div class="ttname"><a href="class_parse_date.html">ParseDate</a></div><div class="ttdef"><b>Definition:</b> ParseDate.h:36</div></div>
+<div class="ttc" id="astruct_categorical_field_html"><div class="ttname"><a href="struct_categorical_field.html">CategoricalField</a></div><div class="ttdef"><b>Definition:</b> CategoricalField.h:41</div></div>
 <div class="ttc" id="astruct___probe_traits_html"><div class="ttname"><a href="struct___probe_traits.html">_ProbeTraits</a></div><div class="ttdef"><b>Definition:</b> ProbeTraits.h:30</div></div>
-<div class="ttc" id="aclassgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field_html"><div class="ttname"><a href="classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html">geolife::c2d::raw::ProviderCategoricalField</a></div><div class="ttdef"><b>Definition:</b> GeolifeProbeTraits.h:56</div></div>
+<div class="ttc" id="aclassgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field_html"><div class="ttname"><a href="classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html">geolife::c2d::raw::ProviderCategoricalField</a></div><div class="ttdef"><b>Definition:</b> GeolifeProbeTraits.h:70</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

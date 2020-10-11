@@ -18,7 +18,9 @@ if [ -d Release ]; then
 fi
 mkdir Release
 cd Release/
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/local -DBUILD_DOC=ON -DWITH_CGAL_BACKEND=OFF -DBoost_NO_BOOST_CMAKE=ON  ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/local \
+ -DBUILD_DOC=ON -DWITH_CGAL_BACKEND=OFF \
+ -DBoost_NO_BOOST_CMAKE=ON  -DWITH_BOOST=ON -DWITH_GeographicLib=ON ..
 cmake --build . -- -j 2
 ctest -VV
 cmake --build . --target install

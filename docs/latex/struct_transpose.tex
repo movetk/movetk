@@ -3,20 +3,20 @@
 \doxysubsection*{Public Types}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{struct_transpose_aa01ed5112767fe671ae846c47beb4336}\label{struct_transpose_aa01ed5112767fe671ae846c47beb4336}} 
-typedef tuple$<$ fields... $>$ {\bfseries row\+\_\+tuple\+\_\+type}
+\mbox{\Hypertarget{struct_transpose_aef43991f482ccd3107e86efb154c84ac}\label{struct_transpose_aef43991f482ccd3107e86efb154c84ac}} 
+typedef std\+::tuple$<$ fields... $>$ {\bfseries row\+\_\+tuple\+\_\+type}
 \item 
-\mbox{\Hypertarget{struct_transpose_a9fc328cd24203433b95ef882ebab4889}\label{struct_transpose_a9fc328cd24203433b95ef882ebab4889}} 
-typedef tuple$<$ vector$<$ fields $>$... $>$ {\bfseries tuple\+\_\+of\+\_\+vectors\+\_\+type}
+\mbox{\Hypertarget{struct_transpose_aa0b8399487a25636454a605b066e885b}\label{struct_transpose_aa0b8399487a25636454a605b066e885b}} 
+typedef std\+::tuple$<$ std\+::vector$<$ fields $>$... $>$ {\bfseries tuple\+\_\+of\+\_\+vectors\+\_\+type}
 \end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{struct_transpose_a8abcc5e214cf23cd66538c974e8feef5}\label{struct_transpose_a8abcc5e214cf23cd66538c974e8feef5}} 
-{\bfseries Transpose} (vector$<$ row\+\_\+tuple\+\_\+type $>$ \&inp)
+\mbox{\Hypertarget{struct_transpose_a34ccf2052b7b2e0766a0081c2f73f9aa}\label{struct_transpose_a34ccf2052b7b2e0766a0081c2f73f9aa}} 
+{\bfseries Transpose} (std\+::vector$<$ row\+\_\+tuple\+\_\+type $>$ \&inp)
 \item 
-\mbox{\Hypertarget{struct_transpose_ab3c0ce8ee996b1063e225fff7d543c51}\label{struct_transpose_ab3c0ce8ee996b1063e225fff7d543c51}} 
-{\footnotesize template$<$std\+::size\+\_\+t idx$>$ }\\vector$<$ typename std\+::tuple\+\_\+element$<$ idx, tuple$<$ fields... $>$ $>$\+::type $>$ {\bfseries convert\+\_\+rows\+\_\+to\+\_\+column} ()
+\mbox{\Hypertarget{struct_transpose_aecca74d2d8510a250d07ee61524178ff}\label{struct_transpose_aecca74d2d8510a250d07ee61524178ff}} 
+{\footnotesize template$<$std\+::size\+\_\+t idx$>$ }\\std\+::vector$<$ typename std\+::tuple\+\_\+element$<$ idx, std\+::tuple$<$ fields... $>$ $>$\+::type $>$ {\bfseries convert\+\_\+rows\+\_\+to\+\_\+column} ()
 \item 
 \mbox{\Hypertarget{struct_transpose_a3f1d55e8162b14e1ff9c4cf7c0033cb9}\label{struct_transpose_a3f1d55e8162b14e1ff9c4cf7c0033cb9}} 
 {\footnotesize template$<$std\+::size\+\_\+t... idx$>$ }\\tuple\+\_\+of\+\_\+vectors\+\_\+type {\bfseries convert\+\_\+rows\+\_\+to\+\_\+columns} (std\+::index\+\_\+sequence$<$ idx... $>$)
@@ -27,8 +27,8 @@ tuple\+\_\+of\+\_\+vectors\+\_\+type {\bfseries operator()} ()
 \doxysubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{struct_transpose_a65c6e027fed3c629d6dae471023f741b}\label{struct_transpose_a65c6e027fed3c629d6dae471023f741b}} 
-vector$<$ row\+\_\+tuple\+\_\+type $>$ \& {\bfseries \+\_\+inp}
+\mbox{\Hypertarget{struct_transpose_a2884fd75cccb42a3cee238f2419ea8f0}\label{struct_transpose_a2884fd75cccb42a3cee238f2419ea8f0}} 
+std\+::vector$<$ row\+\_\+tuple\+\_\+type $>$ \& {\bfseries \+\_\+inp}
 \end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
 \begin{DoxyCompactItemize}

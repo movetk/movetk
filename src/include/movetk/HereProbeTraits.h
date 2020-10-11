@@ -29,36 +29,57 @@
 #include "movetk/io/csv/csv.h"
 #include "ProbeTraits.h"
 
-namespace here { namespace c2d { namespace raw {
+namespace here
+{
+    namespace c2d
+    {
+        namespace raw
+        {
 
-    enum InputColumns {
-        _PROBE_ID, _SAMPLE_DATE, _LAT, _LON, _HEADING, _SPEED, _PROBE_DATA_PROVIDER
-    };
+            enum InputColumns
+            {
+                _PROBE_ID,
+                _SAMPLE_DATE,
+                _LAT,
+                _LON,
+                _HEADING,
+                _SPEED,
+                _PROBE_DATA_PROVIDER
+            };
 
-    // Fields of interest: all
-    enum ProbeColumns {
-        PROBE_ID, SAMPLE_DATE, LAT, LON, HEADING, SPEED, PROBE_DATA_PROVIDER
-    };
+            // Fields of interest: all
+            enum ProbeColumns
+            {
+                PROBE_ID,
+                SAMPLE_DATE,
+                LAT,
+                LON,
+                HEADING,
+                SPEED,
+                PROBE_DATA_PROVIDER
+            };
 
-    class ProbeParseDate: public ParseDate {
-    public:
-        explicit ProbeParseDate(std::time_t ts = 0, string date_format = "%Y-%m-%d %H:%M:%S")
-                :ParseDate(ts, std::move(date_format)) { }
-    };
+            class ProbeParseDate : public ParseDate
+            {
+            public:
+                explicit ProbeParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d %H:%M:%S")
+                    : ParseDate(ts, std::move(date_format)) {}
+            };
 
-    class ProviderCategoricalField : public CategoricalField<std::string, ProviderCategoricalField> {};
+            class ProviderCategoricalField : public CategoricalField<std::string, ProviderCategoricalField>
+            {
+            };
 
-    typedef csv<std::tuple<string, ProbeParseDate, double, double, double, double, ProviderCategoricalField>,
-                _PROBE_ID, _SAMPLE_DATE, _LAT, _LON, _HEADING, _SPEED, _PROBE_DATA_PROVIDER> ProbeCsv;
+            typedef csv<std::tuple<std::string, ProbeParseDate, double, double, double, double, ProviderCategoricalField>,
+                        _PROBE_ID, _SAMPLE_DATE, _LAT, _LON, _HEADING, _SPEED, _PROBE_DATA_PROVIDER>
+                ProbeCsv;
 
-    typedef typename ProbeCsv::value_type ProbePoint;
+            typedef typename ProbeCsv::value_type ProbePoint;
 
-    typedef _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
+            typedef _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
 
-
-
-}  // namespace raw
-}  // namespace c2d
-}  // namespace here
+        } // namespace raw
+    }     // namespace c2d
+} // namespace here
 
 #endif //MOVETK_HEREPROBETRAITS_H

@@ -15,10 +15,28 @@ endif()
 # include common tools and workarounds
 include(tools)
 
-find_package(Boost REQUIRED COMPONENTS iostreams log)
+if (WITH_BOOST)
+        set(BOOST_ENABLED 1)
+        find_package(Boost REQUIRED COMPONENTS iostreams log thread system log_setup graph)
+        set(Boost_USE_MULTITHREADED 1)
+        message(STATUS "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
+	message(STATUS "Boost_LIBRARIES ${Boost_LIBRARIES}")
+else()
+        set(BOOST_ENABLED 0)
+endif()
+
+if (WITH_GeographicLib)
+        set(GeographicLib_ENABLED 1)
+        find_package(GeographicLib REQUIRED COMPONENTS SHARED)
+        message(STATUS "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
+        message(STATUS "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
+else()
+        set(GeographicLib_ENABLED 0)
+endif()
+
 find_package(Threads REQUIRED)
 find_package(GDAL 2.2 REQUIRED)
-find_package(GeographicLib REQUIRED)
+
 find_package(GSL 2.4 REQUIRED)
 find_package(MPFR REQUIRED)
 
@@ -235,8 +253,9 @@ if (WITH_CGAL_BACKEND)
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
             $<INSTALL_INTERFACE:include>
+            ${Boost_INCLUDE_DIRS}
             ${GDAL_INCLUDE_DIR}
-            ${GeographicLib_INCLUDE_DIR}
+            ${GeographicLib_INCLUDE_DIRS}
             ${CGAL_INCLUDE_DIR}
             ${MPFR_INCLUDE_DIR}
             ${GSL_INCLUDE_DIR}
@@ -247,8 +266,9 @@ else ()
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
             $<INSTALL_INTERFACE:include>
+            ${Boost_INCLUDE_DIRS}
             ${GDAL_INCLUDE_DIR}
-            ${GeographicLib_INCLUDE_DIR}
+            ${GeographicLib_INCLUDE_DIRS}
             ${GSL_INCLUDE_DIR}
             )
 endif ()
@@ -257,13 +277,12 @@ if (WITH_CGAL_BACKEND)
     target_link_libraries(movetk
             PUBLIC
             Threads::Threads
-            Boost::log
-            Boost::iostreams
-            gdal
-            Geographic
+            ${Boost_LIBRARIES}
+            ${GDAL_LIBRARY}
+            ${GeographicLib_LIBRARIES}
             ${CGAL_LIBRARY}
-            gsl
-	    gslcblas
+            ${GSL_LIBRARY}
+	    #gslcblas
             GMP::GMP
             MPFR::MPFR
             CGAL::CGAL
@@ -272,12 +291,11 @@ else ()
     target_link_libraries(movetk
             PUBLIC
             Threads::Threads
-            Boost::log
-            Boost::iostreams
-            gdal
-            Geographic
-            gsl
-	    gslcblas
+            ${Boost_LIBRARIES}
+            ${GDAL_LIBRARY}
+            ${GeographicLib_LIBRARIES}
+            ${GSL_LIBRARY}
+	    #gslcblas
             )
 endif ()
 

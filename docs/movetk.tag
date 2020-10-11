@@ -1215,10 +1215,6 @@
     <templarg></templarg>
   </compound>
   <compound kind="struct">
-    <name>movetk_core::is_directed_graph&lt; boost::directedS &gt;</name>
-    <filename>structmovetk__core_1_1is__directed__graph_3_01boost_1_1directed_s_01_4.html</filename>
-  </compound>
-  <compound kind="struct">
     <name>movetk_core::is_equal_to</name>
     <filename>structmovetk__core_1_1is__equal__to.html</filename>
     <templarg></templarg>
@@ -1363,11 +1359,6 @@
     <name>movetk_core::is_simple_graph</name>
     <filename>structmovetk__core_1_1is__simple__graph.html</filename>
     <templarg></templarg>
-    <templarg></templarg>
-  </compound>
-  <compound kind="struct">
-    <name>movetk_core::is_simple_graph&lt; ValueType, boost::unordered_set&lt; typename ValueType::MovetkPoint &gt; &gt;</name>
-    <filename>structmovetk__core_1_1is__simple__graph_3_01_value_type_00_01boost_1_1unordered__set_3_01typenam5dc58a0f6faba5fc293e2e6561798567.html</filename>
     <templarg></templarg>
   </compound>
   <compound kind="struct">
@@ -2318,8 +2309,8 @@
     <filename>structboost_1_1geometry_1_1detail_1_1discrete__hausdorff__distance_1_1point__range.html</filename>
   </compound>
   <compound kind="class">
-    <name>here::c2d::raw::ProbeParseDate</name>
-    <filename>classhere_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
+    <name>geolife::c2d::raw::ProbeParseDate</name>
+    <filename>classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
@@ -2328,8 +2319,8 @@
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
-    <name>geolife::c2d::raw::ProbeParseDate</name>
-    <filename>classgeolife_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
+    <name>here::c2d::raw::ProbeParseDate</name>
+    <filename>classhere_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
@@ -3417,7 +3408,6 @@
     <class kind="struct">movetk_core::is_date&lt; std::size_t &gt;</class>
     <class kind="struct">movetk_core::is_date&lt; std::time_t &gt;</class>
     <class kind="struct">movetk_core::is_directed_graph</class>
-    <class kind="struct">movetk_core::is_directed_graph&lt; boost::directedS &gt;</class>
     <class kind="struct">movetk_core::is_equal_to</class>
     <class kind="struct">movetk_core::is_equal_to&lt; T1, T1 &gt;</class>
     <class kind="struct">movetk_core::is_forward_iterator</class>
@@ -3446,7 +3436,6 @@
     <class kind="struct">movetk_core::is_random_access_iterator</class>
     <class kind="struct">movetk_core::is_random_access_iterator&lt; std::random_access_iterator_tag &gt;</class>
     <class kind="struct">movetk_core::is_simple_graph</class>
-    <class kind="struct">movetk_core::is_simple_graph&lt; ValueType, boost::unordered_set&lt; typename ValueType::MovetkPoint &gt; &gt;</class>
     <class kind="struct">movetk_core::is_simple_graph&lt; ValueType, std::set&lt; typename ValueType::MovetkPoint &gt; &gt;</class>
     <class kind="struct">movetk_core::is_size_t</class>
     <class kind="struct">movetk_core::is_size_t&lt; const std::size_t &gt;</class>
