@@ -64,9 +64,18 @@ TEST_CASE("Intersection", "[intersection]")
         const char *mpWkt1 = "MULTIPOINT (51.4450444 5.483836956, 51.445071148 5.484236605, 51.445027683 5.484309025, 51.445015981 5.484381444, 51.44502434 5.484561152, 51.444970844 5.484571881, 51.444943261 5.48457054)";
 
         OGRPolygon p1;
+#if unix
+        p1.importFromWkt((char **)&polyWkt1);
+#else
         p1.importFromWkt((const char **)&polyWkt1);
+#endif
+
         OGRMultiPoint mp1;
+#if unix
+        mp1.importFromWkt((char **)&mpWkt1);
+#else
         mp1.importFromWkt((const char **)&mpWkt1);
+#endif
 
         REQUIRE(!intersects(&p1, &mp1));
     }
@@ -77,9 +86,18 @@ TEST_CASE("Intersection", "[intersection]")
         const char *mpWkt2 = "MULTIPOINT (51.4450444 5.483836956, 51.445071148 5.484236605, 51.445027683 5.484309025, 51.445015981 5.484381444, 51.44502434 5.484561152, 51.444970844 5.484571881, 51.44492988698722 5.484570540189736)";
 
         OGRPolygon p2;
+#if unix
+        p2.importFromWkt((char **)&polyWkt2);
+#else
         p2.importFromWkt((const char **)&polyWkt2);
+#endif
+
         OGRMultiPoint mp2;
+#if unix
+        mp2.importFromWkt((char **)&mpWkt2);
+#else
         mp2.importFromWkt((const char **)&mpWkt2);
+#endif
 
         //        char* p2wkt;
         //        p2.exportToWkt(&p2wkt);

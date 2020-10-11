@@ -1,4 +1,4 @@
-FROM fedora:30
+FROM fedora:latest
 
 ARG WITH_CGAL_BACKEND=OFF
 

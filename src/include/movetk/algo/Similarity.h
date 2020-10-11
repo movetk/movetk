@@ -27,6 +27,7 @@
 #include <iterator>
 #include <stdlib.h>
 #include <vector>
+#include <algorithm>
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/geom/GeometryInterface.h"
