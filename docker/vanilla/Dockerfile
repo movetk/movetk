@@ -31,7 +31,9 @@ WORKDIR /usr/src/movetk
 
 RUN mkdir -p Release \
  && cd Release \
- && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local  -DWITH_CGAL_BACKEND=${WITH_CGAL_BACKEND} .. \
+ && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local  -DBUILD_DOC=ON  \
+ -DWITH_CGAL_BACKEND=${WITH_CGAL_BACKEND} -DBoost_NO_BOOST_CMAKE=ON \
+ -DWITH_BOOST=ON -DWITH_GeographicLib=ON .. \
  && cmake --build . -- -j $(nproc) \
  && cmake --build . --target install \
  && make package

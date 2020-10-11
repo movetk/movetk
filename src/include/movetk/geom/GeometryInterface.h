@@ -30,13 +30,14 @@
 #define MOVETK_INTERFACE_H
 
 #include <math.h>
+#include <array>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/Asserts.h"
 #include "movetk/metric/Distances.h"
 #include "movetk/utils/Iterators.h"
-#include <iostream>
-#include <array>
-#include <cmath>
 
 #define PI 3.14159265
 #define TWO_PI 6.2831853
