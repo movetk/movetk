@@ -106,6 +106,8 @@ if (WITH_CGAL_BACKEND)
             include/movetk/geom/trajectory_to_interface.h
             include/movetk/metric/Norm.h
             include/movetk/metric/Distances.h
+            include/movetk/metric/DistanceTraits.h
+            include/movetk/metric/DistanceInterface.h
             include/movetk/utils/unituple.h
             include/movetk/utils/TrajectoryUtils.h
             include/movetk/utils/StringUtils.h
@@ -177,6 +179,8 @@ if (WITH_CGAL_BACKEND)
             include/movetk/geom/trajectory_to_interface.h
             include/movetk/metric/Norm.h
             include/movetk/metric/Distances.h
+            include/movetk/metric/DistanceTraits.h
+            include/movetk/metric/DistanceInterface.h
             include/movetk/utils/unituple.h
             include/movetk/utils/TrajectoryUtils.h
             include/movetk/utils/StringUtils.h
@@ -196,7 +200,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/algo/Search.h
             include/movetk/algo/BrownianBridge.h
             include/movetk/algo/Similarity.h
-			include/movetk/algo/Statistics.h
+	    include/movetk/algo/Statistics.h
             include/movetk/algo/OutlierDetection.h
             include/movetk/algo/OutlierDetectionPredicates.h
             include/movetk/algo/Clustering.h
