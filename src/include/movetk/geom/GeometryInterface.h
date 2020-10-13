@@ -452,6 +452,114 @@ namespace movetk_core
                 NT op2 = 0.25 * numerator / squared_length;
                 NT squared_radius = op1 - op2 - 0.25 * squared_length;
                 return make_sphere(center, squared_radius, false);
+            } else {
+                return make_sphere(ORIGIN, 0);
+            }
+
+        }
+    };
+
+
+    template<class GeometryTraits, class Norm, class T>
+    struct discrete_hausdorff_distance_algorithm {
+        typedef T discrete_hausdorff_distance;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct discrete_hausdorff_distance_algorithm<GeometryTraits, Norm, void> {
+        typedef movetk_support::Discrete_Hausdorff<GeometryTraits, Norm> discrete_hausdorff_distance;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct ComputeDiscreteHausdorffDistance {
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<GeometryTraits,
+                        typename InputIterator::value_type>>
+        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+            typedef discrete_hausdorff_distance_algorithm<GeometryTraits, Norm,
+                    typename GeometryTraits::MovetkDiscreteHausdorffDistance> algorithm;
+            typename algorithm::discrete_hausdorff_distance distance;
+            return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
+        }
+
+    };
+
+    template<class GeometryTraits, class Norm, class T>
+    struct dynamic_time_warping_algorithm {
+        typedef T dynamic_time_warping;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct dynamic_time_warping_algorithm<GeometryTraits, Norm, void> {
+        typedef movetk_support::Dynamic_Time_Warping<GeometryTraits, Norm> dynamic_time_warping;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct ComputeDynamicTimeWarpingDistance {
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<GeometryTraits,
+                        typename InputIterator::value_type>>
+        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+            typedef dynamic_time_warping_algorithm<GeometryTraits, Norm,
+                    typename GeometryTraits::MovetkDynamicTimeWarpingDistance> algorithm;
+            typename algorithm::dynamic_time_warping distance;
+            return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
+        }
+
+    };
+
+
+    template<class GeometryTraits, class Norm, class T>
+    struct discrete_frechet_distance_algorithm {
+        typedef T discrete_frechet_distance;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct discrete_frechet_distance_algorithm<GeometryTraits, Norm, void> {
+        typedef movetk_support::Discrete_Frechet<GeometryTraits, Norm> discrete_frechet_distance;
+    };
+
+    template<class GeometryTraits, class Norm>
+    struct ComputeDiscreteFrechetDistance {
+        template<class InputIterator, typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_movetk_point<GeometryTraits,
+                        typename InputIterator::value_type>>
+        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+            typedef discrete_frechet_distance_algorithm<GeometryTraits, Norm,
+                    typename GeometryTraits::MovetkDiscreteFrechetDistance> algorithm;
+            typename algorithm::discrete_frechet_distance distance;
+            return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
+        }
+
+        template<class DistanceMatrix, class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_random_access_iterator<typename InputIterator::value_type::iterator>,
+                typename = movetk_core::requires_movetk_point<GeometryTraits, typename InputIterator::value_type::value_type>,
+                typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::iterator>,
+                typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::value_type::iterator>,
+                typename = movetk_core::requires_NT<GeometryTraits, typename DistanceMatrix::value_type::value_type> >
+        typename GeometryTraits::NT
+        operator()(InputIterator first, InputIterator beyond, DistanceMatrix &upper_triag_mat) {
+            typedef discrete_frechet_distance_algorithm<GeometryTraits, Norm,
+                    typename GeometryTraits::MovetkDiscreteFrechetDistance> algorithm;
+            typename algorithm::discrete_frechet_distance distance;
+            movetk_core::movetk_back_insert_iterator bit(upper_triag_mat);
+            auto it = first;
+            while (it != beyond) {
+                auto nit = it + 1;
+                typename DistanceMatrix::value_type node;
+                movetk_core::movetk_back_insert_iterator node_bit(node);
+                while (nit != beyond) {
+                    node_bit = distance(std::cbegin(*it), std::cend(*it), std::cbegin(*nit), std::cend(*nit));
+                    nit++;
+                }
+                bit = node;
+                it++;
             }
             else
             {
@@ -909,6 +1017,10 @@ namespace movetk_core
          * @typedef ::MovetkDiscreteHausdorffDistance
          * */
         typedef typename WrapperGeometryKernel::Wrapper_Discrete_Hausdorff_Distance MovetkDiscreteHausdorffDistance;
+        /*!*
+         * @typedef ::MovetkDynamicTimeWarpingDistance
+         * */
+        typedef typename WrapperGeometryKernel::Wrapper_Dynamic_Time_Warping_Distance MovetkDynamicTimeWarpingDistance;
         /*!*
          * @typedef ::MovetkDiscreteFrechetDistance
          * */

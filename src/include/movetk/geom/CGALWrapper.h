@@ -995,6 +995,7 @@ namespace movetk_support {
         typedef CGAL_Algorithms::Wrapper_Curve_Intersection<Wrapper_CGAL_Kernel> Wrapper_Curve_Intersection;
         typedef void Wrapper_Squared_Distance;
         typedef void Wrapper_Discrete_Hausdorff_Distance;
+        typedef void Wrapper_Dynamic_Time_Warping_Distance;
         typedef void Wrapper_Discrete_Frechet_Distance;
         typedef void Wrapper_Minimum_Bounding_Rectangle;
         struct Wrapper_CGAL_Kernel_2 {

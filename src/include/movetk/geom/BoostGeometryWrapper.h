@@ -36,6 +36,7 @@
 #include "third_party/miniball/Seb.h"
 #include "third_party/boost_geometry/discrete_hausdorff_distance.hpp"
 #include "third_party/boost_geometry/discrete_frechet_distance.hpp"
+#include "third_party/boost_geometry/dynamic_time_warping_distance.hpp"
 
 //TODO Rename this to a Wrapper
 
@@ -434,6 +435,33 @@ namespace movetk_support {
 
     };
 
+template <class Kernel>
+    struct Wrapper_Boost_Dynamic_Time_Warping_Distance {
+
+        template<class InputIterator,
+                typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                typename = movetk_core::requires_wrapper_point<Kernel,
+                        typename InputIterator::value_type> >
+        typename Kernel::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                       InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+            typename Kernel::Boost_PolyLine_  poly1, poly2;
+
+            InputIterator it = polyline_a_first;
+            while (it != polyline_a_beyond ){
+                poly1.push_back(it->get());
+                it++;
+            }
+            it = polyline_b_first;
+            while (it != polyline_b_beyond ){
+                poly2.push_back(it->get());
+                it++;
+            }
+
+            return bg::dynamic_time_warping_distance(poly1, poly2);
+
+        }
+
+    };
 
 
     template <class Kernel>
@@ -516,6 +544,7 @@ namespace movetk_support {
         typedef Wrapper_Boost_Sphere<Wrapper_Boost_Kernel> Wrapper_Sphere;
         typedef Wrapper_Boost_Squared_Distance<Wrapper_Boost_Kernel> Wrapper_Squared_Distance;
         typedef Wrapper_Boost_Discrete_Hausdorff_Distance<Wrapper_Boost_Kernel> Wrapper_Discrete_Hausdorff_Distance;
+        typedef Wrapper_Boost_Dynamic_Time_Warping_Distance<Wrapper_Boost_Kernel> Wrapper_Dynamic_Time_Warping_Distance;
         typedef Wrapper_Boost_Discrete_Frechet_Distance<Wrapper_Boost_Kernel> Wrapper_Discrete_Frechet_Distance;
         typedef void Intersection_visitor;
         typedef void Wrapper_Curve_Intersection;
