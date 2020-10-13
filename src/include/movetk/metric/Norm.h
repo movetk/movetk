@@ -1,4 +1,4 @@
-x/*
+/*
  * Copyright (C) 2018-2020 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@ x/*
  * License-Filename: LICENSE
  */
 
-
 //
 // Created by Mitra, Aniket on 2019-02-18.
 //
@@ -31,49 +30,59 @@ x/*
 #include <iostream>
 #include "movetk/utils/Asserts.h"
 
-namespace movetk_support {
+namespace movetk_support
+{
 
-    template <class Kernel,std::size_t p>
-    class FiniteNorm{
+    template <class Kernel, std::size_t p>
+    class FiniteNorm
+    {
     private:
         typename Kernel::NT result;
+
     public:
         constexpr static size_t P = p;
-        FiniteNorm(){
+        FiniteNorm()
+        {
             ASSERT_MIN_NORM(p);
         }
 
-        typename Kernel::NT operator()(typename Kernel::MovetkVector &v) {
-            auto sum_exponent_p = [](typename Kernel::NT sum, typename Kernel::NT coord) -> typename Kernel::NT{
-                return std::move(sum) + std::pow(abs(coord) , p );
+        typename Kernel::NT operator()(typename Kernel::MovetkVector &v)
+        {
+            auto sum_exponent_p = [](typename Kernel::NT sum, typename Kernel::NT coord) -> typename Kernel::NT {
+                return std::move(sum) + std::pow(abs(coord), p);
             };
-            result = std::accumulate(std::begin(v),std::end(v),0.0,sum_exponent_p);
+            result = std::accumulate(std::begin(v), std::end(v), 0.0, sum_exponent_p);
             return result;
         }
 
-        typename Kernel::NT operator^(std::size_t exponent){
+        typename Kernel::NT operator^(std::size_t exponent)
+        {
             typename Kernel::NT n = exponent / static_cast<typename Kernel::NT>(p);
-            return std::pow(result,n);
+            return std::pow(result, n);
         }
-
     };
 
     template <class Kernel>
-    class InfinityNorm{
+    class InfinityNorm
+    {
     private:
         typename Kernel::NT result;
-        static bool abs_compare(typename Kernel::NT coord1, typename Kernel::NT coord2){
+        static bool abs_compare(typename Kernel::NT coord1, typename Kernel::NT coord2)
+        {
             return (std::abs(coord1) < std::abs(coord2));
         };
+
     public:
-        typename Kernel::NT operator()(typename Kernel::MovetkVector &v) {
-            result = abs(*std::max_element(std::begin(v),std::end(v),abs_compare));
+        typename Kernel::NT operator()(typename Kernel::MovetkVector &v)
+        {
+            result = abs(*std::max_element(std::begin(v), std::end(v), abs_compare));
             return result;
         }
 
-        typename Kernel::NT operator^(std::size_t exponent){
-            return std::pow(result,exponent);
+        typename Kernel::NT operator^(std::size_t exponent)
+        {
+            return std::pow(result, exponent);
         }
     };
-}
+} // namespace movetk_support
 #endif //MOVETK_NORM_H
