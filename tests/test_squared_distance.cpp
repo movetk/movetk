@@ -17,12 +17,9 @@
  * License-Filename: LICENSE
  */
 
-
 //
 // Created by Mitra, Aniket on 2019-02-20.
 //
-
-
 
 #include <array>
 #include "catch2/catch.hpp"
@@ -34,6 +31,7 @@
 #endif
 
 #include "movetk/geom/GeometryInterface.h"
+#include "movetk/metric/DistanceInterface.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 #include "movetk/metric/Norm.h"
@@ -42,55 +40,57 @@ using namespace std;
 
 #if CGAL_BACKEND_ENABLED
 //==============================
-    // Define the Number Type
-    // For the CGAL backend,
-    // One can choose from the
-    // following number types
-    typedef long double NT;
-    //typedef CGAL::Mpzf NT;
-    //typedef CGAL::Gmpfr NT;
-    //typedef CGAL::Gmpq NT;
-    //==============================
+// Define the Number Type
+// For the CGAL backend,
+// One can choose from the
+// following number types
+typedef long double NT;
+//typedef CGAL::Mpzf NT;
+//typedef CGAL::Gmpfr NT;
+//typedef CGAL::Gmpq NT;
+//==============================
 
-    //==============================
-    // Define the Dimensions
-    const size_t dimensions = 2;
-    //==============================
+//==============================
+// Define the Dimensions
+const size_t dimensions = 2;
+//==============================
 
-    //==============================
-    // Define the Geometry Backend
-    typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
-    //Using the Geometry Backend define the Movetk Geometry Kernel
-    typedef movetk_core::MovetkGeometryKernel<
-            typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
-    typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
-    //==============================
+//==============================
+// Define the Geometry Backend
+typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
+//Using the Geometry Backend define the Movetk Geometry Kernel
+typedef movetk_core::MovetkGeometryKernel<
+    typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry>
+    MovetkGeometryKernel;
+typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
+//==============================
 #else
-    //==============================
-    // Define the Number Type
-    // For the Boost Backend
-    typedef long double NT;
-    //==============================
+//==============================
+// Define the Number Type
+// For the Boost Backend
+typedef long double NT;
+//==============================
 
-    //==============================
-    // Define the Dimensions
-    // It is possible to choose
-    // a higher dimension
-    // Note: Boost Geometry Adapter supports geometry in two
-    // dimensions only
-    const static size_t dimensions = 2;
-    //==============================
+//==============================
+// Define the Dimensions
+// It is possible to choose
+// a higher dimension
+// Note: Boost Geometry Adapter supports geometry in two
+// dimensions only
+const static size_t dimensions = 2;
+//==============================
 
-    //==============================
-    // Define the Geometry Backend
-    typedef movetk_support::BoostGeometryTraits<long double, dimensions> Boost_Geometry_Backend;
+//==============================
+// Define the Geometry Backend
+typedef movetk_support::BoostGeometryTraits<long double, dimensions> Boost_Geometry_Backend;
 //Using the Geometry Backend define the Movetk Geometry Kernel
 typedef movetk_core::MovetkGeometryKernel<typename Boost_Geometry_Backend::Wrapper_Boost_Geometry> MovetkGeometryKernel;
-    typedef void Norm;
-    //==============================
+typedef void Norm;
+//==============================
 #endif
 
-TEST_CASE("Check Distance between point and segment","[is_valid_dist_point_seg]"){
+TEST_CASE("Check Distance between point and segment", "[is_valid_dist_point_seg]")
+{
     movetk_core::MakePoint<MovetkGeometryKernel> make_point;
     MovetkGeometryKernel::MovetkPoint p1 = make_point({5.5, 3.1});
     MovetkGeometryKernel::MovetkPoint p2 = make_point({3.22, 1.3});
