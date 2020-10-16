@@ -17,7 +17,6 @@
  * License-Filename: LICENSE
  */
 
-
 //
 // Created by onur on 10/22/18.
 //
@@ -28,7 +27,6 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-using std::string;
 #include <unordered_map>
 #include <vector>
 #include <utility>
@@ -40,7 +38,8 @@ using std::string;
  *         (Using the "Curiously recurring template pattern" to enforce separate static variables for each subclass)
  */
 template <class T, class CRTP>
-struct CategoricalField {
+struct CategoricalField
+{
 
     std::size_t _idx;
     static std::vector<T> _values;
@@ -50,38 +49,40 @@ struct CategoricalField {
     {
         return _idx;
     }
-    double operator-(CategoricalField<T, CRTP>& rhs)
+    double operator-(CategoricalField<T, CRTP> &rhs)
     {
-        return _idx - rhs._idx;  // time_end, time_beg
+        return _idx - rhs._idx; // time_end, time_beg
     }
-    bool operator<(CategoricalField<T, CRTP>& rhs)
+    bool operator<(CategoricalField<T, CRTP> &rhs)
     {
         return _idx < rhs._idx;
     }
-    bool operator>(CategoricalField<T, CRTP>& rhs)
+    bool operator>(CategoricalField<T, CRTP> &rhs)
     {
-        return rhs<*this;
+        return rhs < *this;
     }
-    bool operator<=(CategoricalField<T, CRTP>& rhs)
+    bool operator<=(CategoricalField<T, CRTP> &rhs)
     {
-        return !(rhs<*this);
+        return !(rhs < *this);
     }
-    bool operator>=(CategoricalField<T, CRTP>& rhs)
+    bool operator>=(CategoricalField<T, CRTP> &rhs)
     {
-        return !(*this<rhs);
+        return !(*this < rhs);
     }
-    inline void add(T&& t)
+    inline void add(T &&t)
     {
-        if(_indexOf.find(t) == _indexOf.end()) {
+        if (_indexOf.find(t) == _indexOf.end())
+        {
             _indexOf[t] = _values.size();
             _idx = _values.size();
             _values.push_back(t);
         }
-        else {
+        else
+        {
             _idx = _indexOf[t];
         }
     }
-    friend std::istream& operator>>(std::istream& is, CategoricalField<T, CRTP>& field)
+    friend std::istream &operator>>(std::istream &is, CategoricalField<T, CRTP> &field)
     {
         T t;
         is >> t;
@@ -89,7 +90,7 @@ struct CategoricalField {
         return is;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const CategoricalField<T, CRTP>& field)
+    friend std::ostream &operator<<(std::ostream &os, const CategoricalField<T, CRTP> &field)
     {
         os << field._values[field._idx];
         return os;
@@ -101,6 +102,5 @@ std::vector<T> CategoricalField<T, CRTP>::_values;
 
 template <class T, class CRTP>
 std::unordered_map<T, std::size_t> CategoricalField<T, CRTP>::_indexOf;
-
 
 #endif //MOVETK_CATEGORICALFIELD_H

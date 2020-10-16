@@ -29,18 +29,25 @@
 #include "ColumnarTrajectory.h"
 #include "TabularTrajectory.h"
 
-namespace here { namespace c2d { namespace raw {
+namespace here
+{
+    namespace c2d
+    {
+        namespace raw
+        {
 
-    typedef here::c2d::raw::ProbeTraits ProbeTraits;
-    constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::PROBE_ID;
-    constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::SAMPLE_DATE;
-    using columnar_trajectory_type = ColumnarTrajectory<string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
-    using tabular_trajectory_type = TabularTrajectory<string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
+            typedef here::c2d::raw::ProbeTraits ProbeTraits;
+            constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::PROBE_ID;
+            constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::SAMPLE_DATE;
+            using columnar_trajectory_type = ColumnarTrajectory<std::string, ProbeParseDate,
+                                                                double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
+            using tabular_trajectory_type = TabularTrajectory<std::string, ProbeParseDate,
+                                                              double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
 
-    using ColumnarTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, columnar_trajectory_type>;
-    using TabularTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, tabular_trajectory_type>;
-}  // namespace raw
-}  // namespace c2d
-}  // namespace here
+            using ColumnarTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, columnar_trajectory_type>;
+            using TabularTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, tabular_trajectory_type>;
+        } // namespace raw
+    }     // namespace c2d
+} // namespace here
 
 #endif //MOVETK_HERETRAJECTORYTRAITS_H
