@@ -11,5 +11,7 @@ cmake-build-debug/
 docs/.DS_Store
 docs/images/.DS_Store
 src/.DS_Store
+docs/html
+docs/latex
 src/include/.DS_Store
 src/include/third_party/.DS_Store
