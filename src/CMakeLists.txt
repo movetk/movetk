@@ -32,14 +32,22 @@ if(_IMPORT_PREFIX STREQUAL "/")
     set(_IMPORT_PREFIX "")
 endif()
 
-install(DIRECTORY  ${_IMPORT_PREFIX}/third_party/GsTL/include/
-        DESTINATION include
-        )
-message(STATUS "import_prefix ${_IMPORT_PREFIX}/third_party/GsTL/include/")
-
 set(GsTL_INCLUDE_DIR "${_IMPORT_PREFIX}/third_party/GsTL/include/")
 
 message(STATUS "GsTL_include ${GsTL_INCLUDE_DIR} ")
+
+set(RAPIDJSON_INCLUDE_DIR "${_IMPORT_PREFIX}/third_party/rapidjson/include/")
+
+message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
+
+install(DIRECTORY  ${GsTL_INCLUDE_DIR}
+        ${RAPIDJSON_INCLUDE_DIR}
+        DESTINATION include
+        )
+
+
+
+#include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
 
 if (WITH_CGAL_BACKEND)
         find_package(CGAL REQUIRED)
@@ -230,7 +238,7 @@ endif()
 target_compile_features(movetk PUBLIC cxx_std_17)
 target_compile_definitions(movetk PUBLIC -DBOOST_LOG_DYN_LINK=1)
 
-target_include_directories(movetk PRIVATE ${GsTL_INCLUDE_DIR})
+target_include_directories(movetk PRIVATE ${GsTL_INCLUDE_DIR} ${RAPIDJSON_INCLUDE_DIR})
 
 
 if (WITH_CGAL_BACKEND)
@@ -294,7 +302,8 @@ install(TARGETS movetk EXPORT ${CMAKE_PROJECT_NAME}Targets
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include
         )
-install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR}
+install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR} 
+        ${RAPIDJSON_INCLUDE_DIR}
         DESTINATION include
         COMPONENT Devel
         )
