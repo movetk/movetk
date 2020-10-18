@@ -15,6 +15,14 @@ endif ()
 
 message(STATUS "CGAL_BACKEND_ENABLED ${CGAL_BACKEND_ENABLED}")
 
+set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
+message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
+
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}")
+
+include_directories(${RAPIDJSON_INCLUDE_DIR})
+
+
 add_executable(movetk_tests
         test_includes.h
         tests_main.cpp
@@ -49,6 +57,7 @@ add_executable(movetk_tests
         test_free_space_diagram.cpp
         test_clustering.cpp
         test_mbr.cpp
+        test_geojson.cpp
         )
 
 target_compile_definitions(movetk_tests PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
