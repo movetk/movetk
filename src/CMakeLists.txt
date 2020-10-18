@@ -39,11 +39,11 @@ if(_IMPORT_PREFIX STREQUAL "/")
     set(_IMPORT_PREFIX "")
 endif()
 
-set(GsTL_INCLUDE_DIR "${_IMPORT_PREFIX}/third_party/GsTL/include/")
+set(GsTL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/GsTL/include/")
 
 message(STATUS "GsTL_include ${GsTL_INCLUDE_DIR} ")
 
-set(RAPIDJSON_INCLUDE_DIR "${_IMPORT_PREFIX}/third_party/rapidjson/include/")
+set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
 
 message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
 
@@ -53,8 +53,7 @@ install(DIRECTORY  ${GsTL_INCLUDE_DIR}
         )
 
 
-
-#include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
+include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
 
 if (WITH_CGAL_BACKEND)
         find_package(CGAL REQUIRED)
@@ -115,6 +114,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/io/csv/ParseDate.h
             include/movetk/io/GeoJSONUtils.h
             include/movetk/io/ColouredGeoJSONUtils.h
+             include/movetk/io/GeoJSON.h
             include/movetk/geom/CGALTraits.h
             include/movetk/geom/trajectory_gdal.h
             include/movetk/geom/CGALWrapper.h
@@ -188,6 +188,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/io/csv/ParseDate.h
             include/movetk/io/GeoJSONUtils.h
             include/movetk/io/ColouredGeoJSONUtils.h
+            include/movetk/io/GeoJSON.h
             include/movetk/geom/trajectory_gdal.h
             include/movetk/geom/BoostGeometryWrapper.h
             include/movetk/geom/BoostGeometryTraits.h
