@@ -11,9 +11,9 @@ TEST_CASE("Test GeoJSON", "[test_geojson]")
 
     std::string expected_geojson = "{\"type\":\"FeatureCollection\",\"features\":\
 [{\"type\":\"Feature\",\"geometry\":{\"coordinates\":[[102.0,0.0],[103.0,1.0],[104.0,0.0],[105.0,1.0]],\"type\"\
-:\"LineString\"},\"properties\":{\"stroke\":\"red\",\"stroke-width\":\"4\"}},\
+:\"LineString\"},\"properties\":{\"id\":\"a1398a11-d1ce-421c-bf66-a456ff525de9\",\"stroke\":\"red\",\"stroke-width\":\"4\"}},\
 {\"type\":\"Feature\",\"geometry\":{\"coordinates\":[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0]],\
-\"type\":\"LineString\"},\"properties\":{\"stroke\":\"blue\",\"stroke-width\":\"6\"}}]}";
+\"type\":\"LineString\"},\"properties\":{\"id\":\"d1ce-a1398a11-421c-bf66-a456ff525de9\",\"stroke\":\"blue\",\"stroke-width\":\"6\"}}]}";
 
     rapidjson::StringBuffer strbuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
@@ -28,7 +28,7 @@ TEST_CASE("Test GeoJSON", "[test_geojson]")
                                          std::begin(lon));
 
     GeoJSONProperties prop;
-    rapidjson::Document properties1 = prop("red", 4);
+    rapidjson::Document properties1 = prop("a1398a11-d1ce-421c-bf66-a456ff525de9", "red", 4);
 
     GeoJSONFeature feat;
     rapidjson::Document feature1 = feat(geometry1, properties1);
@@ -43,7 +43,9 @@ TEST_CASE("Test GeoJSON", "[test_geojson]")
                                          std::end(lat),
                                          std::begin(lon));
 
-    rapidjson::Document properties2 = prop("blue", 6);
+    rapidjson::Document properties2 = prop("d1ce-a1398a11-421c-bf66-a456ff525de9",
+                                           "blue",
+                                           6);
 
     rapidjson::Document feature2 = feat(geometry2, properties2);
 
