@@ -31,6 +31,7 @@
 struct GeoJSONPoint;
 struct GeoJSONLineString;
 struct GeoJSONColorProperty;
+struct GeoJSONGenericProperty;
 
 template <class T>
 class GeoJSONCoordinates
@@ -114,10 +115,31 @@ struct GeoJSONProperty<GeoJSONColorProperty>
 {
     template <class Document, class Allocator>
     void operator()(Document &properties, Allocator &property_allocator,
-                    std::string &colour, std::size_t width)
+                    std::string &identifier, std::string &colour, std::size_t width)
     {
+        properties.AddMember("id", rapidjson::Value(identifier, property_allocator).Move(), property_allocator);
         properties.AddMember("stroke", rapidjson::Value(colour, property_allocator).Move(), property_allocator);
         properties.AddMember("stroke-width", rapidjson::Value(std::to_string(width), property_allocator).Move(), property_allocator);
+    }
+};
+
+template <>
+struct GeoJSONProperty<GeoJSONGenericProperty>
+{
+
+    template <class Document, class Allocator, class Iterator>
+    void operator()(Document &properties, Allocator &property_allocator,
+                    Iterator first, Iterator beyond)
+    {
+        auto it = first;
+        while (it != beyond)
+        {
+            properties.AddMember(
+                rapidjson::Value((*it).first, property_allocator).Move(),
+                rapidjson::Value((*it).second, property_allocator).Move(),
+                property_allocator);
+            it++;
+        }
     }
 };
 
@@ -125,13 +147,13 @@ struct GeoJSONProperties
 {
 
     rapidjson::Document
-    operator()(std::string colour, std::size_t width)
+    operator()(std::string identifier, std::string colour, std::size_t width)
     {
         rapidjson::Document properties;
         properties.SetObject();
         rapidjson::Document::AllocatorType &properties_allocator = properties.GetAllocator();
         GeoJSONProperty<GeoJSONColorProperty> colour_property;
-        colour_property(properties, properties_allocator, colour, width);
+        colour_property(properties, properties_allocator, identifier, colour, width);
         return properties;
     }
 
@@ -141,6 +163,18 @@ struct GeoJSONProperties
         rapidjson::Document properties;
         properties.SetObject();
         rapidjson::Document::AllocatorType &properties_allocator = properties.GetAllocator();
+        return properties;
+    }
+
+    template <class Iterator>
+    rapidjson::Document
+    operator()(Iterator first, Iterator beyond)
+    {
+        rapidjson::Document properties;
+        properties.SetObject();
+        rapidjson::Document::AllocatorType &properties_allocator = properties.GetAllocator();
+        GeoJSONProperty<GeoJSONGenericProperty> generic_property;
+        generic_property(properties, properties_allocator, first, beyond);
         return properties;
     }
 };
