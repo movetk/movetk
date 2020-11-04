@@ -12,9 +12,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    # Checkout repository
     - uses: actions/checkout@v2
+    # Get the ninja generator
     - uses: seanmiddleditch/gha-setup-ninja@master
-    - name: install dependencies
-      run: C:\vcpkg\vcpkg.exe install boost gdal gsl cgal geographiclib --triplet x64-windows
+    # Install movetk dependencies
+    # TODO temporarily commented out to checkout workflow compiler detection
+    #- name: install dependencies
+    #  run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --triplet x64-windows
+    # Build movetk
     - name: build movetk
       run: .\ci.cmd 	 
