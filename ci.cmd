@@ -4,7 +4,6 @@ SET VC_FOLDER=C:/Program\ Files\ (x86)/Microsoft\ Visual\ Studio/2019/Enterprise
 @call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 :: Suffix for compiler executable in the VC_FOLDER
 SET CL_SUFFIX=Tools/MSVC/14.27.29016/bin/Hostx64/x64/cl.exe
-DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC"
 RD /S /Q build
 MKDIR build
 CD build
