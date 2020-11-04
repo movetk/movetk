@@ -4,12 +4,12 @@ SET VC_FOLDER=C:/Program\ Files\ (x86)/Microsoft\ Visual\ Studio/2019/Enterprise
 @call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 :: Suffix for compiler executable in the VC_FOLDER
 SET CL_SUFFIX=Tools/MSVC/14.27.29016/bin/Hostx64/x64/cl.exe
-DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.27.29016\bin\Hostx64\x64"
+DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC"
 RD /S /Q build
 MKDIR build
 CD build
 SET CC=cl.exe
 SET CXX=cl.exe
-cmake -GNinja -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DWITH_CGAL_BACKEND=OFF -DCMAKE_CXX_COMPILER=%VC_FOLDER%/%CL_SUFFIX% -DCMAKE_C_COMPILER=%VC_FOLDER%/%CL_SUFFIX% -DBUILD_DOC=ON ..
+cmake -GNinja -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DWITH_CGAL_BACKEND=OFF -DBUILD_DOC=ON ..
 cmake --build .
 ctest -VV
