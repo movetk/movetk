@@ -1,7 +1,7 @@
 :: Base folder for visual studio compiler
 SET VC_FOLDER=C:/Program\ Files\ (x86)/Microsoft\ Visual\ Studio/2019/Enterprise/VC
 :: Setup VC variables on path
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+@call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 :: Suffix for compiler executable in the VC_FOLDER
 SET CL_SUFFIX=Tools/MSVC/14.27.29016/bin/Hostx64/x64/cl.exe
 DIR "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.27.29016\bin\Hostx64\x64"
