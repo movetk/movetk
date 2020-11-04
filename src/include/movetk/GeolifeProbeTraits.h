@@ -55,7 +55,7 @@ namespace geolife {
 
 			class ProviderCategoricalField : public CategoricalField<std::string, ProviderCategoricalField> {};
 
-			typedef csv<std::tuple<double, double, double, std::string, std::string, std::string>,
+			typedef csv<std::tuple<double, double, double, std::time_t, std::string, std::string>,
 				_LAT, _LON, _ALTITUDE, _DATETIME, _TRAJID, _MODEID> ProbeCsv;
 
 			typedef typename ProbeCsv::value_type ProbePoint;

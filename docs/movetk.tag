@@ -2318,13 +2318,13 @@
     <filename>structboost_1_1geometry_1_1detail_1_1discrete__hausdorff__distance_1_1point__range.html</filename>
   </compound>
   <compound kind="class">
-    <name>here::c2d::raw::ProbeParseDate</name>
-    <filename>classhere_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
+    <name>movetk_kernel::ProbeParseDate</name>
+    <filename>classmovetk__kernel_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
-    <name>movetk_kernel::ProbeParseDate</name>
-    <filename>classmovetk__kernel_1_1_probe_parse_date.html</filename>
+    <name>here::c2d::raw::ProbeParseDate</name>
+    <filename>classhere_1_1c2d_1_1raw_1_1_probe_parse_date.html</filename>
     <base>ParseDate</base>
   </compound>
   <compound kind="class">
@@ -2342,13 +2342,13 @@
     <filename>class_probe_reader_factory.html</filename>
   </compound>
   <compound kind="class">
-    <name>geolife::c2d::raw::ProviderCategoricalField</name>
-    <filename>classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
+    <name>here::c2d::raw::ProviderCategoricalField</name>
+    <filename>classhere_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
     <base>CategoricalField&lt; std::string, ProviderCategoricalField &gt;</base>
   </compound>
   <compound kind="class">
-    <name>here::c2d::raw::ProviderCategoricalField</name>
-    <filename>classhere_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
+    <name>geolife::c2d::raw::ProviderCategoricalField</name>
+    <filename>classgeolife_1_1c2d_1_1raw_1_1_provider_categorical_field.html</filename>
     <base>CategoricalField&lt; std::string, ProviderCategoricalField &gt;</base>
   </compound>
   <compound kind="struct">
@@ -2573,16 +2573,16 @@
     <filename>classtemplate_3_01class_01_geometry_traits_00_01class_01_parameter_traits_00_01class_01_norm_00_54301d4ca90d30d3a40053789e00b9bd.html</filename>
   </compound>
   <compound kind="class">
+    <name>movetk_algorithms::TEST</name>
+    <filename>classmovetk__algorithms_1_1_t_e_s_t.html</filename>
+    <templarg>TestCriteria</templarg>
+    <templarg></templarg>
+  </compound>
+  <compound kind="class">
     <name>movetk_algorithms::outlier_detection::TEST</name>
     <filename>classmovetk__algorithms_1_1outlier__detection_1_1_t_e_s_t.html</filename>
     <templarg></templarg>
     <templarg></templarg>
-    <templarg></templarg>
-  </compound>
-  <compound kind="class">
-    <name>movetk_algorithms::TEST</name>
-    <filename>classmovetk__algorithms_1_1_t_e_s_t.html</filename>
-    <templarg>TestCriteria</templarg>
     <templarg></templarg>
   </compound>
   <compound kind="class">
