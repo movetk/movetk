@@ -18,8 +18,8 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@master
       # Install movetk dependencies
       # TODO temporarily commented out to checkout workflow compiler detection
-      - name: install dependencies
-        run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --triplet x64-windows
+      #- name: install dependencies
+      #  run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --triplet x64-windows
       # Build movetk
       - name: build movetk
         run: .\ci.cmd 	 
