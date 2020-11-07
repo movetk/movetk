@@ -28,19 +28,58 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
+/**
+ * @brief 
+ * 
+ */
 struct GeoJSONPoint;
+
+/**
+ * @brief 
+ * 
+ */
 struct GeoJSONLineString;
+
+/**
+ * @brief 
+ * 
+ */
 struct GeoJSONColorProperty;
+
+/**
+ * @brief 
+ * 
+ */
 struct GeoJSONGenericProperty;
 
+/**
+ * @brief 
+ * 
+ * @tparam T 
+ */
 template <class T>
 class GeoJSONCoordinates
 {
 };
 
+/**
+ * @brief 
+ * 
+ * @tparam  
+ */
 template <>
 struct GeoJSONCoordinates<GeoJSONPoint>
 {
+    /**
+     * @brief 
+     * 
+     * @tparam CoordType 
+     * @tparam Allocator 
+     * @param lat 
+     * @param lon 
+     * @param geometry_allocator 
+     * @return rapidjson::Value 
+     */
     template <class CoordType, class Allocator>
     rapidjson::Value
     operator()(CoordType &lat, CoordType &lon,
@@ -51,11 +90,53 @@ struct GeoJSONCoordinates<GeoJSONPoint>
         point.PushBack(lat, geometry_allocator);
         return point;
     }
+
+    /**
+     * @brief 
+     * 
+     * @tparam CoordType 
+     * @tparam TStype 
+     * @tparam Allocator 
+     * @param lat 
+     * @param lon 
+     * @param timestamp 
+     * @param geometry_allocator 
+     * @return rapidjson::Value 
+     */
+    template <class CoordType, class TStype, class Allocator>
+    rapidjson::Value
+    operator()(CoordType &lat, CoordType &lon, TStype &timestamp,
+               Allocator &geometry_allocator)
+    {
+        rapidjson::Value point(rapidjson::kArrayType);
+        point.PushBack(lon, geometry_allocator);
+        point.PushBack(lat, geometry_allocator);
+        point.PushBack(0, geometry_allocator);
+        point.PushBack(timestamp, geometry_allocator);
+        return point;
+    }
 };
 
+/**
+ * @brief 
+ * 
+ * @tparam  
+ */
 template <>
 struct GeoJSONCoordinates<GeoJSONLineString>
 {
+    /**
+     * @brief 
+     * 
+     * @tparam LatIterator 
+     * @tparam LonIterator 
+     * @tparam Allocator 
+     * @param lat_first 
+     * @param lat_beyond 
+     * @param lon_first 
+     * @param geometry_allocator 
+     * @return rapidjson::Value 
+     */
     template <class LatIterator, class LonIterator, class Allocator>
     rapidjson::Value
     operator()(LatIterator lat_first, LatIterator lat_beyond,
@@ -70,10 +151,54 @@ struct GeoJSONCoordinates<GeoJSONLineString>
         }
         return line_string;
     }
+
+    /**
+     * @brief 
+     * 
+     * @tparam LatIterator 
+     * @tparam LonIterator 
+     * @tparam TSIterator 
+     * @tparam Allocator 
+     * @param lat_first 
+     * @param lat_beyond 
+     * @param lon_first 
+     * @param ts_first 
+     * @param geometry_allocator 
+     * @return rapidjson::Value 
+     */
+    template <class LatIterator, class LonIterator, class TSIterator, class Allocator>
+    rapidjson::Value
+    operator()(LatIterator lat_first, LatIterator lat_beyond,
+               LonIterator lon_first, TSIterator ts_first,
+               Allocator &geometry_allocator)
+    {
+        rapidjson::Value line_string(rapidjson::kArrayType);
+        GeoJSONCoordinates<GeoJSONPoint> geojson_point;
+        while (lat_first != lat_beyond)
+        {
+            line_string.PushBack(geojson_point(*lat_first++, *lon_first++,
+                                               *ts_first++, geometry_allocator),
+                                 geometry_allocator);
+        }
+        return line_string;
+    }
 };
 
+/**
+ * @brief 
+ * 
+ */
 struct GeoJSONGeometry
 {
+
+    /**
+     * @brief 
+     * 
+     * @tparam T 
+     * @param lat 
+     * @param lon 
+     * @return rapidjson::Document 
+     */
     template <class T>
     rapidjson::Document
     operator()(T &lat, T &lon)
@@ -88,6 +213,16 @@ struct GeoJSONGeometry
         return geometry;
     }
 
+    /**
+     * @brief 
+     * 
+     * @tparam LatIterator 
+     * @tparam LonIterator 
+     * @param lat_first 
+     * @param lat_beyond 
+     * @param lon_first 
+     * @return rapidjson::Document 
+     */
     template <class LatIterator, class LonIterator>
     rapidjson::Document
     operator()(LatIterator lat_first, LatIterator lat_beyond,
@@ -103,16 +238,65 @@ struct GeoJSONGeometry
         geometry.AddMember("type", "LineString", geom_allocator);
         return geometry;
     }
+
+    /**
+     * @brief 
+     * 
+     * @tparam LatIterator 
+     * @tparam LonIterator 
+     * @tparam TSIterator 
+     * @param lat_first 
+     * @param lat_beyond 
+     * @param lon_first 
+     * @param ts_first 
+     * @return rapidjson::Document 
+     */
+    template <class LatIterator, class LonIterator, class TSIterator>
+    rapidjson::Document
+    operator()(LatIterator lat_first, LatIterator lat_beyond,
+               LonIterator lon_first, TSIterator ts_first)
+    {
+
+        rapidjson::Document geometry;
+        geometry.SetObject();
+        GeoJSONCoordinates<GeoJSONLineString> geojson_linestring;
+        rapidjson::Document::AllocatorType &geom_allocator = geometry.GetAllocator();
+        geometry.AddMember("coordinates", geojson_linestring(lat_first, lat_beyond, lon_first, ts_first, geom_allocator),
+                           geom_allocator);
+        geometry.AddMember("type", "LineString", geom_allocator);
+        return geometry;
+    }
 };
 
+/**
+ * @brief 
+ * 
+ * @tparam T 
+ */
 template <class T>
 struct GeoJSONProperty
 {
 };
 
+/**
+ * @brief 
+ * 
+ * @tparam  
+ */
 template <>
 struct GeoJSONProperty<GeoJSONColorProperty>
 {
+    /**
+     * @brief 
+     * 
+     * @tparam Document 
+     * @tparam Allocator 
+     * @param properties 
+     * @param property_allocator 
+     * @param identifier 
+     * @param colour 
+     * @param width 
+     */
     template <class Document, class Allocator>
     void operator()(Document &properties, Allocator &property_allocator,
                     std::string &identifier, std::string &colour, std::size_t width)
@@ -123,10 +307,26 @@ struct GeoJSONProperty<GeoJSONColorProperty>
     }
 };
 
+/**
+ * @brief 
+ * 
+ * @tparam  
+ */
 template <>
 struct GeoJSONProperty<GeoJSONGenericProperty>
 {
 
+    /**
+     * @brief 
+     * 
+     * @tparam Document 
+     * @tparam Allocator 
+     * @tparam Iterator 
+     * @param properties 
+     * @param property_allocator 
+     * @param first 
+     * @param beyond 
+     */
     template <class Document, class Allocator, class Iterator>
     void operator()(Document &properties, Allocator &property_allocator,
                     Iterator first, Iterator beyond)
@@ -143,9 +343,21 @@ struct GeoJSONProperty<GeoJSONGenericProperty>
     }
 };
 
+/**
+ * @brief 
+ * 
+ */
 struct GeoJSONProperties
 {
 
+    /**
+     * @brief 
+     * 
+     * @param identifier 
+     * @param colour 
+     * @param width 
+     * @return rapidjson::Document 
+     */
     rapidjson::Document
     operator()(std::string identifier, std::string colour, std::size_t width)
     {
@@ -157,6 +369,11 @@ struct GeoJSONProperties
         return properties;
     }
 
+    /**
+     * @brief 
+     * 
+     * @return rapidjson::Document 
+     */
     rapidjson::Document
     operator()()
     {
@@ -166,6 +383,14 @@ struct GeoJSONProperties
         return properties;
     }
 
+    /**
+    * @brief 
+    * 
+    * @tparam Iterator 
+    * @param first 
+    * @param beyond 
+    * @return rapidjson::Document 
+    */
     template <class Iterator>
     rapidjson::Document
     operator()(Iterator first, Iterator beyond)
@@ -179,8 +404,19 @@ struct GeoJSONProperties
     }
 };
 
+/**
+ * @brief 
+ * 
+ */
 struct GeoJSONFeature
 {
+    /**
+     * @brief 
+     * 
+     * @param geometry 
+     * @param properties 
+     * @return rapidjson::Document 
+     */
     rapidjson::Document
     operator()(rapidjson::Document &geometry, rapidjson::Document &properties)
     {
