@@ -74,7 +74,7 @@ if (WITH_CGAL_BACKEND)
         message(STATUS "cgal_lib ${CGAL_LIBRARIES}")
         message(STATUS "gsl_include ${GSL_INCLUDE_DIR}")
         message(STATUS "gsl_lib ${GSL_LIBRARY}")
-    else()
+else()
         message(STATUS "gsl_include ${GSL_INCLUDE_DIR}")
         message(STATUS "gsl_lib ${GSL_LIBRARY}")
         message(STATUS "gdal_include ${GDAL_INCLUDE_DIR}")
@@ -283,21 +283,22 @@ if (WITH_CGAL_BACKEND)
             ${GDAL_LIBRARY}
             ${CGAL_LIBRARY}
             ${GeographicLib_LIBRARIES}
-            ${GSL_LIBRARY}
+            ${GSL_LIBRARIES}
             GMP::GMP
             MPFR::MPFR
             CGAL::CGAL
             )
 else ()
-    target_link_libraries(movetk
-            PUBLIC
-            Threads::Threads
-            ${Boost_LIBRARIES}
-            ${GDAL_LIBRARY}
-            ${CGAL_LIBRARY}
-            ${GeographicLib_LIBRARIES}
-            ${GSL_LIBRARY}
-            )
+                target_link_libraries(movetk
+                        PUBLIC
+                        Threads::Threads
+                        ${Boost_LIBRARIES}
+                        ${GDAL_LIBRARY}
+                        ${CGAL_LIBRARY}
+                        ${GeographicLib_LIBRARIES}
+                        ${GSL_LIBRARIES}
+                     
+                )           
 endif ()
 
 add_library(c2d::movetk ALIAS movetk)
