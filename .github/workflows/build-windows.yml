@@ -12,11 +12,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: seanmiddleditch/gha-setup-ninja@master
-    - name: list directory
-	    run: dir "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Tools\MSVC\*"
-    #- name: install dependencies
-    #  run: C:\vcpkg\vcpkg.exe install boost gdal gsl cgal geographiclib --triplet x64-windows
-    #- name: build movetk
-    #  run: .\ci.cmd 	 
+      # Checkout repository
+      - uses: actions/checkout@v2
+      # Get the ninja generator
+      - uses: seanmiddleditch/gha-setup-ninja@master
+      # Install movetk dependencies
+      - name: install dependencies
+        run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --triplet x64-windows
+      # Build movetk
+      - name: build movetk
+        run: .\ci.cmd 	 
