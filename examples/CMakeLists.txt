@@ -14,6 +14,11 @@ endif ()
 
 message(STATUS "CGAL_BACKEND_ENABLED ${CGAL_BACKEND_ENABLED}")
 
+set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
+message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
+include_directories(${RAPIDJSON_INCLUDE_DIR})
+
+
 include_directories(include/)
 
 add_executable(rawprobe2trajectories rawprobe2trajectories.cpp)
@@ -217,6 +222,13 @@ add_executable(example_statistics compute_statistics.cpp)
                 PRIVATE
                 c2d::movetk
                 )
+
+add_executable(write_geojson write_geojson.cpp)
+        target_compile_definitions(write_geojson PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
+        target_link_libraries(write_geojson
+                PRIVATE
+                c2d::movetk
+                )                
 
 if (WITH_CGAL_BACKEND)
 

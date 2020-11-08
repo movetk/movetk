@@ -25,29 +25,28 @@
 #define MOVETK_TRANSPOSE_H
 
 #include <vector>
-using std::vector;
 #include <tuple>
-using std::tuple;
 #include <string>
-using std::string;
 
 template <class... fields>
-struct Transpose {
+struct Transpose
+{
 
     constexpr static std::size_t N = sizeof...(fields);
-    typedef tuple<fields...> row_tuple_type;
-    typedef tuple<vector<fields>...> tuple_of_vectors_type;
-    vector<row_tuple_type>& _inp;
+    typedef std::tuple<fields...> row_tuple_type;
+    typedef std::tuple<std::vector<fields>...> tuple_of_vectors_type;
+    std::vector<row_tuple_type> &_inp;
 
-    explicit Transpose(vector<row_tuple_type>& inp) : _inp(inp) {}
+    explicit Transpose(std::vector<row_tuple_type> &inp) : _inp(inp) {}
 
     template <std::size_t idx>
-    vector<typename std::tuple_element<idx, tuple<fields...>>::type>
+    std::vector<typename std::tuple_element<idx, std::tuple<fields...>>::type>
     convert_rows_to_column()
     {
-        using type = typename std::tuple_element<idx, tuple<fields...>>::type;
-        vector<type> v;
-        for (auto x: _inp) {
+        using type = typename std::tuple_element<idx, std::tuple<fields...>>::type;
+        std::vector<type> v;
+        for (auto x : _inp)
+        {
             v.push_back(std::get<idx>(x));
         }
         return v;
@@ -64,6 +63,5 @@ struct Transpose {
         return convert_rows_to_columns(std::make_index_sequence<N>{});
     }
 };
-
 
 #endif //MOVETK_TRANSPOSE_H

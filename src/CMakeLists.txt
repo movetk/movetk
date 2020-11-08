@@ -15,10 +15,17 @@ endif()
 # include common tools and workarounds
 include(tools)
 
-find_package(Boost REQUIRED COMPONENTS iostreams log)
+find_package(Boost REQUIRED COMPONENTS iostreams log thread system log_setup graph)
+set(Boost_USE_MULTITHREADED 1)
+message(STATUS "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
+message(STATUS "Boost_LIBRARIES ${Boost_LIBRARIES}")
+
 find_package(Threads REQUIRED)
 find_package(GDAL 2.2 REQUIRED)
-find_package(GeographicLib REQUIRED)
+find_package(GeographicLib REQUIRED COMPONENTS SHARED)
+message(STATUS "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
+message(STATUS "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
+
 find_package(GSL 2.4 REQUIRED)
 find_package(MPFR REQUIRED)
 
@@ -32,14 +39,21 @@ if(_IMPORT_PREFIX STREQUAL "/")
     set(_IMPORT_PREFIX "")
 endif()
 
-install(DIRECTORY  ${_IMPORT_PREFIX}/third_party/GsTL/include/
-        DESTINATION include
-        )
-message(STATUS "import_prefix ${_IMPORT_PREFIX}/third_party/GsTL/include/")
-
-set(GsTL_INCLUDE_DIR "${_IMPORT_PREFIX}/third_party/GsTL/include/")
+set(GsTL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/GsTL/include/")
 
 message(STATUS "GsTL_include ${GsTL_INCLUDE_DIR} ")
+
+set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
+
+message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
+
+install(DIRECTORY  ${GsTL_INCLUDE_DIR}
+        ${RAPIDJSON_INCLUDE_DIR}
+        DESTINATION include
+        )
+
+
+include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
 
 if (WITH_CGAL_BACKEND)
         find_package(CGAL REQUIRED)
@@ -60,7 +74,7 @@ if (WITH_CGAL_BACKEND)
         message(STATUS "cgal_lib ${CGAL_LIBRARIES}")
         message(STATUS "gsl_include ${GSL_INCLUDE_DIR}")
         message(STATUS "gsl_lib ${GSL_LIBRARY}")
-    else()
+else()
         message(STATUS "gsl_include ${GSL_INCLUDE_DIR}")
         message(STATUS "gsl_lib ${GSL_LIBRARY}")
         message(STATUS "gdal_include ${GDAL_INCLUDE_DIR}")
@@ -98,8 +112,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/io/csv/csv.h
             include/movetk/io/csv/CategoricalField.h
             include/movetk/io/csv/ParseDate.h
-            include/movetk/io/GeoJSONUtils.h
-            include/movetk/io/ColouredGeoJSONUtils.h
+            include/movetk/io/GeoJSON.h
             include/movetk/geom/CGALTraits.h
             include/movetk/geom/trajectory_gdal.h
             include/movetk/geom/CGALWrapper.h
@@ -107,6 +120,8 @@ if (WITH_CGAL_BACKEND)
             include/movetk/geom/trajectory_to_interface.h
             include/movetk/metric/Norm.h
             include/movetk/metric/Distances.h
+            include/movetk/metric/DistanceTraits.h
+            include/movetk/metric/DistanceInterface.h
             include/movetk/utils/unituple.h
             include/movetk/utils/TrajectoryUtils.h
             include/movetk/utils/StringUtils.h
@@ -169,8 +184,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/io/csv/csv.h
             include/movetk/io/csv/CategoricalField.h
             include/movetk/io/csv/ParseDate.h
-            include/movetk/io/GeoJSONUtils.h
-            include/movetk/io/ColouredGeoJSONUtils.h
+            include/movetk/io/GeoJSON.h
             include/movetk/geom/trajectory_gdal.h
             include/movetk/geom/BoostGeometryWrapper.h
             include/movetk/geom/BoostGeometryTraits.h
@@ -178,6 +192,8 @@ if (WITH_CGAL_BACKEND)
             include/movetk/geom/trajectory_to_interface.h
             include/movetk/metric/Norm.h
             include/movetk/metric/Distances.h
+            include/movetk/metric/DistanceTraits.h
+            include/movetk/metric/DistanceInterface.h
             include/movetk/utils/unituple.h
             include/movetk/utils/TrajectoryUtils.h
             include/movetk/utils/StringUtils.h
@@ -197,7 +213,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/algo/Search.h
             include/movetk/algo/BrownianBridge.h
             include/movetk/algo/Similarity.h
-			include/movetk/algo/Statistics.h
+	    include/movetk/algo/Statistics.h
             include/movetk/algo/OutlierDetection.h
             include/movetk/algo/OutlierDetectionPredicates.h
             include/movetk/algo/Clustering.h
@@ -226,7 +242,7 @@ endif()
 target_compile_features(movetk PUBLIC cxx_std_17)
 target_compile_definitions(movetk PUBLIC -DBOOST_LOG_DYN_LINK=1)
 
-target_include_directories(movetk PRIVATE ${GsTL_INCLUDE_DIR})
+target_include_directories(movetk PRIVATE ${GsTL_INCLUDE_DIR} ${RAPIDJSON_INCLUDE_DIR})
 
 
 if (WITH_CGAL_BACKEND)
@@ -235,8 +251,9 @@ if (WITH_CGAL_BACKEND)
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
             $<INSTALL_INTERFACE:include>
+            ${Boost_INCLUDE_DIRS}
             ${GDAL_INCLUDE_DIR}
-            ${GeographicLib_INCLUDE_DIR}
+            ${GeographicLib_INCLUDE_DIRS}
             ${CGAL_INCLUDE_DIR}
             ${MPFR_INCLUDE_DIR}
             ${GSL_INCLUDE_DIR}
@@ -247,8 +264,9 @@ else ()
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
             $<INSTALL_INTERFACE:include>
+            ${Boost_INCLUDE_DIRS}
             ${GDAL_INCLUDE_DIR}
-            ${GeographicLib_INCLUDE_DIR}
+            ${GeographicLib_INCLUDE_DIRS}
             ${GSL_INCLUDE_DIR}
             )
 endif ()
@@ -257,28 +275,26 @@ if (WITH_CGAL_BACKEND)
     target_link_libraries(movetk
             PUBLIC
             Threads::Threads
-            Boost::log
-            Boost::iostreams
-            gdal
-            Geographic
+            ${Boost_LIBRARIES}
+            ${GDAL_LIBRARY}
             ${CGAL_LIBRARY}
-            gsl
-	    gslcblas
+            ${GeographicLib_LIBRARIES}
+            ${GSL_LIBRARIES}
             GMP::GMP
             MPFR::MPFR
             CGAL::CGAL
             )
 else ()
-    target_link_libraries(movetk
-            PUBLIC
-            Threads::Threads
-            Boost::log
-            Boost::iostreams
-            gdal
-            Geographic
-            gsl
-	    gslcblas
-            )
+                target_link_libraries(movetk
+                        PUBLIC
+                        Threads::Threads
+                        ${Boost_LIBRARIES}
+                        ${GDAL_LIBRARY}
+                        ${CGAL_LIBRARY}
+                        ${GeographicLib_LIBRARIES}
+                        ${GSL_LIBRARIES}
+                     
+                )           
 endif ()
 
 add_library(c2d::movetk ALIAS movetk)
@@ -290,7 +306,8 @@ install(TARGETS movetk EXPORT ${CMAKE_PROJECT_NAME}Targets
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include
         )
-install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR}
+install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR} 
+        ${RAPIDJSON_INCLUDE_DIR}
         DESTINATION include
         COMPONENT Devel
         )

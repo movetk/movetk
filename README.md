@@ -1,7 +1,7 @@
 # MoveTK: the movement toolkit
 ![MoveTK-CI-Ubuntu](https://github.com/heremaps/movetk/workflows/MoveTK-CI-Ubuntu/badge.svg?branch=master&event=push) ![MoveTK-CI-macOS](https://github.com/heremaps/movetk/workflows/MoveTK-CI-macOS/badge.svg?branch=master&event=push) ![MoveTK-create-docker-image](https://github.com/heremaps/movetk/workflows/MoveTK-create-docker-image/badge.svg?branch=master)
 
-MoveTK is a library for computational movement analysis written in C++. The library has been developed as part of a collaboration between [HERE Technologies](https://www.here.com/) , [Eindhoven University of Technology](https://www.tue.nl/en/) and [Utrecht University](https://www.uu.nl/en) under the [Commit2Data](https://commit2data.nl/en/commit2data-program/data-handling/data-science-voor-veranderende-data-2/analysis-and-visualization-of-heterogeneous-spatio-temporal-data) program.
+MoveTK is a library for computational movement analysis written in C++. The library has been developed as part of a collaboration between [HERE Technologies](https://www.here.com/) , [Eindhoven University of Technology](https://alga.win.tue.nl/) and [Utrecht University](https://www.uu.nl/en/research/algorithms/geometric-computing) under the [Commit2Data](https://commit2data.nl/en/commit2data-program/data-handling/data-science-voor-veranderende-data-2/analysis-and-visualization-of-heterogeneous-spatio-temporal-data) program.
 
 ## Overview
 MoveTK is a reusable, well tested, high performant, feature-rich library that incorporates state of the art algorithms for understanding movement.
@@ -48,32 +48,13 @@ docker run -p 6013:8888 -p 80:80 -it aniketmitra001/movetk
 
 4. Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to ```/tutorials ```  using the navigation pane in JupyterLab 
 
-**Note** : On Mac it is important to start Docker from Docker Desktop , so that ```localhost``` of the container gets mapped to the ```localhost``` of the host machine. This will allow the documentation to be rendered in Jupyter notebooks.  
+**Notes** : 
+
+- On Mac it is important to start Docker from Docker Desktop , so that ```localhost``` of the container gets mapped to the ```localhost``` of the host machine. This will allow the documentation to be rendered in Jupyter notebooks.  
+- If you are running a ```docker build``` yourself, it it important to ensure that at least 4GB of memory has been allocated to the docker container 
 
 
-## Artifacts 
-
-A push event to the master branch of MoveTK triggers a set of continuous integration (CI) [workflows](https://github.com/heremaps/movetk/actions). If the worflows are sucessful, this results in the following artifacts to be generated
-
-- A Docker image. Do ```docker pull aniketmitra001/movetk:latest``` to get the image
-- A RPM & DEB package. If the latest run of the CI workflow for [MoveTK-CI-Ubuntu](https://github.com/heremaps/movetk/actions?query=workflow%3AMoveTK-CI-Ubuntu+branch%3Amaster) is successful, select the last run. The packages can be found on the *Artifacts* section.   
-
-## Installation with cmake
-
-1. Clone the repository.
-```bash
-git clone https://github.com/heremaps/movetk.git
-```
-
-2. Replicate the  steps in corresponding YAML files
-
-    -[Mac](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-macos.yml)
-
-    -[Windows](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-windows.yml)
-
-    -[Ubuntu](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-ubuntu.yml)
-
-## Artifacts 
+##  Build Artifacts 
 
 A push event to the master branch of MoveTK triggers a set of continuous integration (CI) [workflows](https://github.com/heremaps/movetk/actions). If the worflows are sucessful, this results in the following artifacts to be generated
 
@@ -94,6 +75,10 @@ git clone https://github.com/heremaps/movetk.git
     -[Windows](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-windows.yml)
 
     -[Ubuntu](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-ubuntu.yml)
+
+## Using MoveTK in your App
+
+Please refer to this [example](https://github.com/aniketmitra001/movetk-app-template) for a template on how to use MoveTK in your app 
 
 ## Third Party Libraries Included In MoveTK
 
