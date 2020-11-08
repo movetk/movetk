@@ -112,9 +112,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/io/csv/csv.h
             include/movetk/io/csv/CategoricalField.h
             include/movetk/io/csv/ParseDate.h
-            include/movetk/io/GeoJSONUtils.h
-            include/movetk/io/ColouredGeoJSONUtils.h
-             include/movetk/io/GeoJSON.h
+            include/movetk/io/GeoJSON.h
             include/movetk/geom/CGALTraits.h
             include/movetk/geom/trajectory_gdal.h
             include/movetk/geom/CGALWrapper.h
@@ -186,8 +184,6 @@ if (WITH_CGAL_BACKEND)
             include/movetk/io/csv/csv.h
             include/movetk/io/csv/CategoricalField.h
             include/movetk/io/csv/ParseDate.h
-            include/movetk/io/GeoJSONUtils.h
-            include/movetk/io/ColouredGeoJSONUtils.h
             include/movetk/io/GeoJSON.h
             include/movetk/geom/trajectory_gdal.h
             include/movetk/geom/BoostGeometryWrapper.h
