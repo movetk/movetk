@@ -12,13 +12,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - uses: actions/checkout@v2
+        with:
+            repository: microsoft/vcpkg
+            path: vcpkg-ports
+            ref: '2020.07'
       # Checkout repository
       - uses: actions/checkout@v2
+        with:
+            repository: heremaps/movetk
+            path: movetk   
       # Get the ninja generator
       - uses: seanmiddleditch/gha-setup-ninja@master
       # Install movetk dependencies
       - name: install dependencies
-        run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --triplet x64-windows
+        run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --triplet x64-windows --overlay-ports=./vcpkg-ports
       # Build movetk
       - name: build movetk
         run: .\ci.cmd 	 
