@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
             repository: microsoft/vcpkg
-            path: vcpkg-ports
+            path: vcpkg-202007
             ref: '2020.07'
       # Checkout repository
       - uses: actions/checkout@v2
@@ -29,7 +29,7 @@ jobs:
       # Install movetk dependencies
       - name: install dependencies
         #run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --overlay-ports=${{ github.workspace }}\vcpkg-ports --triplet x64-windows 
-        run: C:\vcpkg\vcpkg.exe install cgal --overlay-ports=${{ github.workspace }}\vcpkg-ports --triplet x64-windows 
+        run: C:\vcpkg\vcpkg.exe install cgal --overlay-ports="${{ github.workspace }}\vcpkg-202007\ports\cgal" --triplet x64-windows 
       # Build movetk
       - name: build movetk
         run: .\ci.cmd 	 
