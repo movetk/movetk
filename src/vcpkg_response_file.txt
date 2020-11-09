@@ -1,0 +1,11 @@
+boost-graph
+boost-iostreams
+boost-geometry
+boost-log
+gdal
+gsl
+cgal
+geographiclib
+cgal
+--triplet
+x64-windows
