@@ -30,6 +30,6 @@ jobs:
       # Build movetk
       - name: build movetk
         run: |
-            cd ${{ github.workspace }}
-            dir ${{ github.workspace }}
+            cd ${{ github.workspace }}\movetk
+            dir 
             .\ci.cmd 	 
