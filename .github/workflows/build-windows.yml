@@ -28,10 +28,9 @@ jobs:
       # Install movetk dependencies
       #- name: install dependencies
       #  run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib  cgal --overlay-ports=${{ github.workspace }}\vcpkg-202007\ports --triplet x64-windows 
-      # Restore from cache the previously built ports. If "cache miss", then provision vcpkg, install desired ports, finally cache everything for the next run.
-      - name: Set vcpkg's response file path used as part of cache's key.
-        run: echo "${{ github.workspace }}\movetk\src\vcpkg_response_file.txt" >> $VCPKGRESPONSEFILE
+      # Restore from cache the previously built ports. If "cache miss", then provision vcpkg, install desired ports, finally cache everything for the next run.        
       - name: Restore from cache and run vcpkg
+        run: echo "${{ github.workspace }}\movetk\src\vcpkg_response_file.txt" >> $VCPKGRESPONSEFILE
         uses: lukka/run-vcpkg@main
         id: runvcpkg
         with:
