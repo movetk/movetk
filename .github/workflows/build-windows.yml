@@ -26,7 +26,7 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@master
       # Install movetk dependencies
       - name: install dependencies
-        run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --triplet x64-windows --overlay-ports=./vcpkg-ports
+        run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib --overlay-ports="C:\vcpkg-ports" --triplet x64-windows 
       # Build movetk
       - name: build movetk
         run: .\ci.cmd 	 
