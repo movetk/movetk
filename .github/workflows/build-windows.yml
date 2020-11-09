@@ -28,10 +28,6 @@ jobs:
       # Get the ninja generator
       - uses: seanmiddleditch/gha-setup-ninja@master
      
-      # Install movetk dependencies
-      #- name: install dependencies
-      #  run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib  cgal --overlay-ports=${{ github.workspace }}\vcpkg-202007\ports --triplet x64-windows 
-       
       - name: Set vcpkg's response file path used as part of cache's key.
         uses: lukka/set-shell-env@master
         with:
@@ -52,18 +48,10 @@ jobs:
           appendedCacheKey: ${{ hashFiles( env.VCPKGRESPONSEFILE ) }}
      
       # Build movetk
-      # - name: build movetk
-      #   run: |
-      #       cd ${{ github.workspace }}\movetk
-      #       dir 
-      #      .\ci.cmd 	
-      
-      # Build movetk
       - name: Run CMake with Ninja
         uses: lukka/run-cmake@main
         id: runcmake
         with:
           cmakeListsTxtPath: '${{ github.workspace }}\movetk\CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildDirectory: '${{ github.workspace }}\movetk\build'   
           cmakeAppendedArgs: '-GNinja -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_CGAL_BACKEND=OFF -DBUILD_DOC=ON'   
