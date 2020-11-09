@@ -126,6 +126,49 @@ TEST_CASE( "Check if polyline strong Frechet distance is correct", "[strong_frec
 </path>
 </ipeselection>
 )IPE", expectedDistLine);
+        sfr.setTolerance(1.0);
+        auto dist = sfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
+
+        auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
+        std::cout << "Expected dist: " << expectedDist << std::endl;
+
+        REQUIRE(dist < expectedDist + sfr.tolerance());
+        REQUIRE(dist > expectedDist - sfr.tolerance());
+    }
+    SECTION("Single segment and spike example")
+    {
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="-80 352">
+<path stroke="black">
+128 320 m
+144 352 l
+160 368 l
+176 416 l
+192 368 l
+208 352 l
+224 320 l
+</path>
+</ipeselection>
+)IPE", polyA);
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="-32 368">
+<path stroke="black">
+128 320 m
+224 320 l
+</path>
+</ipeselection>
+)IPE", polyB);
+        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="176 384">
+<path matrix="1 0 0 1 32 32" stroke="black">
+176 320 m
+176 416 l
+</path>
+</ipeselection>s
+)IPE", expectedDistLine);
 
 
         auto dist = sfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
