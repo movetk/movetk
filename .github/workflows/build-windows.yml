@@ -65,5 +65,5 @@ jobs:
         with:
           cmakeListsTxtPath: '${{ github.workspace }}\movetk\CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '-DVCPKG_TARGET_TRIPLET=x64-windows  -DWITH_CGAL_BACKEND=OFF -DBUILD_DOC=ON'
-          buildDirectory: '${{ github.workspace }}\movetk\build'      
+          buildDirectory: '${{ github.workspace }}\movetk\build'   
+          cmakeAppendedArgs: '-GNinja -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_CGAL_BACKEND=OFF -DBUILD_DOC=ON'   
