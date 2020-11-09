@@ -52,8 +52,18 @@ jobs:
           appendedCacheKey: ${{ hashFiles( env.VCPKGRESPONSEFILE ) }}
      
       # Build movetk
-      - name: build movetk
-        run: |
-            cd ${{ github.workspace }}\movetk
-            dir 
-            .\ci.cmd 	 
+      # - name: build movetk
+      #   run: |
+      #       cd ${{ github.workspace }}\movetk
+      #       dir 
+      #      .\ci.cmd 	
+      
+      # Build movetk
+      - name: Run CMake with Ninja
+        uses: lukka/run-cmake@main
+        id: runcmake
+        with:
+          cmakeListsTxtPath: '${{ github.workspace }}\movetk\CMakeLists.txt'
+          useVcpkgToolchainFile: true
+          buildWithCMakeArgs: '-DVCPKG_TARGET_TRIPLET=x64-windows  -DWITH_CGAL_BACKEND=OFF -DBUILD_DOC=ON'
+          buildDirectory: '${{ github.workspace }}\movetk\build'      
