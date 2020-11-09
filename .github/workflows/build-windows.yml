@@ -25,8 +25,8 @@ jobs:
       # Get the ninja generator
       - uses: seanmiddleditch/gha-setup-ninja@master
       # Install movetk dependencies
-      #- name: install dependencies
-      #  run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib  cgal --overlay-ports=${{ github.workspace }}\vcpkg-202007\ports --triplet x64-windows 
+      - name: install dependencies
+        run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib  cgal --overlay-ports=${{ github.workspace }}\vcpkg-202007\ports --triplet x64-windows 
       # Build movetk
       - name: build movetk
         run: |
