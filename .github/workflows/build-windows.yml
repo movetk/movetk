@@ -30,20 +30,19 @@ jobs:
       #  run: C:\vcpkg\vcpkg.exe install boost-graph boost-iostreams boost-geometry boost-log gdal gsl cgal geographiclib  cgal --overlay-ports=${{ github.workspace }}\vcpkg-202007\ports --triplet x64-windows 
       # Restore from cache the previously built ports. If "cache miss", then provision vcpkg, install desired ports, finally cache everything for the next run.
       - name: Set vcpkg's response file path used as part of cache's key.
-        uses: lukka/set-shell-env@master
-        with:
-          VCPKGRESPONSEFILE: ${{ github.workspace }}\movetk\src\vcpkg_response_file.txt
+        run: echo "${{ github.workspace }}\movetk\src\vcpkg_response_file.txt" >> $VCPKGRESPONSEFILE
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@main
         id: runvcpkg
         with:
           # Response file stored in source control, it provides the list of ports and triplet(s).
-          vcpkgArguments: '@${{ env.vcpkgResponseFile }} --overlay-ports=${{ github.workspace }}\vcpkg-202007\ports'
+          vcpkgArguments: '@${{ env.VCPKGRESPONSEFILE }}'
           # Location of the vcpkg as submodule of the repository.
           vcpkgDirectory: '${{ github.workspace }}\vcpkg-202007'
+          vcpkgGitCommitId: '56fffbe49dfb4dd8fae0940f272c5fd2b86be991'
           # Since the cache must be invalidated when content of the response file changes, let's
           # compute its hash and append this to the computed cache's key.
-          appendedCacheKey: ${{ hashFiles(env.vcpkgResponseFile) }}
+          appendedCacheKey: ${{ hashFiles(env.VCPKGRESPONSEFILE) }}
       # Build movetk
       - name: build movetk
         run: |
