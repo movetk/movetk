@@ -708,14 +708,25 @@ namespace movetk_support
 
             if (polyASize == 1)
             {
-                auto transform = [poly_a](const auto& polyBIt) {return std::sqrt(m_sqDistance(*poly_a, *polyBIt)); };
+                auto sqDist = m_sqDistance;
+                // Use std::function, otherwise boost will error when trying to copy the transform_iterator
+                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_a](const auto& polyBEl)
+                {
+                    SqDistance sqDist;
+                    return std::sqrt(sqDist(*poly_a, polyBEl));
+                };
                 auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
                 output = *maxElIt;
                 return true;
             }
             if (polyBSize == 1)
             {
-                auto transform = [poly_b](const auto& polyAIt) {return std::sqrt(m_sqDistance(*poly_b, *polyAIt)); };
+                // Use std::function, otherwise boost will error when trying to copy the transform_iterator
+                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_b](const auto& polyAEl)
+                {
+                    SqDistance sqDist;
+                    return std::sqrt(sqDist(*poly_b, polyAEl));
+                };
                 auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
                 output = *maxElIt;
                 return true;

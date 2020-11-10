@@ -73,8 +73,7 @@ TEST_CASE( "Check if polyline strong Frechet distance is correct", "[strong_frec
         auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
         std::cout << "Expected dist: " << expectedDist << std::endl;
 
-        REQUIRE(dist < expectedDist + sfr.tolerance());
-        REQUIRE(dist > expectedDist - sfr.tolerance());
+        REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
     }
     SECTION("Weaved grid example")
     {
@@ -132,8 +131,7 @@ TEST_CASE( "Check if polyline strong Frechet distance is correct", "[strong_frec
         auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
         std::cout << "Expected dist: " << expectedDist << std::endl;
 
-        REQUIRE(dist < expectedDist + sfr.tolerance());
-        REQUIRE(dist > expectedDist - sfr.tolerance());
+        REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
     }
     SECTION("Single segment and spike example")
     {
@@ -176,7 +174,135 @@ TEST_CASE( "Check if polyline strong Frechet distance is correct", "[strong_frec
         auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
         std::cout << "Expected dist: " << expectedDist << std::endl;
 
-        REQUIRE(dist < expectedDist + sfr.tolerance());
-        REQUIRE(dist > expectedDist - sfr.tolerance());
+        REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
+    }
+    SECTION("Two segments example")
+    {
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="176 736">
+<path stroke="black" arrow="normal/normal">
+128 736 m
+192 736 l
+</path>
+</ipeselection>
+)IPE", polyA);
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="0 768">
+<path stroke="black" arrow="normal/normal">
+98.5874 755.395 m
+157.413 780.605 l
+</path>
+</ipeselection>
+)IPE", polyB);
+        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="174.706 758.303">
+<path stroke="black" arrow="normal/normal">
+157.413 780.605 m
+192 736 l
+</path>
+</ipeselection>
+)IPE", expectedDistLine);
+        auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
+        {
+            auto dist = sfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
+
+
+            REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
+        }
+        {
+            // Test reverse, should still be true
+            auto dist = sfr(polyB.begin(), polyB.end(), polyA.begin(), polyA.end());
+
+            REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
+        }
+        
+    }
+    SECTION("Segment-point example")
+    {
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="176 736">
+<path stroke="black" arrow="normal/normal">
+128 736 m
+192 736 l
+</path>
+</ipeselection>
+)IPE", polyA);
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="0 768">
+<path stroke="black" arrow="normal/normal">
+98.5874 755.395 m
+</path>
+</ipeselection>
+)IPE", polyB);
+        REQUIRE(polyA.size() == 2);
+        REQUIRE(polyB.size() == 1);
+
+        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="139.422 746.917">
+<path stroke="black">
+98.5874 755.395 m
+192 736 l
+</path>
+</ipeselection>
+)IPE", expectedDistLine);
+        auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
+        {
+            auto dist = sfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
+
+            REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
+        }
+        {
+            // Test reverse, should still be true
+            auto dist = sfr(polyB.begin(), polyB.end(), polyA.begin(), polyA.end());
+
+            REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
+        }
+    }
+    SECTION("Point-point example")
+    {
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="176 736">
+<path stroke="black" arrow="normal/normal">
+128 736 m
+</path>
+</ipeselection>
+)IPE", polyA);
+        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="0 768">
+<path stroke="black" arrow="normal/normal">
+98.5874 755.395 mp
+</path>
+</ipeselection>
+)IPE", polyB);
+        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
+        test_helpers::parseIpePath(R"IPE(
+<ipeselection pos="96 736">
+<path stroke="black" arrow="normal/normal">
+98.5874 755.395 m
+128 736 l
+</path>
+</ipeselection>
+)IPE", expectedDistLine);
+        auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
+        {
+            auto dist = sfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
+
+
+            REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
+        }
+        {
+            // Test reverse, should still be true
+            auto dist = sfr(polyB.begin(), polyB.end(),polyA.begin(), polyA.end());
+
+            REQUIRE(dist == Approx(expectedDist).margin(sfr.tolerance()));
+        }
     }
 }
