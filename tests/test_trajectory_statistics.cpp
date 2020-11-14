@@ -47,40 +47,96 @@ struct Dist
 
 TEST_CASE( "Trajectory length", "[trajectory_length]" ) {
 
-    using ProbePoint = std::tuple<string, double, double, std::time_t>;
-    // Construct data
-    ProbePoint base{ "test",0,0,0 };
-    std::vector<double> xs = { 0,0,2,-3 };
-    std::vector<double> ys = { 2,4,6,5 };
-    std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, static_cast<std::time_t>(5),base);
-
     using Trajectory = TabularTrajectory<string, double, double, std::time_t>;
-    Trajectory t{ data };
-
+    using ProbePoint = std::tuple<string, double, double, std::time_t>;
     // Setup algorithm
     Dist d;
     movetk_algorithms::TrajectoryLength<Trajectory, MovetkGeometryKernel, Dist, 1, 2> lengthCalc(d);
 
-    auto dist = lengthCalc(t);
-    
-    REQUIRE(dist == Approx(2.0 + std::sqrt(8.) + std::sqrt(26.)) );
+    SECTION("Simple trajectory")
+    {
+        // Construct data
+        ProbePoint base{ "test",0,0,0 };
+        std::vector<double> xs = { 0,0,2,-3 };
+        std::vector<double> ys = { 2,4,6,5 };
+        std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, static_cast<std::time_t>(5), base);
+
+        Trajectory t{ data };
+
+        auto dist = lengthCalc(t);
+        REQUIRE(dist == Approx(2.0 + std::sqrt(8.) + std::sqrt(26.)));
+    }
+    SECTION("Single segment trajectory")
+    {
+        // Construct data
+        ProbePoint base{ "test",0,0,0 };
+        std::vector<double> xs = { 0,2};
+        std::vector<double> ys = { 2,6};
+        std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, static_cast<std::time_t>(5), base);
+
+        Trajectory t{ data };
+
+        auto dist = lengthCalc(t);
+        REQUIRE(dist == Approx(std::sqrt(2.0*2.0 + 4.0 * 4.0)));
+    }
+    SECTION("Degenerate point trajectory case")
+    {
+        // Construct data
+        ProbePoint base{ "test",0,0,0 };
+        std::vector<double> xs = { 0 };
+        std::vector<double> ys = { 2 };
+        std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, static_cast<std::time_t>(5), base);
+
+        Trajectory t{ data };
+
+        auto dist = lengthCalc(t);
+        REQUIRE(dist == Approx(0));
+    }
+    SECTION("Empty trajectory case")
+    {
+        Trajectory t;
+
+        auto dist = lengthCalc(t);
+        REQUIRE(dist == Approx(0));
+    }
 }
 
 TEST_CASE("Trajectory duration", "[trajectory_duration]") {
-    using ProbePoint = std::tuple<string, double, double, std::time_t>;
-    // Construct data
-    ProbePoint base{ "test",0,0,0 };
-    std::vector<double> xs = { 0, 0, 2,-3, 2.0, 3.0, -2.3, 1.5 };
-    std::vector<double> ys = { 2, 4, 6, 5, 1.2, 3.3, 2.25, -1.0 };
-    std::vector<std::time_t> times = { 3, 5, 2, 21, 13, 15, 2, 6 };
-    std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, times, base);
-
     using Trajectory = TabularTrajectory<string, double, double, std::time_t>;
+    using ProbePoint = std::tuple<string, double, double, std::time_t>;
     movetk_algorithms::TrajectoryDuration<Trajectory, 3> durationCalc;
-    Trajectory t{ data };
+    SECTION("Simple trajectory")
+    {
+        // Construct data
+        ProbePoint base{ "test",0,0,0 };
+        std::vector<double> xs = { 0, 0, 2,-3, 2.0, 3.0, -2.3, 1.5 };
+        std::vector<double> ys = { 2, 4, 6, 5, 1.2, 3.3, 2.25, -1.0 };
+        std::vector<std::time_t> times = { 3, 5, 2, 21, 13, 15, 2, 6 };
+        std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, times, base);
 
-    //Approx here since duration is implementation defined, may be double
-    REQUIRE( durationCalc(t) == Approx(19) ); 
+        Trajectory t{ data };
+
+        //Approx here since duration is implementation defined, may be double
+        REQUIRE( durationCalc(t) == Approx(19) );
+    }
+    SECTION("Degenerate point trajectory case")
+    {
+        // Construct data
+        ProbePoint base{ "test",0,0,0 };
+        std::vector<double> xs = { 0 };
+        std::vector<double> ys = { 2 };
+        std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, static_cast<std::time_t>(5), base);
+
+        Trajectory t { data };
+
+        REQUIRE(durationCalc(t) == Approx(0));
+    }
+    SECTION("Empty trajectory case")
+    {
+        Trajectory t;
+
+        REQUIRE(durationCalc(t) == Approx(0));
+    }
 }
 
 TEST_CASE("Trajectory speed statistics", "[trajectory_speed_statistics]") {
@@ -100,42 +156,115 @@ TEST_CASE("Trajectory speed statistics", "[trajectory_speed_statistics]") {
     Trajectory t{ data };
     using Stat = typename decltype(speedStat)::Statistic;
     //Approx here since duration is implementation defined, may be double
-    SECTION("The mean speed is properly calculated")
+    SECTION("Simple trajectory")
     {
-        auto mean = speedStat(t,Stat::Mean);
-        auto meanComputed = (2.0 / 5.0 + std::sqrt(8) / 5.0 + std::sqrt(26.0) / 5.0) / 3.0;
-        REQUIRE(mean == Approx(meanComputed));
-    }
-    SECTION("The median speed is properly calculated")
-    {
-        auto median = speedStat(t, Stat::Median);
-        auto medianComputed = std::sqrt(8) / 5.0;
-        REQUIRE(median == Approx(medianComputed));
-    }
-    SECTION("The min and max speeds are properly calculated")
-    {
-        auto minS = speedStat(t, Stat::Min);
-        auto maxS = speedStat(t, Stat::Max);
-        REQUIRE(minS == Approx(2.0/5.0));
-        REQUIRE(maxS == Approx(std::sqrt(26.0)/ 5.0));
-    }
-    SECTION("The variance of the speeds is properly calculated")
-    {
-        auto sqDiff = [](SpeedStat::Speed_t s1, SpeedStat::Speed_t s2)
+        SECTION("The mean speed is properly calculated")
         {
-            auto diff = s1 - s2;
-            return diff * diff;
-        };
+            auto mean = speedStat(t, Stat::Mean);
+            auto meanComputed = (2.0 / 5.0 + std::sqrt(8) / 5.0 + std::sqrt(26.0) / 5.0) / 3.0;
+            REQUIRE(mean == Approx(meanComputed));
+        }
+        SECTION("The median speed is properly calculated")
+        {
+            auto median = speedStat(t, Stat::Median);
+            auto medianComputed = std::sqrt(8) / 5.0;
+            REQUIRE(median == Approx(medianComputed));
+        }
+        SECTION("The min and max speeds are properly calculated")
+        {
+            auto minS = speedStat(t, Stat::Min);
+            auto maxS = speedStat(t, Stat::Max);
+            REQUIRE(minS == Approx(2.0 / 5.0));
+            REQUIRE(maxS == Approx(std::sqrt(26.0) / 5.0));
+        }
+        SECTION("The variance of the speeds is properly calculated")
+        {
+            auto sqDiff = [](SpeedStat::Speed_t s1, SpeedStat::Speed_t s2)
+            {
+                auto diff = s1 - s2;
+                return diff * diff;
+            };
+            auto mean = speedStat(t, Stat::Mean);
+            auto var = speedStat(t, Stat::Variance);
+            auto varComputed = (sqDiff(mean, 2.0 / 5.0) + sqDiff(mean, std::sqrt(26.) / 5.0) + sqDiff(mean, std::sqrt(8.) / 5.0)) / 3.0;
+            REQUIRE(var == Approx(varComputed));
+        }
+    }
+    
+    SECTION("Single segment trajectory")
+    {
+        // Construct data
+        ProbePoint base{ "test",0,0,0 };
+        std::vector<double> xs = { 0,2 };
+        std::vector<double> ys = { 2,6 };
+        std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, static_cast<std::time_t>(5), base);
+        Trajectory t{ data };
+        REQUIRE(t.size() == 2);
+
+        auto v = std::sqrt(2.0*2.0 + 4.0 * 4.0) / 5.0;
+
+
         auto mean = speedStat(t, Stat::Mean);
+        REQUIRE(mean== Approx(v));
+        auto median= speedStat(t, Stat::Median);
+        REQUIRE(median == Approx(v));
+        auto minS = speedStat(t, Stat::Min);
+        REQUIRE(minS == Approx(v));
+        auto maxS = speedStat(t, Stat::Max);
+        REQUIRE(maxS == Approx(v));
         auto var = speedStat(t, Stat::Variance);
-        auto varComputed = (sqDiff(mean, 2.0/5.0) + sqDiff(mean, std::sqrt(26.)/5.0) + sqDiff(mean,std::sqrt(8.)/5.0)) / 3.0;
-        REQUIRE(var == Approx(varComputed));
+        REQUIRE(var == Approx(0));
+    }
+    SECTION("Degenerate point trajectory case")
+    {
+        // Construct data
+        ProbePoint base{ "test",0,0,0 };
+        std::vector<double> xs = { 0 };
+        std::vector<double> ys = { 2 };
+        std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, static_cast<std::time_t>(5), base);
+
+        Trajectory t{ data };
+        REQUIRE(t.size() == 1);
+
+        auto v = 0;
+
+        auto mean = speedStat(t, Stat::Mean);
+        REQUIRE(mean == Approx(v));
+        auto median = speedStat(t, Stat::Median);
+        REQUIRE(median == Approx(v));
+        auto minS = speedStat(t, Stat::Min);
+        REQUIRE(minS == Approx(v));
+        auto maxS = speedStat(t, Stat::Max);
+        REQUIRE(maxS == Approx(v));
+        auto var = speedStat(t, Stat::Variance);
+        REQUIRE(var == Approx(0));
+    }
+    SECTION("Empty trajectory case")
+    {
+        Trajectory t;
+
+        auto v = 0;
+        auto mean = speedStat(t, Stat::Mean);
+        REQUIRE(mean == Approx(v));
+        auto median = speedStat(t, Stat::Median);
+        REQUIRE(median == Approx(v));
+        auto minS = speedStat(t, Stat::Min);
+        REQUIRE(minS == Approx(v));
+        auto maxS = speedStat(t, Stat::Max);
+        REQUIRE(maxS == Approx(v));
+        auto var = speedStat(t, Stat::Variance);
+        REQUIRE(var == Approx(0));
     }
 }
 
 TEST_CASE("Trajectory dominant time mode statistic", "[trajectory_time_mode_statistic]")
 {
     using ProbePoint = std::tuple<string, double, double, std::time_t>;
+
+    using Trajectory = TabularTrajectory<string, double, double, std::time_t>;
+    const int binNum = 4;
+    movetk_algorithms::TrajectoryTimeIntervalMode<Trajectory, 3> timeIntervalModeCalc(binNum);
+
     // Construct data
     ProbePoint base{ "test",0,0,0 };
     std::vector<double> xs = { 0, 0, 2,-3, 2.0, 3.0, -2.3, 1.5 };
@@ -143,8 +272,6 @@ TEST_CASE("Trajectory dominant time mode statistic", "[trajectory_time_mode_stat
     std::vector<std::time_t> times = { 2,3,4,5,6,13,15,21 };
     std::vector<ProbePoint> data = test_helpers::buildData<ProbePoint, 1, 2, 3>(xs, ys, times, base);
 
-    using Trajectory = TabularTrajectory<string, double, double, std::time_t>;
-    movetk_algorithms::TrajectoryTimeIntervalMode<Trajectory, 3> timeIntervalModeCalc(4);
     Trajectory t{ data };
     //std::vector<std::time_t> timeDiff = { 1,1,1,1,6,2,7 };
 

@@ -42,7 +42,7 @@ namespace movetk_algorithms {
     struct IteratorAccessor
     {
         // Reference to the parent trajectory
-        Trajectory& m_trajectory;
+        Trajectory* m_trajectory = nullptr;
         using TrajectoryIt = typename Trajectory::TrajectoryIterator;
         // The iterator
         TrajectoryIt m_it;
@@ -53,10 +53,10 @@ namespace movetk_algorithms {
         static constexpr bool isColumnar = Trajectory::storage_scheme() == StorageScheme::columnar;
 
         IteratorAccessor(Trajectory& trajectory, TrajectoryIt it):
-        m_trajectory(trajectory), m_it(it){}
+        m_trajectory(&trajectory), m_it(it){}
 
         IteratorAccessor(Trajectory& trajectory) :
-            m_trajectory(trajectory), m_it({}) {}
+            m_trajectory(&trajectory), m_it({}) {}
 
         /**
          * @brief Creates an accessor for the start iterator of the trajectory
@@ -108,6 +108,10 @@ namespace movetk_algorithms {
                 return std::get<Idx>(*m_it);
             }
         }
+        Self_t& operator*()
+        {
+            return *this;
+        }
 
         /**
          * @brief Creates a new iterator that is the current operator, offset by
@@ -117,7 +121,7 @@ namespace movetk_algorithms {
          */
         Self_t operator+(int offset)
         {
-            Self_t newIt(m_trajectory, m_it);
+            Self_t newIt(*m_trajectory, m_it);
             for(int i = 0; i < offset; ++i)
             {
                 ++newIt;
@@ -132,7 +136,7 @@ namespace movetk_algorithms {
         Self_t& operator++()
         {
             if constexpr(Trajectory::storage_scheme() == StorageScheme::columnar){
-                m_trajectory.row_next(m_it);
+                m_trajectory->row_next(m_it);
             }
             else
             {
@@ -177,17 +181,16 @@ namespace movetk_algorithms {
             m_trajectory(trajectory),
             m_dist(dist){}
 
-            void operator()(IteratorAccessor<Trajectory> point)
+            void operator()(IteratorAccessor<Trajectory> point0, IteratorAccessor<Trajectory> point1)
             {
                 movetk_core::MakePoint<GeometryKernel> make_point;
                 auto p0 = make_point({ 
-                    point.template getField<XcoordIdx>(),
-                    point.template getField<YcoordIdx>()
+                    point0.template getField<XcoordIdx>(),
+                    point0.template getField<YcoordIdx>()
                 });
-                auto next = point + 1;
                 auto p1 = make_point({
-                    next.template getField<XcoordIdx>(),
-                    next.template getField<YcoordIdx>()
+                    point1.template getField<XcoordIdx>(),
+                    point1.template getField<YcoordIdx>()
                     });
                 total += m_dist(p0, p1);
             }
@@ -200,9 +203,13 @@ namespace movetk_algorithms {
             AggregateLength aggregator(trajectory, m_dist);
             ItAccessor current = ItAccessor::start(trajectory);
             ItAccessor end = ItAccessor::end(trajectory);
+
+            // Empty trajectory: return zero length.
+            if (current == end) return 0;
+
             for(; (current + 1) != end; ++current)
             {
-                aggregator(current);
+                aggregator(current,current+1);
             }
 
             return aggregator.total;
@@ -233,19 +240,25 @@ namespace movetk_algorithms {
             ItAccessor current = ItAccessor::start(trajectory);
             ItAccessor end = ItAccessor::end(trajectory);
 
+            // Catch empty case
+            if (current == end) return 0;
+
+            auto getTime = [](auto& it)
+            {
+                return it.template getField<TimeStampIdx>();
+            };
+
             // Minimum and maximum time
             Time_t maxTime;
-            Time_t minTime = maxTime = current.template getField<TimeStampIdx>();
+            Time_t minTime = maxTime = getTime(current);
 
             // Find min and max time over all points
-            for (; current != end; ++current)
+            auto minMaxIts = std::minmax_element(current, end, [getTime](auto& it0, auto& it1)
             {
-                auto val = current.template getField<TimeStampIdx>();
-                if (minTime > val) minTime = val;
-                if (maxTime < val) maxTime = val;
-            }
+                return getTime(it0) < getTime(it1);
+            });
 
-            return maxTime - minTime;
+            return getTime(minMaxIts.second) - getTime(minMaxIts.first);
         }
     };
 
@@ -294,12 +307,11 @@ namespace movetk_algorithms {
          * @param it The current iterator 
          * @return The speed between the current and next point
          */
-        Speed_t getSpeed(ItAccessor it) 
+        Speed_t getSpeed(ItAccessor it0, ItAccessor it1)
         {
-            ItAccessor next = it + 1;
-            auto timeDiff = next.template getField<TimeStampIdx>() - it.template getField<TimeStampIdx>();
+            auto timeDiff = it1.template getField<TimeStampIdx>() - it0.template getField<TimeStampIdx>();
             // Calculate the distance
-            auto dist = m_dist(getPoint(it), getPoint(next));
+            auto dist = m_dist(getPoint(it0), getPoint(it1));
             // Return the speed
             return dist / timeDiff;
         }
@@ -312,16 +324,18 @@ namespace movetk_algorithms {
         {
             std::vector<Speed_t> speeds;
             movetk_core::MakePoint<GeometryKernel> make_point;
+            std::vector<Speed_t> output(requiredStatistics.size(), 0);
 
             ItAccessor current = ItAccessor::start(trajectory);
             ItAccessor end = ItAccessor::end(trajectory);
 
+            if (current == end) return output;
+
             // Find min and max time over all points
             for (; (current + 1) != end; ++current)
             {
-                speeds.push_back(getSpeed(current));
+                speeds.push_back(getSpeed(current,current+1));
             }
-            std::vector<Speed_t> output(requiredStatistics.size(), 0);
 
             // Check if the speeds are empty to avoid divisions by zero
             if (speeds.empty()) return output;
@@ -427,6 +441,10 @@ namespace movetk_algorithms {
                 auto timeDiff = next.template getField<TimeStampIdx>() - current.template getField<TimeStampIdx>();
                 intervals.push_back(timeDiff);
             }
+
+            // Return 0 when no intervals exist
+            if (intervals.empty()) return 0;
+
             // Sort the intervals
             std::sort(intervals.begin(), intervals.end());
 
