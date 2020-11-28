@@ -20,7 +20,7 @@
 #include "GeolifeTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/TrajectoryReader.h"
-#include "movetk/io/GeoJSONUtils.h"
+#include "movetk/io/GeoJSON.h"
 
 // Specializations for the Geolife raw probe format
 using TrajectoryTraits = geolife::c2d::raw::TabularTrajectoryTraits;

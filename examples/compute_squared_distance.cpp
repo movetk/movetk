@@ -22,12 +22,14 @@
 //
 
 #include "movetk/utils/GeometryBackendTraits.h"
+#include "movetk/metric/DistanceInterface.h"
 
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
@@ -39,7 +41,8 @@ int main(int argc, char **argv){
     GeometryKernel::MovetkGeometryKernel::MovetkSegment seg = make_segment(pt2, pt3);
 
     movetk_core::ComputeSquaredDistance<GeometryKernel::MovetkGeometryKernel,
-            GeometryKernel::Norm> squared_dist;
-    std::cout<<"Squared Distance from Point to Segment: "<<squared_dist(pt1,seg)<<std::endl;
+                                        GeometryKernel::Norm>
+        squared_dist;
+    std::cout << "Squared Distance from Point to Segment: " << squared_dist(pt1, seg) << std::endl;
     return 0;
 }

@@ -24,8 +24,6 @@
 // Created by Wouter Jongeling (wouter.jongeling@gmail.com)
 //
 
-
-
 #ifndef MOVETK_GEOLIFEPROBETRAITS_H
 #define MOVETK_GEOLIFEPROBETRAITS_H
 
@@ -34,36 +32,55 @@
 #include "movetk/io/csv/csv.h"
 #include "movetk/ProbeTraits.h"
 
-namespace geolife {
-	namespace c2d {
-		namespace raw {
+namespace geolife
+{
+	namespace c2d
+	{
+		namespace raw
+		{
 
-			enum InputColumns {
-				_LAT, _LON, _ALTITUDE, _DATETIME, _TRAJID, _MODEID
+			enum InputColumns
+			{
+				_LAT,
+				_LON,
+				_ALTITUDE,
+				_DATETIME,
+				_TRAJID,
+				_MODEID
 			};
 
 			// Fields of interest
-			enum ProbeColumns {
-				LAT, LON, ALTITUDE, DATETIME, TRAJID, MODEID
+			enum ProbeColumns
+			{
+				LAT,
+				LON,
+				ALTITUDE,
+				DATETIME,
+				TRAJID,
+				MODEID
 			};
 
-			class ProbeParseDate : public ParseDate {
+			class ProbeParseDate : public ParseDate
+			{
 			public:
-				explicit ProbeParseDate(std::time_t ts = 0, string date_format = "%Y-%m-%d %H:%M:%S")
-					:ParseDate(ts, std::move(date_format)) { }
+				explicit ProbeParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d %H:%M:%S")
+					: ParseDate(ts, std::move(date_format)) {}
 			};
 
-			class ProviderCategoricalField : public CategoricalField<std::string, ProviderCategoricalField> {};
+			class ProviderCategoricalField : public CategoricalField<std::string, ProviderCategoricalField>
+			{
+			};
 
 			typedef csv<std::tuple<double, double, double, std::time_t, std::string, std::string>,
-				_LAT, _LON, _ALTITUDE, _DATETIME, _TRAJID, _MODEID> ProbeCsv;
+						_LAT, _LON, _ALTITUDE, _DATETIME, _TRAJID, _MODEID>
+				ProbeCsv;
 
 			typedef typename ProbeCsv::value_type ProbePoint;
 
-            typedef _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
+			typedef _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
 
-		}  // namespace raw
-	}  // namespace c2d
-}  // namespace here
+		} // namespace raw
+	}	  // namespace c2d
+} // namespace geolife
 
 #endif //MOVETK_GEOLIFEPROBETRAITS_H

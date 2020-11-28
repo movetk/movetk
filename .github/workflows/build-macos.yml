@@ -13,6 +13,8 @@ jobs:
 
     steps:   
         - uses: actions/checkout@v2
+          with:
+            submodules: recursive
         - name: install dependencies
           run: brew install boost cgal gdal geographiclib gsl doxygen pybind11
         - name: build movetk

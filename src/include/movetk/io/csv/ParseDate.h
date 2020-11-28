@@ -31,27 +31,25 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-using std::string;
 #include <ctime>
-using std::mktime;
 
-
-class ParseDate {
+class ParseDate
+{
 
 protected:
     std::time_t _ts;
-    string _date_format;
+    std::string _date_format;
 
 public:
-    explicit ParseDate(std::time_t ts = 0, string date_format = "%Y-%m-%d") : _ts(ts), _date_format(std::move(date_format)) {}
+    explicit ParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d") : _ts(ts), _date_format(std::move(date_format)) {}
 
-    ParseDate(std::time_t ts):_ts(ts){}
+    ParseDate(std::time_t ts) : _ts(ts) {}
 
-//    ParseDate(const ParseDate&) = default;
-//    ParseDate(ParseDate&&) = default;
-//    ParseDate& operator=(const ParseDate&) = default;
-//    ParseDate& operator=(ParseDate&&) = default;
-//    ~ParseDate() = default;
+    //    ParseDate(const ParseDate&) = default;
+    //    ParseDate(ParseDate&&) = default;
+    //    ParseDate& operator=(const ParseDate&) = default;
+    //    ParseDate& operator=(ParseDate&&) = default;
+    //    ~ParseDate() = default;
 
     inline void ts(std::time_t ts)
     {
@@ -61,45 +59,47 @@ public:
     {
         return _ts;
     }
-    double operator-(const ParseDate& rhs) const
+    double operator-(const ParseDate &rhs) const
     {
-        return std::difftime(_ts, rhs.ts());  // time_end, time_beg
+        return std::difftime(_ts, rhs.ts()); // time_end, time_beg
     }
 
     ParseDate operator+(std::size_t delta) const
     {
-        return ParseDate(_ts + delta, this->_date_format);  // time_end, time_beg
+        return ParseDate(_ts + delta, this->_date_format); // time_end, time_beg
     }
 
-    bool operator<(const ParseDate& rhs) const
+    bool operator<(const ParseDate &rhs) const
     {
         return _ts < rhs._ts;
     }
-    bool operator>(const ParseDate& rhs) const
+    bool operator>(const ParseDate &rhs) const
     {
-        return rhs<*this;
+        return rhs < *this;
     }
-    bool operator<=(const ParseDate& rhs) const
+    bool operator<=(const ParseDate &rhs) const
     {
-        return !(rhs<*this);
+        return !(rhs < *this);
     }
-    bool operator>=(const ParseDate& rhs) const
+    bool operator>=(const ParseDate &rhs) const
     {
-        return !(*this<rhs);
+        return !(*this < rhs);
     }
-    bool operator==(const ParseDate& rhs) const
+    bool operator==(const ParseDate &rhs) const
     {
-        return *this - rhs == 0;  // On POSIX, time_t is int, so should work. Otherwise may be comparing doubles for equality.
+        return *this - rhs == 0; // On POSIX, time_t is int, so should work. Otherwise may be comparing doubles for equality.
     }
 
-    friend std::istream& operator>>(std::istream& is, ParseDate& date)
+    friend std::istream &operator>>(std::istream &is, ParseDate &date)
     {
-//        std::istringstream ss("2011-Februar-18 23:12:34");
-//        ss.imbue(std::locale("de_DE.utf-8"));
-        if (!date._date_format.empty()){
+        //        std::istringstream ss("2011-Februar-18 23:12:34");
+        //        ss.imbue(std::locale("de_DE.utf-8"));
+        if (!date._date_format.empty())
+        {
             std::tm _tm = {};
             is >> std::get_time(&_tm, date._date_format.c_str());
-            if (is.fail()) {
+            if (is.fail())
+            {
                 std::cout << "Parse date failed\n";
                 return is;
             }
@@ -109,13 +109,15 @@ public:
         return is;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const ParseDate& date)
+    friend std::ostream &operator<<(std::ostream &os, const ParseDate &date)
     {
-        if (!date._date_format.empty()) {
+        if (!date._date_format.empty())
+        {
             auto ts = date.ts();
-            os << std::put_time(std::gmtime(&ts), date._date_format.c_str());  // "%c"
+            os << std::put_time(std::gmtime(&ts), date._date_format.c_str()); // "%c"
         }
-        else{
+        else
+        {
             os << date._ts;
         }
         return os;

@@ -14,6 +14,8 @@ jobs:
     steps:
         - name: Git checkout
           uses: actions/checkout@v2
+          with:
+            submodules: recursive
         - name: Get version
           run: echo "${{ github.ref }}"
         - name: Docker build
