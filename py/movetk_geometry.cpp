@@ -31,6 +31,7 @@
  */
 
 #include <movetk/utils/GeometryBackendTraits.h>
+#include "movetk/metric/DistanceInterface.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>

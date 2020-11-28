@@ -39,8 +39,8 @@ namespace here
             typedef here::c2d::raw::ProbeTraits ProbeTraits;
             constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::PROBE_ID;
             constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::SAMPLE_DATE;
-            using columnar_trajectory_type = ColumnarTrajectory<string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
-            using tabular_trajectory_type = TabularTrajectory<string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
+            using columnar_trajectory_type = ColumnarTrajectory<std::string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
+            using tabular_trajectory_type = TabularTrajectory<std::string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
 
             using ColumnarTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, columnar_trajectory_type>;
             using TabularTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, tabular_trajectory_type>;

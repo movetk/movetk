@@ -24,13 +24,14 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include "movetk/logging.h"
 #include "movetk/io/GeoJSON.h"
 #include "movetk/test_data.h"
-#include "GeometryBackendTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/algo/Statistics.h"
 #include "movetk/TrajectoryReader.h"
-#include "movetk/HereTrajectoryTraits.h"
+#include "movetk/utils/HereTrajectoryTraits.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
 constexpr int LON_Idx = here::c2d::raw::ProbeColumns::LON;
 constexpr int LAT_Idx = here::c2d::raw::ProbeColumns::LAT;
