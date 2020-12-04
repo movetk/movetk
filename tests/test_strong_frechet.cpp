@@ -350,3 +350,53 @@ TEST_CASE("Check if polyline strong Frechet distance is correct with upperbounde
         }
     }
 }
+
+TEST_CASE("Check if decision strong Frechet distance is correct", "[strong_frechet]")
+{
+    using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
+    using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
+    // Initialize algorithm.
+    movetk_support::StrongFrechet<MovetkGeometryKernel, SqDistance> sfr;
+    sfr.setTolerance(0.0001);
+
+    // Distance computer for expected distance
+    SqDistance sqDist;
+
+    // Test fractions of known distance
+    std::vector<MovetkGeometryKernel::NT> fractions = { 0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000 };
+    std::vector<bool> expectSuccess = { false, false, false, false, true, true, true, true };
+
+    for (const auto& pair : testCases)
+    {
+        std::string testCaseName = pair.first;
+        StrongFrechetTestCase tc = pair.second;
+        SECTION(testCaseName)
+        {
+            // Read input
+            std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
+            test_helpers::parseIpePath(tc.polyA, polyA);
+            std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
+            test_helpers::parseIpePath(tc.polyB, polyB);
+            // Expected distance element
+            std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
+            test_helpers::parseIpePath(tc.expectedLine, expectedDistLine);
+            // Compute expected distance
+            auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
+
+            for (std::size_t i = 0; i < fractions.size(); ++i)
+            {
+                NT epsilon = -1;
+                // Try algorithm with both polyA and polyB as first polyline
+                {
+                    bool success = sfr.decide(polyA.begin(), polyA.end(), polyB.begin(), polyB.end(), expectedDist*fractions[i]);
+                    // Check whether we expect success or not.
+                    REQUIRE(success == expectSuccess[i]);
+                }
+                {
+                    bool success = sfr.decide(polyB.begin(), polyB.end(), polyA.begin(), polyA.end(), expectedDist*fractions[i]);
+                    REQUIRE(success == expectSuccess[i]);
+                }
+            }
+        }
+    }
+}
