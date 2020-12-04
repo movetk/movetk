@@ -35,7 +35,7 @@
 #include <boost/iterator/zip_iterator.hpp>
 
 namespace movetk_algorithms {
-    template <class GeometryKernel>
+    template <class GeometryKernel, typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>>
     class TrajectoryLength {
     private:
         using NT = typename GeometryKernel::NT;
@@ -94,7 +94,7 @@ namespace movetk_algorithms {
         }
     };
 
-    template<typename GeometryKernel>
+    template<typename GeometryKernel, typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>>
     class TrajectorySpeedStatistic
     {
     public:
@@ -112,7 +112,7 @@ namespace movetk_algorithms {
         // Point type
         using Point_t = typename GeometryKernel::MovetkPoint;
         // Distance type
-        using Dist_t = decltype(std::declval<movetk_core::ComputeLength<GeometryKernel>>()(std::declval<Point_t>(), std::declval<Point_t>()));
+        using Dist_t = decltype(std::declval<PointDistanceFunc>()(std::declval<Point_t>(), std::declval<Point_t>()));
         // Speed type = Distance type / Duration type
         template<typename Time_t>
         using Speed_t = decltype(std::declval<Dist_t>() / std::declval<Duration_t<Time_t>>());
@@ -140,7 +140,8 @@ namespace movetk_algorithms {
             // Compute speeds
             {
                 std::vector<Dist_t> distances;
-                movetk_core::get_distances<GeometryKernel>(pointsBegin, pointsEnd, movetk_core::movetk_back_insert_iterator(distances));
+                movetk_core::movetk_back_insert_iterator backInsert(distances);
+                movetk_core::get_distances<GeometryKernel,decltype(pointsBegin), decltype(backInsert), PointDistanceFunc>(pointsBegin, pointsEnd, backInsert);
                 std::vector<Duration> timeDiffs;
                 movetk_core::get_time_diffs(timeBegin, timeEnd, movetk_core::movetk_back_insert_iterator(timeDiffs));
 
