@@ -87,7 +87,7 @@ namespace movetk_core
         template <class CoordinateIterator,
                   typename = movetk_core::requires_random_access_iterator<CoordinateIterator>>
         typename GeometryTraits::MovetkPoint operator()(CoordinateIterator first,
-                                                        CoordinateIterator beyond)
+                                                        CoordinateIterator beyond) const
         {
             //ASSERT_RANDOM_ACCESS_ITERATOR(CoordinateIterator);
             ASSERT_NUMBER_TYPE(GeometryTraits, first);
@@ -97,7 +97,7 @@ namespace movetk_core
 
         typename GeometryTraits::MovetkPoint operator()(std::initializer_list<
                                                         typename GeometryTraits::NT>
-                                                            l)
+                                                            l) const
         {
             typename GeometryTraits::MovetkPoint p(l.begin(), l.end());
             return p;
