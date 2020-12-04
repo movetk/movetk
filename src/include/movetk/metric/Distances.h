@@ -501,13 +501,11 @@ namespace movetk_support
                 const NT curr = (lBound + rBound) * 0.5;
                 if (decide(polynomials, curr))
                 {
-                    std::cout << "Best epsilon " << curr << std::endl;
                     rBound = curr;
                     currentBest = curr;
                 }
                 else
                 {
-                    std::cout << "Frechet larger than: " << curr << std::endl;
                     lBound = curr;
                 }
             }
@@ -717,7 +715,7 @@ namespace movetk_support
                 };
                 auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
                 output = *maxElIt;
-                return true;
+                return output <= m_upperBound + m_precision;
             }
             if (polyBSize == 1)
             {
@@ -729,7 +727,7 @@ namespace movetk_support
                 };
                 auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
                 output = *maxElIt;
-                return true;
+                return output <= m_upperBound + m_precision;
             }
             
             switch (m_mode)
