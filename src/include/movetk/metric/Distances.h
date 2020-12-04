@@ -643,15 +643,23 @@ namespace movetk_support
 
             if(polyASize == 1)
             {
-                auto transform = [poly_a](const auto& polyBIt) {return std::sqrt(m_sqDistance(*poly_a, *polyBIt)); };
+                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_a](const auto& polyBEl)
+                {
+                    SqDistance sqDist;
+                    return std::sqrt(sqDist(*poly_a, polyBEl));
+                };
                 auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
-                return *maxElIt <= epsilon;
+                return *maxElIt <= epsilon + m_precision;
             }
             if (polyBSize == 1)
             {
-                auto transform = [poly_b](const auto& polyAIt) {return std::sqrt(m_sqDistance(*poly_b, *polyAIt)); };
+                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_b](const auto& polyAEl)
+                {
+                    SqDistance sqDist;
+                    return std::sqrt(sqDist(*poly_b, polyAEl));
+                };
                 auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
-                return *maxElIt <= epsilon;
+                return *maxElIt <= epsilon + m_precision;
             }
             
             // Minimum required epsilon to make start and end match for polylines.
@@ -659,10 +667,10 @@ namespace movetk_support
 
             if(polyASize == 2 && polyBSize == 2)
             {
-                return minEps < epsilon;
+                return minEps <= epsilon + m_precision;
             }
 
-            if (minEps > m_upperBound || minEps > epsilon)
+            if (minEps > m_upperBound + m_precision || minEps > epsilon + m_precision)
             {
                 return false;
             }
