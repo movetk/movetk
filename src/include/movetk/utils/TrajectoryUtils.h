@@ -169,13 +169,7 @@ namespace movetk_core {
             cit++;
         }
     }
-
-    template<typename T>
-    struct TagHolder
-    {
-        using tag_type = T;
-    };
-
+    
     /*!
      *
      * @tparam InputIterator
@@ -185,6 +179,7 @@ namespace movetk_core {
      * @param iter
      */
     template<class GeometryKernel, class InputIterator, class OutputIterator,
+        typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>,
         typename = movetk_core::requires_atleast_input_iterator<InputIterator>,
         typename = movetk_core::requires_output_iterator<OutputIterator>,
         typename = movetk_core::requires_movetk_point<GeometryKernel,
@@ -193,7 +188,7 @@ namespace movetk_core {
         typename OutputIterator::value_type> >
         void get_distances(InputIterator first, InputIterator beyond, OutputIterator iter) {
         //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
-        movetk_core::ComputeLength<GeometryKernel> distance;
+        PointDistanceFunc distance;
         InputIterator pit = first;
         InputIterator cit = std::next(first);
         //*iter = 0;
