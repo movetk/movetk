@@ -882,13 +882,13 @@ namespace movetk_support
             const auto polyBSize = std::distance(polyline_b_first, polyline_b_beyond);
 
             // Distances between starts resp. ends of the polylines (squared)
-            const auto startMatchDist = m_sqDist(*polyline_a_first, *polyline_b_first);
-            const auto endMatchDist = m_sqDist(*std::prev(polyline_a_beyond), *std::prev(polyline_b_beyond));
+            const auto startMatchDist = std::sqrt(m_sqDist(*polyline_a_first, *polyline_b_first));
+            const auto endMatchDist = std::sqrt(m_sqDist(*std::prev(polyline_a_beyond), *std::prev(polyline_b_beyond)));
 
             // Special case input
             if (polyASize <= 2 && polyBSize <= 2)
             {
-                return std::sqrt(std::max(startMatchDist, endMatchDist));
+                return std::max(startMatchDist, endMatchDist);
             }
 
             // Setup free space grid graph. The weights on the edges are the minimum distances for the cell border, represented by that edge, to open
