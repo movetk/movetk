@@ -37,7 +37,7 @@
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 #include "movetk/metric/Norm.h"
-#include <movetk/algo/Similarity.h>
+#include <movetk/metric/Distances.h>
 
 // Helpers for testing
 #include "test_includes.h"
@@ -49,7 +49,7 @@ typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
 
 
 TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
-    movetk_algorithms::WeakFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>> wfr{};
+    movetk_support::WeakFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>> wfr{};
     movetk_support::squared_distance_d<MovetkGeometryKernel, Norm> sqDist;
     SECTION("Simple spike example")
     {
@@ -150,7 +150,7 @@ TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
     }
 }
 TEST_CASE("Check Weak frechet matching between polylines", "[weak_frechet]") {
-    movetk_algorithms::WeakFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>> wfr{};
+    movetk_support::WeakFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>> wfr{};
     movetk_support::squared_distance_d<MovetkGeometryKernel, Norm> sqDist;
 
     SECTION("Interweaved grid example")
