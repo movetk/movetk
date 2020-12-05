@@ -89,24 +89,34 @@ void run(int argc, char** argv)
 
         Distance distanceFunc;
 
-        movetk_algorithms::TrajectoryLength<Trajectory_t, GeomKernel, Distance, LON_Idx, LAT_Idx> lenCalc(distanceFunc);
-        BOOST_LOG_TRIVIAL(info) << "Trajectory length:" << lenCalc(trajectory) << std::endl;
-        movetk_algorithms::TrajectoryDuration<Trajectory_t, TS_Idx> duration;
-        BOOST_LOG_TRIVIAL(info) << "Trajectory duration:" << duration(trajectory) << std::endl;
+        // Get iterators for data
+        auto lons = trajectory.template get<LON_Idx>();
+        using CoordIt = decltype(lons.begin());
+        auto lats = trajectory.template get<LAT_Idx>();
+        auto ts = trajectory.template get<TS_Idx>();
+        auto pointIterators = movetk_core::point_iterators_from_coordinates<GeomKernel>(std::array<std::pair<CoordIt, CoordIt>,2>{
+            std::make_pair(lons.begin(), lons.end()),
+            std::make_pair(lats.begin(), lats.end())
+        });
+
+        movetk_algorithms::TrajectoryLength<GeomKernel, Distance> lenCalc;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory length:" << lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end()) << std::endl;
+        movetk_algorithms::TrajectoryDuration duration;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory duration:" << duration(ts.begin(), ts.end()) << std::endl;
 
         // Show speed statistics:
-        using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<Trajectory_t, GeomKernel, Distance, LON_Idx, LAT_Idx, TS_Idx>;
-        SpeedStat speedStat(distanceFunc);
+        using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<GeomKernel, Distance>;
+        SpeedStat speedStat;
         using Stat = typename SpeedStat::Statistic;
-        BOOST_LOG_TRIVIAL(info) << "Trajectory average speed:" << speedStat(trajectory,Stat::Mean) << std::endl;
-        BOOST_LOG_TRIVIAL(info) << "Trajectory median speed:" << speedStat(trajectory, Stat::Median) << std::endl;
-        BOOST_LOG_TRIVIAL(info) << "Trajectory min speed:" << speedStat(trajectory, Stat::Min) << std::endl;
-        BOOST_LOG_TRIVIAL(info) << "Trajectory max speed:" << speedStat(trajectory, Stat::Max) << std::endl;
-        BOOST_LOG_TRIVIAL(info) << "Trajectory variance of speed:" << speedStat(trajectory, Stat::Variance) << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory average speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(),Stat::Mean) << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory median speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Median) << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory min speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Min) << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory max speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Max) << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory variance of speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Variance) << std::endl;
 
         // Show time mode
-        movetk_algorithms::TrajectoryTimeIntervalMode<Trajectory_t, TS_Idx> timeMode;
-        BOOST_LOG_TRIVIAL(info) << "Most common time interval: " << timeMode(trajectory);
+        movetk_algorithms::ComputeDominantDifference timeMode;
+        BOOST_LOG_TRIVIAL(info) << "Most common time interval: " << timeMode(ts.begin(), ts.end(), 0);
 
         count++;
     }
