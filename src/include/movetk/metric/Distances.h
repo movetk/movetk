@@ -56,7 +56,7 @@ namespace movetk_support
             return n(v2);
         }
 
-        typename Kernel::NT operator()(typename Kernel::MovetkLine &l,typename MovetkPoint &p)
+        typename Kernel::NT operator()(typename Kernel::MovetkLine &l, const MovetkPoint &p)
         {
             return this->operator()(p,l);
         }
@@ -84,7 +84,7 @@ namespace movetk_support
             typename Kernel::MovetkVector v2 = p - Pb;
             return n(v2);
         }
-        typename Kernel::NT operator()(typename Kernel::MovetkSegment &s, typename Kernel::MovetkPoint &p)
+        typename Kernel::NT operator()(typename Kernel::MovetkSegment &s, const MovetkPoint& p) const
         {
             return this->operator()(p, s);
         }
