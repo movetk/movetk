@@ -297,8 +297,8 @@ namespace movetk_support
 
         struct CellPolynomials
         {
-            Polynomial L;
-            Polynomial B;
+            // Cell boundary polynomials for left (0) and bottom (1) boundaries.
+            Polynomial polys[2];
         };
 
         /**
@@ -328,9 +328,9 @@ namespace movetk_support
                 for (auto pointB = polyB.first; pointB != std::prev(polyB.second); ++pointB, ++j)
                 {
                     // Compute left boundary polynomial
-                    polynomials[i][j].L.compute(*pointA, *pointB, *(std::next(pointB)));
+                    polynomials[i][j].polys[0].compute(*pointA, *pointB, *(std::next(pointB)));
                     // Compute bottom boundary polynomial
-                    polynomials[i][j].B.compute(*pointB, *pointA, *std::next(pointA));
+                    polynomials[i][j].polys[1].compute(*pointB, *pointA, *std::next(pointA));
                 }
             }
         }
@@ -348,103 +348,118 @@ namespace movetk_support
         {
             const auto maxI = polynomials.size();
             const auto maxJ = polynomials[0].size();
+            const std::size_t sizes[2] = { maxI, maxJ };
 
-            using Interval = std::pair<NT, NT>;
-            // Mark intervals empty when they have incorrect order.
-            auto isEmpty = [](const Interval& inter) {return inter.second < inter.first; };
-
+            struct Interval
+            {
+                NT min = std::numeric_limits<NT>::max();
+                NT max = std::numeric_limits<NT>::lowest();
+                bool isEmpty() const
+                {
+                    return max < min;
+                }
+                void assignMaxToMin(const Interval& other)
+                {
+                    min = std::max(min, other.min);
+                }
+            };
             struct CellIntervals
             {
-                Interval L;
-                Interval B;
+                Interval intervals[2] = { {},{} };
                 bool isReachable() const
                 {
                     // Reachable if one of the intervals is not empty
-                    return !(L.second < L.first) || !(B.second < B.first);
+                    return !intervals[0].isEmpty() || !intervals[1].isEmpty();
+                }
+                Interval& operator[](int i)
+                {
+                    return intervals[i];
+                }
+                const Interval& operator[](int i) const
+                {
+                    return intervals[i];
                 }
             };
-
-            const NT negInf = std::numeric_limits<NT>::lowest();
-            const NT posInf = std::numeric_limits<NT>::max();
-            auto emptyInterval = std::make_pair(posInf, negInf);
-            auto emptyCell = CellIntervals{ emptyInterval, emptyInterval };
-            std::vector<CellIntervals> col[2], row[2];
-            // Index of vector to fill
+            // Save two rows/columns while computing the decision problem
+            std::vector<CellIntervals> progress[2];
+            // Which of the two saved rows/columns to fill. Either 0 or 1
             int current = 0;
-            col[current].resize(maxJ, emptyCell);
-            row[current].resize(maxI, emptyCell);
 
-            // Assume that the bottom left cell is reachable
+            // Dimension: 0 = row direction, 1 is column direction
+            const int dim = maxI > maxJ ? 1 : 0;
+            // The other dimension
+            const int secondaryDim = 1 - dim;
 
-            //Initialize first row and column
-            col[current][1].B = polynomials[0][1].B.range(epsilon);
-            for (auto i = 2; i < maxJ; ++i) {
-                col[current][i].B = polynomials[0][i].B.range(epsilon);
-                if (isEmpty(col[current][i].B)) break;
-                col[current][i].B.first = std::max(col[current][i].B.first, col[current][i - 1].B.first);
-            }
-
-            row[current][1].L = polynomials[1][0].L.range(epsilon);
-            for (auto i = 2; i < maxI; ++i) {
-                row[current][i].L = polynomials[i][0].L.range(epsilon);
-                if (isEmpty(row[current][i].L)) break;
-                row[current][i].L.first = std::max(row[current][i].L.first, row[current][i - 1].L.first);
-            }
-
-            // Function that assigns self (i.e. does not do anything) when the first condition is met,
-            // otherwise assigns the minimum of the latter two intervals to the second argument if the last argument
-            // is not an empty interval. 
-            auto assignSelfMaxOfMinimumOrEmpty = [isEmpty, emptyInterval](bool assignSelfCondition, Interval& target, const Interval& compare)
+            // Get the freespace interval for a cell boundary at the given dimension.
+            auto getFreeSpace = [dim,&polynomials,epsilon](int primaryDimIndex, int secondaryDimIndex, int targetDim)
             {
-                if (assignSelfCondition) return;
-                if (isEmpty(compare)) target = emptyInterval;
-                else target.first = std::max(target.first, compare.first);
+                const auto r = dim == 0 ? primaryDimIndex : secondaryDimIndex;
+                const auto c = dim == 0 ? secondaryDimIndex : primaryDimIndex;
+                auto res = polynomials[r][c].polys[targetDim].range(epsilon);
+                return Interval{ res.first, res.second };
             };
 
-            auto minComplexity = std::min(maxI, maxJ);
-            // Number of rows and columns left, to be modified in the loop
-            int colNum = maxJ - 1;
-            int rowNum = maxI - 1;
-
-            for (; colNum >= 1 && rowNum >= 1; --colNum, --rowNum)
+            // Initialize first row(col), depending on chosen dimension to compute over.
+            progress[current].assign(sizes[dim], {});
+            progress[current][1].intervals[dim] = getFreeSpace(1, 0, dim);
+            for(auto i = 2; i < sizes[dim]; ++i)
             {
-                const auto prev = current;
-                const auto currCol = maxJ - colNum;
-                const auto currRow = maxI - rowNum;
-                current = 1 - current;
-                col[current].resize(colNum);
-                row[current].resize(rowNum);
-
-                // Compute bottom and left interval for cell common to both the row and column
-                col[current][0].B = polynomials[currRow][currCol].B.range(epsilon);
-                assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[prev][1].L), col[current][0].B, row[prev][1].B);
-                row[current][0].B = col[current][0].B;
-
-                col[current][0].L = polynomials[currRow][currCol].L.range(epsilon);
-                assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[prev][1].B), col[current][0].L, col[prev][1].L);
-                row[current][0].L = col[current][0].L;
-
-                // Compute propagated interval values in the column
-                for (int i = 1; i < colNum; ++i)
+                progress[current][i].intervals[dim] = getFreeSpace(i, 0, dim);
+                if(!progress[current][i-1].intervals[dim].isEmpty())
                 {
-                    col[current][i].L = polynomials[currRow][currCol + i].L.range(epsilon);
-                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[prev][i + 1].B), col[current][i].L, col[prev][i + 1].L);
-                    
-                    col[current][i].B = polynomials[currRow][currCol + i].B.range(epsilon);
-                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[current][i - 1].L), col[current][i].B, col[current][i - 1].B);
-                }
-                // Compute propagated interval values in the row
-                for (int i = 1; i < rowNum; ++i)
-                {
-                    row[current][i].L = polynomials[currRow + i][currCol].L.range(epsilon);
-                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[current][i - 1].B), row[current][i].L, row[current][i - 1].L);
-                    row[current][i].B = polynomials[currRow + i][currCol].B.range(epsilon);
-                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[prev][i + 1].L), row[current][i].B, row[prev][i + 1].B);
+                    progress[current][i].intervals[dim].assignMaxToMin(progress[current][i-1].intervals[dim]);
                 }
             }
-            // Determine if we can reach the topright cell, in which case the strong Frechet distance
-            // is at most epsilon.
-            return (rowNum > colNum) ? row[current].back().isReachable() : col[current].back().isReachable();
+            // Go over all other rows(columns).
+            for(auto j = 1; j < sizes[secondaryDim]; ++j)
+            {
+                // Fill other
+                const auto prev = current;
+                current = 1 - current;
+                // Reset intervals
+                progress[current].assign(sizes[dim], {});
+                // Compute first cell
+                auto& firstCell = progress[current][0];
+                const auto& prevFirstCell = progress[prev][0];
+                if(!prevFirstCell[secondaryDim].isEmpty())
+                {
+                    firstCell[secondaryDim] = getFreeSpace(0, j, dim);
+                    // Assign maximum of the minimum coordinates to the minimum
+                    firstCell[secondaryDim].assignMaxToMin(prevFirstCell[secondaryDim]);
+                }
+
+                // Compute the intervals for the other cells
+                const auto& prevCells = progress[prev];
+                const auto& currCells = progress[current];
+                for(auto i = 1; i < sizes[dim]; ++i)
+                {
+                    auto& currCell = progress[current][i];
+                    // Compute secondary dimension element
+                    if(!prevCells[i][dim].isEmpty())
+                    {
+                        currCell[secondaryDim] = getFreeSpace(i, j, secondaryDim);
+                    }
+                    else if(!prevCells[i][secondaryDim].isEmpty())
+                    {
+                        currCell[secondaryDim] = getFreeSpace(i, j, secondaryDim);
+                        currCell[secondaryDim].assignMaxToMin(prevCells[i][secondaryDim]);
+                    }
+                    // Otherwise, the cell boundary interval will remain empty
+
+                    // Compute primary dimension element
+                    if (!currCells[i-1][secondaryDim].isEmpty())
+                    {
+                        currCell[dim] = getFreeSpace(i, j, dim);
+                    }
+                    else if (!currCells[i-1][dim].isEmpty())
+                    {
+                        currCell[dim] = getFreeSpace(i, j,dim);
+                        currCell[dim].assignMaxToMin(currCells[i-1][dim]);
+                    }
+                }
+            }
+            
+            return progress[current].back().isReachable();
         }
 
         /**
@@ -590,6 +605,145 @@ namespace movetk_support
         {
             m_upperBound = upperBound;
         }
+
+        /**
+         * \brief Given two polylines, decide if the strong Frechet distance is at most epsilon.
+         * \param polynomials Freespace diagram, given as a table of polynomials
+         * \param epsilon The maximum allowed Frechet distance
+         * \return Whether or not the polylines are within Frechet distance epsilon
+         */
+        //template <class InputIterator,
+        //    typename = movetk_core::requires_random_access_iterator<InputIterator>,
+        //    typename = movetk_core::requires_movetk_point<Kernel,
+        //    typename InputIterator::value_type>>
+        //bool decide(InputIterator poly_a, InputIterator poly_a_beyond, 
+        //    InputIterator poly_b, InputIterator poly_b_beyond, NT epsilon) const
+        //{
+        //    // Polyline sizes (number of points)
+        //    const auto polyASize = std::distance(poly_a, poly_a_beyond);
+        //    const auto polyBSize = std::distance(poly_b, poly_b_beyond);
+        //    // Minimum required epsilon to make start and end match for polylines.
+        //    NT minEps = std::max(m_sqDistance(*polyA.first, *polyB.first), m_sqDistance(*std::prev(polyA.second), *std::prev(polyB.second)));
+
+        //    if (minEps > m_upperBound)
+        //    {
+        //        return false;
+        //    }
+
+        //    std::vector<std::vector<CellPolynomials>> polynomials;
+        //    precomputePolynomials(polyA, polyB, polynomials);
+
+        //    // If the endpoint epsilon is the smallest, within some fraction, we are ok with selecting that
+        //    if (decide(polynomials, minEps + m_precision))
+        //    {
+        //        outDist = minEps + m_precision;
+        //        return true;
+        //    }
+        //    if (minEps < m_precision)
+        //    {
+        //        minEps = m_precision;
+        //    }
+
+        //    const auto maxI = polynomials.size();
+        //    const auto maxJ = polynomials[0].size();
+
+        //    using Interval = std::pair<NT, NT>;
+        //    // Mark intervals empty when they have incorrect order.
+        //    auto isEmpty = [](const Interval& inter) {return inter.second < inter.first; };
+
+        //    struct CellIntervals
+        //    {
+        //        Interval L;
+        //        Interval B;
+        //        bool isReachable() const
+        //        {
+        //            // Reachable if one of the intervals is not empty
+        //            return !(L.second < L.first) || !(B.second < B.first);
+        //        }
+        //    };
+
+        //    const NT negInf = std::numeric_limits<NT>::lowest();
+        //    const NT posInf = std::numeric_limits<NT>::max();
+        //    auto emptyInterval = std::make_pair(posInf, negInf);
+        //    auto emptyCell = CellIntervals{ emptyInterval, emptyInterval };
+        //    std::vector<CellIntervals> col[2], row[2];
+        //    // Index of vector to fill
+        //    int current = 0;
+        //    col[current].resize(maxJ, emptyCell);
+        //    row[current].resize(maxI, emptyCell);
+
+        //    // Assume that the bottom left cell is reachable
+
+        //    //Initialize first row and column
+        //    col[current][1].B = polynomials[0][1].B.range(epsilon);
+        //    for (auto i = 2; i < maxJ; ++i) {
+        //        col[current][i].B = polynomials[0][i].B.range(epsilon);
+        //        if (isEmpty(col[current][i].B)) break;
+        //        col[current][i].B.first = std::max(col[current][i].B.first, col[current][i - 1].B.first);
+        //    }
+
+        //    row[current][1].L = polynomials[1][0].L.range(epsilon);
+        //    for (auto i = 2; i < maxI; ++i) {
+        //        row[current][i].L = polynomials[i][0].L.range(epsilon);
+        //        if (isEmpty(row[current][i].L)) break;
+        //        row[current][i].L.first = std::max(row[current][i].L.first, row[current][i - 1].L.first);
+        //    }
+
+        //    // Function that assigns self (i.e. does not do anything) when the first condition is met,
+        //    // otherwise assigns the minimum of the latter two intervals to the second argument if the last argument
+        //    // is not an empty interval. 
+        //    auto assignSelfMaxOfMinimumOrEmpty = [isEmpty, emptyInterval](bool assignSelfCondition, Interval& target, const Interval& compare)
+        //    {
+        //        if (assignSelfCondition) return;
+        //        if (isEmpty(compare)) target = emptyInterval;
+        //        else target.first = std::max(target.first, compare.first);
+        //    };
+
+        //    auto minComplexity = std::min(maxI, maxJ);
+        //    // Number of rows and columns left, to be modified in the loop
+        //    int colNum = maxJ - 1;
+        //    int rowNum = maxI - 1;
+
+        //    for (; colNum >= 1 && rowNum >= 1; --colNum, --rowNum)
+        //    {
+        //        const auto prev = current;
+        //        const auto currCol = maxJ - colNum;
+        //        const auto currRow = maxI - rowNum;
+        //        current = 1 - current;
+        //        col[current].resize(colNum);
+        //        row[current].resize(rowNum);
+
+        //        // Compute bottom and left interval for cell common to both the row and column
+        //        col[current][0].B = polynomials[currRow][currCol].B.range(epsilon);
+        //        assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[prev][1].L), col[current][0].B, row[prev][1].B);
+        //        row[current][0].B = col[current][0].B;
+
+        //        col[current][0].L = polynomials[currRow][currCol].L.range(epsilon);
+        //        assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[prev][1].B), col[current][0].L, col[prev][1].L);
+        //        row[current][0].L = col[current][0].L;
+
+        //        // Compute propagated interval values in the column
+        //        for (int i = 1; i < colNum; ++i)
+        //        {
+        //            col[current][i].L = polynomials[currRow][currCol + i].L.range(epsilon);
+        //            assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[prev][i + 1].B), col[current][i].L, col[prev][i + 1].L);
+
+        //            col[current][i].B = polynomials[currRow][currCol + i].B.range(epsilon);
+        //            assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[current][i - 1].L), col[current][i].B, col[current][i - 1].B);
+        //        }
+        //        // Compute propagated interval values in the row
+        //        for (int i = 1; i < rowNum; ++i)
+        //        {
+        //            row[current][i].L = polynomials[currRow + i][currCol].L.range(epsilon);
+        //            assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[current][i - 1].B), row[current][i].L, row[current][i - 1].L);
+        //            row[current][i].B = polynomials[currRow + i][currCol].B.range(epsilon);
+        //            assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[prev][i + 1].L), row[current][i].B, row[prev][i + 1].B);
+        //        }
+        //    }
+        //    // Determine if we can reach the topright cell, in which case the strong Frechet distance
+        //    // is at most epsilon.
+        //    return (rowNum > colNum) ? row[current].back().isReachable() : col[current].back().isReachable();
+        //}
 
         /**
          * \brief Set the error tolerance in Frechet distance for the inexact methods.
