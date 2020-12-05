@@ -745,6 +745,17 @@ namespace movetk_support
             default:return false;
             }
         }
+        template <class InputIterator,
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_movetk_point<Kernel,
+            typename InputIterator::value_type>>
+        typename Kernel::NT operator()(InputIterator poly_a, InputIterator poly_a_beyond,
+                InputIterator poly_b, InputIterator poly_b_beyond)
+        {
+            typename Kernel::NT epsilon = -1;
+            (void)this->operator()(poly_a, poly_a_beyond, poly_b, poly_b_beyond, epsilon);
+            return epsilon;
+        }
     };
 
 
