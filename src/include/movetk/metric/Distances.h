@@ -33,12 +33,13 @@ namespace movetk_support
 
     // based on Eiter, T., & Mannila, H. (1994). Computing Discrete Fréchet Distance ∗.
 
-    template <class Kernel, class Norm>
-    struct squared_distance_d
-    {
+    template<class Kernel, class _Norm>
+    struct squared_distance_d {
+        using Norm = _Norm;
+        using MovetkPoint = typename Kernel::MovetkPoint;
 
-        typename Kernel::NT operator()(typename Kernel::MovetkPoint &p,
-                                       typename Kernel::MovetkLine &l)
+        typename Kernel::NT operator()(const MovetkPoint&p,
+            const typename Kernel::MovetkLine &l) const
         {
             Norm n;
             typename Kernel::MovetkVector v = l[1] - l[0];
@@ -52,8 +53,8 @@ namespace movetk_support
             return n(v2);
         }
 
-        typename Kernel::NT operator()(typename Kernel::MovetkPoint &p,
-                                       typename Kernel::MovetkSegment &s)
+        typename Kernel::NT operator()(const MovetkPoint& p,
+            const typename Kernel::MovetkSegment &s) const
         {
             Norm n;
             typename Kernel::MovetkVector v = s[1] - s[0];
@@ -76,8 +77,8 @@ namespace movetk_support
             return n(v2);
         }
 
-        typename Kernel::NT operator()(typename Kernel::MovetkPoint &p1,
-                                       typename Kernel::MovetkPoint &p2)
+        typename Kernel::NT operator()(const MovetkPoint&p1,
+            const MovetkPoint& p2) const
         {
             Norm n;
             typename Kernel::MovetkVector v = p2 - p1;
@@ -219,7 +220,425 @@ namespace movetk_support
 
             NT dfd = dp_row.back();
             NT n = 1 / static_cast<NT>(Norm::P);
-            return std::pow(dfd, n);
+            return  std::pow(dfd,n);
+        }
+
+    };
+
+
+    /**
+     * \brief Strong Frechet distance between polylines
+     * Implementation of Alt & Godau in combination with either a double-and-search approach or a 
+     * bisection (binary search) approach. For the latter, a decent upperbound is needed to determine
+     * the search range.
+     * See: http://www.staff.science.uu.nl/~kreve101/asci/ag-cfdbt-95.pdf
+     * \tparam Kernel The geometry kernel
+     * \tparam SqDistance Square distance type for compting segment-point distance.
+     */
+    template<typename Kernel, typename SqDistance>
+    class StrongFrechet
+    {
+        // Typedefs
+        using NT = typename Kernel::NT;
+        using Point = typename Kernel::MovetkPoint;
+
+        // The norm to use
+        SqDistance m_sqDistance;
+
+        // Upperbound on the allowed Frechet distance
+        NT m_upperBound = std::numeric_limits<NT>::max();
+
+        // Precision on the output strong Frechet distance
+        NT m_precision = 1.0;
+
+        /**
+         * \brief Polynomial for the freespace cell boundary.
+         */
+        struct Polynomial
+        {
+            // Parallel-perpendicular decomposition of distance between point and segment
+            NT parallelDistance;
+            NT perpendicularDistance;
+            // Smallest epsilon needed to make the ball centered at the point touch the segment
+            NT minimumEpsilon;
+            // Type of relation between point and segment: 
+            // 'i' : parallel projection of the point lies on the segment
+            // 'a' : parallel projection of the point lies above the segment (relative to the segment direction)
+            // 'b' : parallel projection of the point lies below the segment (relative to the segment direction)
+            char type;
+
+            std::pair<NT, NT> range(NT epsilon) const
+            {
+                auto sq = [](auto el) {return el * el; };
+                if (epsilon < minimumEpsilon) return std::make_pair<NT, NT>(std::numeric_limits<NT>::max(), std::numeric_limits<NT>::lowest());
+                return std::make_pair(
+                    type == 'b' ? 0.0 : parallelDistance - std::sqrt(sq(epsilon) - sq(perpendicularDistance)),
+                    type == 'a' ? parallelDistance : parallelDistance + std::sqrt(sq(epsilon) - sq(perpendicularDistance))
+                );
+            }
+
+            void compute(const Point& point, const Point& seg0, const Point& seg1)
+            {
+                typename SqDistance::Norm norm;
+                auto dir = seg1 - seg0;
+                auto segLen = std::sqrt(norm(dir));
+                auto pntLen = std::sqrt(norm(point - seg0));
+                // Projected value on line through segment,
+                // with origin at start of segment
+                parallelDistance = (point - seg0)*dir / segLen;
+                perpendicularDistance = std::sqrt(pntLen*pntLen - parallelDistance*parallelDistance);
+                auto seg = movetk_core::MakeSegment<Kernel>()(seg0, seg1);
+                minimumEpsilon = std::sqrt(SqDistance()(point, seg));
+                type = 'i';
+                if (parallelDistance > segLen) type = 'a';
+                else if (parallelDistance < 0) type = 'b';
+            }
+        };
+
+        struct CellPolynomials
+        {
+            Polynomial L;
+            Polynomial B;
+        };
+
+        /**
+         * \brief Precomputes the polynomials describing the freespace cell boundaries.
+         * \tparam PointIt Type of the input point iterators for the polylines
+         * \param polyA First polyline, specified as pair of start and end iterator of points
+         * \param polyB Second polyline, specified as pair of start and end iterator of points
+         * \param polynomials Output table of polynomials.
+         */
+        template<typename PointIt>
+        void precomputePolynomials(const std::pair<PointIt, PointIt>& polyA, const std::pair<PointIt, PointIt>& polyB, std::vector<std::vector<CellPolynomials>>& polynomials) const
+        {
+            // We don't save the boundaries at the top/right of the freespacediagram, since they are not need:
+            // by convexity, if a path uses the boundary, then the left/bottom boundaries should have atleast one 
+            // point of free space.
+            const auto polyASize = std::distance(polyA.first, polyA.second);
+            const auto polyBSize = std::distance(polyB.first, polyB.second);
+            polynomials.resize(polyASize - 1, {});
+            for (auto& el : polynomials)
+            {
+                el.resize(polyBSize - 1, CellPolynomials{});
+            }
+            std::size_t i = 0;
+            for (auto pointA = polyA.first; pointA != std::prev(polyA.second); ++pointA, ++i)
+            {
+                std::size_t j = 0;
+                for (auto pointB = polyB.first; pointB != std::prev(polyB.second); ++pointB, ++j)
+                {
+                    // Compute left boundary polynomial
+                    polynomials[i][j].L.compute(*pointA, *pointB, *(std::next(pointB)));
+                    // Compute bottom boundary polynomial
+                    polynomials[i][j].B.compute(*pointB, *pointA, *std::next(pointA));
+                }
+            }
+        }
+
+        /**
+         * \brief Given the freespace diagram and an epsilon, decide if the strong Frechet distance
+         * is at most epsilon.
+         * It is assumed that the given epsilon is larger than or equal to the smallest distance
+         * of the endpoints of the polylines.
+         * \param polynomials Freespace diagram, given as a table of polynomials
+         * \param epsilon The maximum allowed Frechet distance
+         * \return Whether or not the polylines are within Frechet distance epsilon
+         */
+        bool decide(const std::vector<std::vector<CellPolynomials>>& polynomials, NT epsilon) const
+        {
+            const auto maxI = polynomials.size();
+            const auto maxJ = polynomials[0].size();
+
+            using Interval = std::pair<NT, NT>;
+            // Mark intervals empty when they have incorrect order.
+            auto isEmpty = [](const Interval& inter) {return inter.second < inter.first; };
+
+            struct CellIntervals
+            {
+                Interval L;
+                Interval B;
+                bool isReachable() const
+                {
+                    // Reachable if one of the intervals is not empty
+                    return !(L.second < L.first) || !(B.second < B.first);
+                }
+            };
+
+            const NT negInf = std::numeric_limits<NT>::lowest();
+            const NT posInf = std::numeric_limits<NT>::max();
+            auto emptyInterval = std::make_pair(posInf, negInf);
+            auto emptyCell = CellIntervals{ emptyInterval, emptyInterval };
+            std::vector<CellIntervals> col[2], row[2];
+            // Index of vector to fill
+            int current = 0;
+            col[current].resize(maxJ, emptyCell);
+            row[current].resize(maxI, emptyCell);
+
+            // Assume that the bottom left cell is reachable
+
+            //Initialize first row and column
+            col[current][1].B = polynomials[0][1].B.range(epsilon);
+            for (auto i = 2; i < maxJ; ++i) {
+                col[current][i].B = polynomials[0][i].B.range(epsilon);
+                if (isEmpty(col[current][i].B)) break;
+                col[current][i].B.first = std::max(col[current][i].B.first, col[current][i - 1].B.first);
+            }
+
+            row[current][1].L = polynomials[1][0].L.range(epsilon);
+            for (auto i = 2; i < maxI; ++i) {
+                row[current][i].L = polynomials[i][0].L.range(epsilon);
+                if (isEmpty(row[current][i].L)) break;
+                row[current][i].L.first = std::max(row[current][i].L.first, row[current][i - 1].L.first);
+            }
+
+            // Function that assigns self (i.e. does not do anything) when the first condition is met,
+            // otherwise assigns the minimum of the latter two intervals to the second argument if the last argument
+            // is not an empty interval. 
+            auto assignSelfMaxOfMinimumOrEmpty = [isEmpty, emptyInterval](bool assignSelfCondition, Interval& target, const Interval& compare)
+            {
+                if (assignSelfCondition) return;
+                if (isEmpty(compare)) target = emptyInterval;
+                else target.first = std::max(target.first, compare.first);
+            };
+
+            auto minComplexity = std::min(maxI, maxJ);
+            // Number of rows and columns left, to be modified in the loop
+            int colNum = maxJ - 1;
+            int rowNum = maxI - 1;
+
+            for (; colNum >= 1 && rowNum >= 1; --colNum, --rowNum)
+            {
+                const auto prev = current;
+                const auto currCol = maxJ - colNum;
+                const auto currRow = maxI - rowNum;
+                current = 1 - current;
+                col[current].resize(colNum);
+                row[current].resize(rowNum);
+
+                // Compute bottom and left interval for cell common to both the row and column
+                col[current][0].B = polynomials[currRow][currCol].B.range(epsilon);
+                assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[prev][1].L), col[current][0].B, row[prev][1].B);
+                row[current][0].B = col[current][0].B;
+
+                col[current][0].L = polynomials[currRow][currCol].L.range(epsilon);
+                assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[prev][1].B), col[current][0].L, col[prev][1].L);
+                row[current][0].L = col[current][0].L;
+
+                // Compute propagated interval values in the column
+                for (int i = 1; i < colNum; ++i)
+                {
+                    col[current][i].L = polynomials[currRow][currCol + i].L.range(epsilon);
+                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[prev][i + 1].B), col[current][i].L, col[prev][i + 1].L);
+                    
+                    col[current][i].B = polynomials[currRow][currCol + i].B.range(epsilon);
+                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(col[current][i - 1].L), col[current][i].B, col[current][i - 1].B);
+                }
+                // Compute propagated interval values in the row
+                for (int i = 1; i < rowNum; ++i)
+                {
+                    row[current][i].L = polynomials[currRow + i][currCol].L.range(epsilon);
+                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[current][i - 1].B), row[current][i].L, row[current][i - 1].L);
+                    row[current][i].B = polynomials[currRow + i][currCol].B.range(epsilon);
+                    assignSelfMaxOfMinimumOrEmpty(!isEmpty(row[prev][i + 1].L), row[current][i].B, row[prev][i + 1].B);
+                }
+            }
+            // Determine if we can reach the topright cell, in which case the strong Frechet distance
+            // is at most epsilon.
+            return (rowNum > colNum) ? row[current].back().isReachable() : col[current].back().isReachable();
+        }
+
+        /**
+         * \brief Search the epsilon such that the strong Frechet distance is epsilon, within the predefined tolerance. The given
+         * lower and upper bound give the range between which it is known that the value of epsilon should lie.
+         * \param polynomials The freespace diagram, described as a table of polynomials describing the cell boundary freespace
+         * \param tolerance The tolerance to use for determining the epsilon
+         * \param lower The lower bound on the range to search epsilon in
+         * \param upper The upper bound on the range to search epsilon in
+         * \param outDist The output epsilon value
+         * \return Whether or not the epsilon was found in the given range.
+         */
+        bool bisectionSearchInInterval(const std::vector<std::vector<CellPolynomials>>& polynomials, NT tolerance, NT lower, NT upper, NT& outDist) const
+        {
+            // Upper should be valid, otherwise we are searching in an infeasible interval.
+            if (!decide(polynomials, upper)) return false;
+
+            NT lBound = lower, rBound = upper;
+            NT currentBest = upper;
+            while (true)
+            {
+                if (std::abs(lBound - rBound) < tolerance) break;
+                // New value to test
+                const NT curr = (lBound + rBound) * 0.5;
+                if (decide(polynomials, curr))
+                {
+                    rBound = curr;
+                    currentBest = curr;
+                }
+                else
+                {
+                    lBound = curr;
+                }
+            }
+            outDist = currentBest;
+
+            return true;
+        }
+
+        template<typename PointIt>
+        bool bisectionSearchUpperBounded(const std::pair<PointIt, PointIt>& polyA, const std::pair<PointIt, PointIt>& polyB, NT& outDist) const
+        {
+            // Polyline sizes (number of points)
+            const auto polyASize = std::distance(polyA.first, polyA.second);
+            const auto polyBSize = std::distance(polyB.first, polyB.second);
+
+            // Minimum required epsilon to make start and end match for polylines.
+            const NT minEps = std::max(m_sqDistance(*polyA.first, *polyB.first), m_sqDistance(*(polyA.first + polyASize - 1), *(polyB.first + polyBSize - 1)));
+
+            if (minEps > m_upperBound)
+            {
+                return false;
+            }
+
+            std::vector<std::vector<CellPolynomials>> polynomials;
+            precomputePolynomials(polyA, polyB, polynomials);
+
+
+            // If the endpoint epsilon is the smallest, within some fraction, we are ok with selecting that
+            if (decide(polynomials, minEps + m_precision))
+            {
+                outDist = minEps;
+                return true;
+            }
+            return bisectionSearchInInterval(polynomials, m_precision, minEps, m_upperBound, outDist);
+        }
+        
+        template<typename PointIt>
+        bool doubleAndSearch(const std::pair<PointIt, PointIt>& polyA, const std::pair<PointIt, PointIt>& polyB, NT& outDist)
+        {
+            // Polyline sizes (number of points)
+            const auto polyASize = std::distance(polyA.first, polyA.second);
+            const auto polyBSize = std::distance(polyB.first, polyB.second);
+            // Minimum required epsilon to make start and end match for polylines.
+            NT minEps = std::max(m_sqDistance(*polyA.first, *polyB.first), m_sqDistance(*std::prev(polyA.second), *std::prev(polyB.second)));
+
+            if (minEps > m_upperBound)
+            {
+                return false;
+            }
+
+            std::vector<std::vector<CellPolynomials>> polynomials;
+            precomputePolynomials(polyA, polyB, polynomials);
+
+            // If the endpoint epsilon is the smallest, within some fraction, we are ok with selecting that
+            if (decide(polynomials, minEps + m_precision))
+            {
+                outDist = minEps + m_precision;
+                return true;
+            }
+            if (minEps < m_precision)
+            {
+                minEps = m_precision;
+            }
+
+            // Double the epsilon at each step
+            NT currEps = minEps * 2.0;
+            while (true)
+            {
+                // Should happen at some point unless the input is extremely malformed
+                if (decide(polynomials, currEps))
+                {
+                    return bisectionSearchInInterval(polynomials, m_precision, currEps * 0.5, currEps, outDist);
+                }
+                currEps *= 2.0;
+            }
+        }
+
+    public:
+        enum class Mode
+        {
+            BisectionSearch,
+            DoubleAndSearch
+        };
+    private:
+        Mode m_mode;
+    public:
+        StrongFrechet(Mode mode = Mode::DoubleAndSearch) : m_mode(mode) {}
+
+        /**
+         * \brief Returns the computation mode for the strong Frechet computation
+         * \return The computation mode
+         */
+        Mode mode() const
+        {
+            return m_mode;
+        }
+
+        /**
+         * \brief Set the computation mode for the strong Frechet computation
+         * \param mode The computation mode
+         */
+        void setMode(Mode mode)
+        {
+            m_mode = mode;
+        }
+
+        /**
+         * \brief Set upperbound for upperbounded search approaches
+         * \param upperBound The upperbound on the Frechet distance
+         */
+        void setUpperbound(NT upperBound)
+        {
+            m_upperBound = upperBound;
+        }
+
+        /**
+         * \brief Set the error tolerance in Frechet distance for the inexact methods.
+         * \param tolerance The tolerance
+         */
+        void setTolerance(NT tolerance)
+        {
+            m_precision = tolerance;
+        }
+        NT tolerance() const
+        {
+            return m_precision;
+        }
+        
+        template <class InputIterator,
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_movetk_point<Kernel,
+            typename InputIterator::value_type>>
+            typename Kernel::NT operator()(InputIterator poly_a, InputIterator poly_a_beyond,
+                InputIterator poly_b, InputIterator poly_b_beyond)
+        {
+            auto polyA = std::make_pair(poly_a, poly_a_beyond);
+            auto polyB = std::make_pair(poly_b, poly_b_beyond);
+
+            NT returnVal = 0.0;
+            switch (m_mode)
+            {
+            case Mode::BisectionSearch: bisectionSearchUpperBounded(polyA, polyB, returnVal); break;
+            case Mode::DoubleAndSearch: doubleAndSearch(polyA, polyB, returnVal); break;
+            }
+
+            return returnVal;
+        }
+
+        template <class InputIterator,
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_movetk_point<Kernel,
+            typename InputIterator::value_type>>
+            bool operator()(InputIterator poly_a, InputIterator poly_a_beyond,
+                InputIterator poly_b, InputIterator poly_b_beyond, typename Kernel::NT& output)
+        {
+            auto polyA = std::make_pair(poly_a, poly_a_beyond);
+            auto polyB = std::make_pair(poly_b, poly_b_beyond);
+            switch (m_mode)
+            {
+            case Mode::BisectionSearch: return bisectionSearchUpperBounded(polyA, polyB, output);
+            case Mode::DoubleAndSearch: return doubleAndSearch(polyA, polyB, output);
+            default:return false;
+            }
         }
     };
 
