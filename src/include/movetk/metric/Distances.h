@@ -27,6 +27,7 @@
 #include <iostream>
 #include "movetk/utils/Asserts.h"
 #include "movetk/geom/GeometryInterface.h"
+#include <boost/iterator/transform_iterator.hpp>
 
 namespace movetk_support
 {
@@ -638,8 +639,25 @@ namespace movetk_support
             // Polyline sizes (number of points)
             const auto polyASize = std::distance(poly_a, poly_a_beyond);
             const auto polyBSize = std::distance(poly_b, poly_b_beyond);
+
+            // Or error
+            if (polyASize == 0 || polyBSize == 0) return false;
+
+            if(polyASize == 1)
+            {
+                auto transform = [poly_a](const auto& polyBIt) {return std::sqrt(m_sqDistance(*poly_a, *polyBIt)); };
+                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
+                return *maxElIt <= epsilon;
+            }
+            if (polyBSize == 1)
+            {
+                auto transform = [poly_b](const auto& polyAIt) {return std::sqrt(m_sqDistance(*poly_b, *polyAIt)); };
+                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
+                return *maxElIt <= epsilon;
+            }
+            
             // Minimum required epsilon to make start and end match for polylines.
-            NT minEps = std::sqrt(std::max(m_sqDistance(*poly_a, *poly_b), m_sqDistance(*std::prev(poly_a_beyond), *std::prev(poly_b_beyond))));
+            NT minEps = std::max(std::sqrt(m_sqDistance(*poly_a, *poly_b)), std::sqrt(m_sqDistance(*std::prev(poly_a_beyond), *std::prev(poly_b_beyond))));
 
             if(polyASize == 2 && polyBSize == 2)
             {
@@ -670,26 +688,6 @@ namespace movetk_support
         {
             return m_precision;
         }
-        
-        template <class InputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIterator::value_type>>
-            typename Kernel::NT operator()(InputIterator poly_a, InputIterator poly_a_beyond,
-                InputIterator poly_b, InputIterator poly_b_beyond)
-        {
-            auto polyA = std::make_pair(poly_a, poly_a_beyond);
-            auto polyB = std::make_pair(poly_b, poly_b_beyond);
-
-            NT returnVal = 0.0;
-            switch (m_mode)
-            {
-            case Mode::BisectionSearch: bisectionSearchUpperBounded(polyA, polyB, returnVal); break;
-            case Mode::DoubleAndSearch: doubleAndSearch(polyA, polyB, returnVal); break;
-            }
-
-            return returnVal;
-        }
 
         template <class InputIterator,
             typename = movetk_core::requires_random_access_iterator<InputIterator>,
@@ -700,6 +698,29 @@ namespace movetk_support
         {
             auto polyA = std::make_pair(poly_a, poly_a_beyond);
             auto polyB = std::make_pair(poly_b, poly_b_beyond);
+
+            // Polyline sizes (number of points)
+            const auto polyASize = std::distance(poly_a, poly_a_beyond);
+            const auto polyBSize = std::distance(poly_b, poly_b_beyond);
+
+            // Or error
+            if (polyASize == 0 || polyBSize == 0) return false;
+
+            if (polyASize == 1)
+            {
+                auto transform = [poly_a](const auto& polyBIt) {return std::sqrt(m_sqDistance(*poly_a, *polyBIt)); };
+                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
+                output = *maxElIt;
+                return true;
+            }
+            if (polyBSize == 1)
+            {
+                auto transform = [poly_b](const auto& polyAIt) {return std::sqrt(m_sqDistance(*poly_b, *polyAIt)); };
+                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
+                output = *maxElIt;
+                return true;
+            }
+            
             switch (m_mode)
             {
             case Mode::BisectionSearch: return bisectionSearchUpperBounded(polyA, polyB, output);
@@ -1349,27 +1370,6 @@ namespace movetk_support
         // http://www.staff.science.uu.nl/~kreve101/asci/ag-cfdbt-95.pdf
         // TODO: maybe parametric search:
         // https://www.sciencedirect.com/science/article/pii/S0925772104000203
-
-        template <class InputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIterator::value_type>>
-            typename Kernel::NT operator()(InputIterator poly_a, InputIterator poly_a_beyond,
-                InputIterator poly_b, InputIterator poly_b_beyond)
-        {
-            auto polyA = std::make_pair(poly_a, poly_a_beyond);
-            auto polyB = std::make_pair(poly_b, poly_b_beyond);
-
-            NT returnVal = 0.0;
-            switch (m_mode)
-            {
-            case Mode::AllCriticalValues: return fullSearch(polyA, polyB);
-            case Mode::BisectionSearch: bisectionSearchUpperBounded(polyA, polyB, returnVal); break;
-            case Mode::DoubleAndSearch: doubleAndSearch(polyA, polyB, returnVal); break;
-            }
-
-            return returnVal;
-        }
         template <class InputIterator,
             typename = movetk_core::requires_random_access_iterator<InputIterator>,
             typename = movetk_core::requires_movetk_point<Kernel,
@@ -1388,6 +1388,19 @@ namespace movetk_support
             }
 
         }
+        
+        template <class InputIterator,
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_movetk_point<Kernel,
+            typename InputIterator::value_type>>
+            typename Kernel::NT operator()(InputIterator poly_a, InputIterator poly_a_beyond,
+                InputIterator poly_b, InputIterator poly_b_beyond)
+        {
+            typename Kernel::NT output = 0.0;
+            (void)this->operator()(poly_a, poly_a_beyond, poly_b, poly_b_beyond, output);
+            return output;
+        }
+
     };
 }
 #endif //MOVETK_DISTANCES_H
