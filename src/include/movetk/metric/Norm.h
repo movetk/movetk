@@ -55,7 +55,7 @@ namespace movetk_support
             return result;
         }
 
-        typename Kernel::NT operator^(std::size_t exponent)
+        typename Kernel::NT operator^(std::size_t exponent) const
         {
             typename Kernel::NT n = exponent / static_cast<typename Kernel::NT>(p);
             return std::pow(result, n);

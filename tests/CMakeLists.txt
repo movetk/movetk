@@ -58,6 +58,7 @@ add_executable(movetk_tests
         test_clustering.cpp
         test_mbr.cpp
         test_geojson.cpp
+        test_strong_frechet.cpp
         )
 
 target_compile_definitions(movetk_tests PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})

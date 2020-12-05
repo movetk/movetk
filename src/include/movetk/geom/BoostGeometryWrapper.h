@@ -156,7 +156,8 @@ namespace movetk_support {
             seg = Boost_Segment(p1.get(),p2.get());
         }
 
-        typename Kernel::Wrapper_Point operator[](size_t idx){
+        typename Kernel::Wrapper_Point operator[](size_t idx) const
+        {
             if (idx == 0)
                 return seg.first;
             if (idx == 1)
