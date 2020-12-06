@@ -322,8 +322,8 @@ namespace movetk_support
          * \param polyB Second polyline, specified as pair of start and end iterator of points
          * \param polynomials Output table of polynomials.
          */
-        template<typename PointIt>
-        void precomputePolynomials(const std::pair<PointIt, PointIt>& polyA, const std::pair<PointIt, PointIt>& polyB, std::vector<std::vector<CellPolynomials>>& polynomials) const
+        template<typename PointItA, typename PointItB>
+        void precomputePolynomials(const std::pair<PointItA, PointItA>& polyA, const std::pair<PointItB, PointItB>& polyB, std::vector<std::vector<CellPolynomials>>& polynomials) const
         {
             // We don't save the boundaries at the top/right of the freespacediagram, since they are not need:
             // by convexity, if a path uses the boundary, then the left/bottom boundaries should have atleast one 
@@ -526,8 +526,8 @@ namespace movetk_support
             return true;
         }
 
-        template<typename PointIt>
-        bool bisectionSearchUpperBounded(const std::pair<PointIt, PointIt>& polyA, const std::pair<PointIt, PointIt>& polyB, NT& outDist) const
+        template<typename PointItA, typename PointItB>
+        bool bisectionSearchUpperBounded(const std::pair<PointItA, PointItA>& polyA, const std::pair<PointItB, PointItB>& polyB, NT& outDist) const
         {
             // Polyline sizes (number of points)
             const auto polyASize = std::distance(polyA.first, polyA.second);
@@ -554,8 +554,8 @@ namespace movetk_support
             return bisectionSearchInInterval(polynomials, m_precision, minEps, m_upperBound, outDist);
         }
         
-        template<typename PointIt>
-        bool doubleAndSearch(const std::pair<PointIt, PointIt>& polyA, const std::pair<PointIt, PointIt>& polyB, NT& outDist)
+        template<typename PointItA, typename PointItB>
+        bool doubleAndSearch(const std::pair<PointItA, PointItA>& polyA, const std::pair<PointItB, PointItB>& polyB, NT& outDist)
         {
             // Polyline sizes (number of points)
             const auto polyASize = std::distance(polyA.first, polyA.second);
@@ -639,12 +639,16 @@ namespace movetk_support
          * \param epsilon The maximum allowed Frechet distance
          * \return Whether or not the polylines are within Frechet distance epsilon
          */
-        template <class InputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+        template <class InputIteratorA, class InputIteratorB,
+            typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
             typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIterator::value_type>>
-        bool decide(InputIterator poly_a, InputIterator poly_a_beyond, 
-            InputIterator poly_b, InputIterator poly_b_beyond, NT epsilon) const
+            typename InputIteratorA::value_type>,
+            typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
+            typename = movetk_core::requires_movetk_point<Kernel,
+            typename InputIteratorB::value_type>
+        >
+        bool decide(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
+            InputIteratorB poly_b, InputIteratorB poly_b_beyond, NT epsilon) const
         {
             // Polyline sizes (number of points)
             const auto polyASize = std::distance(poly_a, poly_a_beyond);
@@ -707,12 +711,16 @@ namespace movetk_support
             return m_precision;
         }
 
-        template <class InputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+        template <class InputIteratorA, class InputIteratorB,
+            typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
             typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIterator::value_type>>
-            bool operator()(InputIterator poly_a, InputIterator poly_a_beyond,
-                InputIterator poly_b, InputIterator poly_b_beyond, typename Kernel::NT& output)
+            typename InputIteratorA::value_type>,
+            typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
+            typename = movetk_core::requires_movetk_point<Kernel,
+            typename InputIteratorB::value_type>
+        >
+            bool operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
+                InputIteratorB poly_b, InputIteratorB poly_b_beyond, typename Kernel::NT& output)
         {
             auto polyA = std::make_pair(poly_a, poly_a_beyond);
             auto polyB = std::make_pair(poly_b, poly_b_beyond);
@@ -757,12 +765,17 @@ namespace movetk_support
             default:return false;
             }
         }
-        template <class InputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+        
+        template <class InputIteratorA, class InputIteratorB,
+            typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
             typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIterator::value_type>>
-        typename Kernel::NT operator()(InputIterator poly_a, InputIterator poly_a_beyond,
-                InputIterator poly_b, InputIterator poly_b_beyond)
+            typename InputIteratorA::value_type>,
+            typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
+            typename = movetk_core::requires_movetk_point<Kernel,
+            typename InputIteratorB::value_type>
+        >
+        typename Kernel::NT operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
+            InputIteratorB poly_b, InputIteratorB poly_b_beyond)
         {
             typename Kernel::NT epsilon = -1;
             (void)this->operator()(poly_a, poly_a_beyond, poly_b, poly_b_beyond, epsilon);

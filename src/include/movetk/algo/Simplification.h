@@ -342,6 +342,18 @@ namespace movetk_algorithms
         {
             InputIterator curr = first;
 
+            // Empty: no simplification
+            if(curr == beyond )
+            {
+                return;
+            }
+            // Degenerate point: return the point
+            if(std::next(curr) == beyond)
+            {
+                *result = curr;
+                return;
+            }
+
             const auto polyLength = std::distance(first, beyond);
 
             // Assign initial point as output
@@ -380,7 +392,7 @@ namespace movetk_algorithms
                     // Otherwise, set the upperbound for binary search
                     searchUpper = polyLength - 1 - startPointIndex;
                 }
-
+                 
                 // Assign the current segment to check
                 segment[1] = *(curr + searchUpper);
 
@@ -408,9 +420,11 @@ namespace movetk_algorithms
                     *result = curr + upper - 1;
                     startPointIndex += upper - 1;
                     // Update current point iterator
-                    curr = curr + upper - 1;
+                    curr += upper - 1;
                     // Update offset
                     offset = 2;
+                    // Update query segment with new start point
+                    segment[0] = *curr;
                 }
                 // Less than epsilon Frechet distance, so continue the exponential search
                 else
