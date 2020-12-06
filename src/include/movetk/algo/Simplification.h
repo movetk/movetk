@@ -304,7 +304,7 @@ namespace movetk_algorithms
      * \tparam GeometryTraits The geometry kernel
      * \tparam SqDistanceFunc Algorithm for computing the squared distance between points and points/segments.
      */
-    template <class GeometryTraits, class SqDistanceFunc = movetk_core::squared_distance_algorithm<GeometryTraits,movetk_support::FiniteNorm<GeometryTraits,typename GeometryTraits::dim>,void>>
+    template <class GeometryTraits, class SqDistanceFunc = movetk_core::squared_distance_algorithm<GeometryTraits,movetk_support::FiniteNorm<GeometryTraits, 2>,void>>
     class Agarwal
     {
         using NT = typename GeometryTraits::NT;
