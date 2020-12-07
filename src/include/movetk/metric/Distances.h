@@ -641,11 +641,9 @@ namespace movetk_support
          */
         template <class InputIteratorA, class InputIteratorB,
             typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIteratorA::value_type>,
+            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
             typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIteratorB::value_type>
+            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>
         >
         bool decide(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
             InputIteratorB poly_b, InputIteratorB poly_b_beyond, NT epsilon) const
@@ -713,11 +711,9 @@ namespace movetk_support
 
         template <class InputIteratorA, class InputIteratorB,
             typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIteratorA::value_type>,
+            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
             typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIteratorB::value_type>
+            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>
         >
             bool operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
                 InputIteratorB poly_b, InputIteratorB poly_b_beyond, typename Kernel::NT& output)
@@ -768,11 +764,9 @@ namespace movetk_support
         
         template <class InputIteratorA, class InputIteratorB,
             typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIteratorA::value_type>,
+            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
             typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-            typename = movetk_core::requires_movetk_point<Kernel,
-            typename InputIteratorB::value_type>
+            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>
         >
         typename Kernel::NT operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
             InputIteratorB poly_b, InputIteratorB poly_b_beyond)
