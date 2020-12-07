@@ -330,12 +330,10 @@ namespace movetk_algorithms
             return m_tolerance;
         }
 
-
         template <class InputIterator, class OutputIterator,
             typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_movetk_point_iterator<GeometryTraits, InputIterator>,
             typename = movetk_core::requires_output_iterator<OutputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits,
-            typename InputIterator::value_type>,
             typename = std::enable_if_t<std::is_same_v<typename OutputIterator::value_type, InputIterator>,InputIterator>// Require output iterator assignable with input iterator
         >
         void operator()(InputIterator first, InputIterator beyond, OutputIterator result) const
@@ -396,8 +394,10 @@ namespace movetk_algorithms
                 // Assign the current segment to check
                 segment[1] = *(curr + searchUpper);
 
+                // Iterator to the point to check
+                auto nextPointIt = curr + searchUpper + 1;
                 // Distance is larger than epsilon
-                if(!sfd.decide(segment.begin(), segment.end(), curr, curr + searchUpper + 1, m_epsilon))
+                if(!sfd.decide(segment.begin(), segment.end(), curr, nextPointIt, m_epsilon))
                 {
                     // Perform binary search to find p_j such that the subpath to p_{j+1} is above epsilon
                     auto lower = searchLower; // Guaranteed to be within epsilon

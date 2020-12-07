@@ -81,6 +81,14 @@ namespace movetk_core {
             typename std::iterator_traits<T>::iterator_category>::value, T>::type;
 
     /*!
+     *@brief Requirement for template \c T to be an iterator with value_type \c MovetkPoint
+     * @details defines \c requires_movetk_point as \c T iff
+     * \c T is \c MovetkPoint, otherwise defines \c requires_movetk_point as \c void
+     */
+    template<class Traits, class T = void>
+    using requires_movetk_point_iterator = typename std::enable_if<movetk_core::is_MovetkPoint<Traits, typename std::iterator_traits<T>::value_type>::value, T>::type;
+
+    /*!
      *@brief Requirement for template \c T to be a \c MovetkPoint
      * @details defines \c requires_movetk_point as \c Traits::MovetkPoint iff
      * \c T is \c MovetkPoint, otherwise defines \c requires_movetk_point as \c void
