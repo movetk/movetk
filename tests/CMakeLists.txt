@@ -39,6 +39,7 @@ add_executable(movetk_tests
         test_interpolation.cpp
         test_tree.cpp
         test_trajectory_utils.cpp
+        test_continuous_hausdorff.cpp
         test_trajectory_statistics.cpp
         test_seb.cpp
         test_norm.cpp

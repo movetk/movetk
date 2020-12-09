@@ -96,6 +96,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/SplitByField.h
             include/movetk/SplitByDifferenceThreshold.h
             include/movetk/SplitByDistanceThreshold.h
+            include/movetk/metric/HausdorffDistance.h
             include/movetk/Splitter.h
             include/movetk/test_data.h
             include/movetk/ColumnarTrajectory.h
