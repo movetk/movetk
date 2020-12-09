@@ -282,7 +282,7 @@ namespace movetk_support {
              * @param point - A point of type Wrapper_CGAL_Point<Kernel>
              * @return  True / False
              */
-            bool operator<(const Wrapper_CGAL_Point<Kernel> &point) {
+            bool operator<(const Wrapper_CGAL_Point<Kernel> &point) const {
                 return this->get() < point.get();
             }
 
@@ -293,7 +293,7 @@ namespace movetk_support {
              * @param point - A point of type Wrapper_CGAL_Point<Kernel>
              * @return  True / False
              */
-            bool operator>(const Wrapper_CGAL_Point<Kernel> &point) {
+            bool operator>(const Wrapper_CGAL_Point<Kernel> &point) const {
                 return this->get() > point.get();
             }
 
@@ -311,7 +311,7 @@ namespace movetk_support {
              * @param point - A point of type Wrapper_CGAL_Point<Kernel>
              * @return  True / False
              */
-            bool operator>=(const Wrapper_CGAL_Point<Kernel> &point) {
+            bool operator>=(const Wrapper_CGAL_Point<Kernel> &point) const {
                 return this->get() >= point.get();
             }
 
@@ -397,8 +397,8 @@ namespace movetk_support {
                 line = CGAL_Line(p1.get(), p2.get());
             }
 
-            Wrapper_Point operator[](size_t idx) {
-               return line[idx];
+            Wrapper_Point operator[](size_t idx) const {
+               return line.point(idx);
             }
 
             /*!
@@ -451,7 +451,7 @@ namespace movetk_support {
                 seg = CGAL_Segment(p1.get(), p2.get());
             }
 
-            Wrapper_Point operator[](size_t idx){
+            Wrapper_Point operator[](size_t idx) const {
                   return seg[idx];
             }
 
@@ -459,7 +459,7 @@ namespace movetk_support {
              *
              * @return Length of the segment
              */
-            NT operator()() {
+            NT operator()() const {
                 return seg.squared_length();
             }
 
@@ -473,7 +473,7 @@ namespace movetk_support {
         };
 
         template <class Kernel>
-        std::ostream& operator<<(std::ostream &out, Wrapper_CGAL_Segment<Kernel> &seg) {
+        std::ostream& operator<<(std::ostream &out, const Wrapper_CGAL_Segment<Kernel> &seg) {
             Wrapper_CGAL_Point<Kernel> p1 = seg[0];
             Wrapper_CGAL_Point<Kernel> p2 = seg[1];
             OutputRep<is_valid_NT<typename Kernel::NT>::can_cast_to_string,
@@ -520,8 +520,29 @@ namespace movetk_support {
                 return this->get() * vector.get();
             }
 
+            Wrapper_CGAL_Vector<Kernel> operator*(typename Kernel::NT scalar) const {
+                Wrapper_CGAL_Vector<Kernel> vec = *this;
+                vec *= scalar;
+                return vec;
+            }
+
+            friend Wrapper_CGAL_Vector<Kernel> operator*(typename Kernel::NT scalar, const Wrapper_CGAL_Vector<Kernel>& vec) {
+                return vec * scalar;
+            }
+
+            Wrapper_CGAL_Vector<Kernel> operator/(typename Kernel::NT scalar) const {
+                Wrapper_CGAL_Vector<Kernel> vec = *this;
+                vec /= scalar;
+                return vec;
+            }
+
             Wrapper_CGAL_Vector<Kernel>& operator*=(typename Kernel::NT scalar){
                 vec *= scalar;
+                return *this;
+            }
+
+            Wrapper_CGAL_Vector<Kernel>& operator/=(typename Kernel::NT scalar) {
+                vec /= scalar;
                 return *this;
             }
 
@@ -541,7 +562,7 @@ namespace movetk_support {
 
             }
 
-            Wrapper_CGAL_Vector<Kernel> basis(std::size_t i){
+            Wrapper_CGAL_Vector<Kernel> basis(std::size_t i)const {
                 container e = {0};
                 e[i] = 1;
                 CGAL_Vector basis_vec(Kernel::dim ,std::begin(e), std::end(e));

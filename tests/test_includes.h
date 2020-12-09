@@ -106,6 +106,20 @@ namespace test_helpers
     }
 
     /**
+     * \brief Created a MovetkPoint, rotated by angle phi in counterclockwise direction
+     * The rotation is relative to the origin
+     * \param x The initial x coordinate
+     * \param y The initial y coordinate
+     * \param phi The rotation to apply
+     * \return Rotated point
+     */
+    inline auto rotatedPoint(const NT& x, const NT& y, const NT& phi)
+    {
+        auto len = std::hypot(x, y);
+        return  movetk_core::MakePoint<MovetkGeometryKernel>()({ x*std::cos(phi) - y * std::sin(phi) , x*std::sin(phi) + y * std::cos(phi) });
+    }
+
+    /**
      * \brief Reads the first <path> element in an ipe string. The path is assumed to only contain 'm' and 'l' operators,
      * thus defining a polyline
      * \param pathData IPE string
