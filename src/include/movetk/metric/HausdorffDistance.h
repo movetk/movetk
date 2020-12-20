@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2018-2020 HERE Europe B.V.
+ * Copyright (C) 2018-2020
+ * HERE Europe B.V.
+ * TU/e (The Netherlands).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +19,15 @@
  * License-Filename: LICENSE
  */
 
-//
-// Created by Mitra, Aniket on 2019-06-03.
-//
+ //
+ // Created by Bram Custers (b.a.custers@tue.nl)
 
 #ifndef MOVETK_HAUSDORFF_DISTANCES_H
 #define MOVETK_HAUSDORFF_DISTANCES_H
 
 #include <iostream>
-#include "movetk/utils/Asserts.h"
 #include "movetk/geom/GeometryInterface.h"
-#include <boost/iterator/transform_iterator.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <optional>
 
 namespace movetk_support
@@ -44,13 +42,18 @@ namespace movetk_support
 
         struct SegmentSqDistFunc
         {
-            // a x^2 + b x + c, with x \in [0,1]
+            // Describes the squared distance function f(x) = a x^2 + b x + c, with x \in [0,1]
+            // s.t. x=0 is at the start of the segment and x=1 at the end.
             typename Kernel::NT a = 0, b = 0, c = 0;
 
             // Where does the function apply on the segment.
             // TODO: can be modeled as an Interval, similar to the one in StrongFrechet.
             std::array<typename Kernel::NT, 2> applicableSubsegment {1,-1};
 
+            /**
+             * \brief Result struct for intersections between functions.
+             * TODO: maybe model as IntersectionTraits of custom geometric object.
+             */
             struct Intersections
             {
                 int count = 0;
@@ -118,6 +121,10 @@ namespace movetk_support
                 return inters;
             }
 
+            /**
+             * \brief Copies the polynomial from another function
+             * \param other The other function
+             */
             void setFunctionFromOther(const SegmentSqDistFunc& other)
             {
                 a = other.a;
@@ -125,6 +132,11 @@ namespace movetk_support
                 c = other.c;
             }
 
+            /**
+             * \brief Tests if the applicable subsegment of this function overlaps with that of another function
+             * \param other The other function
+             * \return Whether the subsegments overlap
+             */
             bool overlapsWith(const SegmentSqDistFunc& other) const
             {
                 auto minCoord = std::min(applicableSubsegment[0], other.applicableSubsegment[0]);
@@ -134,6 +146,11 @@ namespace movetk_support
                 return maxCoord - minCoord - len - otherLen < MOVETK_EPS;
             }
 
+            /**
+             * \brief Computes the overlapping subsegment between this function and another
+             * \param other The other function
+             * \return The ovelapping subsegment
+             */
             std::array<NT,2> overlappingSegment(const SegmentSqDistFunc& other) const
             {
                 return { std::max(applicableSubsegment[0],other.applicableSubsegment[0]), std::min(applicableSubsegment[1],other.applicableSubsegment[1]) };
@@ -185,12 +202,12 @@ namespace movetk_support
                     return std::min(value(applicableSubsegment[0]), value(applicableSubsegment[1]));
                 }
                 // Lowest x
-                auto lowest = -b * 0.5 / a;
-                if(lowest >= 1.0 || lowest <= 0)
+                auto lowestX = -b * 0.5 / a;
+                if(lowestX >= 1.0 || lowestX <= 0)
                 {
                     return std::min(value(applicableSubsegment[0]), value(applicableSubsegment[1]));
                 }
-                return value(lowest);
+                return value(lowestX);
             }
 
             bool operator<(const SegmentSqDistFunc& other) const
@@ -240,6 +257,10 @@ namespace movetk_support
             };
         };
 
+        /**
+         * \brief Structure that records the lower envelope of the intersection of all (squared) distance functions
+         * for a segment, i.e. the lower envelope of the function in x-distance space.
+         */
         struct SegmentDistanceLowerEnvelope
         {
             // Distance functions for the current segment.
@@ -266,6 +287,11 @@ namespace movetk_support
                 lowerEnvelope.insert(func);
             }
 
+            /**
+             * \brief Computes the lower envelope from the current distance functions.
+             * Note that this is a somewhat naive implementation, a sweepline in the x direction would perhaps
+             * be more performant
+             */
             void compute()
             {
                 lowerEnvelope.clear();
@@ -323,7 +349,7 @@ namespace movetk_support
                     using It = decltype(lowerEnvelope.begin());
 
                     It mergeIt = std::lower_bound(lowerEnvelope.begin(), lowerEnvelope.end(), *it, SegmentSqDistFunc::StartComparator{});
-                    // Check if we are at end, the just add the new function
+                    // Check if we are at end, then just add the new function
                     if (mergeIt == lowerEnvelope.end())
                     {
                         changes.addInsert(*it);
@@ -461,12 +487,14 @@ namespace movetk_support
         // TODO: something for the core geometry?
 
         /**
-         * \brief Represents a halfplane with its separator defined by N * pos = offset. Its signed distance is given by d(vec) = N * pos - offset.
+         * \brief Represents a halfplane with its separator defined by N * pos = offset. Its signed distance is given by d(vec) = N * vec - offset,
+         * i.e. N points in the positive direction of halfplane relative to the separator.
          */
         struct HalfPlane
         {
-
+            // Normal of the halfplane
             typename Kernel::MovetkVector normal;
+            // Offset from origin in the direction of the normal.
             typename Kernel::NT offset;
 
             typename Kernel::NT distance(const typename Kernel::MovetkVector& point) const
@@ -478,6 +506,14 @@ namespace movetk_support
                 return normal * (point - movetk_core::MakePoint<Kernel>()({ (NT)0,(NT)0 })) - offset;
             }
             // TODO: Move this to appropriate place
+
+            /**
+             * \brief Compute the intersection with a line, defined by a point that intersects the line and the
+             * direction of the line
+             * \param point The intersecting point on the line
+             * \param dir The direction of the line
+             * \return Potential intersection parameter t if an intersection exists. The intersection is at point + t * dir.
+             */
             std::optional<typename Kernel::NT> intersection(const MovetkPoint& point, const MovetkVector& dir)
             {
                 auto posVec = (point - movetk_core::MakePoint<Kernel>()({ (NT)0,(NT)0 }));
@@ -531,6 +567,13 @@ namespace movetk_support
             return std::make_tuple(true, t0, t1);
         }
 
+        /**
+         * \brief Compute the distance function at 'target' as given by the source segment, i.e. the function describes the distance from any point
+         * on target to the closest point on source.
+         * \param target The target segment
+         * \param distanceSource The segment that is the source of the distance function
+         * \param output Lower envelope to append the distance function to.
+         */
         void computeDistanceFunc(const MovetkSegment& target, const MovetkSegment& distanceSource, SegmentDistanceLowerEnvelope& output) const
         {
             SqDistance sqDist;
@@ -707,6 +750,13 @@ namespace movetk_support
             }
         }
         
+        /**
+         * \brief Compute the distance function at 'target' as given by the source point, i.e. the function describes the distance from any point
+         * on target to source.
+         * \param target The target segment
+         * \param distanceSource The point that is the source of the distance function
+         * \param output Lower envelope to append the distance function to.
+         */
         void computeDistanceFunc(const MovetkSegment& target, const MovetkPoint& distanceSource, SegmentDistanceLowerEnvelope& output) const
         {
             SqDistance sqDist;
