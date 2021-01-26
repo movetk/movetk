@@ -36,13 +36,14 @@ namespace movetk_support
 
     // based on Eiter, T., & Mannila, H. (1994). Computing Discrete Fréchet Distance ∗.
 
-    template<class Kernel, class _Norm>
-    struct squared_distance_d {
+    template <class Kernel, class _Norm>
+    struct squared_distance_d
+    {
         using Norm = _Norm;
         using MovetkPoint = typename Kernel::MovetkPoint;
 
-        typename Kernel::NT operator()(const MovetkPoint&p,
-            const typename Kernel::MovetkLine &l) const
+        typename Kernel::NT operator()(const MovetkPoint &p,
+                                       const typename Kernel::MovetkLine &l) const
         {
             Norm n;
             typename Kernel::MovetkVector v = l[1] - l[0];
@@ -58,11 +59,11 @@ namespace movetk_support
 
         typename Kernel::NT operator()(typename Kernel::MovetkLine &l, const MovetkPoint &p)
         {
-            return this->operator()(p,l);
+            return this->operator()(p, l);
         }
 
-        typename Kernel::NT operator()(const MovetkPoint& p,
-            const typename Kernel::MovetkSegment &s) const
+        typename Kernel::NT operator()(const MovetkPoint &p,
+                                       const typename Kernel::MovetkSegment &s) const
         {
             Norm n;
             typename Kernel::MovetkVector v = s[1] - s[0];
@@ -84,19 +85,18 @@ namespace movetk_support
             typename Kernel::MovetkVector v2 = p - Pb;
             return n(v2);
         }
-        typename Kernel::NT operator()(typename Kernel::MovetkSegment &s, const MovetkPoint& p) const
+        typename Kernel::NT operator()(typename Kernel::MovetkSegment &s, const MovetkPoint &p) const
         {
             return this->operator()(p, s);
         }
 
-        typename Kernel::NT operator()(const MovetkPoint&p1,
-            const MovetkPoint& p2) const
+        typename Kernel::NT operator()(const MovetkPoint &p1,
+                                       const MovetkPoint &p2) const
         {
             Norm n;
             typename Kernel::MovetkVector v = p2 - p1;
             return n(v);
         }
-
     };
 
     template <class Kernel, class Norm>
@@ -233,11 +233,9 @@ namespace movetk_support
 
             NT dfd = dp_row.back();
             NT n = 1 / static_cast<NT>(Norm::P);
-            return  std::pow(dfd,n);
+            return std::pow(dfd, n);
         }
-
     };
-
 
     /**
      * \brief Strong Frechet distance between polylines
@@ -248,7 +246,7 @@ namespace movetk_support
      * \tparam Kernel The geometry kernel
      * \tparam SqDistance Square distance type for compting segment-point distance.
      */
-    template<typename Kernel, typename SqDistance>
+    template <typename Kernel, typename SqDistance>
     class StrongFrechet
     {
         // Typedefs
@@ -274,7 +272,7 @@ namespace movetk_support
             NT perpendicularDistance;
             // Smallest epsilon needed to make the ball centered at the point touch the segment
             NT minimumEpsilon;
-            // Type of relation between point and segment: 
+            // Type of relation between point and segment:
             // 'i' : parallel projection of the point lies on the segment
             // 'a' : parallel projection of the point lies above the segment (relative to the segment direction)
             // 'b' : parallel projection of the point lies below the segment (relative to the segment direction)
@@ -283,15 +281,15 @@ namespace movetk_support
             // Non-normalized reachable range
             std::pair<NT, NT> range(NT epsilon) const
             {
-                auto sq = [](auto el) {return el * el; };
-                if (epsilon < minimumEpsilon) return std::make_pair<NT, NT>(std::numeric_limits<NT>::max(), std::numeric_limits<NT>::lowest());
+                auto sq = [](auto el) { return el * el; };
+                if (epsilon < minimumEpsilon)
+                    return std::make_pair<NT, NT>(std::numeric_limits<NT>::max(), std::numeric_limits<NT>::lowest());
                 return std::make_pair(
                     type == 'b' ? 0.0 : parallelDistance - std::sqrt(sq(epsilon) - sq(perpendicularDistance)),
-                    type == 'a' ? parallelDistance : parallelDistance + std::sqrt(sq(epsilon) - sq(perpendicularDistance))
-                );
+                    type == 'a' ? parallelDistance : parallelDistance + std::sqrt(sq(epsilon) - sq(perpendicularDistance)));
             }
 
-            void compute(const Point& point, const Point& seg0, const Point& seg1)
+            void compute(const Point &point, const Point &seg0, const Point &seg1)
             {
                 typename SqDistance::Norm norm;
                 auto dir = seg1 - seg0;
@@ -299,13 +297,15 @@ namespace movetk_support
                 auto pntLen = std::sqrt(norm(point - seg0));
                 // Projected value on line through segment,
                 // with origin at start of segment
-                parallelDistance = (point - seg0)*dir / segLen;
-                perpendicularDistance = std::sqrt(pntLen*pntLen - parallelDistance*parallelDistance);
+                parallelDistance = (point - seg0) * dir / segLen;
+                perpendicularDistance = std::sqrt(pntLen * pntLen - parallelDistance * parallelDistance);
                 auto seg = movetk_core::MakeSegment<Kernel>()(seg0, seg1);
                 minimumEpsilon = std::sqrt(SqDistance()(point, seg));
                 type = 'i';
-                if (parallelDistance > segLen) type = 'a';
-                else if (parallelDistance < 0) type = 'b';
+                if (parallelDistance > segLen)
+                    type = 'a';
+                else if (parallelDistance < 0)
+                    type = 'b';
             }
         };
 
@@ -322,16 +322,16 @@ namespace movetk_support
          * \param polyB Second polyline, specified as pair of start and end iterator of points
          * \param polynomials Output table of polynomials.
          */
-        template<typename PointItA, typename PointItB>
-        void precomputePolynomials(const std::pair<PointItA, PointItA>& polyA, const std::pair<PointItB, PointItB>& polyB, std::vector<std::vector<CellPolynomials>>& polynomials) const
+        template <typename PointItA, typename PointItB>
+        void precomputePolynomials(const std::pair<PointItA, PointItA> &polyA, const std::pair<PointItB, PointItB> &polyB, std::vector<std::vector<CellPolynomials>> &polynomials) const
         {
             // We don't save the boundaries at the top/right of the freespacediagram, since they are not need:
-            // by convexity, if a path uses the boundary, then the left/bottom boundaries should have atleast one 
+            // by convexity, if a path uses the boundary, then the left/bottom boundaries should have atleast one
             // point of free space.
             const auto polyASize = std::distance(polyA.first, polyA.second);
             const auto polyBSize = std::distance(polyB.first, polyB.second);
             polynomials.resize(polyASize - 1, {});
-            for (auto& el : polynomials)
+            for (auto &el : polynomials)
             {
                 el.resize(polyBSize - 1, CellPolynomials{});
             }
@@ -358,42 +358,43 @@ namespace movetk_support
          * \param epsilon The maximum allowed Frechet distance
          * \return Whether or not the polylines are within Frechet distance epsilon
          */
-        bool decide(const std::vector<std::vector<CellPolynomials>>& polynomials, NT epsilon) const
+        bool decide(const std::vector<std::vector<CellPolynomials>> &polynomials, NT epsilon) const
         {
             const auto maxI = polynomials.size();
             const auto maxJ = polynomials[0].size();
 
-            const std::size_t sizes[2] = { maxI, maxJ };
+            const std::size_t sizes[2] = {maxI, maxJ};
 
             struct Interval
             {
                 NT min = std::numeric_limits<NT>::max();
                 NT max = std::numeric_limits<NT>::lowest();
-                Interval(){}
-                Interval(NT min, NT max):min(min),max(max){}
+                Interval() {}
+                Interval(NT min, NT max) : min(min), max(max) {}
                 bool isEmpty() const
                 {
                     return max < min;
                 }
-                void assignMaxToMin(const Interval& other)
+                void assignMaxToMin(const Interval &other)
                 {
-                    if (isEmpty()) return;
+                    if (isEmpty())
+                        return;
                     min = std::max(min, other.min);
                 }
             };
             struct CellIntervals
             {
-                Interval intervals[2] = { {},{} };
+                Interval intervals[2] = {{}, {}};
                 bool isReachable() const
                 {
                     // Reachable if one of the intervals is not empty
                     return !intervals[0].isEmpty() || !intervals[1].isEmpty();
                 }
-                Interval& operator[](int i)
+                Interval &operator[](int i)
                 {
                     return intervals[i];
                 }
-                const Interval& operator[](int i) const
+                const Interval &operator[](int i) const
                 {
                     return intervals[i];
                 }
@@ -412,28 +413,27 @@ namespace movetk_support
             const int secondaryDim = 1 - dim;
 
             // Get the freespace interval for a cell boundary at the given dimension.
-            auto getFreeSpace = [dim,&polynomials,epsilon](int primaryDimIndex, int secondaryDimIndex, int targetDim)
-            {
+            auto getFreeSpace = [dim, &polynomials, epsilon](int primaryDimIndex, int secondaryDimIndex, int targetDim) {
                 const auto r = dim == 0 ? primaryDimIndex : secondaryDimIndex;
                 const auto c = dim == 0 ? secondaryDimIndex : primaryDimIndex;
                 auto res = polynomials[r][c].polys[targetDim].range(epsilon);
-                return Interval{ res.first, res.second };
+                return Interval{res.first, res.second};
             };
 
             // Initialize first row(col), depending on chosen dimension to compute over.
             progress[current].assign(sizes[dim], {});
             progress[current][0].intervals[secondaryDim] = Interval(std::numeric_limits<NT>::lowest(), std::numeric_limits<NT>::max()); // Fully open interval
-            progress[current][0].intervals[dim] = Interval(std::numeric_limits<NT>::lowest(), std::numeric_limits<NT>::max()); // Fully open interval
-            for(auto i = 1; i < sizes[dim]; ++i)
+            progress[current][0].intervals[dim] = Interval(std::numeric_limits<NT>::lowest(), std::numeric_limits<NT>::max());          // Fully open interval
+            for (auto i = 1; i < sizes[dim]; ++i)
             {
-                if(!progress[current][i-1].intervals[dim].isEmpty())
+                if (!progress[current][i - 1].intervals[dim].isEmpty())
                 {
                     progress[current][i].intervals[dim] = getFreeSpace(i, 0, dim);
-                    progress[current][i].intervals[dim].assignMaxToMin(progress[current][i-1].intervals[dim]);
+                    progress[current][i].intervals[dim].assignMaxToMin(progress[current][i - 1].intervals[dim]);
                 }
             }
             // Go over all other rows(columns).
-            for(auto j = 1; j < sizes[secondaryDim]; ++j)
+            for (auto j = 1; j < sizes[secondaryDim]; ++j)
             {
                 // Fill other
                 const auto prev = current;
@@ -443,9 +443,9 @@ namespace movetk_support
                 progress[current].assign(sizes[dim], {});
 
                 // Compute first cell
-                auto& firstCell = progress[current][0];
-                const auto& prevFirstCell = progress[prev][0];
-                if(!prevFirstCell[secondaryDim].isEmpty())
+                auto &firstCell = progress[current][0];
+                const auto &prevFirstCell = progress[prev][0];
+                if (!prevFirstCell[secondaryDim].isEmpty())
                 {
                     firstCell[secondaryDim] = getFreeSpace(0, j, secondaryDim);
                     // Assign maximum of the minimum coordinates to the minimum
@@ -453,14 +453,14 @@ namespace movetk_support
                 }
 
                 // Compute the intervals for the other cells
-                const auto& prevCells = progress[prev];
-                const auto& currCells = progress[current];
+                const auto &prevCells = progress[prev];
+                const auto &currCells = progress[current];
                 bool hasReachable = firstCell.isReachable();
-                for(auto i = 1; i < sizes[dim]; ++i)
+                for (auto i = 1; i < sizes[dim]; ++i)
                 {
-                    auto& currCell = progress[current][i];
+                    auto &currCell = progress[current][i];
                     // Compute secondary dimension element
-                    if(prevCells[i].isReachable())
+                    if (prevCells[i].isReachable())
                     {
                         currCell[secondaryDim] = getFreeSpace(i, j, secondaryDim);
                         if (prevCells[i][dim].isEmpty() && !prevCells[i][secondaryDim].isEmpty())
@@ -468,7 +468,7 @@ namespace movetk_support
                             currCell[secondaryDim].assignMaxToMin(prevCells[i][secondaryDim]);
                         }
                     }
-                    if(currCells[i-1].isReachable())
+                    if (currCells[i - 1].isReachable())
                     {
                         currCell[dim] = getFreeSpace(i, j, dim);
                         // Compute primary dimension element
@@ -477,15 +477,16 @@ namespace movetk_support
                             currCell[dim].assignMaxToMin(currCells[i - 1][dim]);
                         }
                     }
-                    
+
                     hasReachable = currCell.isReachable() || hasReachable;
                 }
                 // Early out
-                if (!hasReachable) {
+                if (!hasReachable)
+                {
                     return false;
                 }
             }
-            
+
             return progress[current].back().isReachable();
         }
 
@@ -499,16 +500,18 @@ namespace movetk_support
          * \param outDist The output epsilon value
          * \return Whether or not the epsilon was found in the given range.
          */
-        bool bisectionSearchInInterval(const std::vector<std::vector<CellPolynomials>>& polynomials, NT tolerance, NT lower, NT upper, NT& outDist) const
+        bool bisectionSearchInInterval(const std::vector<std::vector<CellPolynomials>> &polynomials, NT tolerance, NT lower, NT upper, NT &outDist) const
         {
             // Upper should be valid, otherwise we are searching in an infeasible interval.
-            if (!decide(polynomials, upper)) return false;
+            if (!decide(polynomials, upper))
+                return false;
 
             NT lBound = lower, rBound = upper;
             NT currentBest = upper;
             while (true)
             {
-                if (std::abs(lBound - rBound) < tolerance) break;
+                if (std::abs(lBound - rBound) < tolerance)
+                    break;
                 // New value to test
                 const NT curr = (lBound + rBound) * 0.5;
                 if (decide(polynomials, curr))
@@ -526,8 +529,8 @@ namespace movetk_support
             return true;
         }
 
-        template<typename PointItA, typename PointItB>
-        bool bisectionSearchUpperBounded(const std::pair<PointItA, PointItA>& polyA, const std::pair<PointItB, PointItB>& polyB, NT& outDist) const
+        template <typename PointItA, typename PointItB>
+        bool bisectionSearchUpperBounded(const std::pair<PointItA, PointItA> &polyA, const std::pair<PointItB, PointItB> &polyB, NT &outDist) const
         {
             // Polyline sizes (number of points)
             const auto polyASize = std::distance(polyA.first, polyA.second);
@@ -544,7 +547,6 @@ namespace movetk_support
             std::vector<std::vector<CellPolynomials>> polynomials;
             precomputePolynomials(polyA, polyB, polynomials);
 
-
             // If the endpoint epsilon is the smallest, within some fraction, we are ok with selecting that
             if (decide(polynomials, minEps + m_precision))
             {
@@ -553,9 +555,9 @@ namespace movetk_support
             }
             return bisectionSearchInInterval(polynomials, m_precision, minEps, m_upperBound, outDist);
         }
-        
-        template<typename PointItA, typename PointItB>
-        bool doubleAndSearch(const std::pair<PointItA, PointItA>& polyA, const std::pair<PointItB, PointItB>& polyB, NT& outDist)
+
+        template <typename PointItA, typename PointItB>
+        bool doubleAndSearch(const std::pair<PointItA, PointItA> &polyA, const std::pair<PointItB, PointItB> &polyB, NT &outDist)
         {
             // Polyline sizes (number of points)
             const auto polyASize = std::distance(polyA.first, polyA.second);
@@ -601,8 +603,10 @@ namespace movetk_support
             BisectionSearch,
             DoubleAndSearch
         };
+
     private:
         Mode m_mode;
+
     public:
         StrongFrechet(Mode mode = Mode::DoubleAndSearch) : m_mode(mode) {}
 
@@ -640,46 +644,63 @@ namespace movetk_support
          * \return Whether or not the polylines are within Frechet distance epsilon
          */
         template <class InputIteratorA, class InputIteratorB,
-            typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-            typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>
-        >
+                  typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
+                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
+                  typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
+                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>>
         bool decide(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
-            InputIteratorB poly_b, InputIteratorB poly_b_beyond, NT epsilon) const
+                    InputIteratorB poly_b, InputIteratorB poly_b_beyond, NT epsilon) const
         {
             // Polyline sizes (number of points)
             const auto polyASize = std::distance(poly_a, poly_a_beyond);
             const auto polyBSize = std::distance(poly_b, poly_b_beyond);
 
             // Or error
-            if (polyASize == 0 || polyBSize == 0) return false;
+            if (polyASize == 0 || polyBSize == 0)
+                return false;
 
-            if(polyASize == 1)
+            if (polyASize == 1)
             {
-                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_a](const auto& polyBEl)
-                {
-                    SqDistance sqDist;
-                    return std::sqrt(sqDist(*poly_a, polyBEl));
-                };
-                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
+                // std::function<const NT &(const typename Kernel::MovetkPoint &)> transform = [poly_a](const auto &polyBEl) -> const NT & {
+                //     SqDistance sqDist;
+                //     return std::sqrt(sqDist(*poly_a, polyBEl));
+                // };
+                // auto first = boost::make_transform_iterator(poly_b, transform);
+                // auto beyond = boost::make_transform_iterator(poly_b_beyond, transform);
+                std::vector<NT> distances;
+                std::transform(poly_b, poly_b_beyond, std::back_insert_iterator(distances),
+                               [poly_a](const auto &polyBEl) {
+                                   SqDistance sqDist;
+                                   return std::sqrt(sqDist(*poly_a, polyBEl));
+                               });
+                auto maxElIt = std::max_element(std::begin(distances), std::end(distances));
                 return *maxElIt <= epsilon + m_precision;
             }
             if (polyBSize == 1)
             {
-                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_b](const auto& polyAEl)
-                {
-                    SqDistance sqDist;
-                    return std::sqrt(sqDist(*poly_b, polyAEl));
-                };
-                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
+                // std::function<const NT &(const typename Kernel::MovetkPoint &)> transform = [poly_b](const auto &polyAEl) -> const NT & {
+                //     SqDistance sqDist;
+                //     return std::sqrt(sqDist(*poly_b, polyAEl));
+                // };
+                // auto first = boost::make_transform_iterator(poly_a, transform);
+                // auto beyond = boost::make_transform_iterator(poly_a_beyond, transform);
+                // auto maxElIt = std::max_element(first, beyond);
+
+                std::vector<NT> distances;
+                std::transform(poly_a, poly_a_beyond, std::back_insert_iterator(distances),
+                               [poly_b](const auto &polyAEl) {
+                                   SqDistance sqDist;
+                                   return std::sqrt(sqDist(*poly_b, polyAEl));
+                               });
+                auto maxElIt = std::max_element(std::begin(distances), std::end(distances));
+
                 return *maxElIt <= epsilon + m_precision;
             }
-            
+
             // Minimum required epsilon to make start and end match for polylines.
             NT minEps = std::max(std::sqrt(m_sqDistance(*poly_a, *poly_b)), std::sqrt(m_sqDistance(*std::prev(poly_a_beyond), *std::prev(poly_b_beyond))));
 
-            if(polyASize == 2 && polyBSize == 2)
+            if (polyASize == 2 && polyBSize == 2)
             {
                 return minEps <= epsilon + m_precision;
             }
@@ -710,13 +731,12 @@ namespace movetk_support
         }
 
         template <class InputIteratorA, class InputIteratorB,
-            typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-            typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>
-        >
-            bool operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
-                InputIteratorB poly_b, InputIteratorB poly_b_beyond, typename Kernel::NT& output)
+                  typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
+                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
+                  typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
+                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+        bool operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
+                        InputIteratorB poly_b, InputIteratorB poly_b_beyond, typename Kernel::NT &output)
         {
             auto polyA = std::make_pair(poly_a, poly_a_beyond);
             auto polyB = std::make_pair(poly_b, poly_b_beyond);
@@ -726,50 +746,70 @@ namespace movetk_support
             const auto polyBSize = std::distance(poly_b, poly_b_beyond);
 
             // Or error
-            if (polyASize == 0 || polyBSize == 0) return false;
+            if (polyASize == 0 || polyBSize == 0)
+                return false;
 
             if (polyASize == 1)
             {
                 auto sqDist = m_sqDistance;
                 // Use std::function, otherwise boost will error when trying to copy the transform_iterator
-                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_a](const auto& polyBEl)
-                {
-                    SqDistance sqDist;
-                    return std::sqrt(sqDist(*poly_a, polyBEl));
-                };
-                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
+                // std::function<NT(const typename Kernel::MovetkPoint &)> transform = [poly_a](const auto &polyBEl) {
+                //     SqDistance sqDist;
+                //     return std::sqrt(sqDist(*poly_a, polyBEl));
+                // };
+
+                // auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform), boost::make_transform_iterator(poly_b_beyond, transform));
+
+                std::vector<NT> distances;
+                std::transform(poly_b, poly_b_beyond, std::back_insert_iterator(distances),
+                               [poly_a](const auto &polyBEl) {
+                                   SqDistance sqDist;
+                                   return std::sqrt(sqDist(*poly_a, polyBEl));
+                               });
+                auto maxElIt = std::max_element(std::begin(distances), std::end(distances));
+
                 output = *maxElIt;
                 return output <= m_upperBound + m_precision;
             }
             if (polyBSize == 1)
             {
-                // Use std::function, otherwise boost will error when trying to copy the transform_iterator
-                std::function<NT(const typename Kernel::MovetkPoint&)> transform = [poly_b](const auto& polyAEl)
-                {
-                    SqDistance sqDist;
-                    return std::sqrt(sqDist(*poly_b, polyAEl));
-                };
-                auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
+                // // Use std::function, otherwise boost will error when trying to copy the transform_iterator
+                // std::function<NT(const typename Kernel::MovetkPoint &)> transform = [poly_b](const auto &polyAEl) {
+                //     SqDistance sqDist;
+                //     return std::sqrt(sqDist(*poly_b, polyAEl));
+                // };
+                // auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform), boost::make_transform_iterator(poly_a_beyond, transform));
+
+                std::vector<NT> distances;
+                std::transform(poly_a, poly_a_beyond, std::back_insert_iterator(distances),
+                               [poly_b](const auto &polyAEl) {
+                                   SqDistance sqDist;
+                                   return std::sqrt(sqDist(*poly_b, polyAEl));
+                               });
+                auto maxElIt = std::max_element(std::begin(distances), std::end(distances));
+
                 output = *maxElIt;
                 return output <= m_upperBound + m_precision;
             }
-            
+
             switch (m_mode)
             {
-            case Mode::BisectionSearch: return bisectionSearchUpperBounded(polyA, polyB, output);
-            case Mode::DoubleAndSearch: return doubleAndSearch(polyA, polyB, output);
-            default:return false;
+            case Mode::BisectionSearch:
+                return bisectionSearchUpperBounded(polyA, polyB, output);
+            case Mode::DoubleAndSearch:
+                return doubleAndSearch(polyA, polyB, output);
+            default:
+                return false;
             }
         }
-        
+
         template <class InputIteratorA, class InputIteratorB,
-            typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-            typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-            typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>
-        >
+                  typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
+                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
+                  typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
+                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>>
         typename Kernel::NT operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
-            InputIteratorB poly_b, InputIteratorB poly_b_beyond)
+                                       InputIteratorB poly_b, InputIteratorB poly_b_beyond)
         {
             typename Kernel::NT epsilon = -1;
             (void)this->operator()(poly_a, poly_a_beyond, poly_b, poly_b_beyond, epsilon);
@@ -790,7 +830,7 @@ namespace movetk_support
         using NT = typename GeometryTraits::NT;
         using FreeSpaceGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_weight_t, NT>>;
         using FreeSpaceGraphTraits = boost::graph_traits<FreeSpaceGraph>;
-        using FreeSpaceGraphWeightMap = typename boost::property_map< FreeSpaceGraph, boost::edge_weight_t >::type;
+        using FreeSpaceGraphWeightMap = typename boost::property_map<FreeSpaceGraph, boost::edge_weight_t>::type;
 
         // Squared norm to use
         SquaredDistance m_sqDist;
@@ -813,15 +853,14 @@ namespace movetk_support
          * \param freeSpaceGraph Output freespace graph
          * \param weightMap Output weightmap for the edges of the freespace graph.
          */
-        template<typename InIt>
-        void setupFreeSpaceGraph(std::pair<InIt, InIt> polyA, std::pair<InIt, InIt> polyB, FreeSpaceGraph& freeSpaceGraph, FreeSpaceGraphWeightMap& weightMap)
+        template <typename InIt>
+        void setupFreeSpaceGraph(std::pair<InIt, InIt> polyA, std::pair<InIt, InIt> polyB, FreeSpaceGraph &freeSpaceGraph, FreeSpaceGraphWeightMap &weightMap)
         {
             const auto polyASegCount = std::distance(polyA.first, polyA.second) - 1;
             const auto polyBSegCount = std::distance(polyB.first, polyB.second) - 1;
 
             // Convert grid indices to single vector index
-            auto vertIndex = [polyASegCount](int i, int j)
-            {
+            auto vertIndex = [polyASegCount](int i, int j) {
                 return i + j * polyASegCount;
             };
 
@@ -833,7 +872,7 @@ namespace movetk_support
                 auto pointAIt = polyA.first;
                 for (int i = 0; i < polyASegCount; ++i, ++pointAIt)
                 {
-                    // Create the segment 
+                    // Create the segment
                     auto seg = make_segment(*pointAIt, *std::next(pointAIt));
                     // Determine closest distances and store as weights
                     auto pointBIt = polyB.first;
@@ -851,7 +890,7 @@ namespace movetk_support
                 auto pointBIt = polyB.first;
                 for (int j = 0; j < polyBSegCount; ++j, ++pointBIt)
                 {
-                    // Create the segment 
+                    // Create the segment
                     auto seg = make_segment(*pointBIt, *std::next(pointBIt));
                     // Determine closest distances and store as weights
                     auto pointAIt = polyA.first;
@@ -865,6 +904,7 @@ namespace movetk_support
                 }
             }
         }
+
     public:
         WeakFrechet() {}
         /**
@@ -877,12 +917,11 @@ namespace movetk_support
          * @return The weak Frechet distance.
          */
         template <class InputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits,
-            typename InputIterator::value_type>
-        >
-            typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
-                InputIterator polyline_b_first, InputIterator polyline_b_beyond)
+                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                                                                typename InputIterator::value_type>>
+        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond)
         {
             // Point counts of the polylines
             const auto polyASize = std::distance(polyline_a_first, polyline_a_beyond);
@@ -902,7 +941,7 @@ namespace movetk_support
             FreeSpaceGraph freeSpaceGraph;
             FreeSpaceGraphWeightMap weightMap;
             setupFreeSpaceGraph(std::make_pair(polyline_a_first, polyline_a_beyond), std::make_pair(polyline_b_first, polyline_b_beyond),
-                freeSpaceGraph, weightMap);
+                                freeSpaceGraph, weightMap);
 
             std::vector<NT> distances(boost::num_vertices(freeSpaceGraph));
             auto distanceMap = boost::make_iterator_property_map(distances.begin(), get(boost::vertex_index, freeSpaceGraph));
@@ -912,7 +951,7 @@ namespace movetk_support
 
             const auto freeSpaceMatchDist = distances[boost::num_vertices(freeSpaceGraph) - 1];
 
-            return std::sqrt(std::max({ startMatchDist, endMatchDist, freeSpaceMatchDist }));
+            return std::sqrt(std::max({startMatchDist, endMatchDist, freeSpaceMatchDist}));
         }
 
         /**
@@ -930,12 +969,11 @@ namespace movetk_support
          * \return The weak Frechet distance between the given polylines.
          */
         template <class InputIterator, class OutputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits, typename InputIterator::value_type>,
-            typename = movetk_core::requires_equality<std::pair<std::pair<int, int>, NT>, typename OutputIterator::value_type>
-        >
-            typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
-                InputIterator polyline_b_first, InputIterator polyline_b_beyond, OutputIterator matching_output)
+                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
+                  typename = movetk_core::requires_movetk_point<GeometryTraits, typename InputIterator::value_type>,
+                  typename = movetk_core::requires_equality<std::pair<std::pair<int, int>, NT>, typename OutputIterator::value_type>>
+        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond, OutputIterator matching_output)
         {
             // Point counts of the polylines
             const auto polyASize = std::distance(polyline_a_first, polyline_a_beyond);
@@ -958,7 +996,7 @@ namespace movetk_support
             FreeSpaceGraph freeSpaceGraph;
             FreeSpaceGraphWeightMap weightMap;
             setupFreeSpaceGraph(std::make_pair(polyline_a_first, polyline_a_beyond), std::make_pair(polyline_b_first, polyline_b_beyond),
-                freeSpaceGraph, weightMap);
+                                freeSpaceGraph, weightMap);
 
             std::vector<NT> distances(boost::num_vertices(freeSpaceGraph));
             auto distanceMap = boost::make_iterator_property_map(distances.begin(), get(boost::vertex_index, freeSpaceGraph));
@@ -969,22 +1007,20 @@ namespace movetk_support
 
             // Find min max path, uses default less comparison for weights and custom combine fucntion
             boost::dijkstra_shortest_paths(freeSpaceGraph, boost::vertex(0, freeSpaceGraph),
-                // Named arguments
-                boost::distance_zero(0)
-                .distance_map(distanceMap)
-                .distance_combine(MiniMaxCombineDistance())
-                .predecessor_map(predecessorsMap)
-            );
+                                           // Named arguments
+                                           boost::distance_zero(0)
+                                               .distance_map(distanceMap)
+                                               .distance_combine(MiniMaxCombineDistance())
+                                               .predecessor_map(predecessorsMap));
 
             const auto freeSpaceMatchDist = distances[boost::num_vertices(freeSpaceGraph) - 1];
 
-            auto vertDescToIndices = [polyASize](typename FreeSpaceGraph::vertex_descriptor desc)
-            {
+            auto vertDescToIndices = [polyASize](typename FreeSpaceGraph::vertex_descriptor desc) {
                 int j = (int)(desc / (polyASize - 1));
                 int i = desc - j * (polyASize - 1);
                 return std::make_pair(i, j);
             };
-            auto val = std::sqrt(std::max({ startMatchDist, endMatchDist, freeSpaceMatchDist }));
+            auto val = std::sqrt(std::max({startMatchDist, endMatchDist, freeSpaceMatchDist}));
 
             // Reconstruct the path in the freespace graph
             std::vector<std::pair<std::pair<int, int>, NT>> matching;
@@ -998,7 +1034,8 @@ namespace movetk_support
                 auto edge = boost::edge(curr, prev, freeSpaceGraph);
                 auto weight = weightMap[edge.first];
                 *matchingInserter = std::make_pair(vertDescToIndices(curr), std::sqrt(weight));
-                if (curr == boost::vertex(0, freeSpaceGraph)) break;
+                if (curr == boost::vertex(0, freeSpaceGraph))
+                    break;
             }
             // Add the start matching
             *matchingInserter = std::make_pair(std::make_pair(-1, -1), startMatchDist);
@@ -1008,8 +1045,8 @@ namespace movetk_support
             // Copy to output
             std::copy(matching.begin(), matching.end(), matching_output);
 
-            return std::sqrt(std::max({ startMatchDist, endMatchDist, freeSpaceMatchDist }));
+            return std::sqrt(std::max({startMatchDist, endMatchDist, freeSpaceMatchDist}));
         }
     };
-}
+} // namespace movetk_support
 #endif //MOVETK_DISTANCES_H

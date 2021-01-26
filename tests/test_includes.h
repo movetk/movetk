@@ -40,28 +40,29 @@ using namespace std;
 
 #if CGAL_BACKEND_ENABLED
 //==============================
-    // Define the Number Type
-    // For the CGAL backend,
-    // One can choose from the
-    // following number types
-    typedef long double NT;
-    //typedef CGAL::Mpzf NT;
-    //typedef CGAL::Gmpfr NT;
-    //typedef CGAL::Gmpq NT;
-    //==============================
+// Define the Number Type
+// For the CGAL backend,
+// One can choose from the
+// following number types
+typedef long double NT;
+//typedef CGAL::Mpzf NT;
+//typedef CGAL::Gmpfr NT;
+//typedef CGAL::Gmpq NT;
+//==============================
 
-    //==============================
-    // Define the Dimensions
-    const size_t dimensions = 2;
-    //==============================
+//==============================
+// Define the Dimensions
+const size_t dimensions = 2;
+//==============================
 
-    //==============================
-    // Define the Geometry Backend
-    typedef movetk_support::CGALTraits<NT, dimensions> GeometryBackend;
-    //Using the Geometry Backend define the Movetk Geometry Kernel
-    typedef movetk_core::MovetkGeometryKernel<
-            typename GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
-    //==============================
+//==============================
+// Define the Geometry Backend
+typedef movetk_support::CGALTraits<NT, dimensions> GeometryBackend;
+//Using the Geometry Backend define the Movetk Geometry Kernel
+typedef movetk_core::MovetkGeometryKernel<
+    typename GeometryBackend::Wrapper_CGAL_Geometry>
+    MovetkGeometryKernel;
+//==============================
 #else
 //==============================
 // Define the Number Type
@@ -90,20 +91,24 @@ namespace test_helpers
 {
     namespace detail
     {
-        inline bool startsWith(const std::string& str, int offset, const std::string& toSearch, bool ignoreWs)
+        inline bool startsWith(const std::string &str, int offset, const std::string &toSearch, bool ignoreWs)
         {
-            if (offset + toSearch.size() >= str.size()) return false;
+            if (offset + toSearch.size() >= str.size())
+                return false;
             int j = 0;
             for (int i = offset; i < str.size(); ++i)
             {
-                if (ignoreWs && std::isspace(str[i]) && j == 0) continue;
-                if (str[i] != toSearch[j]) return false;
+                if (ignoreWs && std::isspace(str[i]) && j == 0)
+                    continue;
+                if (str[i] != toSearch[j])
+                    return false;
                 ++j;
-                if (j == toSearch.size()) break;
+                if (j == toSearch.size())
+                    break;
             }
             return j == toSearch.size();
         }
-    }
+    } // namespace detail
 
     /**
      * \brief Reads the first <path> element in an ipe string. The path is assumed to only contain 'm' and 'l' operators,
@@ -111,7 +116,7 @@ namespace test_helpers
      * \param pathData IPE string
      * \param points Output movetk points.
      */
-    inline void parseIpePath(const std::string& pathData, std::vector<MovetkGeometryKernel::MovetkPoint>& points)
+    inline void parseIpePath(const std::string &pathData, std::vector<MovetkGeometryKernel::MovetkPoint> &points)
     {
         movetk_core::MakePoint<MovetkGeometryKernel> make_point;
         int i = 0;
@@ -123,14 +128,16 @@ namespace test_helpers
                 {
                     for (; i < pathData.size(); ++i)
                     {
-                        if (pathData[i] == '>') break;
+                        if (pathData[i] == '>')
+                            break;
                     }
                 }
                 else
                 {
                     for (; i < pathData.size(); ++i)
                     {
-                        if (pathData[i] == '>') break;
+                        if (pathData[i] == '>')
+                            break;
                     }
                     // One past the last '>'
                     ++i;
@@ -165,7 +172,7 @@ namespace test_helpers
                 else if (pathData[i] == 'm' || pathData[i] == 'l')
                 {
                     assert(buff.size() == 2);
-                    points.push_back(make_point({ buff[0], buff[1] }));
+                    points.push_back(make_point({buff[0], buff[1]}));
                     buff.clear();
                     prevStart = i + 1;
                 }
@@ -178,15 +185,15 @@ namespace test_helpers
         }
     }
 
-    template<typename FieldsTuple, int XIdx, int YIdx, int TimeIdx>
-    std::vector<FieldsTuple> buildData(const std::vector<double>& xs, const std::vector<double>& ys, std::time_t timeIncrement,FieldsTuple defaultTuple)
+    template <typename FieldsTuple, int XIdx, int YIdx, int TimeIdx>
+    std::vector<FieldsTuple> buildData(const std::vector<double> &xs, const std::vector<double> &ys, std::time_t timeIncrement, FieldsTuple defaultTuple)
     {
         assert(xs.size() == ys.size());
         std::vector<FieldsTuple> out(xs.size(), defaultTuple);
         std::time_t curr = std::get<TimeIdx>(defaultTuple);
-        for(int i = 0; i < xs.size(); ++i)
+        for (int i = 0; i < xs.size(); ++i)
         {
-            if(i != 0)
+            if (i != 0)
             {
                 std::get<TimeIdx>(out[i]) = curr + timeIncrement;
                 curr += timeIncrement;
@@ -196,8 +203,8 @@ namespace test_helpers
         }
         return out;
     }
-    template<typename FieldsTuple, int XIdx, int YIdx, int TimeIdx>
-    std::vector<FieldsTuple> buildData(const std::vector<double>& xs, const std::vector<double>& ys, const std::vector<std::time_t>& times, FieldsTuple defaultTuple)
+    template <typename FieldsTuple, int XIdx, int YIdx, int TimeIdx>
+    std::vector<FieldsTuple> buildData(const std::vector<double> &xs, const std::vector<double> &ys, const std::vector<std::time_t> &times, FieldsTuple defaultTuple)
     {
         assert(xs.size() == ys.size());
         assert(xs.size() == times.size());
@@ -217,7 +224,7 @@ namespace test_helpers
     }
     inline bool approximatelyEqual(double v0, double v1, double tolerance = 0.00001)
     {
-        return std::abs(v0-v1) < tolerance;
+        return std::abs(v0 - v1) < tolerance;
     }
-}
+} // namespace test_helpers
 #endif

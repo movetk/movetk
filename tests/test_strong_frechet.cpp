@@ -17,7 +17,6 @@
  * License-Filename: LICENSE
  */
 
-
 #include <array>
 #include "catch2/catch.hpp"
 
@@ -28,7 +27,12 @@
 #include <movetk/metric/Norm.h>
 
 // Add a message to a Catch2 require
-#define REQUIRE_MESSAGE(cond, msg) do { INFO(msg); REQUIRE(cond); } while((void)0, 0)
+#define REQUIRE_MESSAGE(cond, msg) \
+    do                             \
+    {                              \
+        INFO(msg);                 \
+        REQUIRE(cond);             \
+    } while ((void)0, 0)
 
 // The norm to be used in weak Frechet distance computations.
 typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
@@ -40,13 +44,10 @@ struct StrongFrechetTestCase
     std::string polyA, polyB, expectedLine;
 };
 
-std::map<std::string, StrongFrechetTestCase> testCases
-{
-    {
-        "Simple spike example", 
-        StrongFrechetTestCase
-        {
-            R"IPE(<path>
+std::map<std::string, StrongFrechetTestCase> testCases{
+    {"Simple spike example",
+     StrongFrechetTestCase{
+         R"IPE(<path>
         96 448 m
         192 448 l
         256 448 l
@@ -54,7 +55,7 @@ std::map<std::string, StrongFrechetTestCase> testCases
         384 448 l
         </path>
         )IPE",
-            R"IPE(<path>
+         R"IPE(<path>
         96 448 m
         128 448 l
         144 448 l
@@ -66,19 +67,15 @@ std::map<std::string, StrongFrechetTestCase> testCases
         384 448 l
         </path>
         )IPE",
-        R"IPE(
+         R"IPE(
         <path>
         208 448 m
         208 512 l
         </path>
-        )IPE"
-        }
-    },
-    {
-        "Weaved grid example",
-        StrongFrechetTestCase
-        {
-            R"IPE(<ipeselection pos="160 384">
+        )IPE"}},
+    {"Weaved grid example",
+     StrongFrechetTestCase{
+         R"IPE(<ipeselection pos="160 384">
         <path stroke="darkorange" pen="heavier" arrow="normal/normal">
         128 384 m
         320 384 l
@@ -97,7 +94,7 @@ std::map<std::string, StrongFrechetTestCase> testCases
         </path>
         </ipeselection>
         )IPE",
-        R"IPE(<ipeselection pos="192 368">
+         R"IPE(<ipeselection pos="192 368">
         <path stroke="darkred" pen="heavier" arrow="normal/normal">
         128 384 m
         128 192 l
@@ -116,20 +113,16 @@ std::map<std::string, StrongFrechetTestCase> testCases
         </path>
         </ipeselection>
         )IPE",
-        R"IPE(<ipeselection pos="144 384">
+         R"IPE(<ipeselection pos="144 384">
         <path matrix="1 0 0 1 0 -32" stroke="black">
         128 416 m
         320 416 l
         </path>
         </ipeselection>
-        )IPE"
-        }
-    },
-    {
-        "Single segment and spike example",
-        StrongFrechetTestCase
-        {
-            R"IPE(
+        )IPE"}},
+    {"Single segment and spike example",
+     StrongFrechetTestCase{
+         R"IPE(
             <ipeselection pos="-80 352">
             <path stroke="black">
             128 320 m
@@ -142,37 +135,33 @@ std::map<std::string, StrongFrechetTestCase> testCases
             </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+         R"IPE(
             <ipeselection pos="-32 368">
             <path stroke="black">
             128 320 m
             224 320 l
             </path>
             </ipeselection>
-            )IPE", 
-            R"IPE(
+            )IPE",
+         R"IPE(
             <ipeselection pos="176 384">
             <path matrix="1 0 0 1 32 32" stroke="black">
             176 320 m
             176 416 l
             </path>
             </ipeselection>s
-            )IPE"
-        }
-    },
-    {
-        "Two segments example",
-        StrongFrechetTestCase
-        {
-            R"IPE(
+            )IPE"}},
+    {"Two segments example",
+     StrongFrechetTestCase{
+         R"IPE(
             <ipeselection pos="176 736">
             <path stroke="black" arrow="normal/normal">
             128 736 m
             192 736 l
             </path>
             </ipeselection>
-            )IPE", 
-            R"IPE(
+            )IPE",
+         R"IPE(
             <ipeselection pos="0 768">
             <path stroke="black" arrow="normal/normal">
             98.5874 755.395 m
@@ -180,21 +169,17 @@ std::map<std::string, StrongFrechetTestCase> testCases
             </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+         R"IPE(
             <ipeselection pos="174.706 758.303">
             <path stroke="black" arrow="normal/normal">
             157.413 780.605 m
             192 736 l
             </path>
             </ipeselection>
-            )IPE"
-        }
-    },
-    {
-        "Segment-point example",
-        StrongFrechetTestCase
-        {
-            R"IPE(
+            )IPE"}},
+    {"Segment-point example",
+     StrongFrechetTestCase{
+         R"IPE(
             <ipeselection pos="176 736">
             <path stroke="black" arrow="normal/normal">
             128 736 m
@@ -202,55 +187,47 @@ std::map<std::string, StrongFrechetTestCase> testCases
             </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+         R"IPE(
             <ipeselection pos="0 768">
             <path stroke="black" arrow="normal/normal">
             98.5874 755.395 m
             </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+         R"IPE(
             <ipeselection pos="139.422 746.917">
             <path stroke="black">
             98.5874 755.395 m
             192 736 l
             </path>
             </ipeselection>
-            )IPE"
-        }
-    },
-    {
-        "Point-point example",
-        StrongFrechetTestCase
-        {
-            R"IPE(
+            )IPE"}},
+    {"Point-point example",
+     StrongFrechetTestCase{
+         R"IPE(
             <ipeselection pos="176 736">
             <path stroke="black" arrow="normal/normal">
             128 736 m
             </path>
             </ipeselection>
-            )IPE", 
-            R"IPE(
+            )IPE",
+         R"IPE(
             <ipeselection pos="0 768">
             <path stroke="black" arrow="normal/normal">
             98.5874 755.395 m
             </path>
             </ipeselection>
-            )IPE", 
-            R"IPE(
+            )IPE",
+         R"IPE(
             <ipeselection pos="96 736">
             <path stroke="black" arrow="normal/normal">
             98.5874 755.395 m
             128 736 l
             </path>
             </ipeselection>
-            )IPE"
-        }
-    }
-};
+            )IPE"}}};
 
-
-TEST_CASE( "Check if polyline strong Frechet distance is correct", "[strong_frechet]" ) 
+TEST_CASE("Check if polyline strong Frechet distance is correct", "[strong_frechet]")
 {
     using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
     using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
@@ -262,7 +239,7 @@ TEST_CASE( "Check if polyline strong Frechet distance is correct", "[strong_frec
     // Distance computer for expected distance
     SqDistance sqDist;
 
-    for(const auto& pair: testCases)
+    for (const auto &pair : testCases)
     {
         StrongFrechetTestCase tc = pair.second;
         SECTION(pair.first)
@@ -304,10 +281,10 @@ TEST_CASE("Check if polyline strong Frechet distance is correct with upperbounde
     SqDistance sqDist;
 
     // Test fractions of known distance
-    std::vector<MovetkGeometryKernel::NT> fractions = { 0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000 };
-    std::vector<bool> expectSuccess = { false, false, false, false, true, true, true, true };
+    std::vector<MovetkGeometryKernel::NT> fractions = {0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000};
+    std::vector<bool> expectSuccess = {false, false, false, false, true, true, true, true};
 
-    for (const auto& pair : testCases)
+    for (const auto &pair : testCases)
     {
         std::string testCaseName = pair.first;
         StrongFrechetTestCase tc = pair.second;
@@ -324,16 +301,16 @@ TEST_CASE("Check if polyline strong Frechet distance is correct with upperbounde
             // Compute expected distance
             auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 
-            for(std::size_t i = 0; i < fractions.size(); ++i)
+            for (std::size_t i = 0; i < fractions.size(); ++i)
             {
-                sfr.setUpperbound(expectedDist*fractions[i]);
+                sfr.setUpperbound(expectedDist * fractions[i]);
                 NT epsilon = -1;
                 // Try algorithm with both polyA and polyB as first polyline
                 {
                     bool success = sfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end(), epsilon);
                     // Check whether we expect success or not.
                     REQUIRE(success == expectSuccess[i]);
-                    if(success)
+                    if (success)
                     {
                         REQUIRE_MESSAGE(epsilon == Approx(expectedDist).margin(sfr.tolerance()), (std::string("Failed at fraction ") + std::to_string(fractions[i])));
                     }
@@ -363,10 +340,10 @@ TEST_CASE("Check if decision strong Frechet distance is correct", "[strong_frech
     SqDistance sqDist;
 
     // Test fractions of known distance
-    std::vector<MovetkGeometryKernel::NT> fractions = { 0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000 };
-    std::vector<bool> expectSuccess = { false, false, false, false, true, true, true, true };
+    std::vector<MovetkGeometryKernel::NT> fractions = {0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000};
+    std::vector<bool> expectSuccess = {false, false, false, false, true, true, true, true};
 
-    for (const auto& pair : testCases)
+    for (const auto &pair : testCases)
     {
         std::string testCaseName = pair.first;
         StrongFrechetTestCase tc = pair.second;
@@ -388,12 +365,12 @@ TEST_CASE("Check if decision strong Frechet distance is correct", "[strong_frech
                 NT epsilon = -1;
                 // Try algorithm with both polyA and polyB as first polyline
                 {
-                    bool success = sfr.decide(polyA.begin(), polyA.end(), polyB.begin(), polyB.end(), expectedDist*fractions[i]);
+                    bool success = sfr.decide(polyA.begin(), polyA.end(), polyB.begin(), polyB.end(), expectedDist * fractions[i]);
                     // Check whether we expect success or not.
                     REQUIRE(success == expectSuccess[i]);
                 }
                 {
-                    bool success = sfr.decide(polyB.begin(), polyB.end(), polyA.begin(), polyA.end(), expectedDist*fractions[i]);
+                    bool success = sfr.decide(polyB.begin(), polyB.end(), polyA.begin(), polyA.end(), expectedDist * fractions[i]);
                     REQUIRE(success == expectSuccess[i]);
                 }
             }
