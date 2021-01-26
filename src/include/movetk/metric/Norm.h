@@ -46,7 +46,7 @@ namespace movetk_support
             ASSERT_MIN_NORM(p);
         }
 
-        typename Kernel::NT operator()(typename Kernel::MovetkVector &v)
+        typename Kernel::NT operator()(const typename Kernel::MovetkVector &v)
         {
             auto sum_exponent_p = [](typename Kernel::NT sum, typename Kernel::NT coord) -> typename Kernel::NT {
                 return std::move(sum) + std::pow(abs(coord), p);
@@ -55,7 +55,7 @@ namespace movetk_support
             return result;
         }
 
-        typename Kernel::NT operator^(std::size_t exponent)
+        typename Kernel::NT operator^(std::size_t exponent) const
         {
             typename Kernel::NT n = exponent / static_cast<typename Kernel::NT>(p);
             return std::pow(result, n);
@@ -73,7 +73,7 @@ namespace movetk_support
         };
 
     public:
-        typename Kernel::NT operator()(typename Kernel::MovetkVector &v)
+        typename Kernel::NT operator()(const typename Kernel::MovetkVector &v)
         {
             result = abs(*std::max_element(std::begin(v), std::end(v), abs_compare));
             return result;

@@ -43,7 +43,8 @@ typedef GeometryKernel::MovetkGeometryKernel MovetkGeometryKernel;
 
 struct Distance
 {
-    MovetkGeometryKernel::NT operator()(MovetkGeometryKernel::MovetkPoint p0, MovetkGeometryKernel::MovetkPoint p1)
+    MovetkGeometryKernel::NT operator()(const MovetkGeometryKernel::MovetkPoint& p0, 
+        const MovetkGeometryKernel::MovetkPoint& p1) const
     {
         std::vector<MovetkGeometryKernel::NT> ll0;
         std::copy(p0.begin(), p0.end(), std::back_inserter(ll0));
@@ -78,34 +79,53 @@ public:
 
         Distance distanceFunc;
 
-        movetk_algorithms::TrajectoryLength<Trajectory_t, MovetkGeometryKernel,
-                                            Distance, LON_Idx, LAT_Idx>
-            lenCalc(distanceFunc);
-        length = lenCalc(trajectory);
+        // Retrieve spatio-temporal data
+        auto lons = trajectory.template get<LON_Idx>();
+        auto lats = trajectory.template get<LAT_Idx>();
+        auto timeStamps = trajectory.template get<TS_Idx>();
+
+        //Compute length
+        movetk_algorithms::TrajectoryLength<MovetkGeometryKernel,Distance> lenCalc;
+        length = lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end());
         trajectory_properties.push_back(std::make_pair("length", std::to_string(length)));
-        movetk_algorithms::TrajectoryDuration<Trajectory_t, TS_Idx> duration;
-        traj_duration = duration(trajectory);
+
+        // Compute duration 
+        movetk_algorithms::TrajectoryDuration duration;
+        traj_duration = duration(timeStamps.begin(), timeStamps.end());
         trajectory_properties.push_back(std::make_pair("duration", std::to_string(traj_duration)));
 
         // Show speed statistics:
-        using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<Trajectory_t, MovetkGeometryKernel, Distance, LON_Idx, LAT_Idx, TS_Idx>;
-        SpeedStat speedStat(distanceFunc);
+        //using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<Trajectory_t, MovetkGeometryKernel, Distance, LON_Idx, LAT_Idx, TS_Idx>;
+        using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<MovetkGeometryKernel, Distance>;
+        SpeedStat speedStat;
         using Stat = typename SpeedStat::Statistic;
-        mean_speed = speedStat(trajectory, Stat::Mean);
+
+        using CoordItPair = std::pair<decltype(lons.begin()), decltype(lons.begin())>;
+
+        auto lonLatPoints = movetk_core::point_iterators_from_coordinates<MovetkGeometryKernel>(
+            std::array<CoordItPair, 2>{std::make_pair(lons.begin(), lons.end()), std::make_pair(lats.begin(), lats.end())}
+        );
+
+        // Compute statistics
+        std::vector<Stat> statsToCompute = { Stat::Mean, Stat::Median, Stat::Min, Stat::Max,Stat::Variance };
+        std::vector<MovetkGeometryKernel::NT> stats = speedStat(lonLatPoints.first, lonLatPoints.second, timeStamps.begin(), timeStamps.end(), 
+            statsToCompute);
+
+        mean_speed = stats[0];
         trajectory_properties.push_back(std::make_pair("mean_speed", std::to_string(mean_speed)));
-        median_speed = speedStat(trajectory, Stat::Median);
+        median_speed = stats[1];
         trajectory_properties.push_back(std::make_pair("median_speed", std::to_string(median_speed)));
-        min_speed = speedStat(trajectory, Stat::Min);
+        min_speed = stats[2];
         trajectory_properties.push_back(std::make_pair("min_speed", std::to_string(min_speed)));
-        max_speed = speedStat(trajectory, Stat::Max);
+        max_speed = stats[3];
         trajectory_properties.push_back(std::make_pair("max_speed", std::to_string(max_speed)));
-        var_speed = speedStat(trajectory, Stat::Variance);
+        var_speed = stats[4];
         trajectory_properties.push_back(std::make_pair("var_speed", std::to_string(var_speed)));
 
         // Show time mode
-        movetk_algorithms::TrajectoryTimeIntervalMode<Trajectory_t, TS_Idx> timeMode;
+        movetk_algorithms::ComputeDominantDifference timeMode;
 
-        time_mode = timeMode(trajectory);
+        time_mode = timeMode(timeStamps.begin(), timeStamps.end(), 0);
         trajectory_properties.push_back(std::make_pair("time_mode", std::to_string(time_mode)));
     }
 
@@ -242,7 +262,7 @@ int main(int argc, char **argv)
             ++tit;
             continue;
         }
-
+        
         ComputeStatistics statistics(trajectory, count);
         auto property_iterator_first = statistics.begin();
         auto property_iterator_beyond = statistics.end();

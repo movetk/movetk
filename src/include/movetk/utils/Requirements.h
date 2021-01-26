@@ -69,6 +69,16 @@ namespace movetk_core {
     template<class T = void>
     using requires_random_access_iterator =  typename std::enable_if<movetk_core::is_random_access_iterator<
             typename std::iterator_traits<T>::iterator_category>::value,T>::type;
+    /*!
+     *@brief Requirement for  template \c T  to be an input iterator
+     * @details defines \c requires_atleast_input_iterator as \c T iff
+     * \c std::iterator_traits<T>::iterator_category is a base of \c std::input_iterator_tag , otherwise
+     * defines \c requires_random_access_iterator as \c void
+     */
+    template<class T = void>
+    using requires_atleast_input_iterator = typename std::enable_if<
+        std::is_base_of_v<std::input_iterator_tag, typename std::iterator_traits<T>::iterator_category>,
+    T>::type;
 
     /*!
      *@brief Requirement for template \c T to be an output_iterator
@@ -79,6 +89,14 @@ namespace movetk_core {
     template<class T = void>
     using requires_output_iterator = typename std::enable_if<movetk_core::is_output_iterator<
             typename std::iterator_traits<T>::iterator_category>::value, T>::type;
+
+    /*!
+     *@brief Requirement for template \c T to be an iterator with value_type \c MovetkPoint
+     * @details defines \c requires_movetk_point as \c T iff
+     * \c T is \c MovetkPoint, otherwise defines \c requires_movetk_point as \c void
+     */
+    template<class Traits, class T = void>
+    using requires_movetk_point_iterator = typename std::enable_if<movetk_core::is_MovetkPoint<Traits, typename std::iterator_traits<T>::value_type>::value, T>::type;
 
     /*!
      *@brief Requirement for template \c T to be a \c MovetkPoint

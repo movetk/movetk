@@ -20,240 +20,81 @@
  * License-Filename: LICENSE
  */
 
-//
-// Created by Custers, Bram on 2020-02-08.
-//
+ //
+ // Created by Custers, Bram on 2020-02-08.
+ //
 
 #ifndef MOVETK_STATISTICS_H
 #define MOVETK_STATISTICS_H
 
 #include <iterator>
 #include <functional>
-#include <numeric>
 #include "movetk/TrajectoryTraits.h"
 #include "movetk/geom/GeometryInterface.h"
+#include <movetk/utils/TrajectoryUtils.h>
+#include <boost/iterator/zip_iterator.hpp>
 
-namespace movetk_algorithms
-{
-    /**
-     * @brief Helper for accessing fields of a trajectory iterator.
-     * Supports both tabular and columnar mode
-     * @tparam Trajectory The trajectory type
-     */
-    template <class Trajectory>
-    struct IteratorAccessor
-    {
-        // Reference to the parent trajectory
-        Trajectory &m_trajectory;
-        using TrajectoryIt = typename Trajectory::TrajectoryIterator;
-        // The iterator
-        TrajectoryIt m_it;
-
-        using Self_t = IteratorAccessor<Trajectory>;
-
-        // Is the trajectory stored in columnar mode
-        static constexpr bool isColumnar = Trajectory::storage_scheme() == StorageScheme::columnar;
-
-        IteratorAccessor(Trajectory &trajectory, TrajectoryIt it) : m_trajectory(trajectory), m_it(it) {}
-
-        IteratorAccessor(Trajectory &trajectory) : m_trajectory(trajectory), m_it({}) {}
-
-        /**
-         * @brief Creates an accessor for the start iterator of the trajectory
-         * @param trajectory The target trajectory
-         * @return Accessor with the start iterator assigned
-         */
-        static Self_t start(Trajectory &trajectory)
-        {
-            if constexpr (Self_t::isColumnar)
-            {
-                return Self_t(trajectory, trajectory.row_begin());
-            }
-            else
-            {
-                return Self_t(trajectory, trajectory.begin());
-            }
-        }
-
-        /**
-         * @brief Creates an accessor for the end iterator of the trajectory
-         * @param trajectory The target trajectory
-         * @return Accessor with the end iterator assigned
-         */
-        static Self_t end(Trajectory &trajectory)
-        {
-            if constexpr (Self_t::isColumnar)
-            {
-                return Self_t(trajectory, trajectory.row_end());
-            }
-            else
-            {
-                return Self_t(trajectory, trajectory.end());
-            }
-        }
-
-        /**
-         * @brief Retrieves the value of the field with the given id from
-         * the current iterator location
-         * @tparam Idx The ID of the field
-         * @return The value of the field at the current iterator location
-         */
-        template <int Idx>
-        typename Trajectory::template FieldType<Idx> getField()
-        {
-            if constexpr (Trajectory::storage_scheme() == StorageScheme::columnar)
-            {
-                // Iterator is a tuple of iterators
-                return *std::get<Idx>(m_it);
-            }
-            else
-            {
-                return std::get<Idx>(*m_it);
-            }
-        }
-
-        /**
-         * @brief Creates a new iterator that is the current operator, offset by
-         * the given offset
-         * @param offset The offset
-         * @return The new iterator
-         */
-        Self_t operator+(int offset)
-        {
-            Self_t newIt(m_trajectory, m_it);
-            for (int i = 0; i < offset; ++i)
-            {
-                ++newIt;
-            }
-            return newIt;
-        }
-
-        /**
-         * @brief Moves the iterator to the next 
-         * @return Reference to this object.
-         */
-        Self_t &operator++()
-        {
-            if constexpr (Trajectory::storage_scheme() == StorageScheme::columnar)
-            {
-                m_trajectory.row_next(m_it);
-            }
-            else
-            {
-                ++m_it;
-            }
-            return *this;
-        }
-
-        /**
-         * @brief Returns whether the iterators of this and another accessor are not the same
-         * @param other The other accessor
-         * @return Are the inner iterators not the same
-         */
-        bool operator!=(const Self_t &other) const
-        {
-            return m_it != other.m_it;
-        }
-        bool operator==(const Self_t &other) const
-        {
-            return m_it == other.m_it;
-        }
-    };
-
-    template <class Trajectory, class GeometryKernel, class PointToPointDistance, int XcoordIdx, int YcoordIdx>
-    class TrajectoryLength
-    {
+namespace movetk_algorithms {
+    template <class GeometryKernel, typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>>
+    class TrajectoryLength {
     private:
-        typedef typename GeometryKernel::NT NT;
-        PointToPointDistance m_dist;
-        using ItAccessor = IteratorAccessor<Trajectory>;
-
-        /**
-         * @brief Aggregator function for edge lengths of the trajectory
-         */
-        struct AggregateLength
-        {
-            NT total = 0;
-            PointToPointDistance m_dist;
-            // Underlying trajectory
-            Trajectory &m_trajectory;
-
-            AggregateLength(Trajectory &trajectory, PointToPointDistance dist) : m_trajectory(trajectory),
-                                                                                 m_dist(dist) {}
-
-            void operator()(IteratorAccessor<Trajectory> point)
-            {
-                movetk_core::MakePoint<GeometryKernel> make_point;
-                auto p0 = make_point({point.template getField<XcoordIdx>(),
-                                      point.template getField<YcoordIdx>()});
-                auto next = point + 1;
-                auto p1 = make_point({next.template getField<XcoordIdx>(),
-                                      next.template getField<YcoordIdx>()});
-                total += m_dist(p0, p1);
-            }
-        };
+        using NT = typename GeometryKernel::NT;
 
     public:
-        explicit TrajectoryLength(PointToPointDistance n) : m_dist(n) {}
-
-        typename GeometryKernel::NT operator()(Trajectory trajectory)
+        template<typename CoordinateIterator>
+        typename GeometryKernel::NT operator()(CoordinateIterator firstCoordBegin, CoordinateIterator firstCoordEnd, CoordinateIterator secondCoordBegin,
+            CoordinateIterator secondCoordEnd) const
         {
-            AggregateLength aggregator(trajectory, m_dist);
-            ItAccessor current = ItAccessor::start(trajectory);
-            ItAccessor end = ItAccessor::end(trajectory);
-            for (; (current + 1) != end; ++current)
-            {
-                aggregator(current);
-            }
+            assert(std::distance(firstCoordBegin, firstCoordEnd) == std::distance(secondCoordBegin, secondCoordEnd));
 
-            return aggregator.total;
+            if (firstCoordBegin == firstCoordEnd || secondCoordBegin == secondCoordEnd) return 0;
+
+            auto firstCoordPair = std::make_pair(firstCoordBegin, firstCoordEnd);
+            auto secondCoordPair = std::make_pair(secondCoordBegin, secondCoordEnd);
+            
+
+            // Point iterator begin and end
+            auto beginEndPair = movetk_core::point_iterators_from_coordinates<GeometryKernel, CoordinateIterator>(std::array<decltype(firstCoordPair),2>{firstCoordPair, secondCoordPair});
+
+            std::vector<NT> distances;
+            movetk_core::movetk_back_insert_iterator<decltype(distances)> backInserter(distances);
+            movetk_core::get_distances<GeometryKernel, decltype(beginEndPair.first), decltype(backInserter)>(beginEndPair.first, beginEndPair.second, backInserter);
+            // Defaults to summing everything
+            return std::accumulate(distances.begin(), distances.end(), (NT)0.0);
         }
     };
 
-    template <typename Trajectory, int TimeStampIdx>
     class TrajectoryDuration
     {
-        using ItAccessor = IteratorAccessor<Trajectory>;
-
     public:
-        using Time_t = typename Trajectory::template FieldType<TimeStampIdx>;
-        // Duration is the difference of the time type.
-        using Duration_t = decltype(std::declval<Time_t>() - std::declval<Time_t>());
-
+        
         /**
          * @brief Computes the duration of the trajectory. Does not assume the trajectory to be
          * sorted by time. The duration is returned with the type of the timestamp field in the
          * trajectory. Note that the timestamp type should be comparable and subtractable.
-         * @tparam Trajectory The trajectory type
-         * @param trajectory The trajectory
+         * @tparam TimeIterator The time point iterator.
          * @complexity O(n), with n the number of points
          * @return Duration of the trajectory, returned as the type of the difference of the
          */
-        Duration_t operator()(Trajectory trajectory) const
+        template<typename TimeIterator,
+            typename = movetk_core::requires_atleast_input_iterator<TimeIterator>
+        >
+        decltype(std::declval<typename TimeIterator::value_type>() - std::declval<typename TimeIterator::value_type>()) operator()(TimeIterator begin, TimeIterator end) const
         {
-            // Setup the iterators
-            ItAccessor current = ItAccessor::start(trajectory);
-            ItAccessor end = ItAccessor::end(trajectory);
+            using Time_t = typename TimeIterator::value_type;
+            using Duration_t = decltype(std::declval<Time_t>() - std::declval<Time_t >());
 
-            // Minimum and maximum time
-            Time_t maxTime;
-            Time_t minTime = maxTime = current.template getField<TimeStampIdx>();
+            // Catch empty case. Assume difference type
+            if (begin == end) return 0;
 
-            // Find min and max time over all points
-            for (; current != end; ++current)
-            {
-                auto val = current.template getField<TimeStampIdx>();
-                if (minTime > val)
-                    minTime = val;
-                if (maxTime < val)
-                    maxTime = val;
-            }
+            // Find min and max iterators over all time points
+            auto minMaxIts = std::minmax_element(begin, end);
 
-            return maxTime - minTime;
+            return *(minMaxIts.second) - *(minMaxIts.first);
         }
     };
 
-    template <typename Trajectory, typename GeometryKernel, class PointToPointDistance, int XcoordIdx, int YcoordIdx, int TimeStampIdx>
+    template<typename GeometryKernel, typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>>
     class TrajectorySpeedStatistic
     {
     public:
@@ -265,74 +106,50 @@ namespace movetk_algorithms
             Min,
             Variance
         };
-        // Time type
-        using Time_t = typename Trajectory::template FieldType<TimeStampIdx>;
         // Duration is the difference of the time type.
+        template<typename Time_t>
         using Duration_t = decltype(std::declval<Time_t>() - std::declval<Time_t>());
         // Point type
         using Point_t = typename GeometryKernel::MovetkPoint;
         // Distance type
-        using Dist_t = decltype(std::declval<PointToPointDistance>()(std::declval<Point_t>(), std::declval<Point_t>()));
+        using Dist_t = decltype(std::declval<PointDistanceFunc>()(std::declval<Point_t>(), std::declval<Point_t>()));
         // Speed type = Distance type / Duration type
-        using Speed_t = decltype(std::declval<Duration_t>() / std::declval<Dist_t>());
-
+        template<typename Time_t>
+        using Speed_t = decltype(std::declval<Dist_t>() / std::declval<Duration_t<Time_t>>());
     private:
-        using ItAccessor = IteratorAccessor<Trajectory>;
-        // The distance function
-        PointToPointDistance m_dist;
-
-        /**
-         * @brief Constructs a point for the given accessor with the coordinates
-         * at the specified field IDs
-         * @param it The accessor
-         * @return The point 
-         */
-        Point_t getPoint(ItAccessor it)
-        {
-            movetk_core::MakePoint<GeometryKernel> make_point;
-            return make_point({it.template getField<XcoordIdx>(), it.template getField<YcoordIdx>()});
-        }
-
-        /**
-         * @brief Determines the speed between the probes at the current iterator it and the next element
-         * Assumes linear interpolation of the trajectory.
-         * @param it The current iterator 
-         * @return The speed between the current and next point
-         */
-        Speed_t getSpeed(ItAccessor it)
-        {
-            ItAccessor next = it + 1;
-            auto timeDiff = next.template getField<TimeStampIdx>() - it.template getField<TimeStampIdx>();
-            // Calculate the distance
-            auto dist = m_dist(getPoint(it), getPoint(next));
-            // Return the speed
-            return dist / timeDiff;
-        }
 
     public:
-        explicit TrajectorySpeedStatistic(PointToPointDistance dist) : m_dist(dist) {}
 
-        std::vector<Speed_t> operator()(Trajectory trajectory, const std::vector<Statistic> &requiredStatistics)
+        template<typename PointIterator, typename TimeIterator,
+            typename = movetk_core::requires_atleast_input_iterator<PointIterator>,
+            typename = movetk_core::requires_atleast_input_iterator<TimeIterator>,
+            typename = movetk_core::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>
+        >
+        std::vector<Speed_t<typename TimeIterator::value_type>> operator()(PointIterator pointsBegin, PointIterator pointsEnd, TimeIterator timeBegin, TimeIterator timeEnd, 
+            const std::vector<Statistic>& requiredStatistics) const
         {
-            std::vector<Speed_t> speeds;
-            movetk_core::MakePoint<GeometryKernel> make_point;
+            assert(std::distance(pointsBegin, pointsEnd) == std::distance(timeBegin, timeEnd));
 
-            ItAccessor current = ItAccessor::start(trajectory);
-            ItAccessor end = ItAccessor::end(trajectory);
+            using Speed = Speed_t<typename TimeIterator::value_type>;
+            using Duration = Duration_t<typename TimeIterator::value_type>;
+            std::vector<Speed> speeds;
+            std::vector<Speed> output(requiredStatistics.size(), 0);
+            // We cannot derive speeds for empty or single point trajectories, so return zero values.
+            if (std::distance(pointsBegin, pointsEnd) <= 1 || std::distance(timeBegin, timeEnd) <= 1) return output;
 
-            // Find min and max time over all points
-            for (; (current + 1) != end; ++current)
+            // Compute speeds
             {
-                speeds.push_back(getSpeed(current));
-            }
-            std::vector<Speed_t> output(requiredStatistics.size(), 0);
+                std::vector<Dist_t> distances;
+                movetk_core::movetk_back_insert_iterator backInsert(distances);
+                movetk_core::get_distances<GeometryKernel,decltype(pointsBegin), decltype(backInsert), PointDistanceFunc>(pointsBegin, pointsEnd, backInsert);
+                std::vector<Duration> timeDiffs;
+                movetk_core::get_time_diffs(timeBegin, timeEnd, movetk_core::movetk_back_insert_iterator(timeDiffs));
 
-            // Check if the speeds are empty to avoid divisions by zero
-            if (speeds.empty())
-                return output;
+                movetk_core::get_speeds<GeometryKernel>(timeDiffs.begin(), timeDiffs.end(), distances.begin(), movetk_core::movetk_back_insert_iterator(speeds));
+            }
 
             // Calculate the statistics
-            for (int i = 0; i < requiredStatistics.size(); ++i)
+            for(int i = 0; i < requiredStatistics.size(); ++i)
             {
                 switch (requiredStatistics[i])
                 {
@@ -354,7 +171,7 @@ namespace movetk_algorithms
                 case Statistic::Mean:
                 {
                     // Compute the average
-                    output[i] = std::accumulate(speeds.begin(), speeds.end(), static_cast<Speed_t>(0)) / static_cast<Speed_t>(speeds.size());
+                    output[i] = std::accumulate(speeds.begin(), speeds.end(), static_cast<Speed>(0)) / static_cast<Speed>(speeds.size());
                     break;
                 }
                 case Statistic::Min:
@@ -364,13 +181,14 @@ namespace movetk_algorithms
                 }
                 case Statistic::Variance:
                 {
-                    auto totalNum = static_cast<Speed_t>(speeds.size());
-                    auto mean = std::accumulate(speeds.begin(), speeds.end(), static_cast<Speed_t>(0)) / totalNum;
+                    auto totalNum = static_cast<Speed>(speeds.size());
+                    auto mean = std::accumulate(speeds.begin(), speeds.end(), static_cast<Speed>(0)) / totalNum;
                     // Lambda for accumulating squares of differences to mean.
-                    auto sqDiff = [&mean](Speed_t accum, Speed_t newVal) {
-                        return accum + (newVal - mean) * (newVal - mean);
+                    auto sqDiff = [&mean](auto accum, auto newVal)
+                    {
+                        return accum + (newVal - mean)*(newVal - mean);
                     };
-                    output[i] = std::accumulate(speeds.begin(), speeds.end(), static_cast<Speed_t>(0), sqDiff) / totalNum;
+                    output[i] = std::accumulate(speeds.begin(), speeds.end(), static_cast<Speed>(0), sqDiff) / totalNum;
                     break;
                 }
                 case Statistic::Max:
@@ -378,35 +196,31 @@ namespace movetk_algorithms
                     output[i] = *std::max_element(speeds.begin(), speeds.end());
                     break;
                 }
+                default:
+                    break;
                 }
             }
             return output;
         }
 
-        Speed_t operator()(Trajectory trajectory, Statistic requiredStatistic)
+        template<typename PointIterator, typename TimeIterator,
+            typename = movetk_core::requires_atleast_input_iterator<PointIterator>,
+            typename = movetk_core::requires_atleast_input_iterator<TimeIterator>,
+            typename = movetk_core::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>
+        >
+        Speed_t<typename TimeIterator::value_type> operator()(PointIterator pointsBegin, PointIterator pointsEnd, TimeIterator timeBegin, TimeIterator timeEnd,
+            Statistic requiredStatistic) const
         {
-            auto stats = this->operator()(trajectory, std::vector<Statistic>{requiredStatistic});
+            std::vector<Speed_t<typename TimeIterator::value_type>> stats = this->operator()(pointsBegin, pointsEnd, timeBegin, timeEnd, std::vector<Statistic>{ requiredStatistic });
             return stats[0];
         }
     };
 
-    template <typename Trajectory, int TimeStampIdx>
-    class TrajectoryTimeIntervalMode
+    class ComputeDominantDifference
     {
-        using ItAccessor = IteratorAccessor<Trajectory>;
-        // Number of bins to use when computing mode on double precision durations
-        int m_binNum;
-
     public:
-        using Time_t = typename Trajectory::template FieldType<TimeStampIdx>;
-        // Duration is the difference of the time type.
-        using Duration_t = decltype(std::declval<Time_t>() - std::declval<Time_t>());
-
-        /**
-         * @brief Constructs the algorithm
-         * @param binNum The number of bins to use for double precision durations.
-         */
-        TrajectoryTimeIntervalMode(int binNum = 5) : m_binNum(binNum) {}
+        template<typename T>
+        using Difference_t = decltype(std::declval<T>() - std::declval<T>());
 
         /**
          * @brief Computes the dominant sampling interval in the trajectory.
@@ -420,85 +234,63 @@ namespace movetk_algorithms
          * \param trajectory The trajectory
          * \return Dominant sampling time interval
          */
-        Duration_t operator()(Trajectory trajectory)
+        template<typename InputIterator,
+        typename = movetk_core::requires_random_access_iterator<InputIterator>
+        >
+        Difference_t<typename InputIterator::value_type> operator()(InputIterator begin, InputIterator end, 
+            Difference_t<typename InputIterator::value_type> threshold) const
         {
-            std::vector<Duration_t> intervals;
-            ItAccessor current = ItAccessor::start(trajectory);
-            ItAccessor end = ItAccessor::end(trajectory);
+            using Difference = Difference_t<typename InputIterator::value_type>;
+            std::vector<Difference> differences;
+            differences.reserve(std::distance(begin, end) - 1);
+
+            if (begin == end) return 0;
+
+            auto current = begin;
             // Determine all time intervals
-            for (; (current + 1) != end; ++current)
+            for(; std::next(current) != end; ++current)
             {
-                auto next = current + 1;
-                auto timeDiff = next.template getField<TimeStampIdx>() - current.template getField<TimeStampIdx>();
-                intervals.push_back(timeDiff);
+                differences.push_back(*std::next(current) - *current);
             }
+            if (differences.size() == 1) return differences[0];
+
             // Sort the intervals
-            std::sort(intervals.begin(), intervals.end());
+            std::sort(differences.begin(), differences.end());
 
-            // With integral types, we count occurences
-            if constexpr (std::is_integral_v<Duration_t>)
+            std::size_t maxCount = 1;
+            Difference maxVal = *differences.begin();
+            Difference prevVal = *differences.begin();
+            using It = decltype(differences.begin());
+            auto currIt = differences.begin();
+            // prevVal by reference so it can be modified during the search loop.
+            auto isDifferent = [&prevVal,threshold](const Difference& el)
             {
-                // Count occurences of the intervals
-                int occurences = 0;
-                int maxOccurences = 0;
-                Duration_t maxOccuredValue, prevValue;
-                bool isFirst = true;
-                for (auto val : intervals)
-                {
-                    if (isFirst || val != prevValue)
-                    {
-                        prevValue = val;
-                        occurences = 1;
-                    }
-                    else
-                    {
-                        occurences++;
-                    }
-                    isFirst = false;
-                    if (maxOccurences < occurences)
-                    {
-                        maxOccurences = occurences;
-                        maxOccuredValue = val;
-                    }
-                }
-                return maxOccuredValue;
-            }
-            // With double types, use actual bins instead.
-            else
+                auto pair = std::minmax(prevVal, el);
+                return pair.second - pair.first > threshold;
+            };
+
+            // Compute the element that has most elements within the threshold distance
+            It minIt = differences.begin(), maxIt = currIt;
+
+            for(;currIt != differences.end();++currIt)
             {
-                // Assumes that subtraction/addition and multiplication on
-                // the durations is defined
-                assert(m_binNum > 1);
+                prevVal = *currIt;
+                // Find new min and max elements
+                minIt = std::find_if(minIt, currIt, [isDifferent](const Difference& el) {return !isDifferent(el); });
+                maxIt = std::find_if(maxIt, differences.end(), isDifferent);
 
-                // Get min and max interval sizes
-                auto minInt = intervals[0];
-                auto maxInt = intervals[intervals.size() - 1];
-                auto diff = maxInt - minInt;
-
-                // Check explicitly that not all values are the same
-                if (diff == 0)
-                    return intervals[0]; // This works for doubles since exact zero exists
-
-                // Determine bin width. The bins are assigned
-                // such that the min and max value are the centers
-                // of the outer bins.
-                auto binWidth = diff / (m_binNum - 1);
-                auto start = minInt - 0.5 * binWidth;
-                //Setup the bins
-                std::vector<int> binCounts(m_binNum, 0);
-                // Count
-                for (auto el : intervals)
+                // Count occurences of elements deemed the same
+                const auto count = std::distance(minIt, maxIt);
+                // Save element with maximum count.
+                if(count > maxCount)
                 {
-                    const int bin = static_cast<int>((el - start) / binWidth);
-                    ++binCounts[bin];
+                    maxVal = prevVal;
+                    maxCount = count;
                 }
-                // Return center of bin with maximum number of elements
-                const auto maxEl = std::max_element(binCounts.begin(), binCounts.end());
-                const int maxBin = static_cast<int>(maxEl - binCounts.begin());
-                return start + (maxBin + 0.5) * binWidth;
             }
+            return maxVal;
         }
     };
-} // namespace movetk_algorithms
+}
 
 #endif //MOVETK_SIMILARITY_H
