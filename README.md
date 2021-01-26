@@ -25,6 +25,7 @@ The following table lists some of the algorithms available in MoveTK
 |                         | Model Based Segmentation [[Alewijnse et al. 2018](https://link.springer.com/article/10.1007%2Fs00453-017-0329-x)] |
 | **Trajectory Simplification** | Douglas-Peucker Simplification [[Hershberger et al. 1992,1998](https://dl.acm.org/doi/book/10.5555/902273)] |
 |                           | Imai-Iri Simplification [[Chan et al. 1996](https://www.worldscientific.com/doi/abs/10.1142/S0218195996000058)] |
+|                           | Agarwal Simplification [[Agarwal et al. 2005](https://doi.org/10.1007/s00453-005-1165-y)] |
 | **Trajectory Similarity**     | Longest Common Subsequence [[Vlachos et al. 2002](https://ieeexplore.ieee.org/document/994784)] |
 |                           | Hausdorff & Fréchet  Metric [[Eiter et al. 1994, Alt et al. 1995](https://www.worldscientific.com/doi/abs/10.1142/S0218195995000064)] |
 | **Trajectory Outlier Detection** | Optimal Speed Bounded [[Custers et al. 2019](https://dl.acm.org/doi/10.1145/3347146.3359363)] |
@@ -46,7 +47,7 @@ docker run -p 6013:8888 -p 80:80 -it aniketmitra001/movetk
 3. Follow instructions in the output of step 2 to open Jupyter Notebook in a web browser. Replace port number 8888 with 6013 (or another port depending on your configuration)
 
 
-4. Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to ```/tutorials ```  using the navigation pane in JupyterLab 
+4. Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to ```/tutorials/cpp``` for the C++ notebooks and  ```/tutorials/py``` for the python notebooks
 
 **Notes** : 
 
@@ -87,7 +88,8 @@ MoveTK utilizes some open source components including:
  1. Modified version of GsTL (see include/third_party/GsTL-1.3)
  2. TNT (Template Numerical Toolkit) (see [include/third_party/GsTL-1.3] folder)
  3. Selection of headers of Boost version 1.70.0 (see [src/include/third_party/boost_future]) 
- 4. Miniball (see [src/include/third_party/miniball]) 
+ 4. Miniball (see [src/include/third_party/miniball])
+ 5. rapidjson (see include/third_party/rapidjson)
 
 ## Acknowledgements 
 This project includes GsTL which is software developed by Stanford University and
@@ -97,3 +99,7 @@ its contributors.
 Copyright (C) 2017-2020 HERE Europe B.V.
 
 Unless otherwise noted in `LICENSE` files for specific files or directories, the [LICENSE](LICENSE) in the root applies to all content in this repository.
+
+## Videos
+
+[![Introduction]()](https://youtu.be/fGWSRB_F1O8?list=UUlDUAjbxPzmX76iR20V7WQg)
