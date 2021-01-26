@@ -102,4 +102,4 @@ Unless otherwise noted in `LICENSE` files for specific files or directories, the
 
 ## Videos
 
-[![Introduction]()](https://youtu.be/fGWSRB_F1O8?list=UUlDUAjbxPzmX76iR20V7WQg)
+[![Introduction](https://user-images.githubusercontent.com/2693003/105900271-19046000-601c-11eb-9427-727a814c1d9d.png)](https://youtu.be/fGWSRB_F1O8?list=UUlDUAjbxPzmX76iR20V7WQg)
