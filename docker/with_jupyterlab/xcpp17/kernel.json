@@ -1,0 +1,29 @@
+{
+  "display_name": "C++17",
+  "argv": [
+      "/opt/conda/bin/xcpp",
+      "-std=c++17",
+      "-f",
+      "{connection_file}",
+      "-I",
+      "/usr/local/include",
+      "-I",
+      ".",
+      "-I",
+      "/opt/conda/include",
+      "-cxx-isystem",
+      "/opt/conda/x86_64-conda_cos6-linux-gnu/include/c++/7.3.0",
+      "-cxx-isystem",
+      "/opt/conda/x86_64-conda_cos6-linux-gnu/include/c++/7.3.0/x86_64-conda_cos6-linux-gnu",
+      "-cxx-isystem",
+      "/opt/conda/x86_64-conda_cos6-linux-gnu/include/c++/7.3.0/backward",
+      "-isystem",
+      "/opt/conda/lib/clang/5.0.0/include",
+      "-extern-c-isystem",
+      "/opt/conda/x86_64-conda_cos6-linux-gnu/sysroot",
+      "-extern-c-isystem",
+      "/opt/conda/x86_64-conda_cos6-linux-gnu/sysroot/usr/include",
+      "-nostdinc++"
+  ],
+  "language": "C++17"
+}

@@ -1,91 +1,75 @@
-FROM fedora:latest
+FROM continuumio/miniconda3
 
 ARG WITH_CGAL_BACKEND=OFF
 
-# Install dependencies
-RUN dnf -y update \
- && if [ "${WITH_CGAL_BACKEND}" = "OFF" ]; then CGAL_PACKAGE=""; else CGAL_PACKAGE="CGAL-devel"; fi \
- && echo WITH_CGAL_BACKEND ${CGAL_PACKAGE} \
- && dnf -y install \
-    boost-devel \
-    cmake \
-    ${CGAL_PACKAGE} \
-    doxygen \
-    gcc \
-    gcc-c++ \
-    gsl-devel\
-    gdal-devel \
-    GeographicLib-devel \
-    make \
-    mpfr-devel \
-    python3 \
-    python3-pip \
-    python3-devel \
-    pybind11-devel \
-    bzip2 \
-    wget \
-    nodejs \
-    net-tools \
+# Configure as a web server 
+RUN apt-get install -q -y  \
+    apache2 \
     unzip \
- && dnf clean all \
- && rm -rf /var/cache/dnf
+    && apt-get clean
 
-# Install web server
-RUN dnf -y update && dnf -y install httpd && dnf -y clean all
-RUN [ -d /var/log/httpd ] || mkdir /var/log/httpd
-RUN [ -d /var/run/httpd ] || mkdir /var/run/httpd
-RUN [ -d /var/lock/httpd ] || mkdir /var/lock/httpd
-RUN sed -i.orig 's/#ServerName/ServerName/' /etc/httpd/conf/httpd.conf
-
-ENV APACHE_RUN_USER apache
-ENV APACHE_RUN_GROUP apache
-ENV APACHE_LOG_DIR /var/log/httpd
-ENV APACHE_LOCK_DIR /var/lock/httpd
-ENV APACHE_RUN_DIR /var/run/httpd
-ENV APACHE_PID_FILE /var/run/httpd/httpd.pid
-
+RUN  /etc/init.d/apache2 start
 EXPOSE 80
 
 CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
 
-# These commands copy your files into the specified directory in the image
-# and set that as the working location
+# Install dependencies
+RUN /opt/conda/bin/conda install  gcc_linux-64\
+    gxx_impl_linux-64 \
+    boost \
+    cmake \
+    gsl \
+    make \
+    mpfr \
+    jupyterlab
+
+RUN /opt/conda/bin/conda install -c conda-forge -y xeus-cling=0.9.0=he513fc3_0 \
+    gdal \
+    geographiclib \
+    awscli \
+    doxygen
+
+# Build GeographicLib
+WORKDIR /usr/src/
+
+RUN wget https://downloads.sourceforge.net/project/geographiclib/distrib/GeographicLib-1.50.tar.gz
+RUN tar xfpz GeographicLib-1.50.tar.gz
+RUN cd /usr/src/GeographicLib-1.50
+RUN mkdir /usr/src/GeographicLib-1.50/BUILD
+WORKDIR /usr/src/GeographicLib-1.50/BUILD/
+
+RUN /opt/conda/bin/cmake  -DCMAKE_C_COMPILER=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gcc \
+     -DCMAKE_CXX_COMPILER=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-g++ \
+     -DCMAKE_CXX_STANDARD=17 /usr/src/GeographicLib-1.50/
+
+RUN /opt/conda/bin/make && /opt/conda/bin/make test \
+    && /opt/conda/bin/make install
+
+RUN cp /usr/local/lib/libGeographic.so*  /opt/conda/lib/
+
+# Build MoveTK
 COPY . /usr/src/movetk
-#COPY ./pytulib /usr/src/pytulib
 
-# Specify the working directory
-WORKDIR /usr/src/movetk
+RUN mkdir /usr/src/movetk/Release/
+WORKDIR /usr/src/movetk/Release/
 
-RUN mkdir -p Release \
- && cd Release \
- && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_DOC=ON  -DWITH_CGAL_BACKEND=${WITH_CGAL_BACKEND} -DBoost_NO_BOOST_CMAKE=ON .. \
- && cmake --build . -- -j $(nproc) \
- && cmake --build . --target install
+RUN /opt/conda/bin/cmake  -DCMAKE_BUILD_TYPE=Release  \
+    -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_DOC=ON  -DWITH_CGAL_BACKEND=OFF \
+    -DBoost_NO_BOOST_CMAKE=ON  \
+    -DCMAKE_CXX_COMPILER=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-g++ \
+    -DCMAKE_C_COMPILER=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gcc \
+    -DCMAKE_CXX_STANDARD=17 ..
 
-# Install miniconda to /miniconda
-RUN curl -LO http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN bash Miniconda3-latest-Linux-x86_64.sh -p /miniconda -b
-RUN rm Miniconda3-latest-Linux-x86_64.sh
-ENV PATH=/miniconda/bin:${PATH}
-RUN conda update -y conda
+RUN /opt/conda/bin/cmake --build . -- -j 2 \
+    && /opt/conda/bin/cmake --build . --target install
 
-# Python packages from conda
-RUN conda install -c conda-forge -y \
-    xeus-cling=0.9.0=he513fc3_0 \
-	libboost \
-	mpfr \
-	libgdal \
-	gsl
-	
-RUN pip3 --no-cache-dir install jupyterlab
-# RUN jupyter kernelspec install /miniconda/share/jupyter/kernels/xcpp11
-# RUN jupyter kernelspec install /miniconda/share/jupyter/kernels/xcpp14
-RUN jupyter kernelspec install /miniconda/share/jupyter/kernels/xcpp17
-RUN cp /usr/src/movetk/docker/with_jupyterlab/kernel.json /usr/local/share/jupyter/kernels/xcpp17/
-RUN cp /usr/src/movetk/docker/with_jupyterlab/movetk.json /miniconda/etc/xeus-cling/tags.d/
-RUN cp /usr/src/movetk/docs/movetk.tag /miniconda/share/xeus-cling/tagfiles/
-RUN mkdir /usr/local/include/GeographicLib
-RUN cp /usr/include/GeographicLib/* /usr/local/include/GeographicLib/ 
+# Configure Jupyter Lab
+RUN jupyter kernelspec install /opt/conda/share/jupyter/kernels/xcpp17
+RUN cp /usr/src/movetk/docker/with_jupyterlab/xcpp17/kernel.json /opt/conda/share/jupyter/kernels/xcpp17/
+
+RUN cp /usr/src/movetk/docker/with_jupyterlab/movetk.json /opt/conda/etc/xeus-cling/tags.d/
+
+RUN cp /usr/src/movetk/docs/movetk.tag /opt/conda/share/xeus-cling/tagfiles/
 
 # Download GeoLife data
 WORKDIR /usr/src/movetk/tutorials
@@ -95,6 +79,6 @@ WORKDIR /usr/src
 RUN mkdir /var/www/html/movetk.reference
 RUN cp -R movetk/docs/html/* /var/www/html/movetk.reference/
 
-ENTRYPOINT httpd && jupyter lab --ip 0.0.0.0 --allow-root && /bin/bash
+ENTRYPOINT jupyter lab --ip 0.0.0.0 --allow-root && /bin/bash
 
 LABEL Name=movetk Version=0.6.0
