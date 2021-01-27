@@ -53,11 +53,23 @@ namespace movetk_core {
         return make_point(std::cbegin(projected_point), std::cend(projected_point));
     }
 
+    /**
+     * @brief Returns the x coordinate of the given vector
+     * @tparam GeometryTraits The kernel
+     * @param v The vector
+     * @return The x-coordinate (first coordinate) of the vector
+     */
     template <class GeometryTraits>
     typename GeometryTraits::NT get_x(typename GeometryTraits::MovetkVector &v) {
         return v * v.basis(0);
     }
 
+    /**
+     * @brief Returns the x coordinate of the given point
+     * @tparam GeometryTraits The geometry kernel
+     * @param p The point
+     * @return The x-coordinate (first coordinate) of the point
+     */
     template <class GeometryTraits>
     typename GeometryTraits::NT get_x(typename GeometryTraits::MovetkPoint &p) {
         movetk_core::MakePoint<GeometryTraits> make_point;
@@ -66,11 +78,23 @@ namespace movetk_core {
         return v * v.basis(0);
     }
 
+    /**
+     * @brief Returns the y coordinate of the given vector
+     * @tparam GeometryTraits The kernel
+     * @param v The vector
+     * @return The y-coordinate (second coordinate) of the vector
+     */
     template <class GeometryTraits>
     typename GeometryTraits::NT get_y(typename GeometryTraits::MovetkVector &v) {
         return v * v.basis(1);
     }
 
+    /**
+     * @brief Returns the y coordinate of the given point
+     * @tparam GeometryTraits The kernel
+     * @param p The point
+     * @return The y-coordinate (second coordinate) of the point
+     */
     template <class GeometryTraits>
     typename GeometryTraits::NT get_y(typename GeometryTraits::MovetkPoint &p) {
         movetk_core::MakePoint<GeometryTraits> make_point;
@@ -92,7 +116,7 @@ namespace movetk_core {
         typename = movetk_core::requires_random_access_iterator<InputIterator>,
         typename = movetk_core::requires_size_t<
         typename InputIterator::value_type> >
-        bool is_sequence(InputIterator first, InputIterator beyond) {
+    bool is_sequence(InputIterator first, InputIterator beyond) {
         //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
         size_t init = 0;
         size_t sum = std::accumulate(first, beyond, init);
@@ -118,7 +142,7 @@ namespace movetk_core {
         typename = movetk_core::requires_random_access_iterator<InputIterator>,
         typename = movetk_core::requires_NT<GeometryTraits,
         typename InputIterator::value_type> >
-        InputIterator min_non_zero_element(InputIterator first, InputIterator beyond) {
+    InputIterator min_non_zero_element(InputIterator first, InputIterator beyond) {
         //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
         if (first == beyond) return beyond;
         InputIterator it = first;
@@ -138,45 +162,46 @@ namespace movetk_core {
 
 
     /*!
- * @brief Calculates the tdiff between two consecutive points for an input
-     * consisting of a set of ordered points
- * @tparam GeometryTraits A traits class that defines the expected number type
-     * of the input
- * @tparam InputIterator  A random access iterator over a set of input points
- * @tparam OutputIterator An insert iterator
- * @param first
- * @param beyond
- * @param iter
- */
+     * @brief Calculates the time difference between two consecutive points for an input
+     * consisting of an ordered sequence of points
+     * @tparam InputIterator  A random access iterator over a set of input points
+     * @tparam OutputIterator An insert iterator
+     * @param first
+     * @param beyond
+     * @param iter
+     */
     template<class InputIterator, class OutputIterator,
         typename = movetk_core::requires_random_access_iterator<InputIterator>,
-       /* typename = movetk_core::requires_date_t<
-        typename InputIterator::value_type>,*/
+        /* typename = movetk_core::requires_date_t<
+         typename InputIterator::value_type>,*/
         typename = movetk_core::requires_output_iterator<OutputIterator>
         /*typename = movetk_core::requires_size_t<
         typename OutputIterator::value_type> */
     >
-        void get_time_diffs(InputIterator first, InputIterator beyond, OutputIterator iter) {
+    void get_time_diffs(InputIterator first, InputIterator beyond, OutputIterator iter, bool match_input_range_length = true) {
         //TODO Add support for initial value
         //TODO check std::adjacent_difference
         //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
         InputIterator pit = first;
         InputIterator cit = first + 1;
-        //*iter = 0; //TODO: why do we do this?
+        if (match_input_range_length) *iter = 0;
         while (cit != beyond) {
             *iter = *cit - *pit;
             pit = cit;
             cit++;
         }
     }
-    
+
     /*!
-     *
-     * @tparam InputIterator
-     * @tparam OutputIterator
-     * @param first
-     * @param beyond
-     * @param iter
+     * @brief Computes the spatial distance between two consecutive points for an input
+     * consisting of an ordered sequence of points
+     * @tparam InputIterator The iterator type for the point sequence
+     * @tparam OutputIterator Output iterator for assigning distance
+     * @param first Iterator pointing at the first point of the sequence
+     * @param beyond End sentinel for the point sequence
+     * @param iter Output iterator for assigning the distances
+     * @param match_input_range_length If true, adds 0 as first element to the output, such that
+     * the number of output elements is equal to the number of input points in the sequence.
      */
     template<class GeometryKernel, class InputIterator, class OutputIterator,
         typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>,
@@ -186,12 +211,12 @@ namespace movetk_core {
         typename InputIterator::value_type>,
         typename = movetk_core::requires_NT<GeometryKernel,
         typename OutputIterator::value_type> >
-        void get_distances(InputIterator first, InputIterator beyond, OutputIterator iter) {
+    void get_distances(InputIterator first, InputIterator beyond, OutputIterator iter, bool match_input_range_length = true) {
         //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
         PointDistanceFunc distance;
         InputIterator pit = first;
         InputIterator cit = std::next(first);
-        //*iter = 0;
+        if (match_input_range_length) *iter = 0;
         while (cit != beyond) {
             *iter = distance(*pit, *cit);
             pit = cit;
@@ -199,12 +224,27 @@ namespace movetk_core {
         }
     }
 
+    /*!
+     * @brief Computes the spatial distance between two consecutive points for an input
+     * consisting of an ordered sequence of measurements, containing spatial coordinates.
+     * The result is assigned to the distance element in the input sequence, as identified by DistIdx.
+     * Assigns 0 to the first measurement in the sequence, and the distance between point i and i+1 to
+     * measurement i+1;
+     * TODO: Traits class is rather redundant, use auto!
+     * @tparam Traits Class specifying number type of the spatial coordinates
+     * @tparam InputIterator The iterator type for the point sequence
+     * @tparam LatIdx Index of the latitude coordinate in an input measurement
+     * @tparam LonIdx Index of the longitude coordinate in an input measurement
+     * @tparam DistIdx Index of the output distance element in an input measuremet.
+     * @param first Iterator pointing at the first point of the sequence
+     * @param beyond End sentinel for the point sequence
+     */
     template <class Traits, class InputIterator, std::size_t LatIdx,
         std::size_t LonIdx, std::size_t DistIdx>
-        void get_distances(InputIterator first, InputIterator beyond) {
+    void get_distances(InputIterator first, InputIterator beyond) {
         InputIterator pit = first;
         InputIterator cit = std::next(first);
-        //std::get<DistIdx>(*pit) = 0;
+        std::get<DistIdx>(*pit) = 0;
         while (cit != beyond) {
             typename Traits::NT lat0 = std::get<LatIdx>(*pit);
             typename Traits::NT lon0 = std::get<LonIdx>(*pit);
@@ -212,19 +252,22 @@ namespace movetk_core {
             typename Traits::NT lon1 = std::get<LonIdx>(*cit);
             std::get<DistIdx>(*cit) = distance_exact(lat0, lon0, lat1, lon1);
             pit = cit;
-            cit++;
+            ++cit;
         }
     }
 
     /*!
-     *
-     * @tparam TDiffIterator
-     * @tparam DistanceIterator
-     * @tparam OutputIterator
-     * @param TdiffFirst
-     * @param TdiffBeyond
-     * @param DistFirst
-     * @param iter
+     * Computes speeds for a range of time differences and distances.
+     * Note that it is assumed that the number of elements in the distance range is atleast
+     * the number of elements in the time difference range.
+     * TODO: should we check/assert?
+     * @tparam TDiffIterator Iterator type for the range of time differences
+     * @tparam DistanceIterator Iterator type for the range of distances
+     * @tparam OutputIterator The output iterator
+     * @param TdiffFirst Iterator to first time difference in range
+     * @param TdiffBeyond End sentinel for time difference range
+     * @param DistFirst Iterator to first distance element.
+     * @param iter Output iterator for assigning the computed speeds.
      */
     template<class GeometryKernel, class TDiffIterator, class DistanceIterator, class OutputIterator,
         typename = movetk_core::requires_random_access_iterator<TDiffIterator>,
@@ -236,7 +279,7 @@ namespace movetk_core {
         typename DistanceIterator::value_type>,
         typename = movetk_core::requires_NT<GeometryKernel,
         typename OutputIterator::value_type >>
-        void get_speeds(TDiffIterator TdiffFirst, TDiffIterator TdiffBeyond,
+    void get_speeds(TDiffIterator TdiffFirst, TDiffIterator TdiffBeyond,
             DistanceIterator DistFirst, OutputIterator iter) {
         //ASSERT_RANDOM_ACCESS_ITERATOR(TDiffIterator);
         //ASSERT_RANDOM_ACCESS_ITERATOR(DistanceIterator);
@@ -256,6 +299,19 @@ namespace movetk_core {
         }
     }
 
+    /*!
+     * Computes speeds for an ordered sequence of measurement in-place. 
+     * The speed at point i is given as the average speed between points i-1 and i.
+     * The speed at point 0 is set to zero.
+     * @tparam Traits Geometry kernel 
+     * @tparam InputIterator Iterator type for the range of distances
+     * @tparam LatIdx Index of the latitude in the measurement
+     * @tparam LonIdx Index of the longitude in the measurement
+     * @tparam TsIdx Index of the timestamp in the measurement
+     * @tparam SpeedIdx Output index of the speed in the measurement
+     * @param first Iterator to first measurement in range
+     * @param beyond End sentinel for measurement range
+     */
     template <class Traits, class InputIterator, std::size_t LatIdx,
         std::size_t LonIdx, std::size_t TsIdx, std::size_t SpeedIdx>
         void get_speeds(InputIterator first, InputIterator beyond) {
@@ -282,12 +338,13 @@ namespace movetk_core {
 
 
     /*!
-     *
-     * @tparam InputIterator
+     * @tparam GeometryKernel The geometry kernel
+     * @tparam InputIterator Iterator type for the input sequence
+     * @tparam PointsIterator 
      * @tparam OutputIterator
      * @param first
      * @param beyond
-     * @param iter
+     * @param[out] iter Ouptut iterator to which headings will be saved
      */
     template<class GeometryKernel, class InputIterator, class PointsIterator, class OutputIterator,
         typename = movetk_core::requires_random_access_iterator<InputIterator>,
@@ -319,9 +376,9 @@ namespace movetk_core {
             lambda_1 = deg2radians(pit->second);
             phi_2 = deg2radians(cit->first);
             lambda_2 = deg2radians(cit->second);
-            y = sin(lambda_2 - lambda_1) * cos(phi_2);
-            x = cos(phi_1) * sin(phi_2) - sin(phi_1) * cos(phi_2) * cos(lambda_2 - lambda_1);
-            c_heading = fmod(rad2deg(atan2(y, x)) + 360.0, 360.0);
+            y = std::sin(lambda_2 - lambda_1) * std::cos(phi_2);
+            x = std::cos(phi_1) * std::sin(phi_2) - std::sin(phi_1) * std::cos(phi_2) * std::cos(lambda_2 - lambda_1);
+            c_heading = std::fmod(rad2deg(std::atan2(y, x)) + 360.0, 360.0);
             if ((c_heading < MOVETK_EPS) && (distance(*p_pit, *c_pit) < MOVETK_EPS)) {
                 *iter = p_heading;
             }
@@ -408,13 +465,13 @@ namespace movetk_core {
         struct RepeatedTypeTuple
         {
             using type = decltype(std::tuple_cat(
-                std::declval<TupleType<T>>(), 
+                std::declval<TupleType<T>>(),
                 std::declval<typename RepeatedTypeTuple<TupleType, T, I - 1>::type>()
-                )
-            );
+            )
+                );
         };
         template<template<typename...> typename TupleType, typename T>
-        struct RepeatedTypeTuple<TupleType, T,1>
+        struct RepeatedTypeTuple<TupleType, T, 1>
         {
             using type = TupleType<T>;
         };
@@ -435,8 +492,8 @@ namespace movetk_core {
             using type = T;
         };
 
-        template<class GeometryKernel, typename CoordinateIterator,std::size_t...Is>
-        auto point_iterators_from_coordinates(TypeHolder<GeometryKernel>,const std::array<std::pair<CoordinateIterator, CoordinateIterator>, GeometryKernel::dim>& beginEndPairs, std::index_sequence<Is...>)
+        template<class GeometryKernel, typename CoordinateIterator, std::size_t...Is>
+        auto point_iterators_from_coordinates(TypeHolder<GeometryKernel>, const std::array<std::pair<CoordinateIterator, CoordinateIterator>, GeometryKernel::dim>& beginEndPairs, std::index_sequence<Is...>)
         {
             using NT = typename GeometryKernel::NT;
 
@@ -524,8 +581,18 @@ namespace movetk_core {
             SegmentIdGenerator() = default;
     };
 
-
-    // by Mees van de Kerkhof
+    /**
+     * \brief For a range of intervals, specified as pairs of numbers (TODO: order?), merges
+     * overlapping intervals. 
+     * TODO: move this to more appropriate header
+     * by Mees van de Kerkhof
+     * \tparam GeometryKernel The geometry kernel
+     * \tparam InputIterator Type for the input intervals range
+     * \param first Iterator to first element in the range of intervals
+     * \param beyond End sentinel for the range of intervals
+     * \param sorted Is the given input range sorted? TODO: by what exactly?
+     * \return 
+     */
     template<class GeometryKernel, class InputIterator,
         typename = movetk_core::requires_random_access_iterator<InputIterator>,
         typename = movetk_core::requires_pair<typename InputIterator::value_type>,
