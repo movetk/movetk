@@ -689,28 +689,28 @@ namespace movetk_core
         }
     }
 
-    template <class Trajectory_t>
-    void downsample(Trajectory_t trajectory, std::size_t interval)
+    template <class Trajectory_t, class OfStream>
+    void downsample(Trajectory_t trajectory, OfStream &ofstream, std::size_t interval)
     {
         std::size_t idx = 0;
         for (auto &row : trajectory)
         {
             if (idx == 0)
             {
-                print_tuple(ofcsv_traj, row);
-                ofcsv_traj << "\n";
+                print_tuple(ofstream, row);
+                ofstream << "\n";
             }
             else if (idx % 10 == 0)
             {
-                print_tuple(ofcsv_traj, row);
-                ofcsv_traj << "\n";
+                print_tuple(ofstream, row);
+                ofstream << "\n";
             }
             idx++;
         }
     }
 
-    template <class Trajectory_t>
-    void floor(Trajectory_t trajectory, std::size_t interval)
+    template <class Trajectory_t, class OfStream>
+    void floor(Trajectory_t trajectory, OfStream &ofstream, std::size_t interval)
     {
         std::size_t idx = 0;
         std::size_t num_elems = std::distance(trajectory.begin(), trajectory.end());
@@ -719,8 +719,8 @@ namespace movetk_core
         {
             if (idx <= last_idx)
             {
-                print_tuple(ofcsv_traj, row);
-                ofcsv_traj << "\n";
+                print_tuple(ofstream, row);
+                ofstream << "\n";
             }
             idx++;
         }
