@@ -348,7 +348,7 @@ namespace movetk_support
                 {
                     using It = decltype(lowerEnvelope.begin());
 
-                    It mergeIt = std::lower_bound(lowerEnvelope.begin(), lowerEnvelope.end(), *it, SegmentSqDistFunc::StartComparator{});
+                    It mergeIt = std::lower_bound(lowerEnvelope.begin(), lowerEnvelope.end(), *it, typename SegmentSqDistFunc::StartComparator{});
                     // Check if we are at end, then just add the new function
                     if (mergeIt == lowerEnvelope.end())
                     {
