@@ -227,8 +227,12 @@ namespace movetk_support
             line = Boost_Line({p1.get(), p2.get()});
         }
 
-        Boost_Line get() const
+        Wrapper_Boost_Point<Kernel> operator[](size_t idx) const 
         {
+            return *(line.begin() + idx);
+        }
+
+        Boost_Line get() const {
             return line;
         }
     };
@@ -268,9 +272,29 @@ namespace movetk_support
             return *this;
         }
 
+        Wrapper_Boost_Vector<Kernel>  operator*(typename Kernel::NT scalar) const
+        {
+            Wrapper_Boost_Vector<Kernel> newVec;
+            std::transform(std::begin(vec), std::end(vec), std::begin(newVec.vec),
+                [&scalar](const typename Kernel::NT& i) {return i * scalar; });
+            return newVec;
+        }
+        friend Wrapper_Boost_Vector<Kernel>  operator*(typename Kernel::NT scalar, const Wrapper_Boost_Vector<Kernel>& wrapper) 
+        {
+            Wrapper_Boost_Vector<Kernel> newVec;
+            std::transform(std::begin(wrapper.vec), std::end(wrapper.vec), std::begin(newVec.vec),
+                [&scalar](const typename Kernel::NT& i) {return i * scalar; });
+            return newVec;
+        }
+
+        Wrapper_Boost_Vector<Kernel>  operator/(typename Kernel::NT scalar) const 
+        {
+            return *this * (static_cast<typename Kernel::NT>(1.0) / scalar);
+        }
+
         typename Kernel::NT operator*(const Wrapper_Boost_Vector<Kernel> &vector) const
         {
-            return std::inner_product(this->begin(), this->end(), vector.begin(), 0.0);
+            return std::inner_product(this->begin(),this->end(),vector.begin(), 0.0);
         }
 
         typename Kernel::NT operator*(const Wrapper_Boost_Vector<Kernel> &&vector) const
