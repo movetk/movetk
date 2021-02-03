@@ -250,7 +250,7 @@ namespace movetk_support
             }
             struct StartComparator
             {
-                bool operator()(const SegmentSqDistFunc& f0, const SegmentSqDistFunc& f1)
+                bool operator()(const SegmentSqDistFunc& f0, const SegmentSqDistFunc& f1) const
                 {
                     return f0.applicableSubsegment[0] < f1.applicableSubsegment[0];
                 }
