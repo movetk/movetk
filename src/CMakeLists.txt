@@ -15,8 +15,11 @@ endif()
 # include common tools and workarounds
 include(tools)
 
-find_package(Boost REQUIRED COMPONENTS iostreams log thread system log_setup graph)
 set(Boost_USE_MULTITHREADED 1)
+find_package(Boost CONFIG COMPONENTS iostreams log thread system log_setup graph)
+if(NOT Boost_FOUND)
+	find_package(Boost REQUIRED COMPONENTS iostreams log thread system log_setup graph)
+endif()
 message(STATUS "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
 message(STATUS "Boost_LIBRARIES ${Boost_LIBRARIES}")
 
@@ -96,6 +99,7 @@ if (WITH_CGAL_BACKEND)
             include/movetk/SplitByField.h
             include/movetk/SplitByDifferenceThreshold.h
             include/movetk/SplitByDistanceThreshold.h
+            include/movetk/metric/HausdorffDistance.h
             include/movetk/Splitter.h
             include/movetk/test_data.h
             include/movetk/ColumnarTrajectory.h
