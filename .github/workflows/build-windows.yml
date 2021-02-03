@@ -32,7 +32,10 @@ jobs:
         uses: lukka/set-shell-env@master
         with:
           VCPKGRESPONSEFILE: ${{ github.workspace }}\movetk\src\vcpkg_response_file.txt
-
+      
+      - name: Get specific CMake version (3.16)
+        uses: lukka/get-cmake@v3.16
+      
       # Restore from cache the previously built ports. If "cache miss", then provision vcpkg, install desired ports, finally cache everything for the next run.        
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@main
