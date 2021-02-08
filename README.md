@@ -100,7 +100,3 @@ Copyright (C) 2017-2020 HERE Europe B.V.
 
 Unless otherwise noted in `LICENSE` files for specific files or directories, the [LICENSE](LICENSE) in the root applies to all content in this repository.
 
-## Videos
-
-### Introduction
-[![Introduction](https://user-images.githubusercontent.com/2693003/105900271-19046000-601c-11eb-9427-727a814c1d9d.png)](https://youtu.be/fGWSRB_F1O8?list=UUlDUAjbxPzmX76iR20V7WQg)
