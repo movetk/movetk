@@ -66,7 +66,7 @@ A push event to the master branch of MoveTK triggers a set of continuous integra
 
 1. Clone the repository.
 ```bash
-git clone https://github.com/heremaps/movetk.git
+git clone --recursive https://github.com/heremaps/movetk.git
 ```
 
 2. Replicate the  steps in corresponding YAML files
