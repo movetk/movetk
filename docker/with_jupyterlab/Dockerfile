@@ -3,7 +3,8 @@ FROM continuumio/miniconda3
 ARG WITH_CGAL_BACKEND=OFF
 
 # Configure as a web server 
-RUN apt-get install -q -y  \
+RUN apt-get update \
+   && apt-get install -q -y  \
     apache2 \
     unzip \
     && apt-get clean
