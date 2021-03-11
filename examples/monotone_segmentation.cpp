@@ -31,16 +31,15 @@
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
-
 using namespace std;
 
-
 typedef movetk_algorithms::SegmentationTraits<typename GeometryKernel::MovetkGeometryKernel::NT, typename GeometryKernel::MovetkGeometryKernel,
-        GeometryKernel::dimensions> SegmentationTraits;
+                                              GeometryKernel::dimensions>
+    SegmentationTraits;
 typedef typename GeometryKernel::MovetkGeometryKernel::NT NT;
 // Atribute Containers defined here
 typedef std::vector<size_t> DiscretePosValuedAttributes;
-typedef std::vector<std::pair<NT, NT> > GeoAttributes;
+typedef std::vector<std::pair<NT, NT>> GeoAttributes;
 typedef std::vector<NT> NonGeoAttributes;
 typedef std::vector<SegmentationTraits::Point> Points;
 typedef std::vector<Points::const_iterator> PointsReference;
@@ -49,7 +48,8 @@ typedef std::vector<DiscretePosValuedAttributes::const_iterator> DiscretePosValu
 
 // Atribute  Iterators defined here
 typedef movetk_support::StartStopDiagram<SsdType::compressed,
-        typename GeometryKernel::MovetkGeometryKernel, DiscretePosValuedAttributes> SSD;
+                                         typename GeometryKernel::MovetkGeometryKernel, DiscretePosValuedAttributes>
+    SSD;
 //typedef DiscretePosValuedAttributes::iterator TimeAttributesIterator;
 typedef DiscretePosValuedAttributes::const_iterator TimeAttributesConstIterator;
 //typedef DiscretePosValuedAttributes::iterator TimeDiffsIterator;
@@ -68,14 +68,12 @@ typedef DiscretePosValuedAttributesReference::const_iterator DiscretePosValuedAt
 //typedef DiscretePosValuedAttributesReference::iterator DiscretePosValuedAttributesReferenceIter;
 typedef SSD::const_iterator ssd_const_iterator;
 
-
-
-
-
-class ParseInput{
+class ParseInput
+{
 
 public:
-    static void show_usage(std::string& name) {
+    static void show_usage(std::string &name)
+    {
         std::cerr << "Usage: cat Trajectory | " << name << " <option(s)>\n"
                   << "OR"
                   << "Usage:  " << name << " <option(s)>\n"
@@ -97,24 +95,31 @@ public:
                   << std::endl;
     }
 
-    bool operator()(int argc, char **argv){
+    bool operator()(int argc, char **argv)
+    {
         std::string executable = argv[0];
-        if ( (argc >= MinArgs ) && (argc <= MaxArgs)){
+        if ((argc >= MinArgs) && (argc <= MaxArgs))
+        {
             auto it = argv;
             it++;
-            while (it != (argv + argc)){
+            while (it != (argv + argc))
+            {
                 bool Matched = false;
                 auto eit = eargs.cbegin();
-                while ( eit != eargs.cend() ){
+                while (eit != eargs.cend())
+                {
                     if (strcmp(*it, std::get<0>(*eit).c_str()) == 0 ||
-                        strcmp(*it, std::get<1>(*eit).c_str()) == 0){
+                        strcmp(*it, std::get<1>(*eit).c_str()) == 0)
+                    {
                         Matched = true;
                         break;
                     }
                     eit++;
                 }
-                if (Matched){
-                    if (std::get<2>(*eit)) {
+                if (Matched)
+                {
+                    if (std::get<2>(*eit))
+                    {
                         params[std::get<0>(*eit)] = *(it + 1);
                         it = it + 2;
                     }
@@ -123,11 +128,11 @@ public:
                     set_flags(std::get<0>(*eit));
                     eargs.erase(eit);
                 }
-                else{
+                else
+                {
                     show_usage(executable);
                     return false;
                 }
-
             }
             return true;
         }
@@ -135,30 +140,35 @@ public:
         return false;
     }
 
-    std::string& get_parameter(std::string& key){
+    std::string &get_parameter(std::string &key)
+    {
         return params[key];
     }
 
-    bool has_header(){
+    bool has_header()
+    {
         return header;
     }
 
-    bool compute_attributes(){
+    bool compute_attributes()
+    {
         return compute;
     }
 
-    bool is_stream(){
+    bool is_stream()
+    {
         return stream;
     }
 
-    bool has_indexes(){
+    bool has_indexes()
+    {
         return has_idx;
     }
-private:
 
+private:
     static const size_t MinArgs = 5;
     static const size_t MaxArgs = 9;
-    bool header = false,compute = false, stream = true, has_idx = false;
+    bool header = false, compute = false, stream = true, has_idx = false;
     std::string s1 = "--head";
     std::string s2 = "-c";
     std::string s3 = "--compute";
@@ -166,25 +176,25 @@ private:
     std::string s5 = "--trajectory";
     std::string s6 = "-idx";
     std::string s7 = "--indexes";
-    typedef std::tuple<std::string, std::string,  bool> earg;
-    std::vector<earg > eargs{
-            std::make_tuple(s1,"", false),
-            std::make_tuple(s2,s3, false),
-            std::make_tuple(s4,s5, true),
-            std::make_tuple("-t","--thresholds", true),
-            std::make_tuple(s6,s7, true),
+    typedef std::tuple<std::string, std::string, bool> earg;
+    std::vector<earg> eargs{
+        std::make_tuple(s1, "", false),
+        std::make_tuple(s2, s3, false),
+        std::make_tuple(s4, s5, true),
+        std::make_tuple("-t", "--thresholds", true),
+        std::make_tuple(s6, s7, true),
     };
 
-    std::map<std::string,std::string> params{
-            {"-t",""},
-            {"-tr",""},
-            {"-idx",""}
-    };
+    std::map<std::string, std::string> params{
+        {"-t", ""},
+        {"-tr", ""},
+        {"-idx", ""}};
 
-    void set_flags(std::string arg){
+    void set_flags(std::string arg)
+    {
         if (s1.compare(arg) == 0)
             header = true;
-        if ( (s2.compare(arg) == 0) || (s3.compare(arg) == 0) )
+        if ((s2.compare(arg) == 0) || (s3.compare(arg) == 0))
             compute = true;
         if ((s4.compare(arg) == 0) || (s5.compare(arg) == 0))
             stream = false;
@@ -193,18 +203,16 @@ private:
     }
 };
 
-
-
-
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
     ParseInput parse;
-    if (!parse(argc,argv))
+    if (!parse(argc, argv))
         return 0;
 
     std::ios_base::sync_with_stdio(false);
@@ -240,7 +248,7 @@ int main(int argc, char **argv) {
     else
         assert(tokens.size() == 8);
 
-    std::cerr<<tokens.size()<<std::endl;
+    std::cerr << tokens.size() << std::endl;
 
     NT IDColumnIdx = stold(tokens[0]);
     NT TSColumnIdx = stold(tokens[1]);
@@ -250,11 +258,11 @@ int main(int argc, char **argv) {
     NT YColumnIdx = stold(tokens[5]);
     NT SpeedColumnIdx, HeadingColumnIdx;
 
-    if (!parse.compute_attributes()){
+    if (!parse.compute_attributes())
+    {
         SpeedColumnIdx = stold(tokens[6]);
         HeadingColumnIdx = stold(tokens[7]);
     }
-
 
     // Attribute Iterators defined here
 
@@ -266,7 +274,6 @@ int main(int argc, char **argv) {
     NonGeoAttributes headings, distances, speeds;
     std::vector<std::string> ids;
     DiscretePosValuedAttributes tdiffs;
-
 
     movetk_core::MakePoint<typename GeometryKernel::MovetkGeometryKernel> make_point;
 
@@ -285,10 +292,14 @@ int main(int argc, char **argv) {
 
     tokens.clear();
     std::size_t linecount = 0;
-    if (parse.is_stream()) {
-        while (getline(cin, line)) {
-            if (linecount == 0) {
-                if (parse.has_header()) {
+    if (parse.is_stream())
+    {
+        while (getline(cin, line))
+        {
+            if (linecount == 0)
+            {
+                if (parse.has_header())
+                {
                     linecount++;
                     continue;
                 }
@@ -296,9 +307,12 @@ int main(int argc, char **argv) {
             linecount++;
 
             movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
-            if (parse.compute_attributes()) {
+            if (parse.compute_attributes())
+            {
                 assert(tokens.size() >= 6);
-            } else {
+            }
+            else
+            {
                 assert(tokens.size() >= 8);
 
                 headings.push_back(stold(tokens[HeadingColumnIdx]));
@@ -320,14 +334,18 @@ int main(int argc, char **argv) {
             tokens.clear();
         }
     }
-    else{
+    else
+    {
         key = "-tr";
         std::string trajfile = parse.get_parameter(key);
         ifstream infile;
         infile.open(trajfile);
-        while (getline(infile, line)) {
-            if (linecount == 0) {
-                if (parse.has_header()) {
+        while (getline(infile, line))
+        {
+            if (linecount == 0)
+            {
+                if (parse.has_header())
+                {
                     linecount++;
                     continue;
                 }
@@ -335,9 +353,12 @@ int main(int argc, char **argv) {
             linecount++;
 
             movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
-            if (parse.compute_attributes()) {
+            if (parse.compute_attributes())
+            {
                 assert(tokens.size() >= 6);
-            } else {
+            }
+            else
+            {
                 assert(tokens.size() >= 8);
                 headings.push_back(stold(tokens[HeadingColumnIdx]));
                 speeds.push_back(stold(tokens[SpeedColumnIdx]));
@@ -357,7 +378,6 @@ int main(int argc, char **argv) {
             ids.push_back(id);
             tokens.clear();
         }
-
     }
 
     size_t NumPoints = std::distance(std::begin(ts), std::end(ts));
@@ -365,70 +385,58 @@ int main(int argc, char **argv) {
     movetk_core::get_distances<typename GeometryKernel::MovetkGeometryKernel>(std::begin(poly),
                                                                               std::end(poly),
                                                                               movetk_core::movetk_back_insert_iterator(
-                                                                                        distances));
+                                                                                  distances));
     assert(distances.size() == NumPoints);
 
     movetk_core::get_time_diffs(std::begin(ts), std::end(ts), movetk_core::movetk_back_insert_iterator(tdiffs));
     assert(tdiffs.size() == NumPoints);
 
-    if (parse.compute_attributes()) {
-
+    if (parse.compute_attributes())
+    {
 
         movetk_core::get_speeds<typename GeometryKernel::MovetkGeometryKernel>(std::begin(tdiffs), std::end(tdiffs),
                                                                                std::begin(distances),
                                                                                movetk_core::movetk_back_insert_iterator(
-                                                                                         speeds));
+                                                                                   speeds));
         assert(speeds.size() == NumPoints);
-
 
         movetk_core::get_headings<typename GeometryKernel::MovetkGeometryKernel>(std::begin(GeoCoords),
                                                                                  std::end(GeoCoords),
                                                                                  std::begin(poly),
                                                                                  movetk_core::movetk_back_insert_iterator(
-                                                                                           headings));
+                                                                                     headings));
         assert(headings.size() == NumPoints);
-
     }
 
     movetk_core::get_velocities<typename GeometryKernel::MovetkGeometryKernel>(std::begin(speeds),
                                                                                std::end(speeds), std::begin(headings),
                                                                                movetk_core::movetk_back_insert_iterator(
-                                                                                         velocities));
+                                                                                   velocities));
     assert(velocities.size() == NumPoints);
-
 
     SegmentationTraits::TSSegmentation segment_by_ts(TSThreshold);
     segment_by_ts(std::cbegin(ts), std::cend(ts), movetk_core::movetk_back_insert_iterator(ts_ref));
     make_ts_segment = movetk_core::SegmentIdGenerator<DiscretePosValuedAttributesReferenceConstIter>(std::begin(ts_ref),
-                                                                                             std::end(ts_ref));
-    ts_segments_ssd( std::begin(ts), std::end(ts), make_ts_segment );
-//    cerr<<"TS Segments\n";
-//    cerr<<movetk_support::join(ts_segments_ssd.cbegin(), ts_segments_ssd.cend());
-
+                                                                                                     std::end(ts_ref));
+    ts_segments_ssd(std::begin(ts), std::end(ts), make_ts_segment);
 
     SegmentationTraits::LocationSegmentation segment_by_meb(RadiusThreshold);
     segment_by_meb(std::cbegin(poly), std::cend(poly), movetk_core::movetk_back_insert_iterator(points_ref));
     make_location_segment = movetk_core::SegmentIdGenerator<PointsReferenceConstIter>(std::begin(points_ref),
-                                                                              std::end(points_ref));
+                                                                                      std::end(points_ref));
     location_segments_ssd(std::begin(poly), std::end(poly), make_location_segment);
-//    cerr<<"Location Segments\n";
-//    cerr<<movetk_support::join(location_segments_ssd.cbegin(), location_segments_ssd.cend());
 
     SegmentationTraits::SpeedSegmentation segment_by_diff(DifferenceThreshold);
     segment_by_diff(std::begin(speeds), std::end(speeds), movetk_core::movetk_back_insert_iterator(speed_ref));
     make_speed_segment = movetk_core::SegmentIdGenerator<NonGeoAttributesReferenceConstIter>(std::begin(speed_ref),
-                                                                                     std::end(speed_ref));
+                                                                                             std::end(speed_ref));
     speed_segments_ssd(std::begin(speeds), std::end(speeds), make_speed_segment);
-//    cerr<<"Speed Segments\n";
-//    cerr<<TSL::join(speed_segments_ssd.cbegin(), speed_segments_ssd.cend());
 
     SegmentationTraits::HeadingSegmentation segment_by_range(RangeThreshold);
     segment_by_range(std::begin(headings), std::end(headings), movetk_core::movetk_back_insert_iterator(heading_ref));
     make_heading_segment = movetk_core::SegmentIdGenerator<NonGeoAttributesReferenceConstIter>(std::begin(heading_ref),
-                                                                                       std::end(heading_ref));
+                                                                                               std::end(heading_ref));
     heading_segments_ssd(std::begin(headings), std::end(headings), make_heading_segment);
-//    cerr<<"Heading Segments\n";
-//    cerr<<TSL::join(heading_segments_ssd.cbegin(), heading_segments_ssd.cend());
 
     conjunction_segments_ts_location_ssd = ts_segments_ssd * location_segments_ssd;
 
@@ -436,26 +444,20 @@ int main(int argc, char **argv) {
 
     conjunction_segments_ts_heading_ssd = ts_segments_ssd * heading_segments_ssd;
 
-    //conjunction_segments_ssd = speed_segments_ssd * heading_segments_ssd;
-
     conjunction_segments_ssd = conjunction_segments_ts_speed_ssd * conjunction_segments_ts_heading_ssd;
 
-    //disjunction_segments_ssd = location_segments_ssd + conjunction_segments_ssd;
-
     disjunction_segments_ssd = conjunction_segments_ts_location_ssd + conjunction_segments_ssd;
-
 
     ssd_const_iterator disjunction_ssd_it = disjunction_segments_ssd.cbegin();
     ssd_const_iterator conjunction_ssd_it = conjunction_segments_ssd.cbegin();
     ssd_const_iterator disjunction_prev_ssd_it = disjunction_ssd_it;
     ssd_const_iterator conjunction_prev_ssd_it = conjunction_ssd_it;
-    ssd_const_iterator conjunction_ts_location_ssd_it =conjunction_segments_ts_location_ssd.cbegin();
+    ssd_const_iterator conjunction_ts_location_ssd_it = conjunction_segments_ts_location_ssd.cbegin();
     ssd_const_iterator conjunction_ts_location_ssd_prev_it = conjunction_ts_location_ssd_it;
     ssd_const_iterator conjunction_ts_speed_ssd_it = conjunction_segments_ts_speed_ssd.cbegin();
     ssd_const_iterator conjunction_ts_speed_ssd_prev_it = conjunction_ts_speed_ssd_it;
     ssd_const_iterator conjunction_ts_heading_ssd_it = conjunction_segments_ts_heading_ssd.cbegin();
     ssd_const_iterator conjunction_ts_heading_ssd_prev_it = conjunction_ts_heading_ssd_it;
-
 
     GeoAttributesConstIterator GeoCoordsIterator = std::cbegin(GeoCoords);
     TimeAttributesConstIterator TimeStampIterator = std::cbegin(ts);
@@ -467,32 +469,36 @@ int main(int argc, char **argv) {
     PointsConstIterator VelocityIterator = std::cbegin(velocities);
     auto id_iterator = std::cbegin(ids);
 
-
     cout << "ID,Lat,Lon,Timestamp,Speed,Heading,Tdiff,Distance,X,Y,Velocity_X,Velocity_Y,TSSegments,";
     cout << "LocationSegments,SpeedSegments,HeadingSegments,VelocitySegments,Distance_or_VelocitySegments\n";
-    while (disjunction_ssd_it != disjunction_segments_ssd.cend()) {
-        if (!movetk_core::is_sequence(disjunction_prev_ssd_it, (disjunction_ssd_it + 1))) {
+    while (disjunction_ssd_it != disjunction_segments_ssd.cend())
+    {
+        if (!movetk_core::is_sequence(disjunction_prev_ssd_it, (disjunction_ssd_it + 1)))
+        {
             disjunction_segment_idx++;
             disjunction_prev_ssd_it = disjunction_ssd_it;
         }
 
-        if (!movetk_core::is_sequence(conjunction_prev_ssd_it, (conjunction_ssd_it + 1))) {
+        if (!movetk_core::is_sequence(conjunction_prev_ssd_it, (conjunction_ssd_it + 1)))
+        {
             conjunction_segment_idx++;
             conjunction_prev_ssd_it = conjunction_ssd_it;
         }
-        if (!movetk_core::is_sequence(conjunction_ts_location_ssd_prev_it, (conjunction_ts_location_ssd_it + 1))) {
+        if (!movetk_core::is_sequence(conjunction_ts_location_ssd_prev_it, (conjunction_ts_location_ssd_it + 1)))
+        {
             conjunction_segment_ts_loc_idx++;
             conjunction_ts_location_ssd_prev_it = conjunction_ts_location_ssd_it;
         }
-        if (!movetk_core::is_sequence(conjunction_ts_speed_ssd_prev_it, (conjunction_ts_speed_ssd_it + 1))) {
+        if (!movetk_core::is_sequence(conjunction_ts_speed_ssd_prev_it, (conjunction_ts_speed_ssd_it + 1)))
+        {
             conjunction_segment_ts_speed_idx++;
             conjunction_ts_speed_ssd_prev_it = conjunction_ts_speed_ssd_it;
         }
-        if (!movetk_core::is_sequence(conjunction_ts_heading_ssd_prev_it, (conjunction_ts_heading_ssd_it + 1))) {
+        if (!movetk_core::is_sequence(conjunction_ts_heading_ssd_prev_it, (conjunction_ts_heading_ssd_it + 1)))
+        {
             conjunction_segment_ts_heading_idx++;
             conjunction_ts_heading_ssd_prev_it = conjunction_ts_heading_ssd_it;
         }
-        //cerr<<make_ts_segment.getSegmentID(TimeStampIterator)<<endl;
         cout << *id_iterator << ",";
         cout << GeoCoordsIterator->first << "," << GeoCoordsIterator->second;
         cout << "," << *TimeStampIterator << "," << *SpeedIterator << "," << *HeadingIterator << ",";
@@ -500,14 +506,10 @@ int main(int argc, char **argv) {
         cout << *PolyLineIterator;
         cout << ",";
         cout << *VelocityIterator;
-        cout <<"," << make_ts_segment.getSegmentID(TimeStampIterator) <<",";
-        //cout << make_location_segment.getSegmentID(PolyLineIterator) << ",";
-        cout<<conjunction_segment_ts_loc_idx<<",";
-        //cout << make_speed_segment.getSegmentID(SpeedIterator) << ",";
-        cout<<conjunction_segment_ts_speed_idx<<",";
-        //cout << make_heading_segment.getSegmentID(HeadingIterator) << ",";
-        //cout << make_heading_segment.getSegmentID(HeadingIterator) << ",";
-        cout<<conjunction_segment_ts_heading_idx<<",";
+        cout << "," << make_ts_segment.getSegmentID(TimeStampIterator) << ",";
+        cout << conjunction_segment_ts_loc_idx << ",";
+        cout << conjunction_segment_ts_speed_idx << ",";
+        cout << conjunction_segment_ts_heading_idx << ",";
         cout << conjunction_segment_idx << "," << disjunction_segment_idx << "\n";
         conjunction_ts_location_ssd_it++;
         conjunction_ts_speed_ssd_it++;
@@ -524,6 +526,4 @@ int main(int argc, char **argv) {
         VelocityIterator++;
         id_iterator++;
     }
-
 }
-

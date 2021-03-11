@@ -26,20 +26,32 @@
 
 int main(int argc, char **argv)
 {
+//the value is set via the CMake flag WITH_CGAL_BACKEND
 #if CGAL_BACKEND_ENABLED
     std::cerr << "Using CGAL Backend for Geometry\n";
 #else
     std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
+    // functor to create a point
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+
+    // set the coordinates of the point
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt1 = make_point({3, 3});
 
+    // the end points to create a segment
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt2 = make_point({3, 1});
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt3 = make_point({5, 3});
+
+    // functor to create a segment
     movetk_core::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
     GeometryKernel::MovetkGeometryKernel::MovetkSegment seg = make_segment(pt2, pt3);
 
+    /**
+    *compute the squared distance from point to the segment
+    * parameterized with the geometry kernel and the norm which
+    * are defined in GeometryBackendTraits.h
+    */
     movetk_core::ComputeSquaredDistance<GeometryKernel::MovetkGeometryKernel,
                                         GeometryKernel::Norm>
         squared_dist;

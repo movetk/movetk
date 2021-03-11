@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
     // iterator
     std::array<typename GeometryKernel::MovetkGeometryKernel::NT, GeometryKernel::dimensions> p;
     p = {3, 2};
-    //p = {1,1,1,1,1,1,1};
 
     //===================================
     // Create a  Movetk point and print it

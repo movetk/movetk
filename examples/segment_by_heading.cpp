@@ -102,26 +102,18 @@ int main(int argc, char **argv)
                                                   typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
         SegmentationTraits;
     typedef GeometryKernel::MovetkGeometryKernel::NT NT;
-    //typedef vector<SegmentationTraits::Point > PolyLine;
     typedef std::vector<NT> Headings;
     typedef std::vector<Headings::iterator> SegmentStartReferences;
     SegmentationTraits::HeadingSegmentation segment_by_heading(90);
-    //TSL::MakePoint<SegmentationTraits::Geometry_Kernel > make_point;
-    //std::array<NT, 2> pt;
+   
 
     std::size_t trajectory_count = 0;
     for (auto trajectory : trajectory_reader)
     {
         BOOST_LOG_TRIVIAL(trace) << "New trajectory: \n";
 
-        //auto lons = trajectory.get<ProbeTraits::ProbeColumns::LON>();
-        //auto lats = trajectory.get<ProbeTraits::ProbeColumns::LAT>();
-
+       
         auto headings = trajectory.get<ProbeTraits::ProbeColumns::HEADING>();
-
-        //std::vector<Point> polyline = movetk::to_geocentered_polyline(make_point, lats, lons);
-        // Alternatively, use projection to local coordinates (requires also changing dimensions from 3 to 2):
-        //PolyLine polyline = movetk::to_projected_polyline(make_point, lats, lons);
 
         Headings headings_;
 
@@ -152,10 +144,7 @@ int main(int argc, char **argv)
         // Add new fields to the trajectory
         auto segmented_trajectory = concat_field(trajectory, trajectory_id_col, segment_id_col);
 
-        // Declare an alias for the new field idx if used later
-        // constexpr static std::size_t TRAJ_ID = segmented_trajectory.num_fields() - 2;
-        // constexpr static std::size_t MEB_SEG_ID = segmented_trajectory.num_fields() - 1;
-
+        
         ofcsv << segmented_trajectory;
         ++trajectory_count;
     }

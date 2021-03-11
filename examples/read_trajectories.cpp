@@ -99,7 +99,6 @@ int main(int argc, char **argv)
     std::size_t trajectory_count = 0;
     for (auto trajectory : hifreq_splitter)
     {
-        // std::cout << "New trajectory:\n";
 
         // Create the new trajectory id column
         std::vector<std::size_t> trajectory_id_col;

@@ -102,15 +102,13 @@ int main(int argc, char **argv)
                                                   typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
         SegmentationTraits;
     typedef GeometryKernel::MovetkGeometryKernel::NT NT;
-    //typedef vector<SegmentationTraits::Point > PolyLine;
     typedef std::vector<NT> Speeds;
     typedef std::vector<std::size_t> TS;
     typedef std::vector<Speeds::iterator> SegmentStartReferences;
     typedef std::vector<TS::iterator> TSSegmentStartReferences;
     SegmentationTraits::TSSegmentation segment_by_ts(300);
     SegmentationTraits::SpeedSegmentation segment_by_speed(10);
-    //TSL::MakePoint<SegmentationTraits::Geometry_Kernel > make_point;
-    //std::array<NT, 2> pt;
+   
 
     typedef movetk_support::StartStopDiagram<SsdType::compressed,
                                              typename GeometryKernel::MovetkGeometryKernel,
@@ -122,15 +120,10 @@ int main(int argc, char **argv)
     {
         BOOST_LOG_TRIVIAL(trace) << "New trajectory: \n";
 
-        //auto lons = trajectory.get<ProbeTraits::ProbeColumns::LON>();
-        //auto lats = trajectory.get<ProbeTraits::ProbeColumns::LAT>();
-
+    
         auto speeds = trajectory.get<ProbeTraits::ProbeColumns::SPEED>();
 
-        //std::vector<Point> polyline = movetk::to_geocentered_polyline(make_point, lats, lons);
-        // Alternatively, use projection to local coordinates (requires also changing dimensions from 3 to 2):
-        //PolyLine polyline = movetk::to_projected_polyline(make_point, lats, lons);
-
+    
         Speeds speeds_;
 
         for (auto sit = std::cbegin(speeds); sit != std::cend(speeds); sit++)
@@ -159,10 +152,7 @@ int main(int argc, char **argv)
         // Add new fields to the trajectory
         auto segmented_trajectory = concat_field(trajectory, trajectory_id_col, segment_id_col);
 
-        // Declare an alias for the new field idx if used later
-        // constexpr static std::size_t TRAJ_ID = segmented_trajectory.num_fields() - 2;
-        // constexpr static std::size_t MEB_SEG_ID = segmented_trajectory.num_fields() - 1;
-
+     
         ofcsv << segmented_trajectory;
         ++trajectory_count;
     }
