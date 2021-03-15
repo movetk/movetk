@@ -203,8 +203,7 @@ int main(int argc, char **argv)
                                             ProbeTraits::ProbeColumns::LON, ProbeTraits::ProbeColumns::SAMPLE_DATE,
                                             ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING>
         Interpolator;
-    /* typedef movetk_algorithms::Interpolator<movetk_algorithms::random_trajectory_generator_tag,
-            InterpolationTraits> Interpolator;*/
+
     movetk_core::MakePoint<MovetkGeometryKernel> make_point;
     std::size_t line_count = 0;
     std::vector<std::string> input;
@@ -291,12 +290,8 @@ int main(int argc, char **argv)
         }
         ts.push_back(ts_v);
         movetk_core::movetk_back_insert_iterator result(interpolated_pts);
-        //result = p_u;
         interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
-        //interpolator(p_u, p_v, std::begin(ts), std::end(ts), threshold, result);
-        /*   if ( pit == std::cend(trajectory) - 1 ){
-            result = p_v;
-        }*/
+
         auto it = std::begin(interpolated_pts);
         while (it != std::end(interpolated_pts))
         {

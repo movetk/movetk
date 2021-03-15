@@ -248,9 +248,7 @@ int main(int argc, char **argv)
             }
             ts.push_back(std::get<IN_SAMPLE_DATE>(*last));
             movetk_core::movetk_back_insert_iterator result(interpolated_pts);
-            //result = p_u;
             interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
-            //result = p_v;
 
             auto rit = std::begin(interpolated_pts);
             for (const auto &row : rows)

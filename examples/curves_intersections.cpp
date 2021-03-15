@@ -57,7 +57,7 @@ int main(int argc, char **argv)
                        make_point({5.92, 1.62}), make_point({8.8, 5.12}),
                        make_point({1.26, 4.24})});
 
-        std::cout << "Number of intersections: " << compute_intersections(std::begin(polyline), std::end(polyline));
+    std::cout << "Number of intersections: " << compute_intersections(std::begin(polyline), std::end(polyline));
 
     std::cout << "\n";
 

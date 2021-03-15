@@ -60,8 +60,6 @@ int main(int argc, char **argv)
 
         constexpr int LAT = ProbeTraits::ProbeColumns::LAT;
         constexpr int LON = ProbeTraits::ProbeColumns::LON;
-        //auto lons = trajectory.get<ProbeTraits::ProbeColumns::LON>();
-        //auto lats = trajectory.get<ProbeTraits::ProbeColumns::LAT>();
 
         for (auto probe : trajectory)
         {
@@ -81,7 +79,6 @@ int main(int argc, char **argv)
                 prev_lat = curr_lat;
                 prev_lon = curr_lon;
             }
-            //movetk::to_projected_polyline()
         }
     }
 

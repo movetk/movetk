@@ -50,22 +50,14 @@ typedef std::vector<DiscretePosValuedAttributes::const_iterator> DiscretePosValu
 typedef movetk_support::StartStopDiagram<SsdType::compressed,
                                          typename GeometryKernel::MovetkGeometryKernel, DiscretePosValuedAttributes>
     SSD;
-//typedef DiscretePosValuedAttributes::iterator TimeAttributesIterator;
 typedef DiscretePosValuedAttributes::const_iterator TimeAttributesConstIterator;
-//typedef DiscretePosValuedAttributes::iterator TimeDiffsIterator;
 typedef DiscretePosValuedAttributes::const_iterator TimeDiffsConstIterator;
 typedef GeoAttributes::const_iterator GeoAttributesConstIterator;
-//typedef GeoAttributes::iterator GeoAttributesIterator;
 typedef NonGeoAttributes::const_iterator NonGeoAttributesConstIterator;
-//typedef NonGeoAttributes::iterator NonGeoAttributesIterator;
 typedef Points::const_iterator PointsConstIterator;
-//typedef Points::iterator PointsIterator;
 typedef PointsReference::const_iterator PointsReferenceConstIter;
-//typedef PointsReference::iterator PointsReferenceIter;
 typedef NonGeoAttributesReference::const_iterator NonGeoAttributesReferenceConstIter;
-//typedef NonGeoAttributesReference::iterator NonGeoAttributesReferenceIter;
 typedef DiscretePosValuedAttributesReference::const_iterator DiscretePosValuedAttributesReferenceConstIter;
-//typedef DiscretePosValuedAttributesReference::iterator DiscretePosValuedAttributesReferenceIter;
 typedef SSD::const_iterator ssd_const_iterator;
 
 class ParseInput

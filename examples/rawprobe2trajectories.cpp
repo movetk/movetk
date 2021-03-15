@@ -95,12 +95,6 @@ int main(int argc, char **argv)
     end = std::chrono::high_resolution_clock::now();
     display("sort", start, end);
 
-    //    // Write sorted probe
-    //    for (const auto& point: buffered_probe) {
-    //        print_tuple(ofcsv, point);
-    //        ofcsv << '\n';
-    //    }
-
     start = std::chrono::high_resolution_clock::now();
 
     // Split probe points into trajectories by PROBE_ID

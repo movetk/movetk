@@ -21,15 +21,14 @@
 // Created by Mitra, Aniket on 2019-09-09.
 //
 
-
 #include "movetk/utils/GeometryBackendTraits.h"
 
-
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
     //==============================
@@ -47,11 +46,11 @@ int main(int argc, char **argv) {
     // Create a  Movetk point and print it
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint center = make_point(std::cbegin(p),
-                                                                     std::cend(p));
-    std::cout<<"Center\n";
+                                                                          std::cend(p));
+    std::cout << "Center\n";
     std::cout << center;
     //====================================
-    std::cout<<"\n";
+    std::cout << "\n";
 
     movetk_core::MakeSphere<GeometryKernel::MovetkGeometryKernel> make_sphere;
     GeometryKernel::MovetkGeometryKernel::MovetkSphere s = make_sphere(center, 10);
