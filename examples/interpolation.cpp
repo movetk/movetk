@@ -47,11 +47,14 @@
 
 #include "movetk/utils/GeometryBackendTraits.h"
 
+// namespace for defining the input types
 namespace dl
 {
 
+    // namespace for the input
     namespace raw
     {
+        //alias for the input columns
         enum InputColumns
         {
             _ORIGFILEROW,
@@ -64,6 +67,7 @@ namespace dl
             _RAW_SPEED
         };
 
+        // ordering of the input columns
         enum ProbeColumns
         {
             ORIGFILEROW,
@@ -76,23 +80,39 @@ namespace dl
             RAW_SPEED
         };
 
+        // define the input type as comma seaparted values
         typedef csv<std::tuple<long, string, string, std::time_t,
                                float, float, float, float>,
                     _ORIGFILEROW, _RAW_SOURCE, _RAW_DEVICEID, _RAW_GPSTIME,
                     _RAW_LAT, _RAW_LON, _RAW_HEADING, _RAW_SPEED>
             ProbeCsv;
 
+        // the std::tuple passed as a template parameter to the csv class
         typedef typename ProbeCsv::value_type ProbePoint;
+        // the datetime format is assumed to be be a unix timestamp
+        // so no class for parsing the input datetime is defined
         typedef int Dummy;
+        /* define the probe traits class 
+        * the template parameters are:
+        *   -  ProbeColumns: the enum that specifies the ordering of the input columns
+        *   -  Dummy: the type for datetime column
+        *   -  ProbeCsv: the csv type defined above
+        *   -  ProbePoint: the std::tuple of each attribute / column type in the input
+        */
         typedef _ProbeTraits<ProbeColumns, Dummy, ProbeCsv, ProbePoint> ProbeTraits;
 
+        // alias for the column that will be used to split the input
         constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::RAW_DEVICEID;
+        // alias for the column that will be used to sort the input
         constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::RAW_GPSTIME;
+
+        // alias for TabularTrajectory where template parameters are the types for each column
         using trajectory_type = TabularTrajectory<long, string, string, std::time_t,
                                                   float, float, float, float>;
-
+        // alias for the Trajectory traits class
         using TrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, trajectory_type>;
 
+        // alias for the HighFrequencyTrajectoryTraits class
         using HighFrequencyTrajectoryTraits = _HighFrequencyTrajectoryTraits<
             TrajectoryTraits, ProbeTraits::ProbeColumns::RAW_GPSTIME,
             ProbeTraits::ProbeColumns::RAW_LAT, ProbeTraits::ProbeColumns::RAW_LON>;
@@ -104,8 +124,10 @@ using MovetkGeometryKernel = typename GeometryKernel::MovetkGeometryKernel;
 
 using namespace std;
 
+// namespace for the traits classes for the Interpolation algorithm
 namespace Interpolation
 {
+    // Probe traits required for the interpolation algorithm
     struct ProbeTraits
     {
         enum ProbeColumns
@@ -119,9 +141,17 @@ namespace Interpolation
         typedef MovetkGeometryKernel::NT NT;
         typedef std::tuple<std::time_t, NT, NT, NT, NT> ProbePoint;
     };
+    // Norm for computing distances
     using Norm = typename GeometryKernel::Norm;
+    // Define the type for projection of geo-coordinates to cartesian coordinates
     typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
+    // Interpolation traits class as a composition of various types necessary for trajectory interpolation
     typedef movetk_algorithms::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
+    /* The interpolation algorithm class  is parameterized with the following:
+    *     - the tag that deines the type of interpolation e.g. linear, kinematic, etc..
+    *     - Interpolation traits class that contains all types e.g. projection, norm etc.. 
+    *     - the index of the relevant columns
+    */
     typedef movetk_algorithms::Interpolator<movetk_algorithms::kinematic_interpolator_tag,
                                             InterpolationTraits, ProbeTraits::ProbeColumns::LAT,
                                             ProbeTraits::ProbeColumns::LON, ProbeTraits::ProbeColumns::SAMPLE_DATE,
