@@ -33,6 +33,13 @@
 #include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/*
+* Example to read in raw gps data, construct trajectories,
+* compute statistics for each trajectory: 
+* for example length, duration, meanspeed, median speed, time mode
+* and finally write the trajectories and the statistics in GeoJSON format
+*/
+
 constexpr int LON_Idx = here::c2d::raw::ProbeColumns::LON;
 constexpr int LAT_Idx = here::c2d::raw::ProbeColumns::LAT;
 constexpr int TS_Idx = here::c2d::raw::ProbeColumns::SAMPLE_DATE;

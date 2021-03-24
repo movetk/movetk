@@ -31,6 +31,12 @@
 #include "movetk/algo/Interpolation.h"
 #include "movetk/io/csv/ParseDate.h"
 
+/*
+* Example for reading in a trajectory from an input stream
+* and linear interpolation of the trajectory when the 
+* gap between two consecutive points in the trajectory is greater than 1 second.
+*/
+
 using MovetkGeometryKernel = typename GeometryKernel::MovetkGeometryKernel;
 using Norm = typename GeometryKernel::Norm;
 using namespace std;

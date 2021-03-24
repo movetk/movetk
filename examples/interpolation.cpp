@@ -49,6 +49,8 @@
 
 /* Reads in an input file  of gps data , construct trajectories  
 *  and interpolates the trajectories using a kinematic interpolator
+* For details on the kinematic interpolation algorithm please see
+* https://doi.org/10.1080/13658816.2015.1081909
 */
 
 // namespace for defining the input types

@@ -29,6 +29,11 @@
 #include "movetk/TrajectoryReader.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/*
+* Example for reading in Geolife GPS Trajectories dataset
+* and counting the heading and distance between points in
+* a trajectory
+*/
 int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
@@ -92,7 +97,7 @@ int main(int argc, char **argv)
                 double curr_lon = get<LON>(probe);
                 // calcuclate distance between the two consecutive points in the trajectory
                 double d = distance_exact(prev_lat, prev_lon, curr_lat, curr_lon);
-                // calculate headincg between two consecutive points in the trajectory
+                // calculate heading between two consecutive points in the trajectory
                 double b = bearing_exact(prev_lat, prev_lon, curr_lat, curr_lon);
                 //Log  output to console
                 BOOST_LOG_TRIVIAL(trace) << d << " " << b;

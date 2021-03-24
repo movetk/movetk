@@ -28,6 +28,11 @@
 #include "movetk/algo/Simplification.h"
 #include "movetk/utils/Iterators.h"
 
+/*
+* Example to read in a time sorted input stream (ID,TimeStamp,Lon,Lat,X,Y)
+* that represents a polyline and then run the Dougklas-Peucker simplification
+* on the polyline  
+*/
 class ParseInput
 {
 

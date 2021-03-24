@@ -23,11 +23,16 @@
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
-int main(int argc, char **argv) {
+/*
+* Example for constructing the minimum enclosing ball
+* for a given set of points
+*/
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
     std::cout.setf(std::ios::fixed);
@@ -42,22 +47,21 @@ int main(int argc, char **argv) {
     // Create a  Movetk min sphere and print it's center and radius
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
 
-
     points.push_back(make_point({1, 1}));
 
-    std::cout<<"Point 1:"<<std::endl;
+    std::cout << "Point 1:" << std::endl;
     std::cout << points.back();
     std::cout << std::endl;
 
     points.push_back(make_point({2, 2}));
 
-    std::cout<<"Point 2:"<<std::endl;
+    std::cout << "Point 2:" << std::endl;
     std::cout << points.back();
     std::cout << std::endl;
 
     points.push_back(make_point({3, 3}));
 
-    std::cout<<"Point 3: "<<std::endl;
+    std::cout << "Point 3: " << std::endl;
     std::cout << points.back();
     std::cout << std::endl;
 
@@ -65,19 +69,20 @@ int main(int argc, char **argv) {
 
     GeometryKernel::MovetkGeometryKernel::NT radius = min_sphere(std::cbegin(points), std::cend(points),
                                                                  movetk_core::movetk_back_insert_iterator(
-                                                                         CenterMinSphere));
+                                                                     CenterMinSphere));
 
-    std::cout<<"Radius: "<<std::endl;
-    std::cout<<radius<<std::endl;
+    std::cout << "Radius: " << std::endl;
+    std::cout << radius << std::endl;
 
-    std::cout<<"Center: "<<std::endl;
+    std::cout << "Center: " << std::endl;
     auto it = std::cbegin(CenterMinSphere);
-    while ( it != std::cend(CenterMinSphere) ){
-        std::cout<<*it;
-        std::cout<<" ";
+    while (it != std::cend(CenterMinSphere))
+    {
+        std::cout << *it;
+        std::cout << " ";
         it++;
     }
     //====================================
-    std::cout<<"\n";
+    std::cout << "\n";
     return 0;
 }

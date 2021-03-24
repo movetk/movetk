@@ -23,6 +23,10 @@
 
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/*
+* Example for constructing a sphere 
+* from a given set of points
+*/
 int main(int argc, char **argv)
 {
 #if CGAL_BACKEND_ENABLED

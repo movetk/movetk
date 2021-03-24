@@ -31,6 +31,14 @@
 #include "movetk/ds/Tree.h"
 #include "movetk/utils/Iterators.h"
 
+/*
+* Example to check whether a trajectory intersects a set of polygons
+* A time sorted trajectory is read from an input stream which is checked for
+* intersection with a given set of polygons.
+* The output is the list of polygons with an additional flag indicating whether
+* the trajectory intersects the polygon or not.
+*/
+
 using namespace std;
 using namespace GeographicLib;
 

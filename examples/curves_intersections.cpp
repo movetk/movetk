@@ -24,6 +24,11 @@
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
+/*
+* Example for finding the number of times 
+* a polyline crosses itself
+*/
+
 int main(int argc, char **argv)
 {
 //the value is set via the CMake flag WITH_CGAL_BACKEND

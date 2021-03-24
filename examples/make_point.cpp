@@ -21,15 +21,17 @@
 // Created by Mitra, Aniket on 08/01/2019.
 //
 
-
 #include "movetk/utils/GeometryBackendTraits.h"
 
-
-int main(int argc, char **argv) {
+/*
+* Example for creating a point 
+*/
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
     //==============================
@@ -47,11 +49,11 @@ int main(int argc, char **argv) {
     // Create a  Movetk point and print it
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt = make_point(std::cbegin(p),
-                                                     std::cend(p));
-    std::cout<<"Point\n";
+                                                                      std::cend(p));
+    std::cout << "Point\n";
     std::cout << pt;
     //====================================
-    std::cout<<"\n";
+    std::cout << "\n";
 
     return 0;
 }

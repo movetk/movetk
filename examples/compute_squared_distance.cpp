@@ -24,6 +24,11 @@
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/metric/DistanceInterface.h"
 
+/*
+* Example for calculating the squared distance between 
+* a polint and a segment.
+*/
+
 int main(int argc, char **argv)
 {
 //the value is set via the CMake flag WITH_CGAL_BACKEND

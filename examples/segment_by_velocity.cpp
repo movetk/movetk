@@ -48,6 +48,17 @@
 #include "movetk/ds/StartStopMatrix.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/**
+ * Example: Create trajectories from raw probe points by
+ *          - buffering probe points in memory
+ *          - sorting them by PROBE_ID
+ *          - splitting by PROBE_ID
+ *          - sorting each trajectoy points by SAMPLE_DATE
+ *          - segment the trajectories by velocity 
+ *              - please see https://doi.org/10.1145/1869790.1869821 for a description of the algorihtm
+ *          - writing trajectories to a CSV file.
+ */
+
 int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
@@ -191,7 +202,7 @@ int main(int argc, char **argv)
         // Add new fields to the trajectory
         auto segmented_trajectory = concat_field(trajectory, trajectory_id_col, segment_id_col);
 
-            ofcsv << segmented_trajectory;
+        ofcsv << segmented_trajectory;
         ++trajectory_count;
     }
 

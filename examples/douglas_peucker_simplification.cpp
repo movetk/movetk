@@ -25,6 +25,11 @@
 #include "movetk/algo/Simplification.h"
 #include "movetk/utils/Iterators.h"
 
+/*
+* Example for simplyfying a polyline
+* using the Douglas-Peucker simplification algorithm
+*/
+
 int main(int argc, char **argv)
 {
 #if CGAL_BACKEND_ENABLED

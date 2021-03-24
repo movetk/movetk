@@ -38,6 +38,13 @@
 
 using namespace std;
 
+/*
+* Example to read in a time sorted polyline as an input stream
+* and identify outliers with the output sensitive outlier detection
+* algorithm. For a description of the algorithm please refer to
+* https://doi.org/10.1145/3347146.3359363
+*/
+
 class ParseInput
 {
 
