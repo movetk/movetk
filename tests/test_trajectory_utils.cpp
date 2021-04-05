@@ -106,7 +106,7 @@ TEST_CASE("Find minimum non zero element", "[test_min_non_zero_element]") {
 TEST_CASE("Calculate tdiff", "[test_get_time_diffs]") {
     vector<size_t> ts{1460029938,1460029945,1460029954};
     vector<size_t> result;
-    movetk_core::get_time_diffs(cbegin(ts), cend(ts), movetk_core::movetk_back_insert_iterator(result));
+    movetk_core::get_time_diffs(cbegin(ts), cend(ts), movetk_core::movetk_back_insert_iterator(result), 0);
     REQUIRE ( result[0] == 0);
     REQUIRE ( result[1] == 7);
     REQUIRE ( result[2] == 9);
@@ -124,7 +124,7 @@ TEST_CASE("Calculate Euclidean distance", "[test_calculate_distance]"){
     p = {-8226855, 4993146};
     points.push_back( make_point( cbegin(p), cend(p) ) );
     movetk_core::get_distances<MovetkGeometryKernel>(cbegin(points), cend(points),
-                                                     movetk_core::movetk_back_insert_iterator(result));
+                                                     movetk_core::movetk_back_insert_iterator(result), 0);
     REQUIRE ( result[0] == 0);
     REQUIRE ( result[1] == 5);
     REQUIRE ( result[2] == 1);

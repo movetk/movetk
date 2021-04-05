@@ -169,6 +169,21 @@ namespace movetk_core {
             cit++;
         }
     }
+
+    template<class InputIterator, class OutputIterator,
+        typename = movetk_core::requires_random_access_iterator<InputIterator>,
+       /* typename = movetk_core::requires_date_t<
+        typename InputIterator::value_type>,*/
+        typename = movetk_core::requires_output_iterator<OutputIterator>
+        /*typename = movetk_core::requires_size_t<
+        typename OutputIterator::value_type> */
+    >
+        void get_time_diffs(InputIterator first, InputIterator beyond, 
+        OutputIterator iter,typename OutputIterator::value_type init_val){
+            *iter = init_val;
+            get_time_diffs(first, beyond, iter);
+        }
+    
     
     /*!
      *
@@ -197,6 +212,20 @@ namespace movetk_core {
             pit = cit;
             cit++;
         }
+    }
+
+    template<class GeometryKernel, class InputIterator, class OutputIterator,
+        typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>,
+        typename = movetk_core::requires_atleast_input_iterator<InputIterator>,
+        typename = movetk_core::requires_output_iterator<OutputIterator>,
+        typename = movetk_core::requires_movetk_point<GeometryKernel,
+        typename InputIterator::value_type>,
+        typename = movetk_core::requires_NT<GeometryKernel,
+        typename OutputIterator::value_type> >
+        void get_distances(InputIterator first, InputIterator beyond, 
+            OutputIterator iter, typename OutputIterator::value_type init_value) {
+            *iter = init_value;
+            get_distances<GeometryKernel>(first, beyond, iter);
     }
 
     template <class Traits, class InputIterator, std::size_t LatIdx,
