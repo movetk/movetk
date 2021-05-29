@@ -1,13 +1,16 @@
 cmake_minimum_required(VERSION 3.11)
 project(movetk)
 
-option(_GLIBCXX_PARALLEL "Use parallel STL algorithms at designated places (supported only under GNU/Linux with GCC)")
-option(BUILD_DOC "Build documentation" OFF)
-option(WITH_CGAL_BACKEND "USE CGAL BACKEND" OFF)
+option(MOVETK_GLIBCXX_PARALLEL "Use parallel STL algorithms at designated places (supported only under GNU/Linux with GCC)")
+option(MOVETK_BUILD_DOC "Build documentation" OFF)
+option(MOVETK_WITH_CGAL_BACKEND "Use CGAL backend in MoveTk" OFF)
+option(MOVETK_BUILD_TESTS "Build MoveTk tests" OFF)
+option(MOVETK_BUILD_PY "Build MoveTk Python bindings" OFF)
+option(MOVETK_BUILD_EXAMPLES "Build MoveTk examples" OFF)
 
 if(UNIX)
   if(CMAKE_BUILD_TYPE MATCHES Release)
-    if(_GLIBCXX_PARALLEL)
+    if(MOVETK_GLIBCXX_PARALLEL)
       message("Using parallel STL")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -march=native -Ofast -D_GLIBCXX_PARALLEL")  # catch2 doesn't work with these.
     else()
@@ -41,17 +44,23 @@ add_subdirectory(src)
 message(STATUS "doxygen ${BUILD_DOC}")
 message(STATUS "WITH_CGAL_BACKEND ${WITH_CGAL_BACKEND}")
 
-if (BUILD_DOC)
+if (MOVETK_BUILD_DOC)
     #add project documentation
     add_subdirectory(docs)
 endif()
 
 # add unit tests
-enable_testing()
-add_subdirectory(tests)
+if(MOVETK_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
 # add usage example
-add_subdirectory(examples)
+if(MOVETK_BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
 
 # add python bindings
-add_subdirectory(py)
+if(MOVETK_BUILD_PY)
+  add_subdirectory(py)
+endif()
