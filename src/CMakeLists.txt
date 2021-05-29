@@ -81,224 +81,145 @@ else()
         message(STATUS "gdal_lib ${GDAL_LIBRARY}")
 endif()
 
-
-if (WITH_CGAL_BACKEND)
-    message(STATUS "CGAL_BACKEND ${WITH_CGAL_BACKEND}")
-    add_library(movetk
-            include/movetk/utils/GeolifeProbeTraits.h
-            include/movetk/utils/GeolifeTrajectoryTraits.h
-            include/movetk/utils/HereProbeTraits.h
-            include/movetk/utils/HereTrajectoryTraits.h
-            include/movetk/utils/GeometryBackendTraits.h
-            include/movetk/logging.h
-            include/movetk/ProbeTraits.h
-            include/movetk/SortByField.h
-            include/movetk/SplitByField.h
-            include/movetk/SplitByDifferenceThreshold.h
-            include/movetk/SplitByDistanceThreshold.h
-            include/movetk/Splitter.h
-            include/movetk/test_data.h
-            include/movetk/ColumnarTrajectory.h
-            include/movetk/TabularTrajectory.h
-            include/movetk/TrajectoryReader.h
-            include/movetk/TrajectoryTraits.h
-            include/movetk/SortedProbeReader.h
-            include/movetk/HighFrequencyTrajectorySplitter.h
-            include/movetk/HighFrequencyTrajectoryReader.h
-            include/movetk/HighFrequencyTrajectoryTraits.h
-            include/movetk/TupleIterPrinter.h
-            include/movetk/TuplePrinter.h
-            include/movetk/io/gdal_PolygonReader.h
-            include/movetk/io/ProbeReader.h
-            include/movetk/io/csv/csv.h
-            include/movetk/io/csv/CategoricalField.h
-            include/movetk/io/csv/ParseDate.h
-            include/movetk/io/GeoJSON.h
-            include/movetk/geom/CGALTraits.h
-            include/movetk/geom/trajectory_gdal.h
-            include/movetk/geom/CGALWrapper.h
-            include/movetk/geom/GeometryInterface.h
-            include/movetk/geom/trajectory_to_interface.h
-            include/movetk/metric/Norm.h
-            include/movetk/metric/Distances.h
-            include/movetk/metric/DistanceTraits.h
-            include/movetk/metric/DistanceInterface.h
-            include/movetk/utils/unituple.h
-            include/movetk/utils/TrajectoryUtils.h
-            include/movetk/utils/StringUtils.h
-            include/movetk/utils/Asserts.h
-            include/movetk/utils/Requirements.h
-            include/movetk/utils/Iterators.h
-            include/movetk/utils/text.h
-            include/movetk/utils/Transpose.h
-            include/movetk/utils/TypeChecks.h
-            include/movetk/algo/AlgorithmTraits.h
-            include/movetk/algo/SegmentationTraits.h
-            include/movetk/algo/SegmentationPredicates.h
-            include/movetk/algo/Segmentation.h
-            include/movetk/algo/PolylineUtils.h
-            include/movetk/algo/Interpolation.h
-            include/movetk/algo/Search.h
-            include/movetk/algo/Simplification.h
-            include/movetk/algo/Similarity.h
-            include/movetk/algo/Statistics.h
-            include/movetk/algo/BrownianBridge.h
-            include/movetk/algo/OutlierDetection.h
-            include/movetk/algo/OutlierDetectionPredicates.h
-            include/movetk/algo/Clustering.h
-            include/movetk/ds/StartStopMatrix.h
-            include/movetk/ds/Tree.h
-            include/movetk/ds/FreeSpaceDiagram.h
-            include/movetk/Documentation.h
-            include/movetk/CartesianProbeTraits.h
-            logging.cpp
-            io/gdal_PolygonReader.cpp
-            utils/text.cpp
-            include/movetk/geo/geo.h
-            geo/geo.cpp
-            )
-    else()
-    message(STATUS "CGAL_BACKEND ${WITH_CGAL_BACKEND}")
-    add_library(movetk
-            include/movetk/utils/GeolifeProbeTraits.h
-            include/movetk/utils/GeolifeTrajectoryTraits.h
-            include/movetk/utils/HereProbeTraits.h
-            include/movetk/utils/HereTrajectoryTraits.h
-            include/movetk/utils/GeometryBackendTraits.h
-            include/movetk/logging.h
-            include/movetk/ProbeTraits.h
-            include/movetk/SortByField.h
-            include/movetk/SplitByField.h
-            include/movetk/SplitByDifferenceThreshold.h
-            include/movetk/SplitByDistanceThreshold.h
-            include/movetk/Splitter.h
-            include/movetk/test_data.h
-            include/movetk/ColumnarTrajectory.h
-            include/movetk/TabularTrajectory.h
-            include/movetk/TrajectoryReader.h
-            include/movetk/TrajectoryTraits.h
-            include/movetk/SortedProbeReader.h
-            include/movetk/HighFrequencyTrajectorySplitter.h
-            include/movetk/HighFrequencyTrajectoryReader.h
-            include/movetk/HighFrequencyTrajectoryTraits.h
-            include/movetk/TupleIterPrinter.h
-            include/movetk/TuplePrinter.h
-            include/movetk/io/gdal_PolygonReader.h
-            include/movetk/io/ProbeReader.h
-            include/movetk/io/csv/csv.h
-            include/movetk/io/csv/CategoricalField.h
-            include/movetk/io/csv/ParseDate.h
-            include/movetk/io/GeoJSON.h
-            include/movetk/geom/trajectory_gdal.h
-            include/movetk/geom/BoostGeometryWrapper.h
-            include/movetk/geom/BoostGeometryTraits.h
-            include/movetk/geom/GeometryInterface.h
-            include/movetk/geom/trajectory_to_interface.h
-            include/movetk/metric/Norm.h
-            include/movetk/metric/Distances.h
-            include/movetk/metric/DistanceTraits.h
-            include/movetk/metric/DistanceInterface.h
-            include/movetk/utils/unituple.h
-            include/movetk/utils/TrajectoryUtils.h
-            include/movetk/utils/StringUtils.h
-            include/movetk/utils/Asserts.h
-            include/movetk/utils/Requirements.h
-            include/movetk/utils/Iterators.h
-            include/movetk/utils/text.h
-            include/movetk/utils/Transpose.h
-            include/movetk/utils/TypeChecks.h
-            include/movetk/algo/AlgorithmTraits.h
-            include/movetk/algo/SegmentationTraits.h
-            include/movetk/algo/SegmentationPredicates.h
-            include/movetk/algo/Segmentation.h
-            include/movetk/algo/PolylineUtils.h
-            include/movetk/algo/Interpolation.h
-            include/movetk/algo/Simplification.h
-            include/movetk/algo/Search.h
-            include/movetk/algo/BrownianBridge.h
-            include/movetk/algo/Similarity.h
-	    include/movetk/algo/Statistics.h
-            include/movetk/algo/OutlierDetection.h
-            include/movetk/algo/OutlierDetectionPredicates.h
-            include/movetk/algo/Clustering.h
-            include/movetk/ds/StartStopMatrix.h
-            include/movetk/ds/Tree.h
-            include/movetk/ds/FreeSpaceDiagram.h
-            include/movetk/Documentation.h
-            include/movetk/CartesianProbeTraits.h
-            logging.cpp
-            io/gdal_PolygonReader.cpp
-            utils/text.cpp
-            include/movetk/geo/geo.h
-            geo/geo.cpp
-            include/third_party/miniball/Seb.h
-            include/third_party/miniball/Seb_configure.h
-            include/third_party/miniball/Seb_point.h
-            include/third_party/miniball/Subspan.h
-            include/third_party/miniball/Subspan-inl.h
-            include/third_party/miniball/Seb_debug.h
-            include/third_party/boost_geometry/discrete_hausdorff_distance.hpp
-            include/third_party/boost_geometry/discrete_frechet_distance.hpp
-            #include/third_party/miniball/Seb_debug.C
-            )
+set(_USE_BOOST NOT MOVETK_WITH_CGAL_BACKEND)
+set(SOURCES
+        geo/geo.cpp
+        include/movetk/algo/AlgorithmTraits.h
+        include/movetk/algo/BrownianBridge.h
+        include/movetk/algo/Clustering.h
+        include/movetk/algo/Interpolation.h
+        include/movetk/algo/OutlierDetection.h
+        include/movetk/algo/OutlierDetectionPredicates.h
+        include/movetk/algo/PolylineUtils.h
+        include/movetk/algo/Search.h
+        include/movetk/algo/Segmentation.h
+        include/movetk/algo/SegmentationPredicates.h
+        include/movetk/algo/SegmentationTraits.h
+        include/movetk/algo/Similarity.h
+        include/movetk/algo/Simplification.h
+        include/movetk/algo/Statistics.h
+        include/movetk/Documentation.h
+        include/movetk/ds/ColumnarTrajectory.h
+        include/movetk/ds/FreeSpaceDiagram.h
+        include/movetk/ds/StartStopMatrix.h
+        include/movetk/ds/TabularTrajectory.h
+        include/movetk/ds/Tree.h
+        include/movetk/geo/geo.h
+        include/movetk/geom/GeometryInterface.h
+        include/movetk/geom/trajectory_gdal.h
+        include/movetk/geom/trajectory_to_interface.h
+        include/movetk/io/CartesianProbeTraits.h
+        include/movetk/io/csv/CategoricalField.h
+        include/movetk/io/csv/csv.h
+        include/movetk/io/csv/ParseDate.h
+        include/movetk/io/gdal_PolygonReader.h
+        include/movetk/io/GeoJSON.h
+        include/movetk/io/HighFrequencyTrajectoryReader.h
+        include/movetk/io/HighFrequencyTrajectorySplitter.h
+        include/movetk/io/HighFrequencyTrajectoryTraits.h
+        include/movetk/io/ProbeReader.h
+        include/movetk/io/ProbeTraits.h
+        include/movetk/io/SortByField.h
+        include/movetk/io/SortedProbeReader.h
+        include/movetk/io/SplitByDifferenceThreshold.h
+        include/movetk/io/SplitByDistanceThreshold.h
+        include/movetk/io/SplitByField.h
+        include/movetk/io/Splitter.h
+        include/movetk/io/TrajectoryReader.h
+        include/movetk/io/TrajectoryTraits.h
+        include/movetk/io/TupleIterPrinter.h
+        include/movetk/io/TuplePrinter.h
+        include/movetk/logging.h
+        include/movetk/metric/DistanceInterface.h
+        include/movetk/metric/Distances.h
+        include/movetk/metric/DistanceTraits.h
+        include/movetk/metric/Norm.h
+        include/movetk/test_data.h
+        include/movetk/utils/Asserts.h
+        include/movetk/utils/GeolifeProbeTraits.h
+        include/movetk/utils/GeolifeTrajectoryTraits.h
+        include/movetk/utils/GeometryBackendTraits.h
+        include/movetk/utils/HereProbeTraits.h
+        include/movetk/utils/HereTrajectoryTraits.h
+        include/movetk/utils/Iterators.h
+        include/movetk/utils/Requirements.h
+        include/movetk/utils/StringUtils.h
+        include/movetk/utils/text.h
+        include/movetk/utils/TrajectoryUtils.h
+        include/movetk/utils/Transpose.h
+        include/movetk/utils/TypeChecks.h
+        include/movetk/utils/unituple.h
+        io/gdal_PolygonReader.cpp
+        logging.cpp
+        utils/text.cpp
+)
+#Potentially more options than Boost and CGAL
+if (MOVETK_WITH_CGAL_BACKEND)
+	list(APPEND SOURCES 
+		include/movetk/geom/CGALTraits.h
+		include/movetk/geom/CGALWrapper.h
+	)
+elseif(_USE_BOOST)
+	list(APPEND SOURCES 
+		include/movetk/geom/BoostGeometryWrapper.h
+		include/movetk/geom/BoostGeometryTraits.h
+		include/third_party/miniball/Seb.h
+		include/third_party/miniball/Seb_configure.h
+		include/third_party/miniball/Seb_point.h
+		include/third_party/miniball/Subspan.h
+		include/third_party/miniball/Subspan-inl.h
+		include/third_party/miniball/Seb_debug.h
+		include/third_party/boost_geometry/discrete_hausdorff_distance.hpp
+		include/third_party/boost_geometry/discrete_frechet_distance.hpp
+	)
 endif()
+
+# Add source groups for visual studio
+if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
+	source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SOURCES})
+endif()
+
+message(TRACE "[MoveTk] Using CGAL backend ${MOVETK_WITH_CGAL_BACKEND}")
+add_library(movetk ${SOURCES} )
 
 target_compile_features(movetk PUBLIC cxx_std_17)
 target_compile_definitions(movetk PUBLIC -DBOOST_LOG_DYN_LINK=1)
 
 target_include_directories(movetk PRIVATE ${GsTL_INCLUDE_DIR} ${RAPIDJSON_INCLUDE_DIR})
 
-
-if (WITH_CGAL_BACKEND)
-    target_include_directories(movetk
+target_include_directories(movetk
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
             $<INSTALL_INTERFACE:include>
-            ${Boost_INCLUDE_DIRS}
+			${Boost_INCLUDE_DIRS}
             ${GDAL_INCLUDE_DIR}
             ${GeographicLib_INCLUDE_DIRS}
+            ${GSL_INCLUDE_DIR}
+)
+if (MOVETK_WITH_CGAL_BACKEND)
+    target_include_directories(movetk
+            PUBLIC
             ${CGAL_INCLUDE_DIR}
             ${MPFR_INCLUDE_DIR}
-            ${GSL_INCLUDE_DIR}
-            )
-else ()
-    target_include_directories(movetk
-            PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-            $<INSTALL_INTERFACE:include>
-            ${Boost_INCLUDE_DIRS}
-            ${GDAL_INCLUDE_DIR}
-            ${GeographicLib_INCLUDE_DIRS}
-            ${GSL_INCLUDE_DIR}
             )
 endif ()
-
-if (WITH_CGAL_BACKEND)
-    target_link_libraries(movetk
+target_link_libraries(movetk
             PUBLIC
             Threads::Threads
             ${Boost_LIBRARIES}
             ${GDAL_LIBRARY}
-            ${CGAL_LIBRARY}
             ${GeographicLib_LIBRARIES}
             ${GSL_LIBRARIES}
+            )
+if (MOVETK_WITH_CGAL_BACKEND)
+    target_link_libraries(movetk
+            PUBLIC
+            ${CGAL_LIBRARY}
             GMP::GMP
             MPFR::MPFR
             CGAL::CGAL
             )
-else ()
-                target_link_libraries(movetk
-                        PUBLIC
-                        Threads::Threads
-                        ${Boost_LIBRARIES}
-                        ${GDAL_LIBRARY}
-                        ${CGAL_LIBRARY}
-                        ${GeographicLib_LIBRARIES}
-                        ${GSL_LIBRARIES}
-                     
-                )           
 endif ()
 
 add_library(c2d::movetk ALIAS movetk)
