@@ -49,6 +49,12 @@ using Points = std::vector<MovetkGeometryKernel::MovetkPoint, std::allocator<Mov
 
 PYBIND11_MODULE(movetk_geometry, m)
 {
+    // Or maybe not. Depends on what we consider top level
+    auto geometry_module = m.def_submodule("geometry","MoveTk geometric objects");
+    PyMoveTk::GeometryModule::register_module(geometry_module);
+    auto geometry_module = m.def_submodule("boostkernel_2d","MoveTk geometric objects");
+    
+
     /**
      * @brief Binding for MovetkPoint
      * 
