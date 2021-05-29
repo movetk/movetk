@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.11)
-project(movepy
+cmake_minimum_required(VERSION 3.12)
+project(PyMoveTk
         LANGUAGES CXX
         VERSION 0.1
         )
 
+set(PYBIND11_PYTHON_VERSION 3.7 CACHE STRING "")
 
 # run cmake with -DCMAKE_PREFIX_PATH=path-to-installed-cmake-dir-of-movetk
 #find_package(movetk CONFIG REQUIRED)  ##enable only if movepy is being built as a separate project
@@ -13,64 +14,46 @@ if (NOT TARGET c2d::movetk)
     find_package(movetk CONFIG REQUIRED)
 endif()
 
-find_package (Python COMPONENTS Interpreter Development REQUIRED)
+# TODO: check if this is needed. pybind11 has logic for finding the right Python as well.
+#find_package (Python COMPONENTS Interpreter Development REQUIRED)
 
-# message(STATUS "Python_include_dir ${Python_INCLUDE_DIRS}")
+# Try to find pybind11 on the system. Otherwise, resort to subdirectory
 
+find_package(pybind11 CONFIG)
 
-# set(PYBIND11_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/pybind11/include/")
+if(NOT TARGET pybind11::module)
+# TODO: Add pybind11 via ExternalProject_Add
+	add_subdirectory(pybind11)
+endif()
 
-# message(STATUS "PYBIND11_INCLUDE_DIR ${PYBIND11_INCLUDE_DIR}")
-
-# install(DIRECTORY  ${PYBIND11_INCLUDE_DIR}
-#         DESTINATION include
-#         )
-
-
-# include_directories(${PYBIND11_INCLUDE_DIR})
-
-
-# set(PYBIND11_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/pybind11/")
-
-add_subdirectory(pybind11)
-
+# Set the cpp standard to use
 set(PYBIND11_CPP_STANDARD -std=c++1z)
-
-#find_package(pybind11 REQUIRED)
-
-#find_package(movetk REQUIRED) ##enable only if movepy is being built as a separate project
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-
-add_library(movetk_geometry SHARED movetk_geometry.cpp)
-
-#pybind11_add_module(movetk_geometry SHARED movetk_geometry.cpp)
-
-#target_compile_definitions(movetk_geometry PUBLIC)
-
-target_include_directories(movetk_geometry
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:include>
-        )
-
-
-target_link_libraries(movetk_geometry
-        PUBLIC
-        #${GDAL_LIBRARY}
-        #${GeographicLib_LIBRARIES}
-        c2d::movetk
-        pybind11::module
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+        PyMoveTk/*.h
+        PyMoveTk/*.cpp
 )
 
-set_target_properties(movetk_geometry PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
-        SUFFIX "${PYTHON_MODULE_EXTENSION}")
+# Collect sources
 
-install(TARGETS movetk_geometry EXPORT ${CMAKE_PROJECT_NAME}Targets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
-        )
+pybind11_add_module(PyMoveTk ${SOURCES})
+target_link_libraries(PyMoveTk PUBLIC movetk)
+
+if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
+        source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SOURCES})
+endif()
+
+# Build tests
+if(MOVETK_BUILD_TESTS)
+        add_subdirectory(test)
+endif()
+
+
+#install(TARGETS movetk_geometry EXPORT ${CMAKE_PROJECT_NAME}Targets
+#        LIBRARY DESTINATION lib
+#        ARCHIVE DESTINATION lib
+#        RUNTIME DESTINATION bin
+#        INCLUDES DESTINATION include
+#        )
