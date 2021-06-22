@@ -88,9 +88,8 @@ struct GeometryKernel : public std::tuple_element_t<0,movetk::backends::Availabl
 {
     typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
 
-    typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
-                                            movetk_core::sphere_segment_intersection_tag>
-        SphSegIntersectionTraits;
+    using SphSegIntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
+                                            movetk_core::sphere_segment_intersection_tag>;
 
     typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
                                             movetk_core::sphere_sphere_intersection_tag>
@@ -101,3 +100,50 @@ struct GeometryKernel : public std::tuple_element_t<0,movetk::backends::Availabl
     typedef movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;
     typedef movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits> FreeSpaceDiagram;
 };
+
+template<typename NT_, std::size_t Dimensions_, typename BackendTag>
+struct VerifyKernelSupport
+{
+    // Verify that the chosen backend supports the given dimensions.
+    static_assert(BackendTraits<BackendTag>::template SUPPORTS_DIMENSIONS<Dimensions_>());
+};
+
+template<typename NT_, std::size_t Dimensions_, typename BackendTag>
+struct GeometryKernel2 :
+    VerifyKernelSupport<NT_,Dimensions_, BackendTag>,
+    DeduceKernel<NT_, Dimensions_, BackendTag>::Kernel
+{
+    //==============================
+    // Define the Number Type
+    // For the Boost Backend
+    using NT = NT_;
+    //==============================
+
+    static constexpr size_t dimensions = Dimensions_;
+
+    //==============================
+    // Define the Geometry Backend
+    using Backend = typename BackendTraits<BackendTag>::template backend_type<NT, dimensions>;
+    //Using the Geometry Backend define the Movetk Geometry Kernel
+    using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<typename BackendTraits<BackendTag>::template wrapper_geometry<Backend>>;
+    //==============================
+
+    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
+
+    using SphSegIntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
+        movetk_core::sphere_segment_intersection_tag>;
+
+    using SphSphIntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, 
+        movetk_core::sphere_sphere_intersection_tag>;
+
+    using FreeSpaceCellTraits = movetk_support::FreeSpaceCellTraits<SphSegIntersectionTraits>;
+    using FreeSpaceCell = movetk_support::FreeSpaceCell<FreeSpaceCellTraits>;
+    using FreeSpaceDiagramTraits = movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell>;
+    using FreeSpaceDiagram = movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
+};
+
+template<typename NT, std::size_t Dimensions>
+using MoveTkBoostKernel = GeometryKernel2<NT, Dimensions, boost_backend_tag>;
+
+// Predefine a kernel
+using MoveTkBoostKernel_2_ld = MoveTkBoostKernel<long double, 2>;

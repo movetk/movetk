@@ -65,8 +65,13 @@ namespace movetk_support
 
     public:
         Wrapper_Boost_Point() = default;
+        Wrapper_Boost_Point(const Wrapper_Boost_Point &p) = default;
+        Wrapper_Boost_Point(Wrapper_Boost_Point &&p) = default;
+        Wrapper_Boost_Point& operator=(const Wrapper_Boost_Point &p) = default;
+        Wrapper_Boost_Point& operator=(Wrapper_Boost_Point &&p) = default;
 
         Wrapper_Boost_Point(const Boost_Point &p) : pt(p) {}
+        
 
         template <class CoordinateIterator,
                   typename = movetk_core::requires_random_access_iterator<CoordinateIterator>>
@@ -267,6 +272,30 @@ namespace movetk_support
                            [&scalar](typename Kernel::NT &i) { return i * scalar; });
             return *this;
         }
+        Wrapper_Boost_Vector<Kernel> operator*(typename Kernel::NT scalar) const
+        {
+            auto copy = *this; //Copy self
+            copy *= scalar;
+            return copy;
+        }
+        Wrapper_Boost_Vector<Kernel> &operator/=(typename Kernel::NT scalar)
+        {
+            std::transform(std::begin(vec), std::end(vec), std::begin(vec),
+                [&scalar](typename Kernel::NT &i) { return i / scalar; });
+            return *this;
+        }
+        Wrapper_Boost_Vector<Kernel> operator/(typename Kernel::NT scalar) const
+        {
+            auto copy = *this; //Copy self
+            copy /= scalar;
+            return copy;
+        }
+        Wrapper_Boost_Vector<Kernel> operator-() const
+        {
+            auto copy = *this;
+            copy *= -1;
+            return copy;
+        }
 
         typename Kernel::NT operator*(const Wrapper_Boost_Vector<Kernel> &vector) const
         {
@@ -301,7 +330,7 @@ namespace movetk_support
             return std::equal(this->begin(), this->end(), vector.begin());
         }
 
-        Wrapper_Boost_Vector<Kernel> basis(std::size_t i)
+        static Wrapper_Boost_Vector<Kernel> basis(std::size_t i)
         {
             Boost_Vector _e = {0};
             _e[i] = 1;

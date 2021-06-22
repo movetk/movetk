@@ -107,6 +107,50 @@ namespace movetk_algorithms {
             }
             return dp_row.back();
         }
+        template <class InputIterator, 
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename InputIterator::value_type>>
+            std::size_t operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                InputIterator polyline_b_first, InputIterator polyline_b_beyond) {
+
+            std::size_t size_polyline_b = std::distance(polyline_b_first, polyline_b_beyond);
+            std::vector<std::size_t> dp_row(size_polyline_b + 1);
+            std::fill(std::begin(dp_row), std::begin(dp_row) + size_polyline_b + 1, 0);
+            InputIterator it_a = polyline_a_first;
+            std::size_t i = 1, prev_value = 0, prev_cell = 0;
+            Norm norm;
+            while (it_a != polyline_a_beyond) {
+                std::size_t j = 1, previous = 0, current = 0;
+                InputIterator it_b = polyline_b_first;
+                while (it_b != polyline_b_beyond) {
+                    typename GeometryTraits::MovetkVector v = *it_a - *it_b;
+                    NT distance = norm(v);
+                    if (distance < eps && this->abs(i, j) < del) {
+                        current = dp_row[j - 1] + 1;
+                        if (current != prev_value) {
+                            prev_value = current;
+                            prev_cell = j;
+                        }
+                        else {
+                            if (j < prev_cell) {
+                                prev_cell = j;
+                            }
+                        }
+                    }
+                    else
+                        current = std::max(dp_row[j], previous);
+                    dp_row[j - 1] = previous;
+                    previous = current;
+                    j++;
+                    it_b++;
+                }
+                dp_row[j - 1] = previous;
+                it_a++;
+                i++;
+            }
+            return dp_row.back();
+        }
     };
 
     class DynamicTimeWarping{

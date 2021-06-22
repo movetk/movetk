@@ -612,8 +612,16 @@ namespace movetk_core
         {
             return _slope;
         }
+        const typename GeometryTraits::MovetkVector &slope()const
+        {
+            return _slope;
+        }
 
         const MovetkVector& intercept() const
+        {
+            return _intercept;
+        }
+        const typename GeometryTraits::MovetkVector &intercept() const
         {
             return _intercept;
         }
