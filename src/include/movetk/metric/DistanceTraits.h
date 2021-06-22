@@ -21,6 +21,8 @@
 // Created by Mitra, Aniket on 2020-10-13.
 //
 
+#ifndef DISTANCETRAITS_H
+#define DISTANCETRAITS_H
 #include "Distances.h"
 
 namespace movetk_core
@@ -99,3 +101,4 @@ namespace movetk_core
     };
 
 } // namespace movetk_core
+#endif // DISTANCETRAITS_H

@@ -185,9 +185,7 @@ namespace movetk_algorithms
             std::size_t NumElements = std::distance(first, beyond);
             algorithm(first, beyond, movetk_core::movetk_back_insert_iterator(edges1));
 
-            auto rbegin = std::make_reverse_iterator(beyond);
-            auto rend = std::make_reverse_iterator(beyond);
-            algorithm(rbegin, rend, movetk_core::movetk_back_insert_iterator(edges2));
+            algorithm(std::make_reverse_iterator(beyond), std::make_reverse_iterator(first), movetk_core::movetk_back_insert_iterator(edges2));
 
             for (auto& edge : edges2)
             {
