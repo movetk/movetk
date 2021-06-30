@@ -88,12 +88,12 @@ CreateExample(interpolation)
 CreateExample(compute_statistics)
 
 
-if (WITH_CGAL_BACKEND)
-	CreateExample(TrajectoriesPolygonIntersection trajectories_polygon_intersection.cpp)
+if (MOVETK_WITH_CGAL_BACKEND)
+CreateExample(TrajectoriesPolygonIntersection trajectories_polygon_intersection.cpp)
     CreateExample(curves_intersections)
 endif()
 
-if (WITH_CGAL_BACKEND)
+if (MOVETK_WITH_CGAL_BACKEND)
     # installation info
     install(TARGETS MonotoneSegmentation TrajectoriesPolygonIntersection model_based_segmentation outlier_detection  interpolation EXPORT ${CMAKE_PROJECT_NAME}Targets
             LIBRARY DESTINATION lib
