@@ -23,3 +23,4 @@ packages:
   name: "Miniball"
   sourceInfo: "This is a fork of the miniball repository. Only relevant files are kept"
   versionInfo: "1.0.3"
+  packageFileName: "./"

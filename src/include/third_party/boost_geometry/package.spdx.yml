@@ -23,3 +23,4 @@ packages:
   name: "Boost.Geometry"
   sourceInfo: "Package only includes discrete_frechet_distance.hpp and discrete_hausdorff_distance.hpp from larger Boost.Geometry."
   versionInfo: "1.70.0"
+  packageFileName: "./"
