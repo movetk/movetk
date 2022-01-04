@@ -30,7 +30,7 @@
 #include "movetk/io/csv/ParseDate.h"
 #include "movetk/io/csv/CategoricalField.h"
 #include "movetk/io/csv/csv.h"
-#include "movetk/ProbeTraits.h"
+#include "movetk/io/ProbeTraits.h"
 
 namespace geolife
 {

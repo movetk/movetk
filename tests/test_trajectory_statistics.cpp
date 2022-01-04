@@ -25,9 +25,9 @@
 
 #include "test_includes.h"
 
-#include "movetk/ColumnarTrajectory.h"
-#include "movetk/TabularTrajectory.h"
-#include "movetk/TuplePrinter.h"
+#include "movetk/ds/ColumnarTrajectory.h"
+#include "movetk/ds/TabularTrajectory.h"
+#include "movetk/io/TuplePrinter.h"
 
 #include "movetk/geom/BoostGeometryTraits.h"
 #include "movetk/geom/BoostGeometryWrapper.h"

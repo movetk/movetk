@@ -24,10 +24,10 @@
 #ifndef MOVETK_HERETRAJECTORYTRAITS_H
 #define MOVETK_HERETRAJECTORYTRAITS_H
 
-#include "movetk/TrajectoryTraits.h"
+#include "movetk/io/TrajectoryTraits.h"
 #include "HereProbeTraits.h"
-#include "movetk/ColumnarTrajectory.h"
-#include "movetk/TabularTrajectory.h"
+#include "movetk/ds/ColumnarTrajectory.h"
+#include "movetk/ds/TabularTrajectory.h"
 
 namespace here
 {

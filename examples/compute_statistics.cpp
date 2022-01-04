@@ -30,7 +30,7 @@
 #include "movetk/test_data.h"
 #include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
-#include "movetk/TrajectoryReader.h"
+#include "movetk/io/TrajectoryReader.h"
 #include "movetk/algo/Statistics.h"
 #include "movetk/geo/geo.h"
 #include "movetk/utils/GeometryBackendTraits.h"

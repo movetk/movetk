@@ -28,9 +28,9 @@
 #include "movetk/test_data.h"
 #include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
-#include "movetk/SortedProbeReader.h"
-#include "movetk/TrajectoryReader.h"
-#include "movetk/HighFrequencyTrajectorySplitter.h"
+#include "movetk/io/SortedProbeReader.h"
+#include "movetk/io/TrajectoryReader.h"
+#include "movetk/io/HighFrequencyTrajectorySplitter.h"
 #include "movetk/geo/geo.h"
 
 /**

@@ -31,7 +31,7 @@ using std::cout, std::endl;
 using std::vector;
 #include <iterator>
 
-#include "TuplePrinter.h"
+#include "movetk/io/TuplePrinter.h"
 
 template <class Predicate, class ProbeInputIterator>
 class Splitter {

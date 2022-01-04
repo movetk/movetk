@@ -37,11 +37,11 @@ using std::vector;
 #include <optional>
 
 #include "Splitter.h"
-#include "movetk/SplitByDifferenceThreshold.h"
-#include "movetk/SplitByDistanceThreshold.h"
+#include "movetk/io/SplitByDifferenceThreshold.h"
+#include "movetk/io/SplitByDistanceThreshold.h"
 #include "movetk/geo/geo.h"
-#include "ColumnarTrajectory.h"
-#include "TuplePrinter.h"
+#include "movetk/ds/ColumnarTrajectory.h"
+#include "movetk/io/TuplePrinter.h"
 
 template<class TrajectoryInputIterator, int DateIdx, int LatIdx, int LonIdx>
 class HighFrequencyTrajectorySplitter {

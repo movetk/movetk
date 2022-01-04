@@ -23,7 +23,7 @@
 #include <vector>
 #include <array>
 #include <numeric>
-#include "movetk/TuplePrinter.h"
+#include "movetk/io/TuplePrinter.h"
 #include "movetk/algo/PolylineUtils.h"
 #if CGAL_BACKEND_ENABLED
 #include "movetk/geom/CGALTraits.h"
