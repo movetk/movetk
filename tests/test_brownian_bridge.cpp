@@ -41,7 +41,7 @@
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 #include "movetk/metric/Norm.h"
-#include "movetk/TabularTrajectory.h"
+#include "movetk/ds/TabularTrajectory.h"
 #include "movetk/algo/BrownianBridge.h"
 
 

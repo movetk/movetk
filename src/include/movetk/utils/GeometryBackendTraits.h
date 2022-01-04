@@ -33,7 +33,7 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/ds/FreeSpaceDiagram.h"
-#include "movetk/TuplePrinter.h"
+#include "movetk/io/TuplePrinter.h"
 
 struct GeometryKernel
 {

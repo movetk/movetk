@@ -26,9 +26,9 @@
 
 #include <type_traits>
 #include "movetk/io/ProbeReader.h"
-#include "movetk/SortedProbeReader.h"
-#include "movetk/TrajectoryReader.h"
-#include "movetk/HighFrequencyTrajectorySplitter.h"
+#include "movetk/io/SortedProbeReader.h"
+#include "movetk/io/TrajectoryReader.h"
+#include "movetk/io/HighFrequencyTrajectorySplitter.h"
 
 template<class HighFrequencyTrajectoryTraits>
 struct GroupedHighFrequencyTrajectoryReader {
@@ -154,9 +154,9 @@ private:
 //
 //#include <type_traits>
 //#include "movetk/io/ProbeReader.h"
-//#include "movetk/SortedProbeReader.h"
-//#include "movetk/TrajectoryReader.h"
-//#include "movetk/HighFrequencyTrajectorySplitter.h"
+//#include "movetk/io/SortedProbeReader.h"
+//#include "movetk/io/TrajectoryReader.h"
+//#include "movetk/io/HighFrequencyTrajectorySplitter.h"
 //
 //template<class HighFrequencyTrajectoryTraits>
 //struct GroupedHighFrequencyTrajectoryReader {
@@ -291,9 +291,9 @@ private:
 //
 //#include <type_traits>
 //#include "movetk/io/ProbeReader.h"
-//#include "movetk/SortedProbeReader.h"
-//#include "movetk/TrajectoryReader.h"
-//#include "movetk/HighFrequencyTrajectorySplitter.h"
+//#include "movetk/io/SortedProbeReader.h"
+//#include "movetk/io/TrajectoryReader.h"
+//#include "movetk/io/HighFrequencyTrajectorySplitter.h"
 //#include "SortedProbeReader.h"
 //
 //template <class HighFrequencyTrajectoryTraits>

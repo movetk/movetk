@@ -32,8 +32,8 @@
 #include <vector>
 #include <tuple>
 using std::tuple;
-#include "TupleIterPrinter.h"
-#include "movetk/TrajectoryTraits.h"
+#include "movetk/io/TupleIterPrinter.h"
+#include "movetk/io/TrajectoryTraits.h"
 
 
 template <class... fields>

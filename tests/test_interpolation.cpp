@@ -31,13 +31,13 @@
 
 #endif
 
-#include "movetk/TuplePrinter.h"
+#include "movetk/io/TuplePrinter.h"
 #include "movetk/algo/Interpolation.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 #include "movetk/metric/Norm.h"
-#include "movetk/TabularTrajectory.h"
+#include "movetk/ds/TabularTrajectory.h"
 
 
 using namespace movetk_algorithms;

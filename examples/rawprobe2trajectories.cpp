@@ -28,11 +28,11 @@
 #include "movetk/test_data.h"
 #include "movetk/utils/HereProbeTraits.h"
 #include "movetk/io/ProbeReader.h"
-#include "movetk/Splitter.h"
-#include "movetk/SplitByField.h"
-#include "movetk/SortByField.h"
-#include "movetk/SplitByDifferenceThreshold.h"
-#include "movetk/SplitByDistanceThreshold.h"
+#include "movetk/io/Splitter.h"
+#include "movetk/io/SplitByField.h"
+#include "movetk/io/SortByField.h"
+#include "movetk/io/SplitByDifferenceThreshold.h"
+#include "movetk/io/SplitByDistanceThreshold.h"
 #include "movetk/geo/geo.h"
 
 /**

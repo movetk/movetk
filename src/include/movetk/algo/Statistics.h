@@ -29,7 +29,7 @@
 
 #include <iterator>
 #include <functional>
-#include "movetk/TrajectoryTraits.h"
+#include "movetk/io/TrajectoryTraits.h"
 #include "movetk/geom/GeometryInterface.h"
 #include <movetk/utils/TrajectoryUtils.h>
 #include <boost/iterator/zip_iterator.hpp>

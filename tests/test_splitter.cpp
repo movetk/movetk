@@ -25,12 +25,12 @@
 //#include <sstream>
 //#include <type_traits>
 //#include "movetk/io/csv/csv.h"
-#include "movetk/TuplePrinter.h"
-#include "movetk/ProbeTraits.h"
-#include "movetk/Splitter.h"
-#include "movetk/SplitByField.h"
-#include "movetk/SplitByDifferenceThreshold.h"
-#include "movetk/SplitByDistanceThreshold.h"
+#include "movetk/io/TuplePrinter.h"
+#include "movetk/io/ProbeTraits.h"
+#include "movetk/io/Splitter.h"
+#include "movetk/io/SplitByField.h"
+#include "movetk/io/SplitByDifferenceThreshold.h"
+#include "movetk/io/SplitByDistanceThreshold.h"
 #include "movetk/utils/HereProbeTraits.h"
 #include "movetk/geo/geo.h"
 

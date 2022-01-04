@@ -33,7 +33,7 @@
 
 #include "movetk/utils/Requirements.h"
 #include "movetk/algo/AlgorithmTraits.h"
-#include "movetk/CartesianProbeTraits.h"
+#include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/geo/geo.h"
 
 using namespace std;

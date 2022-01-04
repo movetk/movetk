@@ -29,7 +29,7 @@
 #include "movetk/test_data.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/algo/Statistics.h"
-#include "movetk/TrajectoryReader.h"
+#include "movetk/io/TrajectoryReader.h"
 #include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 

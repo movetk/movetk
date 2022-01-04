@@ -23,7 +23,7 @@
 #include "movetk/test_data.h"
 #include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
-#include "movetk/TrajectoryReader.h"
+#include "movetk/io/TrajectoryReader.h"
 
 /**
  * Example: Process a stream of probe points by

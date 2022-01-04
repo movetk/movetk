@@ -24,7 +24,7 @@
 using std::string;
 #include <tuple>
 
-#include "movetk/TuplePrinter.h"
+#include "movetk/io/TuplePrinter.h"
 
 template<int... indices>
 struct pack { };

@@ -33,13 +33,13 @@ using std::vector;
 #include <memory>
 #include <iterator>
 
-#include "movetk/TrajectoryTraits.h"
+#include "movetk/io/TrajectoryTraits.h"
 #include "Splitter.h"
 #include "SplitByField.h"
 #include "SortByField.h"
 #include "movetk/utils/Transpose.h"
 //#include "ColumnarTrajectory.h"
-#include "TuplePrinter.h"
+#include "movetk/io/TuplePrinter.h"
 
 /**
  *

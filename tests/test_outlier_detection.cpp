@@ -42,11 +42,11 @@
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 #include "movetk/metric/Norm.h"
-#include "movetk/TabularTrajectory.h"
+#include "movetk/ds/TabularTrajectory.h"
 #include "movetk/algo/AlgorithmTraits.h"
 #include "movetk/algo/OutlierDetection.h"
 #include "movetk/algo/OutlierDetectionPredicates.h"
-#include "movetk/CartesianProbeTraits.h"
+#include "movetk/io/CartesianProbeTraits.h"
 
 
 

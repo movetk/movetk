@@ -27,7 +27,7 @@
 #include "movetk/test_data.h"
 #include "movetk/utils/GeolifeTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
-#include "movetk/TrajectoryReader.h"
+#include "movetk/io/TrajectoryReader.h"
 
 int main(int argc, char **argv)
 {

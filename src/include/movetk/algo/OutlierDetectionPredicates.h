@@ -33,7 +33,7 @@
 
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "movetk/CartesianProbeTraits.h"
+#include "movetk/io/CartesianProbeTraits.h"
 #include <iterator>
 #include <algorithm>
 

@@ -26,8 +26,8 @@
 #include <ogr_geometry.h>
 #include "cpl_string.h"
 
-#include "movetk/TabularTrajectory.h"
-#include "movetk/TuplePrinter.h"
+#include "movetk/ds/TabularTrajectory.h"
+#include "movetk/io/TuplePrinter.h"
 #include "movetk/geom/trajectory_gdal.h"
 
 TEST_CASE("Trajectory GDAL", "[trajectory-gdal]")
