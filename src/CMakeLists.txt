@@ -8,76 +8,12 @@ if(UNIX)
 elseif(MSVC)
         list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/msvc")
 endif()
-# include common tools and workarounds
+
+#
+# Include common CMake tools and workarounds
+#
 include(tools)
 
-find_package(Boost REQUIRED COMPONENTS iostreams log thread system log_setup graph)
-set(Boost_USE_MULTITHREADED 1)
-message(STATUS "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
-message(STATUS "Boost_LIBRARIES ${Boost_LIBRARIES}")
-
-find_package(Threads REQUIRED)
-find_package(GDAL 2.2 REQUIRED)
-find_package(GeographicLib REQUIRED COMPONENTS SHARED)
-message(STATUS "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
-message(STATUS "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
-
-find_package(GSL 2.4 REQUIRED)
-find_package(MPFR REQUIRED)
-
-
-#find_package(GsTL REQUIRED /../third_party/GsTL/cmake)
-
-# Compute the installation prefix relative to this file.
-get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
-get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
-if(_IMPORT_PREFIX STREQUAL "/")
-    set(_IMPORT_PREFIX "")
-endif()
-
-set(GsTL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/GsTL/include/")
-
-message(STATUS "GsTL_include ${GsTL_INCLUDE_DIR} ")
-
-set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
-
-message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
-
-install(DIRECTORY  ${GsTL_INCLUDE_DIR}
-        ${RAPIDJSON_INCLUDE_DIR}
-        DESTINATION include
-        )
-
-
-include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
-
-if (WITH_CGAL_BACKEND)
-        find_package(CGAL REQUIRED)
-
-        #Use different multiple precision frameworks between Unix and Windows
-        if(UNIX)
-                find_package(GMP REQUIRED)
-        elseif(MSVC)
-                find_package(MPIR REQUIRED)  # exports GMP_INCLUDE_DIR and GMP::GMP
-        endif()
-        find_package(MPFR REQUIRED)
-
-        message(STATUS "gmp_include ${GMP_INCLUDE_DIR}")
-        message(STATUS "gmp_lib ${GMP_LIBRARIES}")
-        message(STATUS "mpfr_include ${MPFR_INCLUDE_DIR}")
-        message(STATUS "mpfr_lib ${MPFR_LIBRARIES}")
-        message(STATUS "cgal_include ${CGAL_INCLUDE_DIR}")
-        message(STATUS "cgal_lib ${CGAL_LIBRARIES}")
-        message(STATUS "gsl_include ${GSL_INCLUDE_DIR}")
-        message(STATUS "gsl_lib ${GSL_LIBRARY}")
-else()
-        message(STATUS "gsl_include ${GSL_INCLUDE_DIR}")
-        message(STATUS "gsl_lib ${GSL_LIBRARY}")
-        message(STATUS "gdal_include ${GDAL_INCLUDE_DIR}")
-        message(STATUS "gdal_lib ${GDAL_LIBRARY}")
-endif()
-
-set(_USE_BOOST NOT MOVETK_WITH_CGAL_BACKEND)
 set(SOURCES
         geo/geo.cpp
         include/movetk/algo/AlgorithmTraits.h
@@ -155,7 +91,8 @@ if (MOVETK_WITH_CGAL_BACKEND)
 		include/movetk/geom/CGALTraits.h
 		include/movetk/geom/CGALWrapper.h
 	)
-elseif(_USE_BOOST)
+endif()
+if(MOVETK_WITH_BOOST_BACKEND)
 	list(APPEND SOURCES 
 		include/movetk/geom/BoostGeometryWrapper.h
 		include/movetk/geom/BoostGeometryTraits.h
@@ -175,49 +112,92 @@ if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
 	source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SOURCES})
 endif()
 
-message(TRACE "[MoveTk] Using CGAL backend ${MOVETK_WITH_CGAL_BACKEND}")
+#
+# Setup the library
+#
+MOVETK_LOG(TRACE "Using CGAL backend ${MOVETK_WITH_CGAL_BACKEND}")
 add_library(movetk ${SOURCES} )
 
+
+#
+# Find dependencies of MoveTk
+#
+include(../cmake/ResolveMovetkDependencies.cmake)
+MOVETK_LOG(TRACE "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
+MOVETK_LOG(TRACE "Boost_LIBRARIES ${Boost_LIBRARIES}")
+MOVETK_LOG(TRACE "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
+MOVETK_LOG(TRACE "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
+
+#
+# Custom dependencies included in the repository
+#
+set(GsTL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/GsTL/include/")
+MOVETK_LOG(TRACE "GsTL_include ${GsTL_INCLUDE_DIR} ")
+set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
+MOVETK_LOG(TRACE "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
+
+#
+# Setup installation for thirdparty code
+#
+install(DIRECTORY  ${GsTL_INCLUDE_DIR}
+        ${RAPIDJSON_INCLUDE_DIR}
+        DESTINATION include
+        )
+include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
+
+if (MOVETK_WITH_CGAL_BACKEND)
+    # Find CGAL dependencies
+    find_package(CGAL REQUIRED)
+
+    #Use different multiple precision frameworks between Unix and Windows
+    if(UNIX)
+        find_package(GMP REQUIRED)
+    elseif(MSVC)
+        find_package(MPIR REQUIRED)  # exports GMP_INCLUDE_DIR and GMP::GMP
+    endif()
+    find_package(MPFR REQUIRED)
+endif()
+
+# 
+# Setup compilation settings
+#
 target_compile_features(movetk PUBLIC cxx_std_17)
 target_compile_definitions(movetk PUBLIC -DBOOST_LOG_DYN_LINK=1)
 
-target_include_directories(movetk PRIVATE ${GsTL_INCLUDE_DIR} ${RAPIDJSON_INCLUDE_DIR})
-
+#
+# Setup included directories
+#
 target_include_directories(movetk
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
             $<INSTALL_INTERFACE:include>
-			${Boost_INCLUDE_DIRS}
-            ${GDAL_INCLUDE_DIR}
-            ${GeographicLib_INCLUDE_DIRS}
-            ${GSL_INCLUDE_DIR}
+            PRIVATE
+            $<BUILD_INTERFACE:${GsTL_INCLUDE_DIR}> $<BUILD_INTERFACE:${RAPIDJSON_INCLUDE_DIR}>
 )
-if (MOVETK_WITH_CGAL_BACKEND)
-    target_include_directories(movetk
-            PUBLIC
-            ${CGAL_INCLUDE_DIR}
-            ${MPFR_INCLUDE_DIR}
-            )
-endif ()
+
+#
+# Link MoveTk to dependencies
+#
 target_link_libraries(movetk
             PUBLIC
             Threads::Threads
-            ${Boost_LIBRARIES}
-            ${GDAL_LIBRARY}
-            ${GeographicLib_LIBRARIES}
-            ${GSL_LIBRARIES}
+            Boost::headers Boost::log Boost::iostreams Boost::thread Boost::system Boost::log_setup Boost::graph
+            GDAL
+            GeographicLib
+            GSL::gsl GSL::gslcblas #${GSL_LIBRARIES}
             )
 if (MOVETK_WITH_CGAL_BACKEND)
     target_link_libraries(movetk
             PUBLIC
-            ${CGAL_LIBRARY}
             GMP::GMP
             MPFR::MPFR
             CGAL::CGAL
             )
 endif ()
 
+#
+# Add alias for movetk
+#
 add_library(c2d::movetk ALIAS movetk)
 
 # installation info
