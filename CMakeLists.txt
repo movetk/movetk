@@ -10,6 +10,13 @@ option(MOVETK_WITH_CGAL_BACKEND "Use CGAL backend in MoveTk" OFF)
 option(MOVETK_BUILD_TESTS "Build MoveTk tests" OFF)
 option(MOVETK_BUILD_PY "Build MoveTk Python bindings" OFF)
 option(MOVETK_BUILD_EXAMPLES "Build MoveTk examples" OFF)
+# todo(bram): This should just be an option as well, side-by-side backends should be possible.
+set(MOVETK_WITH_BOOST_BACKEND NOT MOVEKT_WITH_CGAL_BACKEND)
+
+macro(MOVETK_LOG msg_type msg)
+    message(${msg_type} "[MoveTk CMake] ${msg}")
+endmacro()
+
 
 if(UNIX)
   if(CMAKE_BUILD_TYPE MATCHES Release)
