@@ -27,71 +27,67 @@
 #ifndef TEST_INCLUDES_H
 #define TEST_INCLUDES_H
 
-#include "catch2/catch.hpp"
-#if CGAL_BACKEND_ENABLED
-#include "movetk/geom/CGALTraits.h"
-#else
-#include "movetk/geom/BoostGeometryTraits.h"
-#endif
-
+#include <catch2/catch.hpp>
+#include <tuple>
 #include "movetk/geom/GeometryInterface.h"
 
-using namespace std;
-
-#if CGAL_BACKEND_ENABLED
-//==============================
-// Define the Number Type
-// For the CGAL backend,
-// One can choose from the
-// following number types
-typedef long double NT;
-//typedef CGAL::Mpzf NT;
-//typedef CGAL::Gmpfr NT;
-//typedef CGAL::Gmpq NT;
-//==============================
-
-//==============================
-// Define the Dimensions
-const size_t dimensions = 2;
-//==============================
-
-//==============================
-// Define the Geometry Backend
-typedef movetk_support::CGALTraits<NT, dimensions> GeometryBackend;
-//Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk_core::MovetkGeometryKernel<
-    typename GeometryBackend::Wrapper_CGAL_Geometry>
-    MovetkGeometryKernel;
-//==============================
+// Setup backend structures
+#if MOVETK_WITH_CGAL_BACKEND
+#include "movetk/geom/CGALTraits.h"
+namespace movetk::test {
+    struct CGALBackend {
+        using NT = long double;
+        static constexpr size_t dimensions = 2;
+        // Define the Geometry Backend
+        using GeometryBackend = movetk_support::CGALTraits<NT, dimensions>;
+        //Using the Geometry Backend define the Movetk Geometry Kernel
+        using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<
+            typename GeometryBackend::Wrapper_CGAL_Geometry
+        >;
+    };
+}
 #else
-//==============================
-// Define the Number Type
-// For the Boost Backend
-typedef long double NT;
-//==============================
-
-//==============================
-// Define the Dimensions
-// It is possible to choose
-// a higher dimension
-// Note: Boost Geometry Adapter supports geometry in two
-// dimensions only
-const static size_t dimensions = 2;
-//==============================
-
-//==============================
-// Define the Geometry Backend
-typedef movetk_support::BoostGeometryTraits<long double, dimensions> GeometryBackend;
-//Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk_core::MovetkGeometryKernel<typename GeometryBackend::Wrapper_Boost_Geometry> MovetkGeometryKernel;
-//==============================
 #endif
+#if MOVETK_WITH_BOOST_BACKEND
+#include "movetk/geom/BoostGeometryTraits.h"
+namespace movetk::test {
+    struct BoostBackend {
+        using NT = long double;
+        static constexpr size_t dimensions = 2;
+        // Define the Geometry Backend
+        using GeometryBackend = movetk_support::BoostGeometryTraits<NT, dimensions>;
+        //Using the Geometry Backend define the Movetk Geometry Kernel
+        using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<
+            typename GeometryBackend::Wrapper_Boost_Geometry
+        >;
+    };
+}
+#endif
+
+namespace movetk::test {
+    template<typename T> struct remove_first_type;
+    template<typename T, typename...Ts>
+    struct remove_first_type < std::tuple<T, Ts...>> {
+        using type = std::tuple<Ts...>;
+    };
+    struct noop {};
+
+    using AvailableBackends = typename remove_first_type<std::tuple<
+        noop
+#if MOVETK_WITH_BOOST_BACKEND
+        , BoostBackend
+#endif
+#if MOVETK_WITH_CGAL_BACKEND
+        , CGALBackend
+#endif
+        >>::type;
+}
 
 namespace test_helpers
 {
     namespace detail
     {
-        inline bool startsWith(const std::string &str, int offset, const std::string &toSearch, bool ignoreWs)
+        inline bool startsWith(const std::string& str, int offset, const std::string& toSearch, bool ignoreWs)
         {
             if (offset + toSearch.size() >= str.size())
                 return false;
@@ -116,7 +112,8 @@ namespace test_helpers
      * \param pathData IPE string
      * \param points Output movetk points.
      */
-    inline void parseIpePath(const std::string &pathData, std::vector<MovetkGeometryKernel::MovetkPoint> &points)
+    template<typename MovetkGeometryKernel>
+    inline void parseIpePath(const std::string& pathData, std::vector<typename MovetkGeometryKernel::MovetkPoint>& points)
     {
         movetk_core::MakePoint<MovetkGeometryKernel> make_point;
         int i = 0;
@@ -172,7 +169,7 @@ namespace test_helpers
                 else if (pathData[i] == 'm' || pathData[i] == 'l')
                 {
                     assert(buff.size() == 2);
-                    points.push_back(make_point({buff[0], buff[1]}));
+                    points.push_back(make_point({ buff[0], buff[1] }));
                     buff.clear();
                     prevStart = i + 1;
                 }
@@ -186,7 +183,7 @@ namespace test_helpers
     }
 
     template <typename FieldsTuple, int XIdx, int YIdx, int TimeIdx>
-    std::vector<FieldsTuple> buildData(const std::vector<double> &xs, const std::vector<double> &ys, std::time_t timeIncrement, FieldsTuple defaultTuple)
+    std::vector<FieldsTuple> buildData(const std::vector<double>& xs, const std::vector<double>& ys, std::time_t timeIncrement, FieldsTuple defaultTuple)
     {
         assert(xs.size() == ys.size());
         std::vector<FieldsTuple> out(xs.size(), defaultTuple);
@@ -203,8 +200,9 @@ namespace test_helpers
         }
         return out;
     }
+
     template <typename FieldsTuple, int XIdx, int YIdx, int TimeIdx>
-    std::vector<FieldsTuple> buildData(const std::vector<double> &xs, const std::vector<double> &ys, const std::vector<std::time_t> &times, FieldsTuple defaultTuple)
+    std::vector<FieldsTuple> buildData(const std::vector<double>& xs, const std::vector<double>& ys, const std::vector<std::time_t>& times, FieldsTuple defaultTuple)
     {
         assert(xs.size() == ys.size());
         assert(xs.size() == times.size());
