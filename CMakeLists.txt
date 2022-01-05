@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.11)
-project(movetk)
+cmake_minimum_required(VERSION 3.18)
+project(movetk
+        LANGUAGES CXX
+        VERSION 0.2
+        )
 
 option(MOVETK_GLIBCXX_PARALLEL "Use parallel STL algorithms at designated places (supported only under GNU/Linux with GCC)")
 option(MOVETK_BUILD_DOC "Build documentation" OFF)

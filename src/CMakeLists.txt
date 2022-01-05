@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
-project(movetk
-        LANGUAGES CXX
-        VERSION 0.2
-        )
 
-# set path to custom cmake modules
+# Set path to custom cmake modules
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 # Add OS specific tools.
 if(UNIX)
