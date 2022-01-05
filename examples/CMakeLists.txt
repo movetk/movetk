@@ -12,17 +12,11 @@ else ()
   set(CGAL_BACKEND_ENABLED 0)
 endif ()
 
-message(STATUS "CGAL_BACKEND_ENABLED ${CGAL_BACKEND_ENABLED}")
+MOVETK_LOG(STATUS "Examples: CGAL_BACKEND_ENABLED ${CGAL_BACKEND_ENABLED}")
 
-set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
-message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
-include_directories(${RAPIDJSON_INCLUDE_DIR})
-
-
-include_directories(include/)
 # Enable folders
 if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
-        set_property( GLOBAL PROPERTY USE_FOLDERS ON)
+    set_property( GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
 # Optional second argument is the source name. Otherwise, same as the example name is assume
@@ -31,7 +25,7 @@ function(CreateExample name)
         if(${ARGC} GREATER 1)
                 set(SRC_NAME ${ARGV1})
         endif()
-        message(STATUS "[MoveTk] Created example ${name}")
+        MOVETK_LOG(STATUS "Created example ${name}")
         add_executable(${name} ${SRC_NAME})
         target_compile_definitions(${name} PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
         target_link_libraries(${name}
@@ -89,27 +83,6 @@ CreateExample(compute_statistics)
 
 
 if (MOVETK_WITH_CGAL_BACKEND)
-CreateExample(TrajectoriesPolygonIntersection trajectories_polygon_intersection.cpp)
+    CreateExample(TrajectoriesPolygonIntersection trajectories_polygon_intersection.cpp)
     CreateExample(curves_intersections)
 endif()
-
-if (MOVETK_WITH_CGAL_BACKEND)
-    # installation info
-    install(TARGETS MonotoneSegmentation TrajectoriesPolygonIntersection model_based_segmentation outlier_detection  interpolation EXPORT ${CMAKE_PROJECT_NAME}Targets
-            LIBRARY DESTINATION lib
-            ARCHIVE DESTINATION lib
-            RUNTIME DESTINATION bin
-            INCLUDES DESTINATION include
-            )
-    else()
-        # installation info
-        install(TARGETS MonotoneSegmentation model_based_segmentation outlier_detection interpolation EXPORT ${CMAKE_PROJECT_NAME}Targets
-                LIBRARY DESTINATION lib
-                ARCHIVE DESTINATION lib
-                RUNTIME DESTINATION bin
-                INCLUDES DESTINATION include
-                )
-endif ()
-
-# generate configuration files and install the package
-#configure_and_install(../cmake/simple_package-config.cmake.in SameMajorVersion)
