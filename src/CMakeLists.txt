@@ -200,21 +200,51 @@ endif ()
 #
 add_library(c2d::movetk ALIAS movetk)
 
-# installation info
+#
+# Setup movetk installation
+#
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+set(_CFG_FILE movetkConfig)
+set(_CFG_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/movetk/cmake)
+
 install(TARGETS movetk EXPORT ${CMAKE_PROJECT_NAME}Targets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
-        INCLUDES DESTINATION include
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
 install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR} 
         ${RAPIDJSON_INCLUDE_DIR}
-        DESTINATION include
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         COMPONENT Devel
         )
+# Install our dependencies resolution script
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/../cmake/ResolveMovetkDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/../cmake/PatchGdalInclude.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
 
-# generate configuration files and install the package
-configure_and_install(../cmake/simple_package-config.cmake.in SameMajorVersion)
+# Make sure we export the exportset containing movetk and the associated targets file.
+install(EXPORT ${CMAKE_PROJECT_NAME}Targets
+    DESTINATION ${_CFG_CMAKE_DIR}
+)
+#
+# Generate configuration files and install the package
+#
+configure_package_config_file(../cmake/${_CFG_FILE}.cmake.in 
+        ${CMAKE_CURRENT_BINARY_DIR}/${_CFG_FILE}.cmake
+        INSTALL_DESTINATION ${_CFG_CMAKE_DIR}
+)
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${_CFG_FILE}Version.cmake
+  COMPATIBILITY SameMajorVersion
+)
+# Setup install of config files
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_CFG_FILE}.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/${_CFG_FILE}Version.cmake
+        DESTINATION ${_CFG_CMAKE_DIR} )
+#
+# Setup package
+#
 
 # Include CPack to get target for package.
 SET (CPACK_GENERATOR "DEB;RPM")
