@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+# Check some paths that we are going to use
+set_and_check(MOVEKT_TARGETS_FILE "${CMAKE_CURRENT_LIST_DIR}/movetkTargets.cmake")
+set_and_check(MOVEKT_DEPENDENCIES_FILE "${CMAKE_CURRENT_LIST_DIR}/helpers/ResolveMovetkDependencies.cmake")
+
+# Perform nice find_package checks
+include(CMakeFindDependencyMacro)
+
+# Include the files
+include(${MOVEKT_DEPENDENCIES_FILE})
+include(${MOVETK_TARGETS_FILE})
