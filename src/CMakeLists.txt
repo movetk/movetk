@@ -85,6 +85,7 @@ set(SOURCES
         logging.cpp
         utils/text.cpp
 )
+
 #Potentially more options than Boost and CGAL
 if (MOVETK_WITH_CGAL_BACKEND)
 	list(APPEND SOURCES 
@@ -145,24 +146,20 @@ install(DIRECTORY  ${GsTL_INCLUDE_DIR}
         )
 include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
 
-if (MOVETK_WITH_CGAL_BACKEND)
-    # Find CGAL dependencies
-    find_package(CGAL REQUIRED)
-
-    #Use different multiple precision frameworks between Unix and Windows
-    if(UNIX)
-        find_package(GMP REQUIRED)
-    elseif(MSVC)
-        find_package(MPIR REQUIRED)  # exports GMP_INCLUDE_DIR and GMP::GMP
-    endif()
-    find_package(MPFR REQUIRED)
-endif()
+foreach(_BACKEND ${MOVETK_BACKENDS})
+	# Include the backend code. These should register necessary properties on the
+	# movetk target.
+	include(backends/${_BACKEND}/CMakeLists.txt)
+endforeach()
 
 # 
 # Setup compilation settings
 #
 target_compile_features(movetk PUBLIC cxx_std_17)
 target_compile_definitions(movetk PUBLIC -DBOOST_LOG_DYN_LINK=1)
+if(MSVC)
+	target_compile_options(movetk PUBLIC /experimental:external /Zc:preprocessor /external:anglebrackets /external:W0)
+endif()
 
 #
 # Setup included directories
@@ -186,14 +183,6 @@ target_link_libraries(movetk
             GeographicLib
             GSL::gsl GSL::gslcblas #${GSL_LIBRARIES}
             )
-if (MOVETK_WITH_CGAL_BACKEND)
-    target_link_libraries(movetk
-            PUBLIC
-            GMP::GMP
-            MPFR::MPFR
-            CGAL::CGAL
-            )
-endif ()
 
 #
 # Add alias for movetk
