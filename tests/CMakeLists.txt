@@ -7,12 +7,6 @@ if (NOT TARGET c2d::movetk)
     find_package(movetk CONFIG REQUIRED)
 endif()
 
-if (WITH_CGAL_BACKEND)
-    set(CGAL_BACKEND_ENABLED 1)
-else ()
-    set(CGAL_BACKEND_ENABLED 0)
-endif ()
-
 message(STATUS "CGAL_BACKEND_ENABLED ${CGAL_BACKEND_ENABLED}")
 
 set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
@@ -64,7 +58,7 @@ add_executable(movetk_tests
         test_agarwal.cpp
         )
 
-target_compile_definitions(movetk_tests PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
+target_compile_definitions(movetk_tests PRIVATE -DCGAL_BACKEND_ENABLED=${MOVETK_WITH_CGAL_BACKEND})
 
 target_link_libraries(movetk_tests
         PRIVATE
@@ -74,10 +68,18 @@ target_link_libraries(movetk_tests
 
 include(CTest)
 include(Catch)
+
+add_custom_command( TARGET movetk_tests POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E echo "Copying dependencies:" $<JOIN:$<TARGET_RUNTIME_DLLS:movetk_tests>,",">
+                    COMMAND ${CMAKE_COMMAND} -E copy
+                        $<TARGET_RUNTIME_DLLS:movetk_tests>
+                        $<TARGET_FILE_DIR:movetk_tests>
+                    COMMAND_EXPAND_LISTS)
+
 catch_discover_tests(movetk_tests)
 
 
-if (WITH_CGAL_BACKEND)
+if (MOVETK_WITH_CGAL_BACKEND)
     add_executable(movetk_tests_CGAL
             tests_main.cpp
             )
@@ -88,8 +90,6 @@ if (WITH_CGAL_BACKEND)
             )
 
     catch_discover_tests(movetk_tests_CGAL)
-
-
 endif()
 
 
