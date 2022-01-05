@@ -1,21 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
-project(movetk_test)
 
 find_package(Catch2 REQUIRED PATHS ../third_party/Catch2/lib64/cmake/Catch2)
-
-if (NOT TARGET c2d::movetk)
-    find_package(movetk CONFIG REQUIRED)
-endif()
-
-message(STATUS "CGAL_BACKEND_ENABLED ${CGAL_BACKEND_ENABLED}")
-
-set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
-message(STATUS "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
-
-message(STATUS "CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}")
-
-include_directories(${RAPIDJSON_INCLUDE_DIR})
-
 
 add_executable(movetk_tests
         test_includes.h
@@ -58,8 +43,6 @@ add_executable(movetk_tests
         test_agarwal.cpp
         )
 
-target_compile_definitions(movetk_tests PRIVATE -DCGAL_BACKEND_ENABLED=${MOVETK_WITH_CGAL_BACKEND})
-
 target_link_libraries(movetk_tests
         PRIVATE
         c2d::movetk
@@ -77,20 +60,5 @@ add_custom_command( TARGET movetk_tests POST_BUILD
                     COMMAND_EXPAND_LISTS)
 
 catch_discover_tests(movetk_tests)
-
-
-if (MOVETK_WITH_CGAL_BACKEND)
-    add_executable(movetk_tests_CGAL
-            tests_main.cpp
-            )
-    target_link_libraries(movetk_tests_CGAL
-            PRIVATE
-            c2d::movetk
-            Catch2::Catch2
-            )
-
-    catch_discover_tests(movetk_tests_CGAL)
-endif()
-
 
 
