@@ -192,10 +192,8 @@ TEST_CASE("Merge Intervals 1", "[test_merge_intervals_1]"){
                                                                      std::end(items));
     auto it = std::begin(items);
     REQUIRE(std::distance(it, beyond) == expected.size());
-    std::cout<<"Merged Interval:\n";
     auto eit = std::begin(expected);
     while (it != beyond){
-        std::cout<<it->first<<","<<it->second<<"\n";
         REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
         REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
         eit++;
@@ -212,10 +210,8 @@ TEST_CASE("Merge Intervals 2", "[test_merge_intervals_2]"){
                                                                      std::end(items));
     auto it = std::begin(items);
     REQUIRE(std::distance(it, beyond) == expected.size());
-    std::cout<<"Merged Interval:\n";
     auto eit = std::begin(expected);
     while (it != beyond){
-        std::cout<<it->first<<","<<it->second<<"\n";
         REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
         REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
         eit++;

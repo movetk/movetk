@@ -53,7 +53,7 @@ namespace movetk_support
         typedef typename Kernel::Wrapper_Vector Wrapper_Vector;
         typedef std::array<typename Kernel::NT, Kernel::dim> Point_Container;
         Boost_Point pt;
-        Wrapper_Boost_Point(Point_Container &p)
+        Wrapper_Boost_Point(Point_Container &&p)
         {
             pt.template set<0>(std::move(p[0]));
             pt.template set<1>(std::move(p[1]));
@@ -117,25 +117,13 @@ namespace movetk_support
             return v1 - v2;
         }
 
-        Wrapper_Vector operator-(const Wrapper_Boost_Point &&point) const
-        {
-            Wrapper_Vector v1(*this);
-            Wrapper_Vector v2(point);
-            return v1 - v2;
-        }
-
-        Wrapper_Boost_Point operator+(Wrapper_Vector &v)
+        Wrapper_Boost_Point operator+(const Wrapper_Vector &v) const
         {
             Point_Container result;
             std::transform(this->begin(), this->end(), v.begin(),
                            result.begin(), std::plus<typename Kernel::NT>());
-            Wrapper_Boost_Point _point(result);
+            Wrapper_Boost_Point _point(std::move(result));
             return _point;
-        }
-
-        Wrapper_Boost_Point operator+(Wrapper_Vector &&v)
-        {
-            return this->operator+(v);
         }
 
         Boost_Point get() const
@@ -273,11 +261,6 @@ namespace movetk_support
             return std::inner_product(this->begin(), this->end(), vector.begin(), 0.0);
         }
 
-        typename Kernel::NT operator*(const Wrapper_Boost_Vector<Kernel> &&vector) const
-        {
-            return std::inner_product(this->begin(), this->end(), vector.begin(), 0.0);
-        }
-
         Wrapper_Boost_Vector<Kernel> operator-(const Wrapper_Boost_Vector<Kernel> &vector) const
         {
             Boost_Vector result;
@@ -296,12 +279,12 @@ namespace movetk_support
             return v3;
         }
 
-        bool operator==(const Wrapper_Boost_Vector<Kernel> &&vector) const
+        bool operator==(const Wrapper_Boost_Vector<Kernel> &vector) const
         {
             return std::equal(this->begin(), this->end(), vector.begin());
         }
 
-        Wrapper_Boost_Vector<Kernel> basis(std::size_t i)
+        Wrapper_Boost_Vector<Kernel> basis(std::size_t i) const
         {
             Boost_Vector _e = {0};
             _e[i] = 1;
@@ -339,9 +322,9 @@ namespace movetk_support
         typedef typename Kernel::Wrapper_Point Point;
         typedef Seb::Smallest_enclosing_ball<NT, Point> miniball;
         template <class T>
-        std::pair<Point, NT> dispatcher(size_t &&dimensions, T &&values)
+        static std::pair<Point, NT> dispatcher(const size_t &dimensions, T &&values)
         {
-            miniball mb(std::forward<size_t>(dimensions), std::forward<T &>(values));
+            miniball mb(dimensions, std::forward<T>(values));
             Point pt(mb.center_begin(), mb.center_end());
             return std::make_pair(pt, mb.radius());
         }
@@ -354,7 +337,7 @@ namespace movetk_support
                   typename = movetk_core::requires_output_iterator<CenterIterator>,
                   typename = movetk_core::requires_NT<Kernel,
                                                       typename CenterIterator::value_type>>
-        NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter)
+        NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const
         {
             auto result = dispatcher(std::distance(first->begin(), first->end()),
                                      std::vector<Point>(first, beyond));
@@ -371,7 +354,7 @@ namespace movetk_support
                   typename = movetk_core::requires_random_access_iterator<PointIterator>,
                   typename = movetk_core::requires_wrapper_point<Kernel,
                                                                  typename PointIterator::value_type>>
-        NT operator()(PointIterator first, PointIterator beyond)
+        NT operator()(PointIterator first, PointIterator beyond) const
         {
             auto result = dispatcher(std::distance(first->begin(), first->end()),
                                      std::vector<Point>(first, beyond));
@@ -404,12 +387,12 @@ namespace movetk_support
             }
         }
 
-        auto v_begin()
+        auto v_begin() const
         {
             return polygon.outer().cbegin();
         }
 
-        auto v_end()
+        auto v_end() const
         {
             return polygon.outer().cend();
         }

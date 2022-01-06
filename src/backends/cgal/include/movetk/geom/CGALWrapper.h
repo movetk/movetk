@@ -546,14 +546,12 @@ namespace movetk_support {
                 return this->get() - vector.get();
             }
 
-
-
             bool operator==(const Wrapper_CGAL_Vector<Kernel>&& vector ) const{
                 return std::equal(this->begin(),this->end(),vector.begin());
 
             }
 
-            Wrapper_CGAL_Vector<Kernel> basis(std::size_t i){
+            Wrapper_CGAL_Vector<Kernel> basis(std::size_t i) const{
                 container e = {0};
                 e[i] = 1;
                 CGAL_Vector basis_vec(Kernel::dim ,std::begin(e), std::end(e));

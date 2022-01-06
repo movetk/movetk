@@ -33,7 +33,7 @@
 #include "test_includes.h"
 
 template<typename Backend>
-struct DistanceTests : public test_helpers::BaseBackendFixture<Backend> {
+struct DistanceTests : public test_helpers::BaseTestFixture<Backend> {
     movetk_core::MakePoint<MovetkGeometryKernel> make_point;
 };
 

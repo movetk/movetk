@@ -33,7 +33,7 @@
 #include "test_includes.h"
 
 template<typename Backend>
-struct IntersectionTests : public test_helpers::BaseBackendFixture<Backend> {
+struct IntersectionTests : public test_helpers::BaseTestFixture<Backend> {
     using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
 
     movetk_core::MakeSphere<MovetkGeometryKernel> make_sphere;
@@ -49,7 +49,7 @@ struct IntersectionTests : public test_helpers::BaseBackendFixture<Backend> {
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests, "Check sphere segment intersection 1", "[sphere_segment_intersection_1]") {
-    auto = make_sphere({ 5, 3 }, 1.371);
+    auto sphere = make_sphere({ 5, 3 }, 1.371);
     auto segment = make_segment({ 2, 2 }, { 4, 6 });
     using intersection_t = typename SphereSegmentIntersectionTraits::value_type;
     std::vector<intersection_t> intersections;
@@ -83,7 +83,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests, "Check sphere segment i
     std::vector<intersection_t> intersections;
     std::vector<MovetkPoint> expected_intersection{ make_point({3.509808, 5.019617}),
                                                                          make_point({2.490192,2.980383}) };
-    movetk_core::ComputeIntersections<SpherSegmentIntersectionTraits> compute_intersections;
+    movetk_core::ComputeIntersections<SphereSegmentIntersectionTraits> compute_intersections;
     compute_intersections(sphere, segment, movetk_core::make_back_inserter(intersections));
     REQUIRE(intersections.size() == 2);
     auto v = std::get<SphereSegmentIntersectionTraits::Attributes::POINT>(intersections[0]) - expected_intersection[0];
@@ -93,7 +93,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests, "Check sphere segment i
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests, "Check sphere sphere intersection 1", "[sphere_sphere_intersection_1]") {
-    autot sphere1 = make_sphere({ 6, 6 }, 5);
+    auto sphere1 = make_sphere({ 6, 6 }, 5);
     auto sphere2 = make_sphere({ 14, 10 }, 5);
     movetk_core::ComputeIntersections<SphereSphereIntersectionTraits> compute_intersections;
     auto sphere3 = compute_intersections(sphere1, sphere2);
