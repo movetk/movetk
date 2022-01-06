@@ -17,20 +17,15 @@
  * License-Filename: LICENSE
  */
 
-//
-// Created by Mitra, Aniket on 2019-04-04.
-//
+ //
+ // Created by Mitra, Aniket on 2019-04-04.
+ //
 
 #include <array>
-#include "catch2/catch.hpp"
+#include <map>
+#include <catch2/catch.hpp>
 
-#if CGAL_BACKEND_ENABLED
-#include "movetk/geom/CGALTraits.h"
-#else
-
-#include "movetk/geom/BoostGeometryTraits.h"
-
-#endif
+#include "test_includes.h"
 
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/utils/Iterators.h"
@@ -38,158 +33,80 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/algo/Simplification.h"
 
+template<typename Backend>
+struct ChanChinTests {
+    using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
 
-using namespace std;
-
-#if CGAL_BACKEND_ENABLED
-//==============================
-    // Define the Number Type
-    // For the CGAL backend,
-    // One can choose from the
-    // following number types
-    typedef long double NT;
-    //typedef CGAL::Mpzf NT;
-    //typedef CGAL::Gmpfr NT;
-    //typedef CGAL::Gmpq NT;
-    //==============================
-
-    //==============================
-    // Define the Dimensions
-    const size_t dimensions = 2;
-    //==============================
-
-    //==============================
-    // Define the Geometry Backend
-    typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
-    //Using the Geometry Backend define the Movetk Geometry Kernel
-    typedef movetk_core::MovetkGeometryKernel<
-            typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
-    //==============================
-#else
-//==============================
-// Define the Number Type
-// For the Boost Backend
-typedef long double NT;
-//==============================
-
-//==============================
-// Define the Dimensions
-// It is possible to choose
-// a higher dimension
-// Note: Boost Geometry Adapter supports geometry in two
-// dimensions only
-const static size_t dimensions = 2;
-//==============================
-
-//==============================
-// Define the Geometry Backend
-typedef movetk_support::BoostGeometryTraits<long double, dimensions> Boost_Geometry_Backend;
-//Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk_core::MovetkGeometryKernel<typename Boost_Geometry_Backend::Wrapper_Boost_Geometry> MovetkGeometryKernel;
-//==============================
-#endif
-
-typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
-
-TEST_CASE("Check Chan Chin Shortcuts 1", "[is_valid_shortcut_1]") {
+    // Point creator
     movetk_core::MakePoint<MovetkGeometryKernel> make_point;
-    typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
-    PolyLine polyline({
-        make_point({-8, 4}), make_point({-2, 4}),
-        make_point({4, 4})
-    });
-    std::cout << "Polyline to be simplified: ";
-    std::cout << "{";
-    for (auto &vertex: polyline) {
-        cout << vertex;
-        std::cout << ";";
-    }
-    std::cout << "}\n";
-    typedef movetk_core::Wedge<MovetkGeometryKernel, Norm> Wedge;
-    movetk_algorithms::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(1);
-    std::vector<std::pair<std::size_t, std::size_t> > edges;
-    std::vector<std::pair<std::size_t, std::size_t> > ExpectedEdges({
-                                                                            std::make_pair(0, 1), std::make_pair(0, 2),
-                                                                            std::make_pair(1, 2)
-                                                                    });
-    ChanChin(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(edges));
-    REQUIRE(edges.size() == ExpectedEdges.size());
-    std::cout << "Valid Shortcuts: ";
-    std::cout << "{";
-    auto eit = std::begin(ExpectedEdges);
-    for (auto &edge: edges) {
-        std::cout << edge.first << "," << edge.second << ";";
-        REQUIRE(edge == *eit);
-        eit++;
-    }
-    std::cout << "}\n";
-}
+    using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
+    using Wedge = movetk_core::Wedge<MovetkGeometryKernel, Norm>;
 
-TEST_CASE("Check Chan Chin Shortcuts 2", "[is_valid_shortcut_2]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
-    typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
-    PolyLine polyline({
-        make_point({-9, 8}), make_point({-2, 4}),
-        make_point({4, 4})
-    });
-    std::cout << "Polyline to be simplified: ";
-    std::cout << "{";
-    for (auto &vertex: polyline) {
-        cout << vertex;
-        std::cout << ";";
-    }
-    std::cout << "}\n";
-    typedef movetk_core::Wedge<MovetkGeometryKernel, Norm> Wedge;
-    movetk_algorithms::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(1);
-    std::vector<std::pair<std::size_t, std::size_t> > edges;
-    std::vector<std::pair<std::size_t, std::size_t> > ExpectedEdges({
-                                                                            std::make_pair(0, 1), std::make_pair(1, 2)
-                                                                    });
-    ChanChin(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(edges));
-    REQUIRE(edges.size() == ExpectedEdges.size());
-    std::cout << "Valid Shortcuts: ";
-    std::cout << "{";
-    auto eit = std::begin(ExpectedEdges);
-    for (auto &edge: edges) {
-        std::cout << edge.first << "," << edge.second << ";";
-        REQUIRE(edge == *eit);
-        eit++;
-    }
-    std::cout << "}\n";
-}
+    using Edge = std::pair<std::size_t, std::size_t>;
+    using EdgeList = std::vector<Edge>;
+
+    struct ShortcutTestcase {
+        PolyLine polyline;
+        EdgeList expectedEdges;
+    };
+    std::map<std::string, ShortcutTestcase> test_cases{
+        {
+            "Case 1",
+            {
+                {
+                make_point({-8, 4}), make_point({-2, 4}),
+                make_point({4, 4})
+                },
+                {
+                std::make_pair(0, 1), std::make_pair(0, 2),
+                std::make_pair(1, 2)
+                }
+            }
+        },
+        {
+            "Case 2",
+            {
+                {
+                make_point({-9, 8}), make_point({-2, 4}),
+                make_point({4, 4})
+                },
+                {
+                std::make_pair(0, 1), std::make_pair(1, 2)
+                }
+            }
+        },
+        {
+            "Case 3",
+            {
+                {
+                make_point({-9, 8}), make_point({-2, 4}),
+                make_point({3.503, 3.456})
+                },
+                {
+                std::make_pair(0, 1), std::make_pair(1, 2)
+                }
+            }
+        }
+    };
+};
 
 
-TEST_CASE("Check Chan Chin Shortcuts 3", "[is_valid_shortcut_3]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
-    typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
-    PolyLine polyline({
-        make_point({-9, 8}), make_point({-2, 4}),
-        make_point({3.503, 3.456})
-    });
-    std::cout << "Polyline to be simplified: ";
-    std::cout << "{";
-    for (auto &vertex: polyline) {
-        cout << vertex;
-        std::cout << ";";
+
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ChanChinTests, "Check Chan Chin Shortcuts", "[is_valid_shortcut_1]") {
+    for (const auto& [test_case_name, test_data] : test_cases) {
+        SECTION(test_case_name) {
+            movetk_algorithms::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(1);
+            EdgeList edges;
+            ChanChin(std::begin(test_data.polyline), std::end(test_data.polyline), movetk_core::movetk_back_insert_iterator(edges));
+            REQUIRE(edges.size() == test_data.expectedEdges.size());
+            auto eit = std::begin(test_data.expectedEdges);
+            for (auto& edge : edges) {
+                REQUIRE(edge == *eit);
+                eit++;
+            }
+        }
     }
-    std::cout << "}\n";
-    typedef movetk_core::Wedge<MovetkGeometryKernel, Norm> Wedge;
-    movetk_algorithms::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(1);
-    std::vector<std::pair<std::size_t, std::size_t> > edges;
-    std::vector<std::pair<std::size_t, std::size_t> > ExpectedEdges({
-                                                                            std::make_pair(0, 1), std::make_pair(1, 2)
-                                                                    });
-    ChanChin(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(edges));
-    REQUIRE(edges.size() == ExpectedEdges.size());
-    std::cout << "Valid Shortcuts: ";
-    std::cout << "{";
-    auto eit = std::begin(ExpectedEdges);
-    for (auto &edge: edges) {
-        std::cout << edge.first << "," << edge.second << ";";
-        REQUIRE(edge == *eit);
-        eit++;
-    }
-    std::cout << "}\n";
 }
 
 

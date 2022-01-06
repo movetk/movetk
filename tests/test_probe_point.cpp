@@ -17,7 +17,7 @@
  * License-Filename: LICENSE
  */
 
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include <iostream>
 #include <string>
@@ -28,7 +28,16 @@ using std::string;
 #include "movetk/io/TuplePrinter.h"
 #include "movetk/io/SortByField.h"
 
-TEST_CASE( "ProbePoint can be sorted", "[probepoint]" ) {
+struct ProbePointTests {
+    ParseDate create_date(const std::string& data) {
+        std::istringstream stream(data);
+        ParseDate date;
+        stream >> date;
+        return date;
+    }
+};
+
+TEST_CASE_METHOD(ProbePointTests, "ProbePoint can be sorted", "[probepoint]" ) {
 
     using ProbePoint = std::tuple<string, ParseDate, float>;
 
@@ -38,17 +47,19 @@ TEST_CASE( "ProbePoint can be sorted", "[probepoint]" ) {
             return std::get<1>(a) < std::get<1>(b);
         }
     } customLess;
-
-    ParseDate d1;
-    std::istringstream dis1("2017-05-22 16:33:33");
-    dis1 >> d1;
-    ParseDate d2;
-    std::istringstream dis2("2017-05-21 16:44:44");
-    dis2 >> d2;
+    // Initialize dates
+    ParseDate d1 = create_date("2017-05-22 16:33:33");
+    ParseDate d2 = create_date("2017-05-21 16:44:44");
+    ParseDate d3 = create_date("2017-05-21 16:43:44");
+    ParseDate d4 = create_date("2017-05-21 16:44:34");
 
     ProbePoint p1 = {"abc", d1, 5.4};
     ProbePoint p2 = {"def", d2, 4.5};
-    std::vector<ProbePoint> v = {p1, p2};
+    ProbePoint p3 = { "gg", d3, -1.5 };
+    ProbePoint p4 = { "hh", d4, 2.5 };
+    std::vector<ProbePoint> v = {
+        p1, p2, p3, p4
+    };
     std::sort(begin(v), end(v), customLess);
 
     print_tuple(std::cout, v[0]);

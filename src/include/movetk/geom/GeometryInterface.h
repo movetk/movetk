@@ -17,14 +17,14 @@
  * License-Filename: LICENSE
  */
 
-/*! @file Interface.h
- *  @brief  An interface for movetk  geometry
- *  @details A collection of classes that provide a generic
- *  interface for construction of different geometric types
- *  by decoupling the underlying geometry library
- *  (e.g CGAL, Boost etc.) from the interface
- *  @authors Aniket Mitra (aniket.mitra@here.com)
- */
+ /*! @file Interface.h
+  *  @brief  An interface for movetk  geometry
+  *  @details A collection of classes that provide a generic
+  *  interface for construction of different geometric types
+  *  by decoupling the underlying geometry library
+  *  (e.g CGAL, Boost etc.) from the interface
+  *  @authors Aniket Mitra (aniket.mitra@here.com)
+  */
 
 #ifndef MOVETK_INTERFACE_H
 #define MOVETK_INTERFACE_H
@@ -40,12 +40,12 @@
 #define TWO_PI 6.2831853
 #define LOG_TWO_PI 1.837877066409345
 
-//TODO  Concepts for the Interface
-/*!
- *
- *  @namespace movetk_core
- *  @brief the core of movetk
- */
+  //TODO  Concepts for the Interface
+  /*!
+   *
+   *  @namespace movetk_core
+   *  @brief the core of movetk
+   */
 namespace movetk_core
 {
     // the support library for Movetk
@@ -85,9 +85,9 @@ namespace movetk_core
          * @return A movetk point
          */
         template <class CoordinateIterator,
-                  typename = movetk_core::requires_random_access_iterator<CoordinateIterator>>
-        typename GeometryTraits::MovetkPoint operator()(CoordinateIterator first,
-                                                        CoordinateIterator beyond) const
+            typename = movetk_core::requires_random_access_iterator<CoordinateIterator>>
+            typename GeometryTraits::MovetkPoint operator()(CoordinateIterator first,
+                CoordinateIterator beyond) const
         {
             //ASSERT_RANDOM_ACCESS_ITERATOR(CoordinateIterator);
             ASSERT_NUMBER_TYPE(GeometryTraits, first);
@@ -96,8 +96,8 @@ namespace movetk_core
         }
 
         typename GeometryTraits::MovetkPoint operator()(std::initializer_list<
-                                                        typename GeometryTraits::NT>
-                                                            l) const
+            typename GeometryTraits::NT>
+            l) const
         {
             typename GeometryTraits::MovetkPoint p(l.begin(), l.end());
             return p;
@@ -118,7 +118,7 @@ namespace movetk_core
          * @return A movetk line
          */
         typename GeometryTraits::MovetkLine operator()(typename GeometryTraits::MovetkPoint p1,
-                                                       typename GeometryTraits::MovetkPoint p2)
+            typename GeometryTraits::MovetkPoint p2)
         {
             typename GeometryTraits::MovetkLine l(p1, p2);
             return l;
@@ -140,7 +140,7 @@ namespace movetk_core
          * @return Length of a segment
          */
         typename GeometryTraits::NT operator()(typename GeometryTraits::MovetkPoint p1,
-                                               typename GeometryTraits::MovetkPoint p2)
+            typename GeometryTraits::MovetkPoint p2)
         {
             typename GeometryTraits::MovetkSegment l(p1, p2);
             return sqrt(l());
@@ -156,14 +156,14 @@ namespace movetk_core
     struct MakeSegment
     {
         typename GeometryTraits::MovetkSegment operator()(typename GeometryTraits::MovetkPoint p1,
-                                                          typename GeometryTraits::MovetkPoint p2)
+            typename GeometryTraits::MovetkPoint p2)
         {
             typename GeometryTraits::MovetkSegment s(p1, p2);
             return s;
         }
 
         typename GeometryTraits::MovetkSegment operator()(std::initializer_list<typename GeometryTraits::NT> l1,
-                                                          std::initializer_list<typename GeometryTraits::NT> l2)
+            std::initializer_list<typename GeometryTraits::NT> l2)
         {
             MakePoint<GeometryTraits> make_point;
             typename GeometryTraits::MovetkPoint p1 = make_point(l1);
@@ -177,17 +177,17 @@ namespace movetk_core
     struct MakeSphere
     {
         typename GeometryTraits::MovetkSphere
-        operator()(typename GeometryTraits::MovetkPoint center, typename GeometryTraits::NT radius,
-                   bool square = true)
+            operator()(typename GeometryTraits::MovetkPoint center, typename GeometryTraits::NT radius,
+                bool square = true)
         {
             typename GeometryTraits::MovetkSphere s(center, radius, square);
             return s;
         }
 
         typename GeometryTraits::MovetkSphere
-        operator()(std::initializer_list<typename GeometryTraits::NT> l,
-                   typename GeometryTraits::NT radius,
-                   bool square = true)
+            operator()(std::initializer_list<typename GeometryTraits::NT> l,
+                typename GeometryTraits::NT radius,
+                bool square = true)
         {
             typename GeometryTraits::MovetkPoint center(l.begin(), l.end());
             typename GeometryTraits::MovetkSphere s(center, radius, square);
@@ -211,11 +211,11 @@ namespace movetk_core
          * @return A movetk polygon
          */
         template <class PointIterator,
-                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits,
-                                                                typename PointIterator::value_type>>
-        typename GeometryTraits::MovetkPolygon operator()(PointIterator first,
-                                                          PointIterator beyond)
+            typename = movetk_core::requires_random_access_iterator<PointIterator>,
+            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename PointIterator::value_type>>
+            typename GeometryTraits::MovetkPolygon operator()(PointIterator first,
+                PointIterator beyond)
         {
             //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
             //ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
@@ -241,10 +241,10 @@ namespace movetk_core
          * @return Radius of the Minimum Enclosing Ball
          */
         template <class PointIterator,
-                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits,
-                                                                typename PointIterator::value_type>>
-        typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond)
+            typename = movetk_core::requires_random_access_iterator<PointIterator>,
+            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename PointIterator::value_type>>
+            typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond)
         {
             //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
             //ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
@@ -263,14 +263,14 @@ namespace movetk_core
          * @return Radius of the Minimum Enclosing Ball
          */
         template <class PointIterator, class CenterIterator,
-                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits,
-                                                                typename PointIterator::value_type>,
-                  typename = movetk_core::requires_output_iterator<CenterIterator>,
-                  typename = movetk_core::requires_NT<GeometryTraits,
-                                                      typename CenterIterator::value_type>>
-        typename GeometryTraits::NT operator()(PointIterator first,
-                                               PointIterator beyond, CenterIterator iter)
+            typename = movetk_core::requires_random_access_iterator<PointIterator>,
+            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename PointIterator::value_type>,
+            typename = movetk_core::requires_output_iterator<CenterIterator>,
+            typename = movetk_core::requires_NT<GeometryTraits,
+            typename CenterIterator::value_type>>
+            typename GeometryTraits::NT operator()(PointIterator first,
+                PointIterator beyond, CenterIterator iter)
         {
             //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
             //ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
@@ -302,8 +302,8 @@ namespace movetk_core
             POINT
         };
         typedef std::tuple<std::size_t, int,
-                           typename _GeometryTraits::NT,
-                           typename _GeometryTraits::MovetkPoint>
+            typename _GeometryTraits::NT,
+            typename _GeometryTraits::MovetkPoint>
             value_type;
         typedef _GeometryTraits GeometryTraits;
         typedef _Norm Norm;
@@ -329,23 +329,23 @@ namespace movetk_core
 
     public:
         template <class PointIterator,
-                  typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                  typename = movetk_core::requires_movetk_point<
-                      typename IntersectionTraits::GeometryTraits,
-                      typename PointIterator::value_type>>
-        std::size_t operator()(PointIterator first, PointIterator beyond)
+            typename = movetk_core::requires_random_access_iterator<PointIterator>,
+            typename = movetk_core::requires_movetk_point<
+            typename IntersectionTraits::GeometryTraits,
+            typename PointIterator::value_type>>
+            std::size_t operator()(PointIterator first, PointIterator beyond)
         {
             typename IntersectionTraits::GeometryTraits::MovetkCurveIntersection compute_curve_intersections;
             return compute_curve_intersections(first, beyond);
         }
 
         template <class OutputIterator,
-                  typename = movetk_core::requires_output_iterator<OutputIterator>,
-                  typename = movetk_core::requires_tuple<
-                      typename OutputIterator::value_type>,
-                  typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm>>
-        void operator()(typename IntersectionTraits::GeometryTraits::MovetkSphere &sphere,
-                        typename IntersectionTraits::GeometryTraits::MovetkSegment &segment, OutputIterator result)
+            typename = movetk_core::requires_output_iterator<OutputIterator>,
+            typename = movetk_core::requires_tuple<
+            typename OutputIterator::value_type>,
+            typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm>>
+            void operator()(typename IntersectionTraits::GeometryTraits::MovetkSphere& sphere,
+                typename IntersectionTraits::GeometryTraits::MovetkSegment& segment, OutputIterator result)
         {
             typename IntersectionTraits::Norm norm;
             typedef typename IntersectionTraits::GeometryTraits::NT NT;
@@ -417,8 +417,8 @@ namespace movetk_core
 
         template <typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm>>
         typename IntersectionTraits::GeometryTraits::MovetkSphere
-        operator()(typename IntersectionTraits::GeometryTraits::MovetkSphere &sphere_a,
-                   typename IntersectionTraits::GeometryTraits::MovetkSphere &sphere_b)
+            operator()(typename IntersectionTraits::GeometryTraits::MovetkSphere& sphere_a,
+                typename IntersectionTraits::GeometryTraits::MovetkSphere& sphere_b)
         {
             // based on https://hal.archives-ouvertes.fr/hal-01955983/document
             typename IntersectionTraits::Norm norm;
@@ -428,14 +428,14 @@ namespace movetk_core
             typedef typename GeometryTraits::MovetkPoint MovetkPoint;
             movetk_core::MakePoint<GeometryTraits> make_point;
             MakeSphere<GeometryTraits> make_sphere;
-            MovetkPoint ORIGIN = make_point({0, 0});
+            MovetkPoint ORIGIN = make_point({ 0, 0 });
             NT squared_r_a = sphere_a.squared_radius();
             NT r_a = std::pow(squared_r_a, 0.5);
             NT squared_r_b = sphere_b.squared_radius();
             NT r_b = std::pow(squared_r_b, 0.5);
             MovetkVector v = sphere_b.center() - sphere_a.center();
             MovetkVector v1 = (sphere_b.center() - ORIGIN) +
-                              (sphere_a.center() - ORIGIN);
+                (sphere_a.center() - ORIGIN);
             NT squared_length = norm(v);
             NT sum_squared_radius = squared_r_a + squared_r_b;
             NT squared_diff_radius = sum_squared_radius - 2 * r_a * r_b;
@@ -466,32 +466,35 @@ namespace movetk_core
      * @tparam Norm
      */
     template <class GeometryTraits,
-              class Norm,
-              typename = movetk_core::requires_planar_geometry<GeometryTraits>,
-              typename = movetk_core::requires_L2_norm<Norm>>
-    class Wedge
+        class Norm,
+        typename = movetk_core::requires_planar_geometry<GeometryTraits>,
+        typename = movetk_core::requires_L2_norm<Norm>>
+        class Wedge
     {
+    public:
+        using MovetkVector = typename GeometryTraits::MovetkVector;
+        using MovetkPoint = typename GeometryTraits::MovetkPoint;
     private:
-        typedef typename GeometryTraits::NT NT;
+        using NT = typename GeometryTraits::NT;
         Norm norm;
         movetk_core::MakePoint<GeometryTraits> make_point;
-        typename GeometryTraits::MovetkPoint ORIGIN = make_point({0, 0});
-        typename GeometryTraits::MovetkVector e1 = make_point({1, 0}) - ORIGIN;
-        typename GeometryTraits::MovetkVector e2 = make_point({0, 1}) - ORIGIN;
-        typename GeometryTraits::MovetkVector _slope = ORIGIN - ORIGIN;
-        typename GeometryTraits::MovetkVector _intercept = ORIGIN - ORIGIN;
+        MovetkPoint ORIGIN = make_point({ 0, 0 });
+        MovetkVector e1 = make_point({ 1, 0 }) - ORIGIN;
+        MovetkVector e2 = make_point({ 0, 1 }) - ORIGIN;
+        MovetkVector _slope = ORIGIN - ORIGIN;
+        MovetkVector _intercept = ORIGIN - ORIGIN;
         bool horizontal = false, vertical = false;
         bool degenerate = false;
         bool upper_right = false, lower_left = false;
         bool lower_right = false, upper_left = false;
 
-        void construct(typename GeometryTraits::MovetkPoint &p,
-                       typename GeometryTraits::MovetkPoint &center,
-                       typename GeometryTraits::NT radius)
+        void construct(const MovetkPoint& p,
+            const MovetkPoint& center,
+            NT radius)
         {
             NT m1, m2, c1, c2, tanA, tanB;
             NT squared_radius = radius * radius;
-            typename GeometryTraits::MovetkVector _slope_ray = center - p;
+            auto _slope_ray = center - p;
             NT v_x = _slope_ray * e1;
             NT v_y = _slope_ray * e2;
             NT segment_squared_length = norm(_slope_ray);
@@ -540,9 +543,9 @@ namespace movetk_core
             else if (horizontal)
             {
                 if (upper_right || lower_right)
-                    _slope = make_point({tanB, -tanB}) - ORIGIN;
+                    _slope = make_point({ tanB, -tanB }) - ORIGIN;
                 else if (upper_left || lower_left)
-                    _slope = make_point({-tanB, tanB}) - ORIGIN;
+                    _slope = make_point({ -tanB, tanB }) - ORIGIN;
             }
             else if (vertical)
             {
@@ -552,7 +555,7 @@ namespace movetk_core
                 else
                     m1 = (tanA + tanB) / (1 - tanA * tanB);
                 m2 = -m1;
-                _slope = make_point({m1, m2}) - ORIGIN;
+                _slope = make_point({ m1, m2 }) - ORIGIN;
             }
             else
             {
@@ -574,48 +577,48 @@ namespace movetk_core
                 }
 
                 if (upper_right || lower_right)
-                    _slope = make_point({m1, m2}) - ORIGIN;
+                    _slope = make_point({ m1, m2 }) - ORIGIN;
                 else if (upper_left || lower_left)
-                    _slope = make_point({m2, m1}) - ORIGIN;
+                    _slope = make_point({ m2, m1 }) - ORIGIN;
             }
 
-            c1 = (make_point({-1 * (_slope * e1), 1}) - ORIGIN) * (p - ORIGIN); // (y - y0) = m * (x - x0)
-            c2 = (make_point({-1 * (_slope * e2), 1}) - ORIGIN) * (p - ORIGIN);
-            _intercept = make_point({c1, c2}) - ORIGIN;
+            c1 = (make_point({ -1 * (_slope * e1), 1 }) - ORIGIN) * (p - ORIGIN); // (y - y0) = m * (x - x0)
+            c2 = (make_point({ -1 * (_slope * e2), 1 }) - ORIGIN) * (p - ORIGIN);
+            _intercept = make_point({ c1, c2 }) - ORIGIN;
         }
 
     public:
         Wedge() = default;
 
-        Wedge(typename GeometryTraits::MovetkPoint &p,
-              typename GeometryTraits::MovetkPoint &center,
-              typename GeometryTraits::NT radius)
+        Wedge(const MovetkPoint& p,
+            const MovetkPoint& center,
+            NT radius)
         {
             construct(p, center, radius);
         }
 
-        Wedge(typename GeometryTraits::MovetkPoint &&p,
-              typename GeometryTraits::MovetkPoint &&center,
-              typename GeometryTraits::NT radius)
+        Wedge(MovetkPoint&& p,
+            MovetkPoint&& center,
+            NT radius)
         {
             construct(p, center, radius);
         }
 
-        Wedge(typename GeometryTraits::MovetkVector &slope,
-              typename GeometryTraits::MovetkVector &intercept) : _slope(slope),
-                                                                  _intercept(intercept) {}
+        Wedge(const MovetkVector& slope,
+            const MovetkVector& intercept) : _slope(slope),
+            _intercept(intercept) {}
 
-        typename GeometryTraits::MovetkVector &slope()
+        const MovetkVector& slope() const
         {
             return _slope;
         }
 
-        typename GeometryTraits::MovetkVector &intercept()
+        const MovetkVector& intercept() const
         {
             return _intercept;
         }
 
-        bool is_empty()
+        bool is_empty() const
         {
             if (_slope == (ORIGIN - ORIGIN))
             {
@@ -632,17 +635,17 @@ namespace movetk_core
          * @param w
          * @return
          */
-        Wedge operator*(Wedge &w)
+        Wedge operator*(const Wedge& w) const
         {
             constexpr std::size_t size = 2 * Norm::P;
-            std::array<std::size_t, size> positions = {0, 1, 2, 3};
+            std::array<std::size_t, size> positions = { 0, 1, 2, 3 };
             std::size_t sum = *(positions.end() - 1) + *(positions.end() - 2);
             typename GeometryTraits::MovetkVector that_slope = w.slope();
             typename GeometryTraits::MovetkVector that_intercept = w.intercept();
-            std::array<NT, size> slopes = {this->_slope * e1, this->_slope * e2,
-                                           that_slope * e1, that_slope * e2};
-            std::array<NT, size> intercepts = {this->_intercept * e1, this->_intercept * e2,
-                                               that_intercept * e1, that_intercept * e2};
+            std::array<NT, size> slopes = { this->_slope * e1, this->_slope * e2,
+                                           that_slope * e1, that_slope * e2 };
+            std::array<NT, size> intercepts = { this->_intercept * e1, this->_intercept * e2,
+                                               that_intercept * e1, that_intercept * e2 };
 
             std::sort(std::begin(positions), std::end(positions), [&slopes](size_t i, size_t j) {
                 return slopes[i] < slopes[j];
@@ -666,13 +669,13 @@ namespace movetk_core
 
             if (slopes[0] > slopes[1])
             {
-                that_slope = make_point({*(sit + *(start + 2)), *(sit + *(start + 1))}) - ORIGIN;
-                that_intercept = make_point({*(it + *(start + 2)), *(it + *(start + 1))}) - ORIGIN;
+                that_slope = make_point({ *(sit + *(start + 2)), *(sit + *(start + 1)) }) - ORIGIN;
+                that_intercept = make_point({ *(it + *(start + 2)), *(it + *(start + 1)) }) - ORIGIN;
             }
             else
             {
-                that_slope = make_point({*(sit + *(start + 1)), *(sit + *(start + 2))}) - ORIGIN;
-                that_intercept = make_point({*(it + *(start + 1)), *(it + *(start + 2))}) - ORIGIN;
+                that_slope = make_point({ *(sit + *(start + 1)), *(sit + *(start + 2)) }) - ORIGIN;
+                that_intercept = make_point({ *(it + *(start + 1)), *(it + *(start + 2)) }) - ORIGIN;
             }
             return Wedge(that_slope, that_intercept);
         }
@@ -682,11 +685,11 @@ namespace movetk_core
          * @param p
          * @return
          */
-        bool operator*(typename GeometryTraits::MovetkPoint &p)
+        bool operator*(const MovetkPoint& p) const
         {
-            NT mx1 = (make_point({this->_slope * this->e1, -1}) - ORIGIN) * (p - ORIGIN);
-            NT mx2 = (make_point({this->_slope * this->e2, -1}) - ORIGIN) * (p - ORIGIN);
-            typename GeometryTraits::MovetkVector v = make_point({mx1, mx2}) - ORIGIN;
+            NT mx1 = (make_point({ this->_slope * this->e1, -1 }) - ORIGIN) * (p - ORIGIN);
+            NT mx2 = (make_point({ this->_slope * this->e2, -1 }) - ORIGIN) * (p - ORIGIN);
+            typename GeometryTraits::MovetkVector v = make_point({ mx1, mx2 }) - ORIGIN;
             typename GeometryTraits::MovetkVector result = v + this->_intercept;
 
             if ((result * this->e1) >= 0 && (result * this->e2) <= 0)
@@ -700,12 +703,12 @@ namespace movetk_core
     };
 
     template <class GeometryTraits, class Norm>
-    std::ostream &operator<<(std::ostream &out, Wedge<GeometryTraits, Norm> &wedge)
+    std::ostream& operator<<(std::ostream& out, Wedge<GeometryTraits, Norm>& wedge)
     {
         MakePoint<GeometryTraits> make_point;
-        typename GeometryTraits::MovetkPoint ORIGIN = make_point({0, 0});
-        typename GeometryTraits::MovetkVector e1 = make_point({1, 0}) - ORIGIN;
-        typename GeometryTraits::MovetkVector e2 = make_point({0, 1}) - ORIGIN;
+        typename GeometryTraits::MovetkPoint ORIGIN = make_point({ 0, 0 });
+        typename GeometryTraits::MovetkVector e1 = make_point({ 1, 0 }) - ORIGIN;
+        typename GeometryTraits::MovetkVector e2 = make_point({ 0, 1 }) - ORIGIN;
         typename GeometryTraits::MovetkVector slope = wedge.slope();
         typename GeometryTraits::MovetkVector intercept = wedge.intercept();
         typename GeometryTraits::NT result_m1 = slope * e1;
@@ -718,9 +721,9 @@ namespace movetk_core
     }
 
     template <class GeometryTraits, class Norm,
-              typename = movetk_core::requires_planar_geometry<GeometryTraits>,
-              typename = movetk_core::requires_L2_norm<Norm>>
-    class MBR
+        typename = movetk_core::requires_planar_geometry<GeometryTraits>,
+        typename = movetk_core::requires_L2_norm<Norm>>
+        class MBR
     {
     private:
         typedef typename GeometryTraits::NT NT;
@@ -728,7 +731,7 @@ namespace movetk_core
         typedef typename GeometryTraits::MovetkVector Vector;
         typedef typename GeometryTraits::MovetkSphere Sphere;
         typedef movetk_core::IntersectionTraits<GeometryTraits, Norm,
-                                                movetk_core::sphere_sphere_intersection_tag>
+            movetk_core::sphere_sphere_intersection_tag>
             IntersectionTraits;
         typename IntersectionTraits::Norm norm;
 
@@ -736,31 +739,31 @@ namespace movetk_core
         movetk_core::MakeSphere<GeometryTraits> make_sphere;
         movetk_core::ComputeIntersections<IntersectionTraits> compute_intersections;
 
-        Point ORIGIN = make_point({0, 0});
+        Point ORIGIN = make_point({ 0, 0 });
 
-        NT get_x(Vector &v)
+        NT get_x(Vector& v)
         {
             return v * v.basis(0);
         }
 
-        NT get_x(Point &p)
+        NT get_x(Point& p)
         {
             Vector v = p - ORIGIN;
             return v * v.basis(0);
         }
 
-        NT get_y(Vector &v)
+        NT get_y(Vector& v)
         {
             return v * v.basis(1);
         }
 
-        NT get_y(Point &p)
+        NT get_y(Point& p)
         {
             Vector v = p - ORIGIN;
             return v * v.basis(1);
         }
 
-        NT get_length(Point &p_u, Point &p_v)
+        NT get_length(Point& p_u, Point& p_v)
         {
             Vector direction = p_v - p_u;
             norm(direction);
@@ -768,37 +771,37 @@ namespace movetk_core
             return length;
         }
 
-        NT get_length(Vector &direction)
+        NT get_length(Vector& direction)
         {
             norm(direction);
             NT length = norm ^ 1;
             return length;
         }
 
-        Vector get_direction_vector(Point &p_u, Point &p_v)
+        Vector get_direction_vector(Point& p_u, Point& p_v)
         {
             return ((p_v - p_u) *= (1 / get_length(p_u, p_v)));
         }
 
-        Vector get_direction_vector(Vector &v)
+        Vector get_direction_vector(Vector& v)
         {
             Vector direction = v;
             return (v *= (1 / get_length(direction)));
         }
 
-        Point translate(Vector unit_vector, Point &start, NT translation_length)
+        Point translate(Vector unit_vector, Point& start, NT translation_length)
         {
             unit_vector *= translation_length;
             return start + unit_vector;
         }
 
     public:
-        std::pair<Point, Point> operator()(Point &p_u, Point &p_v, NT radius_u, NT radius_v)
+        std::pair<Point, Point> operator()(Point& p_u, Point& p_v, NT radius_u, NT radius_v)
         {
             Sphere sphere_u = make_sphere(p_u, radius_u);
             Sphere sphere_v = make_sphere(p_v, radius_v);
             Sphere intersection_sphere = compute_intersections(sphere_u,
-                                                               sphere_v);
+                sphere_v);
             Point center = intersection_sphere.center();
 
             if (intersection_sphere.squared_radius() == 0)
@@ -811,7 +814,7 @@ namespace movetk_core
             Point point_sphere_v = translate(direction_uv, p_v, -radius_v);
 
             //counterclockwise rotation by pi/2
-            Vector direction_p = make_point({-1 * get_y(direction_uv), get_x(direction_uv)}) - ORIGIN;
+            Vector direction_p = make_point({ -1 * get_y(direction_uv), get_x(direction_uv) }) - ORIGIN;
 
             Point p1 = translate(direction_p, point_sphere_u, half_length);
             Point p2 = translate(direction_p, point_sphere_v, -half_length);
@@ -837,8 +840,8 @@ namespace movetk_core
     {
 
         typename GeometryTraits::MovetkVector operator()(typename GeometryTraits::MovetkPoint p1,
-                                                         typename GeometryTraits::MovetkPoint p2,
-                                                         typename GeometryTraits::NT eps)
+            typename GeometryTraits::MovetkPoint p2,
+            typename GeometryTraits::NT eps)
         {
             typename GeometryTraits::MovetkVector v = p2 - p1;
             v *= eps;
@@ -846,7 +849,7 @@ namespace movetk_core
         }
 
         typename GeometryTraits::MovetkVector operator()(typename GeometryTraits::MovetkVector v,
-                                                         typename GeometryTraits::NT eps)
+            typename GeometryTraits::NT eps)
         {
             v *= eps;
             return v;
@@ -858,7 +861,7 @@ namespace movetk_core
     {
 
         typename GeometryTraits::MovetkPoint operator()(typename GeometryTraits::MovetkPoint p,
-                                                        typename GeometryTraits::MovetkVector v)
+            typename GeometryTraits::MovetkVector v)
         {
             typename GeometryTraits::MovetkPoint p1 = p + v;
             return p1;

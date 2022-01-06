@@ -103,6 +103,11 @@ namespace movetk_core
         movetk_back_insert_iterator operator++(int) { return *this; }
     };
 
+
+    template<class Container>
+    auto make_back_inserter(Container& container) {
+        return movetk_back_insert_iterator<Container>(container);
+    }
     /*!
  * @brief an adaptor to std::iterator for inserting into a container at a given position
  * @details unlike the std::inserter, ths iterator has a value_type.

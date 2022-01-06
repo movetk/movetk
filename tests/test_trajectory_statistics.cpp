@@ -35,20 +35,16 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/algo/Statistics.h"
 
-struct Dist
-{
-    movetk_support::FiniteNorm<MovetkGeometryKernel, 2> norm;
-
-    NT operator()(MovetkGeometryKernel::MovetkPoint v0, MovetkGeometryKernel::MovetkPoint v1){
-        auto  vec = v1 - v0;
-        return std::sqrt(norm(vec));
-    }
+struct TestTypes {
+    using Trajectory = TabularTrajectory<std::string, double, double, std::time_t>;
+    using ProbePoint = std::tuple<std::string, double, double, std::time_t>;
 };
 
-TEST_CASE( "Trajectory length statistic", "[trajectory_length][trajectory_statistics]" ) {
+TEMPLATE_LIST_TEST_CASE( "Trajectory length statistic", "[trajectory_length][trajectory_statistics]",movetk::test::AvailableBackends) {
 
-    using Trajectory = TabularTrajectory<string, double, double, std::time_t>;
-    using ProbePoint = std::tuple<string, double, double, std::time_t>;
+    using Trajectory = typename TestTypes::Trajectory;
+    using ProbePoint = typename TestTypes::ProbePoint;
+    using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
     // Setup algorithm
     movetk_algorithms::TrajectoryLength<MovetkGeometryKernel> lengthCalc;
 
@@ -102,9 +98,9 @@ TEST_CASE( "Trajectory length statistic", "[trajectory_length][trajectory_statis
     }
 }
 
-TEST_CASE("Trajectory duration", "[trajectory_duration][trajectory_statistics]") {
-    using Trajectory = TabularTrajectory<string, double, double, std::time_t>;
-    using ProbePoint = std::tuple<string, double, double, std::time_t>;
+TEMPLATE_LIST_TEST_CASE("Trajectory duration", "[trajectory_duration][trajectory_statistics]", movetk::test::AvailableBackends) {
+    using Trajectory = typename TestTypes::Trajectory;
+    using ProbePoint = typename TestTypes::ProbePoint;
     movetk_algorithms::TrajectoryDuration durationCalc;
     SECTION("Simple trajectory")
     {
@@ -142,8 +138,9 @@ TEST_CASE("Trajectory duration", "[trajectory_duration][trajectory_statistics]")
     }
 }
 
-TEST_CASE("Trajectory speed statistics", "[trajectory_speed_statistics][trajectory_statistics]") {
-    using ProbePoint = std::tuple<string, double, double, std::time_t>;
+TEMPLATE_LIST_TEST_CASE("Trajectory speed statistics", "[trajectory_speed_statistics][trajectory_statistics]", movetk::test::AvailableBackends) {
+    using ProbePoint = typename TestTypes::ProbePoint;
+    using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
     // Construct data
     ProbePoint base{ "test",0,0,0 };
 
@@ -197,7 +194,6 @@ TEST_CASE("Trajectory speed statistics", "[trajectory_speed_statistics][trajecto
             REQUIRE(var == Approx(varComputed));
         }
     }
-    
     SECTION("Single segment trajectory")
     {
         // Construct data

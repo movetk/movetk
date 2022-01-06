@@ -38,20 +38,20 @@ private:
 public:
     typedef typename std::vector<T>::const_iterator Iterator;
 
-    Values(std::string& identifier):id(identifier){}
+    Values(const std::string& identifier):id(identifier){}
 
-    void operator()(T& value){
+    void operator()(const T& value){
         values.push_back(value);
     }
 
-    std::string& operator()(){
+    const std::string& operator()(){
         return id;
     }
-    Iterator begin(){
+    Iterator begin() const{
         return cbegin(values);
     }
 
-    Iterator end(){
+    Iterator end() const {
         return cend(values);
     }
 };
@@ -63,7 +63,6 @@ TEST_CASE("Create and search in a Trie", "[test_trie") {
     std::string str = "aabc";
     int value = 1;
     tree.insert( begin(str), end(str), value );
-    //values[*leaf].push_back(1);
     str = "aabda";
     value = 2;
     tree.insert( begin(str), end(str), value );

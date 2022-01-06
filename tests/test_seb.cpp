@@ -42,14 +42,12 @@ TEST_CASE("miniball", "[miniball]") {
 
     Miniball mb(dimension, seb_points);
     FT seb_radius = mb.radius();
-    std::cout << "MEB radius: " << seb_radius << '\n';
 
     std::vector<FT> res;  // center.x, center.y
     Miniball::Coordinate_iterator center_it = mb.center_begin();
     for (int j=0; j<dimension; ++j)
     {
         res.push_back(center_it[j]);
-        std::cout << "center[" << j << "]:  " << center_it[j] << '\n';
     }
     REQUIRE( seb_radius == Approx(0.707).epsilon(0.001) );
     REQUIRE( res[0] == Approx(0.5) );
