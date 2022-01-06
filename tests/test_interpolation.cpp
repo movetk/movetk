@@ -105,7 +105,7 @@ struct InterpolationTests : public test_helpers::BaseTestFixture<Backend> {
         enum ProbeColumns {
             SAMPLE_DATE, LAT, LON, HEADING, SPEED
         };
-        using NT = MovetkGeometryKernel::NT;
+        using NT = typename MovetkGeometryKernel::NT;
         using ProbePoint = std::tuple<NT, NT, NT, NT, NT>;
     };
 

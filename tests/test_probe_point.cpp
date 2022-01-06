@@ -18,204 +18,184 @@
  */
 
 #include <catch2/catch.hpp>
-
 #include <iostream>
 #include <string>
 using std::string;
 #include <tuple>
+
+#include "movetk/io/SortByField.h"
+#include "movetk/io/TuplePrinter.h"
 #include "movetk/io/csv/ParseDate.h"
 #include "movetk/utils/HereProbeTraits.h"
-#include "movetk/io/TuplePrinter.h"
-#include "movetk/io/SortByField.h"
 
 struct ProbePointTests {
-    ParseDate create_date(const std::string& data) {
-        std::istringstream stream(data);
-        ParseDate date;
-        stream >> date;
-        return date;
-    }
+	ParseDate create_date(const std::string& data) {
+		std::istringstream stream(data);
+		ParseDate date;
+		stream >> date;
+		return date;
+	}
 };
 
-TEST_CASE_METHOD(ProbePointTests, "ProbePoint can be sorted", "[probepoint]" ) {
+TEST_CASE_METHOD(ProbePointTests, "ProbePoint can be sorted", "[probepoint]") {
+	using ProbePoint = std::tuple<string, ParseDate, float>;
 
-    using ProbePoint = std::tuple<string, ParseDate, float>;
+	struct {
+		bool operator()(ProbePoint a, ProbePoint b) const { return std::get<1>(a) < std::get<1>(b); }
+	} customLess;
+	// Initialize dates
+	ParseDate d1 = create_date("2017-05-22 16:33:33");
+	ParseDate d2 = create_date("2017-05-21 16:44:44");
+	ParseDate d3 = create_date("2017-05-24 16:44:44");
+	ParseDate d4 = create_date("2017-05-23 16:44:34");
 
-    struct {
-        bool operator()(ProbePoint a, ProbePoint b) const
-        {
-            return std::get<1>(a) < std::get<1>(b);
-        }
-    } customLess;
-    // Initialize dates
-    ParseDate d1 = create_date("2017-05-22 16:33:33");
-    ParseDate d2 = create_date("2017-05-21 16:44:44");
-    ParseDate d3 = create_date("2017-05-21 16:43:44");
-    ParseDate d4 = create_date("2017-05-21 16:44:34");
+	ProbePoint p1 = {"abc", d1, 5.4};
+	ProbePoint p2 = {"def", d2, 4.5};
+	ProbePoint p3 = {"gg", d3, -1.5};
+	ProbePoint p4 = {"hh", d4, 2.5};
+	std::vector<ProbePoint> v = {p1, p2, p3, p4};
+	std::sort(begin(v), end(v), customLess);
 
-    ProbePoint p1 = {"abc", d1, 5.4};
-    ProbePoint p2 = {"def", d2, 4.5};
-    ProbePoint p3 = { "gg", d3, -1.5 };
-    ProbePoint p4 = { "hh", d4, 2.5 };
-    std::vector<ProbePoint> v = {
-        p1, p2, p3, p4
-    };
-    std::sort(begin(v), end(v), customLess);
-
-    print_tuple(std::cout, v[0]);
-    std::cout << '\n';
-    print_tuple(std::cout, v[1]);
-    std::cout << '\n';
-
-    REQUIRE( std::get<0>(v[0]) == "def" );
-    REQUIRE( std::get<0>(v[1]) == "abc" );
-//    REQUIRE( std::get<2>(v[0]) <  std::get<2>(v[1]) );
+	REQUIRE(std::get<0>(v[0]) == "def");
+	REQUIRE(std::get<0>(v[1]) == "abc");
+	REQUIRE(std::get<0>(v[2]) == "hh");
+	REQUIRE(std::get<0>(v[3]) == "gg");
 }
 
-TEST_CASE( "ProbePoint with custom date format can be sorted", "[probepointcustomdate]" ) {
+TEST_CASE("ProbePoint with custom date format can be sorted", "[probepointcustomdate]") {
+	using here::c2d::raw::ProbeParseDate;
+	using ProbePoint = std::tuple<string, ProbeParseDate, float>;
 
-    using here::c2d::raw::ProbeParseDate;
-    using ProbePoint = std::tuple<string, ProbeParseDate, float>;
+	struct {
+		bool operator()(ProbePoint a, ProbePoint b) const { return std::get<1>(a) < std::get<1>(b); }
+	} customLess;
 
-    struct {
-        bool operator()(ProbePoint a, ProbePoint b) const
-        {
-            return std::get<1>(a) < std::get<1>(b);
-        }
-    } customLess;
+	ProbeParseDate d1;
+	std::istringstream dis1("2017-05-22 16:33:33");
+	dis1 >> d1;
+	ProbeParseDate d2;
+	std::istringstream dis2("2017-05-21 16:44:44");
+	dis2 >> d2;
 
-    ProbeParseDate d1;
-    std::istringstream dis1("2017-05-22 16:33:33");
-    dis1 >> d1;
-    ProbeParseDate d2;
-    std::istringstream dis2("2017-05-21 16:44:44");
-    dis2 >> d2;
+	//    REQUIRE( d2 < d1 );
 
-//    REQUIRE( d2 < d1 );
+	ProbePoint p1 = {"abc", d1, 5.4};
+	ProbePoint p2 = {"def", d2, 4.5};
+	std::vector<ProbePoint> v = {p1, p2};
+	std::sort(begin(v), end(v), customLess);
 
-    ProbePoint p1 = {"abc", d1, 5.4};
-    ProbePoint p2 = {"def", d2, 4.5};
-    std::vector<ProbePoint> v = {p1, p2};
-    std::sort(begin(v), end(v), customLess);
+	print_tuple(std::cout, v[0]);
+	std::cout << '\n';
+	print_tuple(std::cout, v[1]);
+	std::cout << '\n';
 
-    print_tuple(std::cout, v[0]);
-    std::cout << '\n';
-    print_tuple(std::cout, v[1]);
-    std::cout << '\n';
-
-//    REQUIRE( std::get<1>(v[0]) <  std::get<1>(v[1]) );
-    REQUIRE( std::get<0>(v[0]) == "def" );
-    REQUIRE( std::get<0>(v[1]) == "abc" );
+	//    REQUIRE( std::get<1>(v[0]) <  std::get<1>(v[1]) );
+	REQUIRE(std::get<0>(v[0]) == "def");
+	REQUIRE(std::get<0>(v[1]) == "abc");
 }
 
-TEST_CASE( "HERE ProbePoint with custom date format can be sorted", "[hereprobepointcustomdate]" ) {
+TEST_CASE("HERE ProbePoint with custom date format can be sorted", "[hereprobepointcustomdate]") {
+	using here::c2d::raw::ProbeParseDate;
+	using here::c2d::raw::ProbePoint;
+	using here::c2d::raw::ProviderCategoricalField;
 
-    using here::c2d::raw::ProbeParseDate;
-    using here::c2d::raw::ProviderCategoricalField;
-    using here::c2d::raw::ProbePoint;
+	struct {
+		bool operator()(ProbePoint a, ProbePoint b) const { return std::get<2>(a) < std::get<2>(b); }
+	} customLess;
 
-    struct {
-        bool operator()(ProbePoint a, ProbePoint b) const
-        {
-            return std::get<2>(a) < std::get<2>(b);
-        }
-    } customLess;
+	ProbeParseDate d1;
+	std::istringstream dis1("2017-05-22 16:33:33");
+	dis1 >> d1;
+	ProbeParseDate d2;
+	std::istringstream dis2("2017-05-21 16:44:44");
+	dis2 >> d2;
 
-    ProbeParseDate d1;
-    std::istringstream dis1("2017-05-22 16:33:33");
-    dis1 >> d1;
-    ProbeParseDate d2;
-    std::istringstream dis2("2017-05-21 16:44:44");
-    dis2 >> d2;
+	ProviderCategoricalField c1;
+	std::istringstream cis1("Provider1");
+	cis1 >> c1;
+	ProviderCategoricalField c2;
+	std::istringstream cis2("Provider2");
+	cis2 >> c2;
+	ProviderCategoricalField c3;
+	std::istringstream cis3("Provider3");
+	cis3 >> c3;
+	ProviderCategoricalField c4;
+	std::istringstream cis4("Provider4");
+	cis4 >> c4;
+	ProviderCategoricalField c5;
+	std::istringstream cis5("Provider5");
+	cis5 >> c5;
 
-    ProviderCategoricalField c1;
-    std::istringstream cis1("Provider1");
-    cis1 >> c1;
-    ProviderCategoricalField c2;
-    std::istringstream cis2("Provider2");
-    cis2 >> c2;
-    ProviderCategoricalField c3;
-    std::istringstream cis3("Provider3");
-    cis3 >> c3;
-    ProviderCategoricalField c4;
-    std::istringstream cis4("Provider4");
-    cis4 >> c4;
-    ProviderCategoricalField c5;
-    std::istringstream cis5("Provider5");
-    cis5 >> c5;
+	std::cout << c3 << c4 << c5 << '\n';
 
-    std::cout << c3 << c4 << c5 << '\n';
+	ProbePoint p1 = {"abc", d1, 5.4, 5.4, 5.4, 5.4, c1};
+	ProbePoint p2 = {"def", d2, 4.5, 4.5, 4.5, 4.5, c2};
+	std::vector<ProbePoint> v = {p1, p2};
+	std::sort(begin(v), end(v), customLess);
 
-    ProbePoint p1 = {"abc", d1, 5.4, 5.4, 5.4, 5.4, c1};
-    ProbePoint p2 = {"def", d2, 4.5, 4.5, 4.5, 4.5, c2};
-    std::vector<ProbePoint> v = {p1, p2};
-    std::sort(begin(v), end(v), customLess);
+	print_tuple(std::cout, v[0]);
+	std::cout << '\n';
+	print_tuple(std::cout, v[1]);
+	std::cout << '\n';
 
-    print_tuple(std::cout, v[0]);
-    std::cout << '\n';
-    print_tuple(std::cout, v[1]);
-    std::cout << '\n';
+	std::cout << "ProviderCategoricalField::_values sizeof: " << sizeof(ProviderCategoricalField::_values)
+	          << "size: " << ProviderCategoricalField::_values.size() << '\n';
+	std::cout << "sizeof(probepoint): " << sizeof(p1) << " " << sizeof(p2) << '\n';
 
-    std::cout << "ProviderCategoricalField::_values sizeof: " << sizeof(ProviderCategoricalField::_values) << "size: " << ProviderCategoricalField::_values.size() << '\n';
-    std::cout << "sizeof(probepoint): " << sizeof(p1) << " " << sizeof(p2) << '\n';
-
-//    REQUIRE( std::get<2>(v[0]) <  std::get<2>(v[1]) );
-    REQUIRE( std::get<0>(v[0]) == "def" );
-    REQUIRE( std::get<0>(v[1]) == "abc" );
+	//    REQUIRE( std::get<2>(v[0]) <  std::get<2>(v[1]) );
+	REQUIRE(std::get<0>(v[0]) == "def");
+	REQUIRE(std::get<0>(v[1]) == "abc");
 }
 
-TEST_CASE( "HERE ProbePoint can be sorted by field", "[hereprobepointsortbyfield]" ) {
-
-    using here::c2d::raw::ProbeParseDate;
-    using here::c2d::raw::ProviderCategoricalField;
-    using here::c2d::raw::ProbePoint;
+TEST_CASE("HERE ProbePoint can be sorted by field", "[hereprobepointsortbyfield]") {
+	using here::c2d::raw::ProbeParseDate;
+	using here::c2d::raw::ProbePoint;
+	using here::c2d::raw::ProviderCategoricalField;
 	constexpr int SAMPLE_DATE = here::c2d::raw::ProbeColumns::SAMPLE_DATE;
 
-    ProbeParseDate d1;
-    std::istringstream dis1("2017-05-22 16:33:33");
-    dis1 >> d1;
-    ProbeParseDate d2;
-    std::istringstream dis2("2017-05-21 16:44:44");
-    dis2 >> d2;
+	ProbeParseDate d1;
+	std::istringstream dis1("2017-05-22 16:33:33");
+	dis1 >> d1;
+	ProbeParseDate d2;
+	std::istringstream dis2("2017-05-21 16:44:44");
+	dis2 >> d2;
 
-    ProviderCategoricalField c1;
-    std::istringstream cis1("Provider1");
-    cis1 >> c1;
-    ProviderCategoricalField c2;
-    std::istringstream cis2("Provider2");
-    cis2 >> c2;
+	ProviderCategoricalField c1;
+	std::istringstream cis1("Provider1");
+	cis1 >> c1;
+	ProviderCategoricalField c2;
+	std::istringstream cis2("Provider2");
+	cis2 >> c2;
 
-    ProbePoint p1 = {"abc", d1, 5.4, 5.4, 5.4, 5.4, c1};
-    ProbePoint p2 = {"def", d2, 4.5, 4.5, 4.5, 4.5, c2};
-    std::vector<ProbePoint> v = {p1, p2};
+	ProbePoint p1 = {"abc", d1, 5.4, 5.4, 5.4, 5.4, c1};
+	ProbePoint p2 = {"def", d2, 4.5, 4.5, 4.5, 4.5, c2};
+	std::vector<ProbePoint> v = {p1, p2};
 
-    SECTION("sort by date in ascending order") {
-        SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint> asc_date;
-        std::sort(begin(v), end(v), asc_date);
+	SECTION("sort by date in ascending order") {
+		SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint> asc_date;
+		std::sort(begin(v), end(v), asc_date);
 
-        print_tuple(std::cout, v[0]);
-        std::cout << '\n';
-        print_tuple(std::cout, v[1]);
-        std::cout << '\n';
+		print_tuple(std::cout, v[0]);
+		std::cout << '\n';
+		print_tuple(std::cout, v[1]);
+		std::cout << '\n';
 
-        //    REQUIRE( std::get<SAMPLE_DATE>(v[0]) <  std::get<SAMPLE_DATE>(v[1]) );
-        REQUIRE(std::get<0>(v[0])=="def");
-        REQUIRE(std::get<0>(v[1])=="abc");
-    }
+		//    REQUIRE( std::get<SAMPLE_DATE>(v[0]) <  std::get<SAMPLE_DATE>(v[1]) );
+		REQUIRE(std::get<0>(v[0]) == "def");
+		REQUIRE(std::get<0>(v[1]) == "abc");
+	}
 
-    SECTION("sort by date in descending order") {
-        SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint, false> desc_date;
-        std::sort(begin(v), end(v), desc_date);
+	SECTION("sort by date in descending order") {
+		SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint, false> desc_date;
+		std::sort(begin(v), end(v), desc_date);
 
-        print_tuple(std::cout, v[0]);
-        std::cout << '\n';
-        print_tuple(std::cout, v[1]);
-        std::cout << '\n';
+		print_tuple(std::cout, v[0]);
+		std::cout << '\n';
+		print_tuple(std::cout, v[1]);
+		std::cout << '\n';
 
-        //    REQUIRE( std::get<SAMPLE_DATE>(v[0]) <  std::get<SAMPLE_DATE>(v[1]) );
-        REQUIRE(std::get<0>(v[1])=="def");
-        REQUIRE(std::get<0>(v[0])=="abc");
-    }
-
+		//    REQUIRE( std::get<SAMPLE_DATE>(v[0]) <  std::get<SAMPLE_DATE>(v[1]) );
+		REQUIRE(std::get<0>(v[1]) == "def");
+		REQUIRE(std::get<0>(v[0]) == "abc");
+	}
 }
-

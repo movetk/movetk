@@ -54,12 +54,12 @@ namespace movetk_core {
     }
 
     template <class GeometryTraits>
-    typename GeometryTraits::NT get_x(typename GeometryTraits::MovetkVector &v) {
+    typename GeometryTraits::NT get_x(const typename GeometryTraits::MovetkVector& v) {
         return v * v.basis(0);
     }
 
     template <class GeometryTraits>
-    typename GeometryTraits::NT get_x(typename GeometryTraits::MovetkPoint &p) {
+    typename GeometryTraits::NT get_x(const typename GeometryTraits::MovetkPoint& p) {
         movetk_core::MakePoint<GeometryTraits> make_point;
         typename GeometryTraits::MovetkPoint ORIGIN = make_point({ 0, 0 });
         typename GeometryTraits::MovetkVector v = p - ORIGIN;
@@ -67,12 +67,12 @@ namespace movetk_core {
     }
 
     template <class GeometryTraits>
-    typename GeometryTraits::NT get_y(typename GeometryTraits::MovetkVector &v) {
+    typename GeometryTraits::NT get_y(const typename GeometryTraits::MovetkVector& v) {
         return v * v.basis(1);
     }
 
     template <class GeometryTraits>
-    typename GeometryTraits::NT get_y(typename GeometryTraits::MovetkPoint &p) {
+    typename GeometryTraits::NT get_y(const typename GeometryTraits::MovetkPoint& p) {
         movetk_core::MakePoint<GeometryTraits> make_point;
         typename GeometryTraits::MovetkPoint ORIGIN = make_point({ 0, 0 });
         typename GeometryTraits::MovetkVector v = p - ORIGIN;
@@ -150,33 +150,39 @@ namespace movetk_core {
  */
     template<class InputIterator, class OutputIterator,
         typename = movetk_core::requires_random_access_iterator<InputIterator>,
-       /* typename = movetk_core::requires_date_t<
-        typename InputIterator::value_type>,*/
+        /* typename = movetk_core::requires_date_t<
+         typename InputIterator::value_type>,*/
         typename = movetk_core::requires_output_iterator<OutputIterator>
         /*typename = movetk_core::requires_size_t<
         typename OutputIterator::value_type> */
     >
-        void get_time_diffs(InputIterator first, InputIterator beyond, OutputIterator iter) {
+        void get_time_diffs(InputIterator first, InputIterator beyond, OutputIterator iter, bool without_leading_zero = false) {
         //TODO Add support for initial value
         //TODO check std::adjacent_difference
         //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
         InputIterator pit = first;
         InputIterator cit = first + 1;
-        //*iter = 0; //TODO: why do we do this?
+        if (!without_leading_zero) {
+            *iter = 0;
+        }
         while (cit != beyond) {
             *iter = *cit - *pit;
             pit = cit;
             cit++;
         }
     }
-    
+
     /*!
-     *
-     * @tparam InputIterator
-     * @tparam OutputIterator
+     * Computes the distances between consecutive points in a point range.
+     * @tparam GeometryKernel The geometry kernel to use.
+     * @tparam InputIterator Iterator type for the input range of points
+     * @tparam OutputIterator Output iterator type that can accept the distance
+     * @tparam PointDistanceFunc Type of the distance function to use. Default to ComputeLength<GeometryKerneL>
      * @param first
      * @param beyond
      * @param iter
+     * @param without_leading_zero Do not add the zero for the first element, resulting in a 
+     * range of size one less than the given input range
      */
     template<class GeometryKernel, class InputIterator, class OutputIterator,
         typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>,
@@ -186,12 +192,14 @@ namespace movetk_core {
         typename InputIterator::value_type>,
         typename = movetk_core::requires_NT<GeometryKernel,
         typename OutputIterator::value_type> >
-        void get_distances(InputIterator first, InputIterator beyond, OutputIterator iter) {
+        void get_distances(InputIterator first, InputIterator beyond, OutputIterator iter, bool without_leading_zero = false) {
         //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
         PointDistanceFunc distance;
         InputIterator pit = first;
         InputIterator cit = std::next(first);
-        //*iter = 0;
+        if (!without_leading_zero) {
+            *iter = 0;
+        }
         while (cit != beyond) {
             *iter = distance(*pit, *cit);
             pit = cit;
@@ -204,7 +212,7 @@ namespace movetk_core {
         void get_distances(InputIterator first, InputIterator beyond) {
         InputIterator pit = first;
         InputIterator cit = std::next(first);
-        //std::get<DistIdx>(*pit) = 0;
+        std::get<DistIdx>(*pit) = 0;
         while (cit != beyond) {
             typename Traits::NT lat0 = std::get<LatIdx>(*pit);
             typename Traits::NT lon0 = std::get<LonIdx>(*pit);
@@ -408,13 +416,13 @@ namespace movetk_core {
         struct RepeatedTypeTuple
         {
             using type = decltype(std::tuple_cat(
-                std::declval<TupleType<T>>(), 
+                std::declval<TupleType<T>>(),
                 std::declval<typename RepeatedTypeTuple<TupleType, T, I - 1>::type>()
-                )
-            );
+            )
+                );
         };
         template<template<typename...> typename TupleType, typename T>
-        struct RepeatedTypeTuple<TupleType, T,1>
+        struct RepeatedTypeTuple<TupleType, T, 1>
         {
             using type = TupleType<T>;
         };
@@ -435,8 +443,8 @@ namespace movetk_core {
             using type = T;
         };
 
-        template<class GeometryKernel, typename CoordinateIterator,std::size_t...Is>
-        auto point_iterators_from_coordinates(TypeHolder<GeometryKernel>,const std::array<std::pair<CoordinateIterator, CoordinateIterator>, GeometryKernel::dim>& beginEndPairs, std::index_sequence<Is...>)
+        template<class GeometryKernel, typename CoordinateIterator, std::size_t...Is>
+        auto point_iterators_from_coordinates(TypeHolder<GeometryKernel>, const std::array<std::pair<CoordinateIterator, CoordinateIterator>, GeometryKernel::dim>& beginEndPairs, std::index_sequence<Is...>)
         {
             using NT = typename GeometryKernel::NT;
 
@@ -525,6 +533,14 @@ namespace movetk_core {
     };
 
 
+    /// \brief Merges intervals
+    /// 
+    /// \typeparam GeometryKernel The geometry kernel to use
+    /// \typeparam InputIterator
+    /// \param first Start of the range of intervals
+    /// \param beyond End of the range of intervals
+    /// \param sorted Is the range sorted (descending...?)
+    /// \returns 
     // by Mees van de Kerkhof
     template<class GeometryKernel, class InputIterator,
         typename = movetk_core::requires_random_access_iterator<InputIterator>,
@@ -534,36 +550,35 @@ namespace movetk_core {
         typename = movetk_core::requires_NT<GeometryKernel,
         typename InputIterator::value_type::second_type> >
         InputIterator merge_intervals(InputIterator first, InputIterator beyond, bool sorted = false) {
-        if (!sorted)
+        if (!sorted) {
+            // Sort in descending order, lexicographically.
             std::sort(first, beyond, [](auto a, auto b) {
-            if (a.first != b.first)
-                return a.first > b.first;
-            else
-                return a.second > b.second;
-        });
+                if (a.first != b.first)
+                    return a.first > b.first;
+                else
+                    return a.second > b.second;
+            });
+        }
+        auto pairs_overlap = [](const auto& pair0, const auto& pair1) {
+            return !(pair0.first > pair1.second || pair1.first > pair0.second);
+        };
+        if (first == beyond || first + 1 == beyond) { return first; }
 
         InputIterator curr = first;
+        InputIterator next_placement_it = first;
         InputIterator next = curr + 1;
-        InputIterator last = beyond - 1;
-        std::size_t moves = 0;
-        while (curr != last) {
-            if (next->second >= curr->first) {
-                moves++;
-                if (curr->second > next->second)
-                    *curr = std::make_pair(next->first, curr->second);
-                else
-                    *curr = std::make_pair(next->first, next->second);
-                *next = std::move(*(next + moves));
-                last--;
+        for (; next != beyond; ++next) {
+            if (pairs_overlap(*next, *curr)) {
+                *curr = std::make_pair(std::min(next->first, curr->first), std::max(curr->second, next->second));
             }
             else {
-                curr++;
-                next++;
-                if (moves > 0)
-                    *next = std::move(*(next + moves));
+                if (curr + 1 != next) {
+                    *(curr + 1) = *next;
+                }
+                ++curr;
             }
         }
-        return (last + 1);
+        return (curr + 1);
     }
 
     template<class GeometryTraits, class Norm, class InputIterator, class OutputIterator>

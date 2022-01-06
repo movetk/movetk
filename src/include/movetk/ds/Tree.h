@@ -17,10 +17,10 @@
  * License-Filename: LICENSE
  */
 
-/*! @file Tree.h
- *  @brief  Trees
- *  @authors Aniket Mitra (aniket.mitra@here.com)
- */
+ /*! @file Tree.h
+  *  @brief  Trees
+  *  @authors Aniket Mitra (aniket.mitra@here.com)
+  */
 
 #ifndef MOVETK_TREES_H
 #define MOVETK_TREES_H
@@ -43,7 +43,7 @@ namespace movetk_support {
      * @param v
      * @return
      */
-    char f(char &v) {
+    char f(char& v) {
         return v;
     }
 
@@ -52,7 +52,7 @@ namespace movetk_support {
      * @param v
      * @return
      */
-    const char f(const char &v) {
+    const char f(const char& v) {
         return v;
     }
 
@@ -61,7 +61,7 @@ namespace movetk_support {
      * @param v
      * @return
      */
-    std::string f(int &v) {
+    std::string f(int& v) {
         return std::to_string(v);
     }
 
@@ -82,7 +82,7 @@ namespace movetk_support {
         TrieNode() = default;
 
     public:
-        typedef NodePtr &reference;
+        typedef NodePtr& reference;
         typedef typename V::Iterator ValuesIterator;
         typedef typename std::map<K, NodePtr>::iterator iterator;
         typedef typename std::map<K, NodePtr>::const_iterator const_iterator;
@@ -91,7 +91,7 @@ namespace movetk_support {
          *
          * @param InKey
          */
-        TrieNode(K &InKey) : key(InKey) {}
+        TrieNode(K& InKey) : key(InKey) {}
 
         /*!
          *
@@ -107,7 +107,7 @@ namespace movetk_support {
          * @param key
          * @return
          */
-        bool operator()(K &key) {
+        bool operator()(K& key) {
             it = links.find(key);
             if (it != links.end())
                 return true;
@@ -164,7 +164,7 @@ namespace movetk_support {
          * @param key
          * @return
          */
-        NodePtr &operator[](K &key) {
+        NodePtr& operator[](K& key) {
             return links[key];
         }
 
@@ -173,7 +173,7 @@ namespace movetk_support {
          * @param iter
          * @return
          */
-        NodePtr &operator()(iterator iter) {
+        NodePtr& operator()(iterator iter) {
             return iter->second;
         }
 
@@ -200,7 +200,7 @@ namespace movetk_support {
          * @param v
          */
         template<class T>
-        void insert_value(std::string &id, T &v) {
+        void insert_value(std::string& id, T& v) {
             if (ValuePtr)
                 (*ValuePtr)(v);
             else {
@@ -231,14 +231,12 @@ namespace movetk_support {
          *
          * @return
          */
-        std::string &v_id() {
+        const std::string& v_id() const {
             assert(ValuePtr);
             return (*ValuePtr)();
         }
 
         ~TrieNode() {
-            if (ValuePtr)
-                ValuePtr.release();
         }
 
     };
@@ -255,7 +253,7 @@ namespace movetk_support {
         K key;
         std::unique_ptr<V> ValuePtr;
         typedef std::unique_ptr<BinaryNode> NodePtr;
-        std::array<NodePtr, 2> links = {nullptr};
+        std::array<NodePtr, 2> links = { nullptr };
         typename std::array<NodePtr, 2>::iterator it;
         NodePtr NullNode = nullptr;
         BinaryNode() = default;
@@ -266,11 +264,11 @@ namespace movetk_support {
          */
         bool is_allocated() {
             return !std::all_of(std::begin(links), std::end(links),
-                                [&](NodePtr &nd) { return nd == nullptr; });
+                [&](NodePtr& nd) { return nd == nullptr; });
         }
 
     public:
-        typedef NodePtr &reference;
+        typedef NodePtr& reference;
         typedef typename V::Iterator ValuesIterator;
         typedef typename std::array<NodePtr, 2>::const_iterator const_iterator;
         typedef typename std::array<NodePtr, 2>::iterator iterator;
@@ -279,7 +277,7 @@ namespace movetk_support {
          *
          * @param InKey
          */
-        BinaryNode(K &InKey) : key(InKey) {}
+        BinaryNode(K& InKey) : key(InKey) {}
 
         /*!
          *
@@ -288,11 +286,13 @@ namespace movetk_support {
         void operator()(NodePtr nd) {
             if (!this->is_allocated()) {
                 links[0] = std::move(nd);
-            } else if (links.size() == 1) {
+            }
+            else if (links.size() == 1) {
                 if (links[0] > nd) {
                     links[1] = std::move(links[0]);
                     links[0] = std::move(nd);
-                } else
+                }
+                else
                     links[1] = std::move(nd);
             }
         }
@@ -303,7 +303,7 @@ namespace movetk_support {
          * @param key
          * @return
          */
-        bool operator()(K &key) {
+        bool operator()(K& key) {
 
             if (!this->is_allocated())
                 return false;
@@ -367,7 +367,7 @@ namespace movetk_support {
          * @param key
          * @return
          */
-        NodePtr &operator[](K &key) {
+        NodePtr& operator[](K& key) {
             assert(this->is_allocated());
             for (it = std::begin(links); it != std::end(links); it++) {
                 if ((**it)() == key)
@@ -381,7 +381,7 @@ namespace movetk_support {
          * @param iter
          * @return
          */
-        NodePtr &operator()(iterator iter) {
+        NodePtr& operator()(iterator iter) {
             return iter->second;
         }
 
@@ -408,7 +408,7 @@ namespace movetk_support {
          * @param v
          */
         template<class T>
-        void insert_value(std::string &id, T &v) {
+        void insert_value(std::string& id, T& v) {
             if (ValuePtr)
                 (*ValuePtr)(v);
             else {
@@ -439,7 +439,7 @@ namespace movetk_support {
          *
          * @return
          */
-        std::string &v_id() {
+        std::string& v_id() {
             assert(ValuePtr);
             return (*ValuePtr)();
         }
@@ -475,16 +475,17 @@ namespace movetk_support {
          * @param val
          */
         template<class InputIterator, class ValueType,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_arithmetic<
-                        typename InputIterator::value_type >>
-        void insert(reference node, InputIterator current, InputIterator beyond, ValueType &val) {
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_arithmetic<
+            typename InputIterator::value_type >>
+            void insert(reference node, InputIterator current, InputIterator beyond, ValueType& val) {
             //TODO Add Requirements for ValueType
             //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
             if (current == beyond) {
                 node->insert_value(identifier, val);
                 return;
-            } else {
+            }
+            else {
                 if (!(*node)(*current)) {
                     (*node)(std::make_unique<NodeType>(*current));
                 }
@@ -504,10 +505,10 @@ namespace movetk_support {
          * @return
          */
         template<class InputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_arithmetic<
-                        typename InputIterator::value_type >>
-        reference find(reference node, InputIterator current, InputIterator beyond) {
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_arithmetic<
+            typename InputIterator::value_type >>
+            reference find(reference node, InputIterator current, InputIterator beyond) {
             //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
             if (current == beyond)
                 return node;
@@ -528,17 +529,18 @@ namespace movetk_support {
          * @param iter
          */
         template<class OutputIterator,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_pair<
-                typename OutputIterator::value_type >>
-        void find(reference node, OutputIterator iter) {
+            typename = movetk_core::requires_output_iterator<OutputIterator>,
+            typename = movetk_core::requires_pair<
+            typename OutputIterator::value_type >>
+            void find(reference node, OutputIterator iter) {
             //ASSERT_OUTPUT_ITERATOR(OutputIterator);
             //ASSERT_IS_PAIR(OutputIterator);
             if (node->begin() == node->end()) {
                 size_t size = std::distance(node->v_begin(), node->v_end());
                 *iter = std::make_pair(node->v_id(), size);
                 return;
-            } else {
+            }
+            else {
                 for (auto it = node->begin(); it != node->end(); it++) {
                     this->find((*node)(it), iter);
                 }
@@ -547,7 +549,7 @@ namespace movetk_support {
 
     public:
 
-        reference get_root(){
+        reference get_root() {
             return root;
         }
 
@@ -561,7 +563,7 @@ namespace movetk_support {
 
         Tree() = default;
 
-        Tree& operator=(Tree& rhs){
+        Tree& operator=(Tree& rhs) {
             this->root = std::move(rhs.get_root());
             return *this;
         }
@@ -576,10 +578,10 @@ namespace movetk_support {
          * @param val
          */
         template<class InputIterator, class ValueType,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_arithmetic<
-                        typename InputIterator::value_type >>
-        void insert(InputIterator first, InputIterator beyond, ValueType &val) {
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_arithmetic<
+            typename InputIterator::value_type >>
+            void insert(InputIterator first, InputIterator beyond, ValueType& val) {
             //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
             identifier = "";
             this->insert(root, first, beyond, val);
@@ -593,10 +595,10 @@ namespace movetk_support {
          * @return
          */
         template<class InputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_arithmetic<
-                        typename InputIterator::value_type >>
-        reference find(InputIterator first, InputIterator beyond) {
+            typename = movetk_core::requires_random_access_iterator<InputIterator>,
+            typename = movetk_core::requires_arithmetic<
+            typename InputIterator::value_type >>
+            reference find(InputIterator first, InputIterator beyond) {
             //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
             matched_branch_length_ = 0;
             return this->find(root, first, beyond);
@@ -608,10 +610,10 @@ namespace movetk_support {
          * @param iter
          */
         template<class OutputIterator,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_pair<
-                        typename OutputIterator::value_type >>
-        void find(OutputIterator iter) {
+            typename = movetk_core::requires_output_iterator<OutputIterator>,
+            typename = movetk_core::requires_pair<
+            typename OutputIterator::value_type >>
+            void find(OutputIterator iter) {
             //ASSERT_OUTPUT_ITERATOR(OutputIterator);
             //ASSERT_IS_PAIR(OutputIterator);
             this->find(root, iter);

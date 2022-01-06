@@ -27,9 +27,9 @@
 #ifndef TEST_INCLUDES_H
 #define TEST_INCLUDES_H
 
-#include <catch2/catch.hpp>
 #include <tuple>
 #include "movetk/geom/GeometryInterface.h"
+#include "movetk/metric/Norm.h"
 
 // Setup backend structures
 #if MOVETK_WITH_CGAL_BACKEND
@@ -93,7 +93,7 @@ namespace test_helpers
         using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
         using NT = typename Backend::NT;
         // Commonly used types
-        using MovetkPoint = typename MovetkGeometryKernel::MovetkGeometryKernel;
+        using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
         using MovetkVector = typename MovetkGeometryKernel::MovetkVector;
         // Most commonly used norm
         using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
@@ -245,7 +245,7 @@ namespace test_helpers
         auto it1 = start1;
         auto it2 = start2;
         std::size_t index = 0;
-        for (; it1 != end1 && it2 != end2; ++it1, ++it2,++index) {
+        for (; it1 != end1 && it2 != end2; ++it1, ++it2, ++index) {
             if (*it1 != *it2) {
                 if (output_failure) {
                     std::cout << "Range were not equal at index " << index << '\n';
@@ -253,9 +253,9 @@ namespace test_helpers
                 return false;
             }
         }
-        if (it1 != end1 || it2 != end2) { 
+        if (it1 != end1 || it2 != end2) {
             std::cout << "Ranges are of unequal lenght\n";
-            return false; 
+            return false;
         }
         return true;
     }

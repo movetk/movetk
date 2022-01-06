@@ -43,6 +43,13 @@ add_executable(movetk_tests
         test_agarwal.cpp
         )
 
+if(MSVC)
+    target_precompile_headers(movetk_tests
+      PRIVATE test_includes.h
+    )
+endif()
+
+include(Catch)
 target_link_libraries(movetk_tests
         PRIVATE
         c2d::movetk
@@ -50,7 +57,6 @@ target_link_libraries(movetk_tests
         )
 
 include(CTest)
-include(Catch)
 
 add_custom_command( TARGET movetk_tests POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E echo "Copying dependencies:" $<JOIN:$<TARGET_RUNTIME_DLLS:movetk_tests>,",">

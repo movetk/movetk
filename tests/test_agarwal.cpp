@@ -23,7 +23,7 @@
 #include <catch2/catch.hpp>
 
  // Defines the geometry kernel
-#include "test_includes.h"
+#include "test_includes.h" 
 
 #include "movetk/metric/Distances.h"
 #include "movetk/metric/Norm.h"

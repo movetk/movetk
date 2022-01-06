@@ -21,13 +21,8 @@
 // Created by Mitra, Aniket on 29/01/2019.
 //
 
-#define CGAL_BACKEND_ENABLED 0
 
-#if CGAL_BACKEND_ENABLED
-#include "movetk/geom/CGALTraits.h"
-#else
-#include "movetk/geom/BoostGeometryTraits.h"
-#endif
+#include <tuple>
 
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
@@ -35,60 +30,62 @@
 #include "movetk/ds/FreeSpaceDiagram.h"
 #include "movetk/io/TuplePrinter.h"
 
-struct GeometryKernel
-{
 
-#if CGAL_BACKEND_ENABLED
-    //==============================
-    // Define the Number Type
-    // For the CGAL backend,
-    // One can choose from the
-    // following number types
-    typedef long double NT;
-    //typedef CGAL::Mpzf NT;
-    //typedef CGAL::Gmpfr NT;
-    //typedef CGAL::Gmpq NT;
-    //==============================
-
-    //==============================
-    // Define the Dimensions
-    // It is possible to choose
-    // a higher dimension
-    const static size_t dimensions = 2;
-    //const size_t dimensions = 7;
-    //==============================
-
-    //==============================
-    // Define the Geometry Backend
-    typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
-    //Using the Geometry Backend define the Movetk Geometry Kernel
-    typedef movetk_core::MovetkGeometryKernel<
-        typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry>
-        MovetkGeometryKernel;
+// Setup backend structures
+#if MOVETK_WITH_CGAL_BACKEND
+#include "movetk/geom/CGALTraits.h"
+namespace movetk::backends {
+    struct CGALBackend {
+        using NT = long double;
+        static constexpr size_t dimensions = 2;
+        // Define the Geometry Backend
+        using GeometryBackend = movetk_support::CGALTraits<NT, dimensions>;
+        //Using the Geometry Backend define the Movetk Geometry Kernel
+        using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<
+            typename GeometryBackend::Wrapper_CGAL_Geometry
+        >;
+    };
+}
 #else
-    //==============================
-    // Define the Number Type
-    // For the Boost Backend
-    typedef long double NT;
-    //==============================
-
-    //==============================
-    // Define the Dimensions
-    // It is possible to choose
-    // a higher dimension
-    // Note: Boost Geometry Adapter supports geometry in two
-    // dimensions only
-    const static size_t dimensions = 2;
-    //==============================
-
-    //==============================
-    // Define the Geometry Backend
-    typedef movetk_support::BoostGeometryTraits<long double, dimensions> Boost_Geometry_Backend;
-    //Using the Geometry Backend define the Movetk Geometry Kernel
-    typedef movetk_core::MovetkGeometryKernel<typename Boost_Geometry_Backend::Wrapper_Boost_Geometry> MovetkGeometryKernel;
-    //==============================
+#endif
+#if MOVETK_WITH_BOOST_BACKEND
+#include "movetk/geom/BoostGeometryTraits.h"
+namespace movetk::backends {
+    struct BoostBackend {
+        using NT = long double;
+        static constexpr size_t dimensions = 2;
+        // Define the Geometry Backend
+        using GeometryBackend = movetk_support::BoostGeometryTraits<NT, dimensions>;
+        //Using the Geometry Backend define the Movetk Geometry Kernel
+        using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<
+            typename GeometryBackend::Wrapper_Boost_Geometry
+        >;
+    };
+}
 #endif
 
+namespace movetk::backends {
+    template<typename T> struct remove_first_type;
+    template<typename T, typename...Ts>
+    struct remove_first_type < std::tuple<T, Ts...>> {
+        using type = std::tuple<Ts...>;
+    };
+    struct noop {};
+
+    using AvailableBackends = typename remove_first_type<std::tuple<
+        noop
+#if MOVETK_WITH_BOOST_BACKEND
+        , BoostBackend
+#endif
+#if MOVETK_WITH_CGAL_BACKEND
+        , CGALBackend
+#endif
+        >>::type;
+    static_assert(std::tuple_size_v<AvailableBackends> > 0);
+}
+
+struct GeometryKernel : public std::tuple_element_t<0,movetk::backends::AvailableBackends>
+{
     typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
 
     typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
