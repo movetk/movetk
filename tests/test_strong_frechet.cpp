@@ -20,7 +20,7 @@
 #include <array>
 #include "catch2/catch.hpp"
 
-// Defines the geometry kernel
+ // Defines the geometry kernel
 #include "test_includes.h"
 
 #include <movetk/metric/Distances.h>
@@ -34,8 +34,6 @@
         REQUIRE(cond);             \
     } while ((void)0, 0)
 
-// The norm to be used in weak Frechet distance computations.
-typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
 
 struct StrongFrechetTestCase
 {
@@ -225,33 +223,47 @@ std::map<std::string, StrongFrechetTestCase> testCases{
             128 736 l
             </path>
             </ipeselection>
-            )IPE"}}};
+            )IPE"}} };
 
-TEST_CASE("Check if polyline strong Frechet distance is correct", "[strong_frechet]")
-{
-    using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
+template<typename Backend>
+struct StrongFrechetTests {
+    using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+    // The norm to be used in weak Frechet distance computations.
+    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
     using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
+    using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, SqDistance>;
+    using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
+    using NT = typename MovetkGeometryKernel::NT;
+    using PointList = std::vector<MovetkPoint>;
+    static void parseIpePath(const std::string& pathData, std::vector<MovetkPoint>& points) {
+        test_helpers::parseIpePath<MovetkGeometryKernel>(pathData, points);
+    }
+};
+
+const char* SFR_TAG = "[strong_frechet]";
+
+TEMPLATE_LIST_TEST_CASE_METHOD(StrongFrechetTests, "Check if polyline strong Frechet distance is correct", SFR_TAG, movetk::test::AvailableBackends)
+{
     // Initialize algorithm.
-    movetk_support::StrongFrechet<MovetkGeometryKernel, SqDistance> sfr;
+    SFR sfr;
     sfr.setMode(SFR::Mode::DoubleAndSearch);
     sfr.setTolerance(0.0001);
 
     // Distance computer for expected distance
     SqDistance sqDist;
 
-    for (const auto &pair : testCases)
+    for (const auto& pair : testCases)
     {
         StrongFrechetTestCase tc = pair.second;
         SECTION(pair.first)
         {
             // Read input
-            std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
-            test_helpers::parseIpePath(tc.polyA, polyA);
-            std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
-            test_helpers::parseIpePath(tc.polyB, polyB);
+            PointList polyA, polyB;
+            parseIpePath(tc.polyA, polyA);
+            parseIpePath(tc.polyB, polyB);
             // Expected distance element
-            std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
-            test_helpers::parseIpePath(tc.expectedLine, expectedDistLine);
+            PointList expectedDistLine;
+            parseIpePath(tc.expectedLine, expectedDistLine);
             // Compute expected distance
             auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 
@@ -268,12 +280,10 @@ TEST_CASE("Check if polyline strong Frechet distance is correct", "[strong_frech
     }
 }
 
-TEST_CASE("Check if polyline strong Frechet distance is correct with upperbounded search", "[strong_frechet]")
+TEMPLATE_LIST_TEST_CASE_METHOD(StrongFrechetTests, "Check if polyline strong Frechet distance is correct with upperbounded search", SFR_TAG, movetk::test::AvailableBackends)
 {
-    using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
-    using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
     // Initialize algorithm.
-    movetk_support::StrongFrechet<MovetkGeometryKernel, SqDistance> sfr;
+    SFR sfr;
     sfr.setMode(SFR::Mode::BisectionSearch);
     sfr.setTolerance(0.0001);
 
@@ -281,23 +291,22 @@ TEST_CASE("Check if polyline strong Frechet distance is correct with upperbounde
     SqDistance sqDist;
 
     // Test fractions of known distance
-    std::vector<MovetkGeometryKernel::NT> fractions = {0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000};
-    std::vector<bool> expectSuccess = {false, false, false, false, true, true, true, true};
+    std::vector<NT> fractions = { 0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000 };
+    std::vector<bool> expectSuccess = { false, false, false, false, true, true, true, true };
 
-    for (const auto &pair : testCases)
+    for (const auto& pair : testCases)
     {
         std::string testCaseName = pair.first;
         StrongFrechetTestCase tc = pair.second;
         SECTION(testCaseName)
         {
             // Read input
-            std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
-            test_helpers::parseIpePath(tc.polyA, polyA);
-            std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
-            test_helpers::parseIpePath(tc.polyB, polyB);
+            PointList polyA, polyB;
+            parseIpePath(tc.polyA, polyA);
+            parseIpePath(tc.polyB, polyB);
             // Expected distance element
-            std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
-            test_helpers::parseIpePath(tc.expectedLine, expectedDistLine);
+            PointList expectedDistLine;
+            parseIpePath(tc.expectedLine, expectedDistLine);
             // Compute expected distance
             auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 
@@ -328,7 +337,7 @@ TEST_CASE("Check if polyline strong Frechet distance is correct with upperbounde
     }
 }
 
-TEST_CASE("Check if decision strong Frechet distance is correct", "[strong_frechet]")
+TEMPLATE_LIST_TEST_CASE_METHOD(StrongFrechetTests,"Check if decision strong Frechet distance is correct", "[strong_frechet]",movetk::test::AvailableBackends)
 {
     using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
     using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
@@ -340,23 +349,22 @@ TEST_CASE("Check if decision strong Frechet distance is correct", "[strong_frech
     SqDistance sqDist;
 
     // Test fractions of known distance
-    std::vector<MovetkGeometryKernel::NT> fractions = {0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000};
-    std::vector<bool> expectSuccess = {false, false, false, false, true, true, true, true};
+    std::vector<NT> fractions = { 0.1, 0.4, 0.55, 0.8, 1.0, 1.2, 5.0, 1000 };
+    std::vector<bool> expectSuccess = { false, false, false, false, true, true, true, true };
 
-    for (const auto &pair : testCases)
+    for (const auto& pair : testCases)
     {
         std::string testCaseName = pair.first;
         StrongFrechetTestCase tc = pair.second;
         SECTION(testCaseName)
         {
             // Read input
-            std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
-            test_helpers::parseIpePath(tc.polyA, polyA);
-            std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
-            test_helpers::parseIpePath(tc.polyB, polyB);
+            PointList polyA, polyB;
+            parseIpePath(tc.polyA, polyA);
+            parseIpePath(tc.polyB, polyB);
             // Expected distance element
-            std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
-            test_helpers::parseIpePath(tc.expectedLine, expectedDistLine);
+            PointList expectedDistLine;
+            parseIpePath(tc.expectedLine, expectedDistLine);
             // Compute expected distance
             auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 

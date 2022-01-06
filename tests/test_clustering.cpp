@@ -17,20 +17,14 @@
  * License-Filename: LICENSE
  */
 
-//
-// Created by Mitra, Aniket on 03/10/2019.
-//
+ //
+ // Created by Mitra, Aniket on 03/10/2019.
+ //
 
 #include <array>
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
-#if CGAL_BACKEND_ENABLED
-#include "movetk/geom/CGALTraits.h"
-#else
-
-#include "movetk/geom/BoostGeometryTraits.h"
-
-#endif
+#include "test_includes.h"
 
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/utils/Iterators.h"
@@ -40,70 +34,22 @@
 #include "movetk/algo/AlgorithmTraits.h"
 #include "movetk/algo/Clustering.h"
 
-using namespace std;
 
-#if CGAL_BACKEND_ENABLED
-//==============================
-    // Define the Number Type
-    // For the CGAL backend,
-    // One can choose from the
-    // following number types
-    typedef long double NT;
-    //typedef CGAL::Mpzf NT;
-    //typedef CGAL::Gmpfr NT;
-    //typedef CGAL::Gmpq NT;
-    //==============================
 
-    //==============================
-    // Define the Dimensions
-    const size_t dimensions = 2;
-    //==============================
-
-    //==============================
-    // Define the Geometry Backend
-    typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
-    //Using the Geometry Backend define the Movetk Geometry Kernel
-    typedef movetk_core::MovetkGeometryKernel<
-            typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
-    //==============================
-#else
-//==============================
-// Define the Number Type
-// For the Boost Backend
-typedef long double NT;
-//==============================
-
-//==============================
-// Define the Dimensions
-// It is possible to choose
-// a higher dimension
-// Note: Boost Geometry Adapter supports geometry in two
-// dimensions only
-const static size_t dimensions = 2;
-//==============================
-
-//==============================
-// Define the Geometry Backend
-typedef movetk_support::BoostGeometryTraits<long double, dimensions> Boost_Geometry_Backend;
-//Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk_core::MovetkGeometryKernel<typename Boost_Geometry_Backend::Wrapper_Boost_Geometry> MovetkGeometryKernel;
-//==============================
-#endif
-
-typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
-
-TEST_CASE("Check subtrajectory clustering 1", "[subtrajectory_clustering_1]") {
-    typedef typename MovetkGeometryKernel::NT NT;
-    typedef typename MovetkGeometryKernel::MovetkPoint MovetkPoint;
-    typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_segment_intersection_tag> IntersectionTraits;
-    typedef movetk_support::FreeSpaceCellTraits<IntersectionTraits> FreeSpaceCellTraits;
-    typedef movetk_support::FreeSpaceCell<FreeSpaceCellTraits> FreeSpaceCell;
-    typedef movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;
-    typedef movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits> FreeSpaceDiagram;
-    typedef movetk_algorithms::ClusteringTraits<FreeSpaceDiagram> ClusteringTraits;
-    typedef movetk_algorithms::SubTrajectoryClustering<ClusteringTraits> SubTrajectoryClustering;
+MOVETK_TEMPLATE_LIST_TEST_CASE("Check subtrajectory clustering 1", "[subtrajectory_clustering_1]") {
+    using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
+    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
+    using NT = typename MovetkGeometryKernel::NT;
+    using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
+    using IntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_segment_intersection_tag>;
+    using FreeSpaceCellTraits = movetk_support::FreeSpaceCellTraits<IntersectionTraits>;
+    using FreeSpaceCell = movetk_support::FreeSpaceCell<FreeSpaceCellTraits>;
+    using FreeSpaceDiagramTraits = movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell>;
+    using FreeSpaceDiagram = movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
+    using ClusteringTraits = movetk_algorithms::ClusteringTraits<FreeSpaceDiagram>;
+    using SubTrajectoryClustering = movetk_algorithms::SubTrajectoryClustering<ClusteringTraits>;
     movetk_core::MakePoint<MovetkGeometryKernel> make_point;
-    std::vector<MovetkGeometryKernel::MovetkPoint> polyline_a{
+    std::vector<MovetkPoint> polyline_a{
             make_point({69.5, 10.5}), make_point({70, 11}),
             make_point({70.1511, 11.5301}), make_point({69.9253, 11.89154}),
             make_point({70.1511, 11.5301}),  make_point({69.9253, 11.89154}),
@@ -123,26 +69,26 @@ TEST_CASE("Check subtrajectory clustering 1", "[subtrajectory_clustering_1]") {
     };
 
 
-    SubTrajectoryClustering clustering(std::begin(polyline_a),std::end(polyline_a), 3,0.5);
-    std::cout<<"Number of edges:"<<std::distance(clustering.edges_begin(),clustering.edges_end())<<"\n";
+    SubTrajectoryClustering clustering(std::begin(polyline_a), std::end(polyline_a), 3, 0.5);
+    std::cout << "Number of edges:" << std::distance(clustering.edges_begin(), clustering.edges_end()) << "\n";
     /*std::copy(clustering.edges_begin(), clustering.edges_end(),
               std::ostream_iterator<ClusteringTraits::Graph::edge_descriptor>{std::cout, "\n"});*/
 
     auto eit = clustering.edges_begin();
-    std::cout<<"Edges: {";
-    while (eit != clustering.edges_end()){
-        std::cout<<"(";
-        std::cout<<*eit;
-        std::cout<<",";
-        std::cout<<clustering.label[*eit];
-        std::cout<<");";
+    std::cout << "Edges: {";
+    while (eit != clustering.edges_end()) {
+        std::cout << "(";
+        std::cout << *eit;
+        std::cout << ",";
+        std::cout << clustering.label[*eit];
+        std::cout << ");";
         eit++;
     }
-    std::cout<<"}\n";
+    std::cout << "}\n";
 
-    std::cout<<"Subtrajectory Length: "<<clustering.get_subtrajectory_cluster_length()<<"\n";
-    std::cout<<"Subtrajectory Index: "<<clustering.get_subtrajectory_indices().first
-             <<","<<clustering.get_subtrajectory_indices().second<<"\n";
+    std::cout << "Subtrajectory Length: " << clustering.get_subtrajectory_cluster_length() << "\n";
+    std::cout << "Subtrajectory Index: " << clustering.get_subtrajectory_indices().first
+        << "," << clustering.get_subtrajectory_indices().second << "\n";
     REQUIRE(clustering.get_subtrajectory_cluster_length() == 4);
     REQUIRE(clustering.get_subtrajectory_indices().first == 2);
     REQUIRE(clustering.get_subtrajectory_indices().second == 6);

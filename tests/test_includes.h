@@ -83,8 +83,22 @@ namespace movetk::test {
         >>::type;
 }
 
+#define MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(test_class, test_name, test_tags) TEMPLATE_LIST_TEST_CASE_METHOD(test_class, test_name, test_tags, movetk::test::AvailableBackends)
+#define MOVETK_TEMPLATE_LIST_TEST_CASE(test_name, test_tags) TEMPLATE_LIST_TEST_CASE(test_name, test_tags, movetk::test::AvailableBackends)
+
 namespace test_helpers
 {
+    template<typename Backend>
+    struct BaseTestFixture {
+        using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+        using NT = typename Backend::NT;
+        // Commonly used types
+        using MovetkPoint = typename MovetkGeometryKernel::MovetkGeometryKernel;
+        using MovetkVector = typename MovetkGeometryKernel::MovetkVector;
+        // Most commonly used norm
+        using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
+    };
+
     namespace detail
     {
         inline bool startsWith(const std::string& str, int offset, const std::string& toSearch, bool ignoreWs)
@@ -115,6 +129,7 @@ namespace test_helpers
     template<typename MovetkGeometryKernel>
     inline void parseIpePath(const std::string& pathData, std::vector<typename MovetkGeometryKernel::MovetkPoint>& points)
     {
+        using NT = typename MovetkGeometryKernel::NT;
         movetk_core::MakePoint<MovetkGeometryKernel> make_point;
         int i = 0;
         for (; i < pathData.size(); ++i)
@@ -224,5 +239,30 @@ namespace test_helpers
     {
         return std::abs(v0 - v1) < tolerance;
     }
+
+    template<typename InputIterator1, typename InputIterator2>
+    bool range_has_same_value(InputIterator1 start1, InputIterator1 end1, InputIterator2 start2, InputIterator2 end2, bool output_failure = false) {
+        auto it1 = start1;
+        auto it2 = start2;
+        std::size_t index = 0;
+        for (; it1 != end1 && it2 != end2; ++it1, ++it2,++index) {
+            if (*it1 != *it2) {
+                if (output_failure) {
+                    std::cout << "Range were not equal at index " << index << '\n';
+                }
+                return false;
+            }
+        }
+        if (it1 != end1 || it2 != end2) { 
+            std::cout << "Ranges are of unequal lenght\n";
+            return false; 
+        }
+        return true;
+    }
+    template<typename RangeLike1, typename RangeLike2>
+    bool range_has_same_value(RangeLike1 range1, RangeLike2 range2, bool output_failure = false) {
+        return range_has_same_value(std::begin(range1), std::end(range1), std::begin(range2), std::end(range2), output_failure);
+    }
+
 } // namespace test_helpers
 #endif

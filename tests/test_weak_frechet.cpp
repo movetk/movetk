@@ -25,45 +25,44 @@
 
 
 #include <array>
-#include "catch2/catch.hpp"
-#if CGAL_BACKEND_ENABLED
-#include "movetk/geom/CGALTraits.h"
-#else
+#include <catch2/catch.hpp>
 
-#include "movetk/geom/BoostGeometryTraits.h"
-#endif
+#include "test_includes.h"
 
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 #include "movetk/metric/Norm.h"
-#include <movetk/metric/Distances.h>
+#include "movetk/metric/Distances.h"
 
 // Helpers for testing
 #include "test_includes.h"
 
 using namespace std;
 
-// The norm to be used in weak Frechet distance computations.
-typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
 
 
-TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
-    movetk_support::WeakFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>> wfr{};
-    movetk_support::squared_distance_d<MovetkGeometryKernel, Norm> sqDist;
-    SECTION("Simple spike example")
-    {
-        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
-        test_helpers::parseIpePath(R"IPE(<path>
+struct WeakFrechetTestCase
+{
+    // Two input lines, given as ipe paths, followed by the expected distance line.
+    // Only the length of segment of expectedLine will be used.
+    std::string polyA, polyB, expectedDistLine;
+};
+
+std::map<std::string, WeakFrechetTestCase> test_cases{
+    {"Simple spike example",
+     WeakFrechetTestCase{
+         R"IPE(
+        <path>
         96 448 m
         192 448 l
         256 448 l
         320 448 l
         384 448 l
         </path>
-        )IPE", polyA);
-        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
-        test_helpers::parseIpePath(R"IPE(<path>
+        )IPE",
+         R"IPE(
+        <path>
         96 448 m
         128 448 l
         144 448 l
@@ -74,26 +73,19 @@ TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
         304 448 l
         384 448 l
         </path>
-        )IPE", polyB);
-        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
-        test_helpers::parseIpePath(R"IPE(
+        )IPE",
+         R"IPE(
         <path>
         208 448 m
         208 512 l
         </path>
-        )IPE", expectedDistLine);
-
-
-        auto dist = wfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
-
-        auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
-
-        REQUIRE(abs(dist - expectedDist) < MOVETK_EPS);
-    }
-    SECTION("Interweaved grid example")
+        )IPE"}
+    },
     {
-        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
-        test_helpers::parseIpePath(R"IPE(<ipeselection pos="160 384">
+        "Interweaved grid example",
+        WeakFrechetTestCase{
+        R"IPE(
+        <ipeselection pos="160 384">
         <path stroke="darkred" pen="heavier" arrow="normal/normal">
         128 384 m
         320 384 l
@@ -110,10 +102,10 @@ TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
         128 192 l
         320 192 l
         </path>
-        </ipeselection>)IPE", polyA);
-
-        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
-        test_helpers::parseIpePath(R"IPE( <ipeselection>
+        </ipeselection>
+        )IPE",
+         R"IPE(
+        <ipeselection>
         <path>
         128 384 m
         128 192 l
@@ -131,79 +123,60 @@ TEST_CASE("Check Weak frechet distance between polylines","[weak_frechet]"){
         320 192 l
         </path>
         </ipeselection>
-        )IPE", polyB);
-
-        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
-        test_helpers::parseIpePath(R"IPE( <ipeselection>
+        )IPE",
+         R"IPE(
+        <ipeselection>
         <path>
         352 384 m
         352 192 l
         </path>
         </ipeselection>
-        )IPE", expectedDistLine);
+        )IPE"
+        }
+    }
+};
 
-        auto dist = wfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
+template<typename Backend>
+struct WeakFrechetTests {
+    using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+    // The norm to be used in weak Frechet distance computations.
+    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
+    using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
+    using WFR = movetk_support::WeakFrechet<MovetkGeometryKernel, SqDistance>;
+    using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
+    using NT = typename MovetkGeometryKernel::NT;
+    using PointList = std::vector<MovetkPoint>;
+    static void parseIpePath(const std::string& pathData, std::vector<MovetkPoint>& points) {
+        test_helpers::parseIpePath<MovetkGeometryKernel>(pathData, points);
+    }
+};
 
-        auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
-
-        REQUIRE(abs(dist - expectedDist) < MOVETK_EPS);
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,"Check Weak frechet distance between polylines","[weak_frechet]"){
+    WFR wfr{};
+    SqDistance sqDist;
+    for (const auto& [test_case_name, test_data] : test_cases) {
+        SECTION(test_case_name) {
+            PointList polyA, polyB, expectedDistLine;
+            parseIpePath(test_data.polyA, polyA);
+            parseIpePath(test_data.polyB, polyB);
+            parseIpePath(test_data.expectedDistLine, expectedDistLine);
+            auto dist = wfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
+            auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
+            REQUIRE(abs(dist - expectedDist) < MOVETK_EPS);
+        }
     }
 }
-TEST_CASE("Check Weak frechet matching between polylines", "[weak_frechet]") {
-    movetk_support::WeakFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>> wfr{};
-    movetk_support::squared_distance_d<MovetkGeometryKernel, Norm> sqDist;
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests, "Check Weak frechet matching between polylines", "[weak_frechet]") {
+    WFR wfr{};
+    SqDistance sqDist;
 
     SECTION("Interweaved grid example")
     {
-        std::vector<MovetkGeometryKernel::MovetkPoint> polyA;
-        test_helpers::parseIpePath(R"IPE(<ipeselection pos="160 384">
-        <path stroke="darkred" pen="heavier" arrow="normal/normal">
-        128 384 m
-        320 384 l
-        320 352 l
-        128 352 l
-        128 320 l
-        320 320 l
-        320 288 l
-        128 288 l
-        128 256 l
-        320 256 l
-        320 224 l
-        128 224 l
-        128 192 l
-        320 192 l
-        </path>
-        </ipeselection>)IPE", polyA);
-
-        std::vector<MovetkGeometryKernel::MovetkPoint> polyB;
-        test_helpers::parseIpePath(R"IPE( <ipeselection>
-        <path>
-        128 384 m
-        128 192 l
-        160 192 l
-        160 384 l
-        192 384 l
-        192 192 l
-        224 192 l
-        224 384 l
-        256 384 l
-        256 192 l
-        288 192 l
-        288 384 l
-        320 384 l
-        320 192 l
-        </path>
-        </ipeselection>
-        )IPE", polyB);
-
-        std::vector<MovetkGeometryKernel::MovetkPoint> expectedDistLine;
-        test_helpers::parseIpePath(R"IPE( <ipeselection>
-        <path>
-        352 384 m
-        352 192 l
-        </path>
-        </ipeselection>
-        )IPE", expectedDistLine);
+        const auto& test_data = test_cases.at("Interweaved grid example");
+        PointList polyA, polyB, expectedDistLine;
+        parseIpePath(test_data.polyA, polyA);
+        parseIpePath(test_data.polyB, polyB);
+        parseIpePath(test_data.expectedDistLine, expectedDistLine);
 
         auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 
@@ -225,7 +198,7 @@ TEST_CASE("Check Weak frechet matching between polylines", "[weak_frechet]") {
         // Maximum distance should be approximately the expected distance
         REQUIRE(std::abs(maxDist - expectedDist) < MOVETK_EPS);
 
-        //We can not really reason about the matching since there are multiple ways to go about this.
+        // We can not really reason about the matching since there are multiple ways to go about this.
         // But we atleast check that there is some place where we temporarily move backwards
         int backwardsMatchMoveCount = 0;
         for(int i = 2; i < matching.size(); ++i)

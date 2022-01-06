@@ -18,13 +18,10 @@
  */
 
 
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include <iostream>
 #include <string>
-//#include <sstream>
-//#include <type_traits>
-//#include "movetk/io/csv/csv.h"
 #include "movetk/io/TuplePrinter.h"
 #include "movetk/io/ProbeTraits.h"
 #include "movetk/io/Splitter.h"
@@ -36,25 +33,19 @@
 
 
 TEST_CASE( "Splitter", "[splitter]" ) {
+    auto create_probe_parsedate = [](const std::string& str) {
+        here::c2d::raw::ProbeParseDate date;
+        std::istringstream stream(str);
+        stream >> date;
+        return date;
+    };
 
-    here::c2d::raw::ProbeParseDate d0;
-    std::istringstream is0("2018-09-18 00:58:02");
-    is0 >> d0;
-    here::c2d::raw::ProbeParseDate d1;
-    std::istringstream is1("2018-09-18 00:58:12");
-    is1 >> d1;
-    here::c2d::raw::ProbeParseDate d2;
-    std::istringstream is2("2018-09-18 00:58:22");
-    is2 >> d2;
-    here::c2d::raw::ProbeParseDate d3;
-    std::istringstream is3("2018-09-18 00:58:42");
-    is3 >> d3;
-    here::c2d::raw::ProbeParseDate d4;
-    std::istringstream is4("2018-09-18 00:58:52");
-    is4 >> d4;
-    here::c2d::raw::ProbeParseDate d5;
-    std::istringstream is5("2018-09-18 00:58:57");
-    is5 >> d5;
+    auto d0 = create_probe_parsedate("2018-09-18 00:58:02");
+    auto d1 = create_probe_parsedate("2018-09-18 00:58:12");
+    auto d2 = create_probe_parsedate("2018-09-18 00:58:22");
+    auto d3 = create_probe_parsedate("2018-09-18 00:58:42");
+    auto d4 = create_probe_parsedate("2018-09-18 00:58:52");
+    auto d5 = create_probe_parsedate("2018-09-18 00:58:57");
 
     using Row = std::tuple<std::string, std::string, int, float, here::c2d::raw::ProbeParseDate, float>;
     Row row0 {"abc", "def", 5, 1.2, d0, 50.2};
@@ -77,11 +68,6 @@ TEST_CASE( "Splitter", "[splitter]" ) {
 
         int i = 0;
         for (const auto& rows : splitter) {
-            std::cout << "Rows for split " << i << '\n';
-            for (const auto& row: rows) {
-                print_tuple(std::cout, row);
-                std::cout << '\n';
-            }
             REQUIRE( std::get<0>(rows[0]) == expected_field_values[i] );
             REQUIRE( rows.size() == expected_split_size[i] );
             i++;
@@ -101,11 +87,6 @@ TEST_CASE( "Splitter", "[splitter]" ) {
 
         int i = 0;
         for (const auto& rows : splitter) {
-            std::cout << "Rows for split " << i << '\n';
-            for (const auto& row: rows) {
-                print_tuple(std::cout, row);
-                std::cout << '\n';
-            }
             REQUIRE( std::get<0>(rows[0]) == expected_field_values[i] );
             REQUIRE( rows.size() == expected_split_size[i] );
             i++;
@@ -125,11 +106,6 @@ TEST_CASE( "Splitter", "[splitter]" ) {
 
         int i = 0;
         for (const auto& rows : splitter) {
-            std::cout << "Rows for split " << i << '\n';
-            for (const auto& row: rows) {
-                print_tuple(std::cout, row);
-                std::cout << '\n';
-            }
             REQUIRE( std::get<0>(rows[0]) == expected_field_values[i] );
             REQUIRE( rows.size() == expected_split_size[i] );
             i++;
@@ -138,10 +114,6 @@ TEST_CASE( "Splitter", "[splitter]" ) {
     }
 
     SECTION( "Split by distance threshold" ) {
-//        std::array<std::string, 6> expected_field_values = {"abc", "ddd"};
-//        std::array<std::size_t, 6> expected_split_size = {3, 3};
-//        int expected_split_count = 2;
-
         using SplitByDist = SplitByDistanceThreshold<3, 5, Row>;
         std::function<double(float, float, float, float)> distancefn = distance_exact;
         SplitByDist split_by_dist(110000.0, distancefn);
@@ -150,19 +122,10 @@ TEST_CASE( "Splitter", "[splitter]" ) {
 
         int i = 0;
         for (const auto& rows : splitter) {
-            std::cout << "Rows for split " << i << '\n';
-            for (const auto& row: rows) {
-                print_tuple(std::cout, row);
-                std::cout << '\n';
-            }
 //            REQUIRE( std::get<0>(rows[0]) == expected_field_values[i] );
 //            REQUIRE( rows.size() == expected_split_size[i] );
             i++;
         }
 //        REQUIRE( i == expected_split_count );
     }
-
-//    SECTION( "Line without new line is not read" ) {
-//
-//    }
 }

@@ -17,7 +17,7 @@
  * License-Filename: LICENSE
  */
 
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include <iostream>
 #include <string>
@@ -53,6 +53,8 @@ TEST_CASE("Trajectory GDAL", "[trajectory-gdal]")
     std::cout << wktStr << std::endl;
     CPLFree(wktStr);
     mp->empty();
+
+    //TODO: expectations?
 }
 
 TEST_CASE("Intersection", "[intersection]")
@@ -98,13 +100,6 @@ TEST_CASE("Intersection", "[intersection]")
 #else
         mp2.importFromWkt((const char **)&mpWkt2);
 #endif
-
-        //        char* p2wkt;
-        //        p2.exportToWkt(&p2wkt);
-        //        char* mp2wkt;
-        //        mp2.exportToWkt(&mp2wkt);
-        //        std::cout << p2wkt << std::endl;
-        //        std::cout << mp2wkt << std::endl;
         REQUIRE(intersects(&p2, &mp2));
     }
 }
