@@ -24,28 +24,35 @@
 #ifndef MOVETK_HERETRAJECTORYTRAITS_H
 #define MOVETK_HERETRAJECTORYTRAITS_H
 
-#include "movetk/io/TrajectoryTraits.h"
 #include "HereProbeTraits.h"
 #include "movetk/ds/ColumnarTrajectory.h"
 #include "movetk/ds/TabularTrajectory.h"
+#include "movetk/io/TrajectoryTraits.h"
 
-namespace here
-{
-    namespace c2d
-    {
-        namespace raw
-        {
+namespace here::c2d::raw {
 
-            typedef here::c2d::raw::ProbeTraits ProbeTraits;
-            constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::PROBE_ID;
-            constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::SAMPLE_DATE;
-            using columnar_trajectory_type = ColumnarTrajectory<std::string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
-            using tabular_trajectory_type = TabularTrajectory<std::string, ProbeParseDate, double, double, double, double, here::c2d::raw::ProviderCategoricalField>;
+typedef here::c2d::raw::ProbeTraits ProbeTraits;
+constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::PROBE_ID;
+constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::SAMPLE_DATE;
+using columnar_trajectory_type = ColumnarTrajectory<std::string,
+                                                    ProbeParseDate,
+                                                    double,
+                                                    double,
+                                                    double,
+                                                    double,
+                                                    here::c2d::raw::ProviderCategoricalField>;
+using tabular_trajectory_type = TabularTrajectory<std::string,
+                                                  ProbeParseDate,
+                                                  double,
+                                                  double,
+                                                  double,
+                                                  double,
+                                                  here::c2d::raw::ProviderCategoricalField>;
 
-            using ColumnarTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, columnar_trajectory_type>;
-            using TabularTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, tabular_trajectory_type>;
-        } // namespace raw
-    }     // namespace c2d
-} // namespace here
+using ColumnarTrajectoryTraits =
+    _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, columnar_trajectory_type>;
+using TabularTrajectoryTraits =
+    _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, tabular_trajectory_type>;
+}  // namespace here::c2d::raw
 
-#endif //MOVETK_HERETRAJECTORYTRAITS_H
+#endif  // MOVETK_HERETRAJECTORYTRAITS_H

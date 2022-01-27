@@ -27,29 +27,32 @@
  * @brief  Python bindings for Movetk Geometry
  * @version 0.1
  * @date 2020-09-26
- * 
+ *
  */
 
 #include <movetk/utils/GeometryBackendTraits.h>
-#include "movetk/metric/DistanceInterface.h"
 #include <pybind11/pybind11.h>
+
 #include "Geometry.h"
-#include "Simplification.h"
 #include "Similarity.h"
+#include "Simplification.h"
+#include "movetk/metric/DistanceInterface.h"
 
 // TODO: replace with choices.
-using GeomKernel = MoveTkBoostKernel_2_ld;
-using MovetkGeometryKernel = GeomKernel::MovetkGeometryKernel;
+namespace PyMoveTk {
+using Backend = movetk::BaseGeometryKernel<movetk::backends::BoostBackend>;
+using GeometryKernel = Backend::GeometryBackend;
+using MovetkGeometryKernel = Backend::MovetkGeometryKernel;
+}  // namespace PyMoveTk
 
-PYBIND11_MODULE(PyMoveTk, m)
-{
-    // Or maybe not. Depends on what we consider top level
-    auto geometry_module = m.def_submodule("geometry","MoveTk geometric objects");
-    PyMoveTk::GeometryModule<MovetkGeometryKernel>::register_module(geometry_module);
+PYBIND11_MODULE(PyMoveTk, m) {
+	// Or maybe not. Depends on what we consider top level
+	auto geometry_module = m.def_submodule("geometry", "MoveTk geometric objects");
+	PyMoveTk::GeometryModule<PyMoveTk::Backend, PyMoveTk::Backend::Norm>::register_module(geometry_module);
 
-    auto simplification_module = m.def_submodule("simplification", "MoveTk geometric objects");
-    PyMoveTk::SimplificationModule<GeomKernel>::register_module(simplification_module);
+	auto simplification_module = m.def_submodule("simplification", "MoveTk geometric objects");
+	PyMoveTk::SimplificationModule<PyMoveTk::Backend, PyMoveTk::Backend::Norm>::register_module(simplification_module);
 
-    auto distances_module = m.def_submodule("distances", "Distances and similarity measures for polylines");
-    PyMoveTk::SimilarityModule<GeomKernel>::register_module(distances_module);
+	auto distances_module = m.def_submodule("distances", "Distances and similarity measures for polylines");
+	PyMoveTk::SimilarityModule<PyMoveTk::Backend, PyMoveTk::Backend::Norm>::register_module(distances_module);
 }

@@ -87,13 +87,7 @@ set(SOURCES
 )
 
 #Potentially more options than Boost and CGAL
-if (MOVETK_WITH_CGAL_BACKEND)
-	list(APPEND SOURCES 
-		include/movetk/geom/CGALTraits.h
-		include/movetk/geom/CGALWrapper.h
-	)
-endif()
-if(MOVETK_WITH_BOOST_BACKEND)
+if(FALSE)
 	list(APPEND SOURCES 
 		include/movetk/geom/BoostGeometryWrapper.h
 		include/movetk/geom/BoostGeometryTraits.h
