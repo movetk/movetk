@@ -6,13 +6,12 @@
 
 namespace PyMoveTk
 {
-    template<typename GeometryKernel>
+    template<typename GeometryKernel,typename Norm>
     struct SimplificationModule
     {
         using MovetkKernel = typename GeometryKernel::MovetkGeometryKernel;
-        using GeometryModule = GeometryModule<typename GeometryKernel::MovetkGeometryKernel>;
+        using GeometryModule = GeometryModule<typename GeometryKernel::MovetkGeometryKernel, Norm>;
         using NT = typename GeometryKernel::NT;
-        using Norm = typename GeometryKernel::Norm;
         using Polyline = typename GeometryModule::Polyline;
     private:
         //TODO: move down

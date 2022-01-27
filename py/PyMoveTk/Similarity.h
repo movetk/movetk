@@ -5,13 +5,12 @@
 #include <movetk/algo/Similarity.h>
 namespace PyMoveTk
 {
-    template<typename GeometryKernel>
+    template<typename GeometryKernel, typename Norm>
     struct SimilarityModule
     {
-        using GeometryModule = GeometryModule<typename GeometryKernel::MovetkGeometryKernel>;
+        using GeometryModule = GeometryModule<typename GeometryKernel::MovetkGeometryKernel, Norm>;
         using MoveTkKernel = typename GeometryKernel::MovetkGeometryKernel;
         using Polyline = typename GeometryModule::Polyline;
-        using Norm = typename GeometryKernel::Norm;
         using NT = typename GeometryKernel::NT;
 
         static void register_lcss(pybind11::module& mod)

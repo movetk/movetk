@@ -24,126 +24,83 @@
 
 #include <tuple>
 
+#include "movetk/ds/FreeSpaceDiagram.h"
 #include "movetk/geom/GeometryInterface.h"
+#include "movetk/io/TuplePrinter.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
-#include "movetk/ds/FreeSpaceDiagram.h"
-#include "movetk/io/TuplePrinter.h"
 
 
 // Setup backend structures
 #if MOVETK_WITH_CGAL_BACKEND
 #include "movetk/geom/CGALTraits.h"
 namespace movetk::backends {
-    struct CGALBackend {
-        using NT = long double;
-        static constexpr size_t dimensions = 2;
-        // Define the Geometry Backend
-        using GeometryBackend = movetk_support::CGALTraits<NT, dimensions>;
-        //Using the Geometry Backend define the Movetk Geometry Kernel
-        using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<
-            typename GeometryBackend::Wrapper_CGAL_Geometry
-        >;
-    };
-}
+struct CGALBackend {
+	using NT = long double;
+	static constexpr size_t dimensions = 2;
+	// Define the Geometry Backend
+	using GeometryBackend = movetk_support::CGALTraits<NT, dimensions>;
+	// Using the Geometry Backend define the Movetk Geometry Kernel
+	using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<typename GeometryBackend::Wrapper_CGAL_Geometry>;
+};
+}  // namespace movetk::backends
 #else
 #endif
 #if MOVETK_WITH_BOOST_BACKEND
 #include "movetk/geom/BoostGeometryTraits.h"
 namespace movetk::backends {
-    struct BoostBackend {
-        using NT = long double;
-        static constexpr size_t dimensions = 2;
-        // Define the Geometry Backend
-        using GeometryBackend = movetk_support::BoostGeometryTraits<NT, dimensions>;
-        //Using the Geometry Backend define the Movetk Geometry Kernel
-        using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<
-            typename GeometryBackend::Wrapper_Boost_Geometry
-        >;
-    };
-}
+struct BoostBackend : public movetk_core::MovetkGeometryKernel<
+                          typename movetk_support::BoostGeometryTraits<long double, 2>::Wrapper_Boost_Geometry> {
+	using NT = long double;
+	static constexpr size_t dimensions = 2;
+	// Define the Geometry Backend
+	using GeometryBackend = movetk_support::BoostGeometryTraits<NT, dimensions>;
+	// Using the Geometry Backend define the Movetk Geometry Kernel
+	using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<typename GeometryBackend::Wrapper_Boost_Geometry>;
+};
+}  // namespace movetk::backends
 #endif
 
 namespace movetk::backends {
-    template<typename T> struct remove_first_type;
-    template<typename T, typename...Ts>
-    struct remove_first_type < std::tuple<T, Ts...>> {
-        using type = std::tuple<Ts...>;
-    };
-    struct noop {};
+template <typename T>
+struct remove_first_type;
+template <typename T, typename... Ts>
+struct remove_first_type<std::tuple<T, Ts...>> {
+	using type = std::tuple<Ts...>;
+};
+struct noop {};
 
-    using AvailableBackends = typename remove_first_type<std::tuple<
-        noop
+using AvailableBackends = typename remove_first_type<std::tuple<noop
 #if MOVETK_WITH_BOOST_BACKEND
-        , BoostBackend
+                                                                ,
+                                                                BoostBackend
 #endif
 #if MOVETK_WITH_CGAL_BACKEND
-        , CGALBackend
+                                                                ,
+                                                                CGALBackend
 #endif
-        >>::type;
-    static_assert(std::tuple_size_v<AvailableBackends> > 0);
-}
+                                                                >>::type;
+static_assert(std::tuple_size_v<AvailableBackends> > 0);
+}  // namespace movetk::backends
 
-struct GeometryKernel : public std::tuple_element_t<0,movetk::backends::AvailableBackends>
-{
-    typedef movetk_support::FiniteNorm<MovetkGeometryKernel, 2> Norm;
+namespace movetk {
+template <typename Backend>
+struct BaseGeometryKernel : public Backend {
+	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+	using Norm = movetk_support::FiniteNorm<typename Backend::MovetkGeometryKernel, 2>;
 
-    using SphSegIntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
-                                            movetk_core::sphere_segment_intersection_tag>;
+	using SphSegIntersectionTraits =
+	    movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_segment_intersection_tag>;
 
-    typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
-                                            movetk_core::sphere_sphere_intersection_tag>
-        SphSphIntersectionTraits;
+	using SphSphIntersectionTraits =
+	    movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_sphere_intersection_tag>;
 
-    typedef movetk_support::FreeSpaceCellTraits<SphSegIntersectionTraits> FreeSpaceCellTraits;
-    typedef movetk_support::FreeSpaceCell<FreeSpaceCellTraits> FreeSpaceCell;
-    typedef movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;
-    typedef movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits> FreeSpaceDiagram;
+	using FreeSpaceCellTraits = movetk_support::FreeSpaceCellTraits<SphSegIntersectionTraits>;
+	using FreeSpaceCell = movetk_support::FreeSpaceCell<FreeSpaceCellTraits>;
+	using FreeSpaceDiagramTraits = movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell>;
+	using FreeSpaceDiagram = movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
 };
+}  // namespace movetk
 
-template<typename NT_, std::size_t Dimensions_, typename BackendTag>
-struct VerifyKernelSupport
-{
-    // Verify that the chosen backend supports the given dimensions.
-    static_assert(BackendTraits<BackendTag>::template SUPPORTS_DIMENSIONS<Dimensions_>());
-};
-
-template<typename NT_, std::size_t Dimensions_, typename BackendTag>
-struct GeometryKernel2 :
-    VerifyKernelSupport<NT_,Dimensions_, BackendTag>,
-    DeduceKernel<NT_, Dimensions_, BackendTag>::Kernel
-{
-    //==============================
-    // Define the Number Type
-    // For the Boost Backend
-    using NT = NT_;
-    //==============================
-
-    static constexpr size_t dimensions = Dimensions_;
-
-    //==============================
-    // Define the Geometry Backend
-    using Backend = typename BackendTraits<BackendTag>::template backend_type<NT, dimensions>;
-    //Using the Geometry Backend define the Movetk Geometry Kernel
-    using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<typename BackendTraits<BackendTag>::template wrapper_geometry<Backend>>;
-    //==============================
-
-    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
-
-    using SphSegIntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm,
-        movetk_core::sphere_segment_intersection_tag>;
-
-    using SphSphIntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, 
-        movetk_core::sphere_sphere_intersection_tag>;
-
-    using FreeSpaceCellTraits = movetk_support::FreeSpaceCellTraits<SphSegIntersectionTraits>;
-    using FreeSpaceCell = movetk_support::FreeSpaceCell<FreeSpaceCellTraits>;
-    using FreeSpaceDiagramTraits = movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell>;
-    using FreeSpaceDiagram = movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
-};
-
-template<typename NT, std::size_t Dimensions>
-using MoveTkBoostKernel = GeometryKernel2<NT, Dimensions, boost_backend_tag>;
-
-// Predefine a kernel
-using MoveTkBoostKernel_2_ld = MoveTkBoostKernel<long double, 2>;
+// TODO:remove from global namespace
+struct GeometryKernel : public movetk::BaseGeometryKernel<std::tuple_element_t<0, movetk::backends::AvailableBackends>> {};

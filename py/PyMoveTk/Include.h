@@ -34,5 +34,12 @@ namespace PyMovetk{
             clsDef.def()
         }
     };
+    // Operator names
+    namespace ops{
+    static constexpr const char* INDEX = "__getitem__";
+    static constexpr const char* SIZE = "__len__";
+    static constexpr const char* ITERATE = "__iter__";
+    }
+    
 }
 #endif
