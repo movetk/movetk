@@ -18,17 +18,17 @@ TEST_CASE("Test GeoJSON", "[test_geojson]") {
 	rapidjson::StringBuffer strbuf;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(strbuf);
 
-	GeoJSONGeometry geom;
+	movetk::io::GeoJSONGeometry geom;
 
 	std::vector<double> lat({0.0, 1.0, 0.0, 1.0});
 	std::vector<double> lon({102.0, 103.0, 104.0, 105.0});
 
 	rapidjson::Document geometry1 = geom(std::begin(lat), std::end(lat), std::begin(lon));
 
-	GeoJSONProperties prop;
+	movetk::io::GeoJSONProperties prop;
 	rapidjson::Document properties1 = prop("a1398a11-d1ce-421c-bf66-a456ff525de9", "red", 4);
 
-	GeoJSONFeature feat;
+	movetk::io::GeoJSONFeature feat;
 	rapidjson::Document feature1 = feat(geometry1, properties1);
 
 	lat.clear();

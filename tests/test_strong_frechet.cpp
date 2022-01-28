@@ -229,9 +229,9 @@ template<typename Backend>
 struct StrongFrechetTests {
     using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
     // The norm to be used in weak Frechet distance computations.
-    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
-    using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
-    using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, SqDistance>;
+    using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
+    using SqDistance = movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>;
+    using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel, SqDistance>;
     using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
     using NT = typename MovetkGeometryKernel::NT;
     using PointList = std::vector<MovetkPoint>;

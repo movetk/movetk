@@ -38,7 +38,7 @@ TEST_CASE("Trajectory GDAL", "[trajectory-gdal]")
     ProbePoint p3 = {"ghi", 3, 3.2};
     std::vector<ProbePoint> data = {p1, p2, p3};
 
-    TabularTrajectory<std::string, int, float> t{data};
+    movetk::ds::TabularTrajectory<std::string, int, float> t{data};
 
     std::cout << "trj: ";
     for (auto x : t.get<2>())

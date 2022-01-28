@@ -34,7 +34,7 @@
 
 template<typename Backend>
 struct DistanceTests : public test_helpers::BaseTestFixture<Backend> {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DistanceTests,"Check Distance between point and segment", "[is_valid_dist_point_seg]")

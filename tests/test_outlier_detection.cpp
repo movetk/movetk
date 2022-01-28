@@ -46,20 +46,20 @@
 
 template<typename Backend>
 struct OutlierDetectionTests : public test_helpers::BaseTestFixture<Backend> {
-    using CartesianProbeTraits = movetk_kernel::ProbeTraits<MovetkGeometryKernel>;
+    using CartesianProbeTraits = movetk::io::ProbeTraits<MovetkGeometryKernel>;
     using Probe = typename CartesianProbeTraits::ProbePoint;
     using Trajectory = std::vector<Probe>;
-    using OutlierDetectionTraits = movetk_algorithms::OutlierDetectionTraits<CartesianProbeTraits,
+    using OutlierDetectionTraits = movetk::algo::OutlierDetectionTraits<movetk::io::CartesianProbeTraits,
         MovetkGeometryKernel,
         Norm>;
-    using LinearSpeedboundedTest = movetk_algorithms::outlier_detection::TEST<movetk_algorithms::linear_speed_bounded_test_tag,
+    using LinearSpeedboundedTest = movetk::algo::outlier_detection::TEST<movetk::algo::linear_speed_bounded_test_tag,
         movetk_algorithms::cartesian_coordinates_tag,
         OutlierDetectionTraits>;
     using Trajectories = std::vector<Trajectory>;
     using Sequence = std::vector<typename Trajectory::const_iterator>;
     using Sequences = std::vector<Sequence>;
 
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 
     static Trajectory sub_trajectory(const Trajectory& base_trajectory, const std::vector<std::size_t>& indices) {
         Trajectory trajectory;
