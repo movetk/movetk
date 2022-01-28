@@ -32,15 +32,15 @@ int main(int argc, char **argv)
     std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt1 = make_point({3, 3});
 
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt2 = make_point({3, 1});
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt3 = make_point({5, 3});
-    movetk_core::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
+    movetk::utils::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
     GeometryKernel::MovetkGeometryKernel::MovetkSegment seg = make_segment(pt2, pt3);
 
-    movetk_core::ComputeSquaredDistance<GeometryKernel::MovetkGeometryKernel,
+    movetk::utils::ComputeSquaredDistance<GeometryKernel::MovetkGeometryKernel,
                                         GeometryKernel::Norm>
         squared_dist;
     std::cout << "Squared Distance from Point to Segment: " << squared_dist(pt1, seg) << std::endl;

@@ -47,7 +47,7 @@ namespace movetk::utils {
      * @return the concatenated string
      */
     template<class IteratorType,
-            typename = movetk_core::requires_random_access_iterator<IteratorType> >
+            typename = movetk::utils::requires_random_access_iterator<IteratorType> >
     std::string join(IteratorType first, IteratorType beyond, const char &delim = ',') {
         //ASSERT_RANDOM_ACCESS_ITERATOR(IteratorType);
         std::string mergedTokens = std::to_string(*first);
@@ -70,8 +70,8 @@ namespace movetk::utils {
      * @param delim
      */
     template<class OutputIterator,
-            typename = movetk_core::requires_output_iterator<OutputIterator>,
-            typename = movetk_core::requires_string<
+            typename = movetk::utils::requires_output_iterator<OutputIterator>,
+            typename = movetk::utils::requires_string<
                     typename OutputIterator::value_type> >
     void split(std::string &in, OutputIterator iter, const char &delim = ',') {
         //ASSERT_OUTPUT_ITERATOR(OutputIterator);

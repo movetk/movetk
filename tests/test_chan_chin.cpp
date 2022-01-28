@@ -40,7 +40,7 @@ struct ChanChinTests {
 	// Point creator
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
-	using Wedge = movetk_core::Wedge<MovetkGeometryKernel, Norm>;
+	using Wedge = movetk::geom::Wedge<MovetkGeometryKernel, Norm>;
 
 	using Edge = std::pair<std::size_t, std::size_t>;
 	using EdgeList = std::vector<Edge>;
@@ -64,11 +64,11 @@ struct ChanChinTests {
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ChanChinTests, "Check Chan Chin Shortcuts", "[is_valid_shortcut_1]") {
 	for (const auto& [test_case_name, test_data] : test_cases) {
 		SECTION(test_case_name) {
-			movetk_algorithms::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(1);
+			movetk::algo::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(1);
 			EdgeList edges;
 			ChanChin(std::begin(test_data.polyline),
 			         std::end(test_data.polyline),
-			         movetk_core::movetk_back_insert_iterator(edges));
+			         movetk::utils::movetk_back_insert_iterator(edges));
 			REQUIRE(edges.size() == test_data.expectedEdges.size());
 			auto eit = std::begin(test_data.expectedEdges);
 			for (auto& edge : edges) {
@@ -82,7 +82,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ChanChinTests, "Check Chan Chin Shortcuts"
 
 /*
 TEST_CASE("Check Chan Chin Shortcuts 4", "[is_valid_shortcut_4]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
     PolyLine polyline({
         make_point({1, -6}), make_point({4, -4}),
@@ -98,8 +98,8 @@ TEST_CASE("Check Chan Chin Shortcuts 4", "[is_valid_shortcut_4]") {
         std::cout << ";";
     }
     std::cout << "}\n";
-    typedef movetk_core::Wedge<MovetkGeometryKernel, Norm> Wedge;
-    movetk_algorithms::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(2);
+    typedef movetk::utils::Wedge<MovetkGeometryKernel, Norm> Wedge;
+    movetk::algo::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(2);
     std::vector<std::pair<std::size_t, std::size_t> > edges;
     std::vector<std::pair<std::size_t, std::size_t> > ExpectedEdges({
         std::make_pair(0, 1), std::make_pair(1, 2),
@@ -110,7 +110,7 @@ TEST_CASE("Check Chan Chin Shortcuts 4", "[is_valid_shortcut_4]") {
         std::make_pair(1, 9), std::make_pair(7, 9),
         std::make_pair(8, 9)
     });
-    ChanChin(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(edges));
+    ChanChin(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(edges));
     REQUIRE(edges.size() == ExpectedEdges.size());
     std::cout << "Valid Shortcuts: ";
     std::cout << "{";

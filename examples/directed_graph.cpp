@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
     std::cout.setf(std::ios::fixed);
 
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     typedef std::vector<GeometryKernel::MovetkGeometryKernel::MovetkPoint> PolyLine;
     typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
                                   boost::property<boost::vertex_index_t, int>, boost::property<boost::edge_index_t, int>>

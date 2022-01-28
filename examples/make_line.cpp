@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
     //===================================
     // Make a Movetk Line
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint P1 = make_point({1, 1});
     std::cout<<"Point 1:"<<std::endl;
     std::cout << P1;
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     std::cout << P2;
     std::cout << std::endl;
 
-    movetk_core::MakeLine<GeometryKernel::MovetkGeometryKernel> make_line;
+    movetk::utils::MakeLine<GeometryKernel::MovetkGeometryKernel> make_line;
     GeometryKernel::MovetkGeometryKernel::MovetkLine line = make_line(P1, P2);
     //====================================
 

@@ -252,7 +252,7 @@ namespace movetk::geom {
              * @param beyond - Iterator to the end of the last Cartesian coordinate
              */
             template<class CoordinateIterator,
-                    typename = movetk_core::requires_random_access_iterator<CoordinateIterator >>
+                    typename = movetk::utils::requires_random_access_iterator<CoordinateIterator >>
             Wrapper_CGAL_Point(CoordinateIterator first,
                                CoordinateIterator beyond) {
                 //ASSERT_RANDOM_ACCESS_ITERATOR(CoordinateIterator);
@@ -633,8 +633,8 @@ namespace movetk::geom {
              * where each point is of type Wrapper_CGAL_Point<Kernel>
              */
             template<class PointIterator,
-                    typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                    typename = movetk_core::requires_wrapper_point<Kernel,
+                    typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+                    typename = movetk::utils::requires_wrapper_point<Kernel,
                             typename PointIterator::value_type >>
             Wrapper_CGAL_Polygon(PointIterator first, PointIterator beyond) {
                 //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
@@ -861,8 +861,8 @@ namespace movetk::geom {
              * where each point is of type Wrapper_CGAL_Point<Kernel>
              */
             template<typename PointIterator,
-                    typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                    typename  = movetk_core::requires_wrapper_point<Kernel,
+                    typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+                    typename  = movetk::utils::requires_wrapper_point<Kernel,
                             typename PointIterator::value_type >>
             void to_CGAL_points(PointIterator first, PointIterator beyond) {
                 //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
@@ -889,11 +889,11 @@ namespace movetk::geom {
              * @return Radius of the MEB
              */
             template<class PointIterator, class CenterIterator,
-                    typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                    typename = movetk_core::requires_wrapper_point<Kernel,
+                    typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+                    typename = movetk::utils::requires_wrapper_point<Kernel,
                             typename PointIterator::value_type>,
-                    typename = movetk_core::requires_output_iterator<CenterIterator>,
-                    typename = movetk_core::requires_NT<Kernel,
+                    typename = movetk::utils::requires_output_iterator<CenterIterator>,
+                    typename = movetk::utils::requires_NT<Kernel,
                             typename CenterIterator::value_type> >
             NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) {
                 //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
@@ -923,8 +923,8 @@ namespace movetk::geom {
              * @return Radius of the MEB
              */
             template<class PointIterator,
-                    typename = movetk_core::requires_random_access_iterator<PointIterator>,
-                    typename = movetk_core::requires_wrapper_point<Kernel,
+                    typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+                    typename = movetk::utils::requires_wrapper_point<Kernel,
                             typename PointIterator::value_type> >
             NT operator()(PointIterator first, PointIterator beyond) {
                 //ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);

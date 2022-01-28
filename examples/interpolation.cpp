@@ -121,8 +121,8 @@ namespace Interpolation
     };
     using Norm = typename GeometryKernel::Norm;
     typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-    typedef movetk_algorithms::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
-    typedef movetk_algorithms::Interpolator<movetk_algorithms::kinematic_interpolator_tag,
+    typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
+    typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
                                             InterpolationTraits, ProbeTraits::ProbeColumns::LAT,
                                             ProbeTraits::ProbeColumns::LON, ProbeTraits::ProbeColumns::SAMPLE_DATE,
                                             ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING>
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     ofcsv_traj << ",RAW_TRAJID,RAW_SEGMENTID,INTERPOLATION_SAMPLE_DATE, INTERPOLATION_LAT, INTERPOLATION_LON, INTERPOLATION_HEADING, INTERPOLATION_SPEED\n";
 
     // Write time-sorted trajectories and segment them using Monotone Diff Criteria
-    typedef movetk_algorithms::SegmentationTraits<long double, MovetkGeometryKernel, GeometryKernel::dimensions> SegmentationTraits;
+    typedef movetk::algo::SegmentationTraits<long double, MovetkGeometryKernel, GeometryKernel::dimensions> SegmentationTraits;
     typedef MovetkGeometryKernel::NT NT;
     SegmentationTraits::TSSegmentation segment_by_tdiff(6);
 
@@ -198,8 +198,8 @@ int main(int argc, char **argv)
         std::vector<std::size_t> ts;
         std::copy(timestamps.begin(), timestamps.end(), std::back_insert_iterator(ts));
         std::vector<decltype(ts)::const_iterator> segIdx;
-        segment_by_tdiff(std::cbegin(ts), std::cend(ts), movetk_core::movetk_back_insert_iterator(segIdx));
-        movetk_core::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
+        segment_by_tdiff(std::cbegin(ts), std::cend(ts), movetk::utils::movetk_back_insert_iterator(segIdx));
+        movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
 
         std::vector<std::size_t> segment_id_col;
         for (auto plit = std::begin(ts); plit != std::end(ts); ++plit)
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
                 it++;
             }
             ts.push_back(std::get<IN_SAMPLE_DATE>(*last));
-            movetk_core::movetk_back_insert_iterator result(interpolated_pts);
+            movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
             //result = p_u;
             interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
             //result = p_v;

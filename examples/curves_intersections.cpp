@@ -27,11 +27,11 @@
 
 int main(int argc, char **argv) {
     if constexpr (!std::is_void_v<typename GeometryKernel::MovetkGeometryKernel::MovetkCurveIntersection>) {
-        movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+        movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
         typedef std::vector<GeometryKernel::MovetkGeometryKernel::MovetkPoint> PolyLine;
-        typedef movetk_core::IntersectionTraits<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm,
-            movetk_core::polylines_instersection_tag> IntersectionTraits;
-        movetk_core::ComputeIntersections<IntersectionTraits> compute_intersections;
+        typedef movetk::utils::IntersectionTraits<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm,
+            movetk::utils::polylines_instersection_tag> IntersectionTraits;
+        movetk::utils::ComputeIntersections<IntersectionTraits> compute_intersections;
 
         PolyLine polyline({
                                   make_point({3, 3}), make_point({3, 3}),

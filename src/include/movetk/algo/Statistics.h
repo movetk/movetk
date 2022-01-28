@@ -37,7 +37,7 @@
 #include "movetk/io/TrajectoryTraits.h"
 
 namespace movetk::algo {
-template <class GeometryKernel, typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>>
+template <class GeometryKernel, typename PointDistanceFunc = movetk::geom::ComputeLength<GeometryKernel>>
 class TrajectoryLength {
 private:
 	using NT = typename GeometryKernel::NT;
@@ -58,12 +58,12 @@ public:
 
 
 		// Point iterator begin and end
-		auto beginEndPair = movetk_core::point_iterators_from_coordinates<GeometryKernel, CoordinateIterator>(
+		auto beginEndPair = movetk::utils::point_iterators_from_coordinates<GeometryKernel, CoordinateIterator>(
 		    std::array<decltype(firstCoordPair), 2>{firstCoordPair, secondCoordPair});
 
 		std::vector<NT> distances;
-		movetk_core::movetk_back_insert_iterator<decltype(distances)> backInserter(distances);
-		movetk_core::get_distances<GeometryKernel, decltype(beginEndPair.first), decltype(backInserter)>(
+		movetk::utils::movetk_back_insert_iterator<decltype(distances)> backInserter(distances);
+		movetk::utils::get_distances<GeometryKernel, decltype(beginEndPair.first), decltype(backInserter)>(
 		    beginEndPair.first,
 		    beginEndPair.second,
 		    backInserter);
@@ -82,7 +82,7 @@ public:
 	 * @complexity O(n), with n the number of points
 	 * @return Duration of the trajectory, returned as the type of the difference of the
 	 */
-	template <typename TimeIterator, typename = movetk_core::requires_atleast_input_iterator<TimeIterator>>
+	template <typename TimeIterator, typename = movetk::utils::requires_atleast_input_iterator<TimeIterator>>
 	decltype(std::declval<typename TimeIterator::value_type>() - std::declval<typename TimeIterator::value_type>())
 	operator()(TimeIterator begin, TimeIterator end) const {
 		using Time_t = typename TimeIterator::value_type;
@@ -99,7 +99,7 @@ public:
 	}
 };
 
-template <typename GeometryKernel, typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>>
+template <typename GeometryKernel, typename PointDistanceFunc = movetk::geom::ComputeLength<GeometryKernel>>
 class TrajectorySpeedStatistic {
 public:
 	enum class Statistic { Median, Mean, Max, Min, Variance };
@@ -118,9 +118,9 @@ private:
 public:
 	template <typename PointIterator,
 	          typename TimeIterator,
-	          typename = movetk_core::requires_atleast_input_iterator<PointIterator>,
-	          typename = movetk_core::requires_atleast_input_iterator<TimeIterator>,
-	          typename = movetk_core::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>>
+	          typename = movetk::utils::requires_atleast_input_iterator<PointIterator>,
+	          typename = movetk::utils::requires_atleast_input_iterator<TimeIterator>,
+	          typename = movetk::utils::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>>
 	std::vector<Speed_t<typename TimeIterator::value_type>> operator()(
 	    PointIterator pointsBegin,
 	    PointIterator pointsEnd,
@@ -140,19 +140,19 @@ public:
 		// Compute speeds
 		{
 			std::vector<Dist_t> distances;
-			movetk_core::movetk_back_insert_iterator backInsert(distances);
-			movetk_core::get_distances<GeometryKernel, decltype(pointsBegin), decltype(backInsert), PointDistanceFunc>(
+			movetk::utils::movetk_back_insert_iterator backInsert(distances);
+			movetk::utils::get_distances<GeometryKernel, decltype(pointsBegin), decltype(backInsert), PointDistanceFunc>(
 			    pointsBegin,
 			    pointsEnd,
 			    backInsert,
 			    true);
 			std::vector<Duration> timeDiffs;
-			movetk_core::get_time_diffs(timeBegin, timeEnd, movetk_core::movetk_back_insert_iterator(timeDiffs), true);
+			movetk::utils::get_time_diffs(timeBegin, timeEnd, movetk::utils::movetk_back_insert_iterator(timeDiffs), true);
 
-			movetk_core::get_speeds<GeometryKernel>(timeDiffs.begin(),
+			movetk::utils::get_speeds<GeometryKernel>(timeDiffs.begin(),
 			                                        timeDiffs.end(),
 			                                        distances.begin(),
-			                                        movetk_core::movetk_back_insert_iterator(speeds));
+			                                        movetk::utils::movetk_back_insert_iterator(speeds));
 		}
 
 		// Calculate the statistics
@@ -199,9 +199,9 @@ public:
 
 	template <typename PointIterator,
 	          typename TimeIterator,
-	          typename = movetk_core::requires_atleast_input_iterator<PointIterator>,
-	          typename = movetk_core::requires_atleast_input_iterator<TimeIterator>,
-	          typename = movetk_core::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>>
+	          typename = movetk::utils::requires_atleast_input_iterator<PointIterator>,
+	          typename = movetk::utils::requires_atleast_input_iterator<TimeIterator>,
+	          typename = movetk::utils::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>>
 	Speed_t<typename TimeIterator::value_type> operator()(PointIterator pointsBegin,
 	                                                      PointIterator pointsEnd,
 	                                                      TimeIterator timeBegin,
@@ -230,7 +230,7 @@ public:
 	 * \param trajectory The trajectory
 	 * \return Dominant sampling time interval
 	 */
-	template <typename InputIterator, typename = movetk_core::requires_random_access_iterator<InputIterator>>
+	template <typename InputIterator, typename = movetk::utils::requires_random_access_iterator<InputIterator>>
 	Difference_t<typename InputIterator::value_type>
 	operator()(InputIterator begin, InputIterator end, Difference_t<typename InputIterator::value_type> threshold) const {
 		using Difference = Difference_t<typename InputIterator::value_type>;
@@ -282,6 +282,6 @@ public:
 		return maxVal;
 	}
 };
-}  // namespace movetk_algorithms
+}  // namespace movetk::algo
 
 #endif  // MOVETK_SIMILARITY_H

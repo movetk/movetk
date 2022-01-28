@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
     std::string key = "-idx";
     string line;
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
     assert(tokens.size() == 3);
 
     std::vector<std::size_t> col_idx;
@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
                 }
             }
             movetk_support::split(line,
-                                  movetk_core::movetk_back_insert_iterator(tokens));
+                                  movetk::utils::movetk_back_insert_iterator(tokens));
             lon = std::stold(tokens[col_idx[0]]);
             lat = std::stold(tokens[col_idx[1]]);
             ts =  static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -242,7 +242,7 @@ int main(int argc, char **argv) {
                 }
             }
             movetk_support::split(line,
-                                  movetk_core::movetk_back_insert_iterator(tokens));
+                                  movetk::utils::movetk_back_insert_iterator(tokens));
             lon = std::stold(tokens[col_idx[0]]);
             lat = std::stold(tokens[col_idx[1]]);
             ts =  static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -251,53 +251,53 @@ int main(int argc, char **argv) {
         }
     }
 
-    typedef movetk_algorithms::brownian_bridge::ParameterTraits<MovetkGeometryKernel, decltype(trajectory.begin())> ParameterTraits;
+    typedef movetk::algo::brownian_bridge::ParameterTraits<MovetkGeometryKernel, decltype(trajectory.begin())> ParameterTraits;
     typedef std::vector<typename ParameterTraits::Parameters>::const_iterator BridgeIterator;
     typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
     std::vector<typename ParameterTraits::Parameters> bridges;
 
-    typedef movetk_algorithms::brownian_bridge::Model<MovetkGeometryKernel, ProbeTraits,
+    typedef movetk::algo::brownian_bridge::Model<MovetkGeometryKernel, ProbeTraits,
             ParameterTraits, GeometryKernel::Norm, Projection> BBMM;
 
-    BBMM bb(trajectory.begin(), trajectory.end(), movetk_core::movetk_back_insert_iterator(bridges));
+    BBMM bb(trajectory.begin(), trajectory.end(), movetk::utils::movetk_back_insert_iterator(bridges));
 
     std::vector<typename MovetkGeometryKernel::NT> selected_coeffs;
 
-    movetk_algorithms::brownian_bridge::MLE<MovetkGeometryKernel,
+    movetk::algo::brownian_bridge::MLE<MovetkGeometryKernel,
             ParameterTraits, GeometryKernel::Norm, BridgeIterator, 1000> mle(std::cbegin(bridges), std::cend(bridges));
 
     auto bit = begin(bridges);
     while(bit != end(bridges)){
-        movetk_algorithms::brownian_bridge::MLE<MovetkGeometryKernel,
+        movetk::algo::brownian_bridge::MLE<MovetkGeometryKernel,
                 ParameterTraits, GeometryKernel::Norm, BridgeIterator, 1000> mle(bit, bit+1);
         std::get<ParameterTraits::ParameterColumns::SIGMA_SQUARED>(*bit) = mle();
         bit++;
     }
 
 
-    movetk_algorithms::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(
+    movetk::algo::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(
             num_coefficients);
 
     selector(std::cbegin(bridges), std::cend(bridges),
-             movetk_core::movetk_back_insert_iterator(selected_coeffs));
+             movetk::utils::movetk_back_insert_iterator(selected_coeffs));
 
 
-    typedef movetk_algorithms::brownian_bridge::LogLikelihood<MovetkGeometryKernel,
+    typedef movetk::algo::brownian_bridge::LogLikelihood<MovetkGeometryKernel,
             ParameterTraits, GeometryKernel::Norm> LogLikelihood;
 
-    typedef movetk_algorithms::ModelBasedSegmentation<MovetkGeometryKernel, LogLikelihood> ModelBasedSegmentation;
+    typedef movetk::algo::ModelBasedSegmentation<MovetkGeometryKernel, LogLikelihood> ModelBasedSegmentation;
 
     ModelBasedSegmentation segmentation(penalty_factor);
 
     std::vector<BridgeIterator> segments;
 
     segmentation(std::cbegin(bridges), std::cend(bridges), std::cbegin(selected_coeffs), std::cend(selected_coeffs),
-                 movetk_core::movetk_back_insert_iterator(segments));
+                 movetk::utils::movetk_back_insert_iterator(segments));
 
 
     std::reverse(std::begin(segments), std::end(segments));
 
-    movetk_core::SegmentIdGenerator make_segment(std::begin(segments), std::end(segments));
+    movetk::utils::SegmentIdGenerator make_segment(std::begin(segments), std::end(segments));
 
     bit = std::begin(bridges);
     std::size_t id = 0;

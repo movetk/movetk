@@ -151,11 +151,11 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct", "[agarwal_
 {
     using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
     // The norm to be used in weak Frechet distance computations.
-    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
+    using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
     using NT = typename MovetkGeometryKernel::NT;
-    using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
-    using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
-    movetk_algorithms::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
+    using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
+    using SqDistance = movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>;
+    movetk::algo::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
     simplifier.setTolerance(0.0001);
     using PointList = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
     const auto parseIpe = [](const std::string& string_data, PointList& output) {
@@ -174,7 +174,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct", "[agarwal_
 
             std::vector<decltype(points.begin())> output;
 
-            simplifier(points.begin(), points.end(), movetk_core::movetk_back_insert_iterator(output));
+            simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
             REQUIRE(output.size() == test_case.expectedInds.size());
             // Compute indices of iterators
             std::vector<std::size_t> inds;
@@ -188,13 +188,13 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct", "[agarwal_
     SECTION("Single point and empty polyline")
     {
         std::vector<typename MovetkGeometryKernel::MovetkPoint> points;
-        points.push_back(movetk_core::MakePoint<MovetkGeometryKernel>()({ (NT)2.0, (NT)5000.}));
+        points.push_back(movetk::geom::MakePoint<MovetkGeometryKernel>()({ (NT)2.0, (NT)5000.}));
 
         simplifier.setEpsilon(1.0);
 
         std::vector<decltype(points.begin())> output;
 
-        simplifier(points.begin(), points.end(), movetk_core::movetk_back_insert_iterator(output));
+        simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
 
         REQUIRE(output.size() == 1);
         REQUIRE(output[0] == points.begin());
@@ -203,7 +203,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct", "[agarwal_
         output.clear();
         points.clear();
 
-        simplifier(points.begin(), points.end(), movetk_core::movetk_back_insert_iterator(output));
+        simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
         REQUIRE(output.size() == 0);
     }
 }

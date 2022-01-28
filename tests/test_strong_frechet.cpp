@@ -339,10 +339,8 @@ TEMPLATE_LIST_TEST_CASE_METHOD(StrongFrechetTests, "Check if polyline strong Fre
 
 TEMPLATE_LIST_TEST_CASE_METHOD(StrongFrechetTests,"Check if decision strong Frechet distance is correct", "[strong_frechet]",movetk::test::AvailableBackends)
 {
-    using SFR = movetk_support::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
-    using SqDistance = movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>;
     // Initialize algorithm.
-    movetk_support::StrongFrechet<MovetkGeometryKernel, SqDistance> sfr;
+    SFR sfr;
     sfr.setTolerance(0.0001);
 
     // Distance computer for expected distance

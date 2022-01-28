@@ -163,7 +163,7 @@ public:
 	 */
 	friend std::ostream &operator<<(std::ostream &os, TabularTrajectory<fields...> &trajectory) {
 		for (auto row : trajectory) {
-			print_tuple(os, row);
+			movetk::io::print_tuple(os, row);
 			os << "\r\n";
 		}
 		return os;
@@ -175,7 +175,7 @@ public:
 		std::vector<double> offsets;
 
 		inline LookupByOffsetFn(TabularTrajectory &parent) : _parent(&parent) {
-			offsets = movetk_algorithms::geopolyline_offsets_m<GeometryTraits>(_parent->begin<LatIdx>(),
+			offsets = movetk::algo::geopolyline_offsets_m<GeometryTraits>(_parent->begin<LatIdx>(),
 			                                                                   _parent->end<LatIdx>(),
 			                                                                   _parent->begin<LonIdx>());
 		}

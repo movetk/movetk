@@ -58,7 +58,7 @@ const size_t dimensions = 2;
 // Define the Geometry Backend
 typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
 // Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk_core::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
+typedef movetk::utils::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
 //==============================
 #else
 //==============================
@@ -202,7 +202,7 @@ TEST_CASE("brownian bridge model segmentation 1", "[test brownian bridge model s
 
 	std::cout << " Running coefficient selector to select 5 coefficients: \n";
 	movetk::algo::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(5);
-	selector(std::cbegin(bridges), std::cend(bridges), movetk_core::movetk_back_insert_iterator(selected_coeffs));
+	selector(std::cbegin(bridges), std::cend(bridges), movetk::utils::movetk_back_insert_iterator(selected_coeffs));
 
 	for (auto coeff : selected_coeffs) {
 		std::cout << " Selected Coefficient: " << coeff << "\n";
@@ -221,7 +221,7 @@ TEST_CASE("brownian bridge model segmentation 1", "[test brownian bridge model s
 	             std::cend(bridges),
 	             std::cbegin(selected_coeffs),
 	             std::cend(selected_coeffs),
-	             movetk_core::movetk_back_insert_iterator(segments));
+	             movetk::utils::movetk_back_insert_iterator(segments));
 
 
 	REQUIRE(segments.size() == 1);
@@ -257,7 +257,7 @@ TEST_CASE("brownian bridge model segmentation 1", "[test brownian bridge model s
 	              std::cend(bridges),
 	              std::cbegin(selected_coeffs),
 	              std::cend(selected_coeffs),
-	              movetk_core::movetk_back_insert_iterator(segments));
+	              movetk::utils::movetk_back_insert_iterator(segments));
 
 	REQUIRE(segments.size() == 24);
 	std::reverse(std::begin(segments), std::end(segments));

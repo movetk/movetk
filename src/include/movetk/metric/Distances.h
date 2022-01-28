@@ -104,8 +104,8 @@ namespace movetk::metric
     {
     private:
         template <class InputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<Kernel,
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<Kernel,
                                                                 typename InputIterator::value_type>>
         typename Kernel::NT discrete_husdorff(InputIterator a_first, InputIterator a_beyond,
                                               InputIterator b_first, InputIterator b_beyond)
@@ -144,8 +144,8 @@ namespace movetk::metric
 
     public:
         template <class InputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<Kernel,
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<Kernel,
                                                                 typename InputIterator::value_type>>
         typename Kernel::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                                        InputIterator polyline_b_first, InputIterator polyline_b_beyond)
@@ -168,8 +168,8 @@ namespace movetk::metric
         typedef typename Kernel::NT NT;
 
         template <class InputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<Kernel,
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<Kernel,
                                                                 typename InputIterator::value_type>>
         NT distance(InputIterator iter_a, InputIterator iter_b)
         {
@@ -180,8 +180,8 @@ namespace movetk::metric
 
     public:
         template <class InputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<Kernel,
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<Kernel,
                                                                 typename InputIterator::value_type>>
         NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                       InputIterator polyline_b_first, InputIterator polyline_b_beyond)
@@ -299,7 +299,7 @@ namespace movetk::metric
                 // with origin at start of segment
                 parallelDistance = (point - seg0) * dir / segLen;
                 perpendicularDistance = std::sqrt(pntLen * pntLen - parallelDistance * parallelDistance);
-                auto seg = movetk_core::MakeSegment<Kernel>()(seg0, seg1);
+                auto seg = movetk::geom::MakeSegment<Kernel>()(seg0, seg1);
                 minimumEpsilon = std::sqrt(SqDistance()(point, seg));
                 type = 'i';
                 if (parallelDistance > segLen)
@@ -644,10 +644,10 @@ namespace movetk::metric
          * \return Whether or not the polylines are within Frechet distance epsilon
          */
         template <class InputIteratorA, class InputIteratorB,
-                  typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-                  typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+                  typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
+                  typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
+                  typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
+                  typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
         bool decide(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
                     InputIteratorB poly_b, InputIteratorB poly_b_beyond, NT epsilon) const
         {
@@ -731,10 +731,10 @@ namespace movetk::metric
         }
 
         template <class InputIteratorA, class InputIteratorB,
-                  typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-                  typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+                  typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
+                  typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
+                  typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
+                  typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
         bool operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
                         InputIteratorB poly_b, InputIteratorB poly_b_beyond, typename Kernel::NT &output)
         {
@@ -804,10 +804,10 @@ namespace movetk::metric
         }
 
         template <class InputIteratorA, class InputIteratorB,
-                  typename = movetk_core::requires_random_access_iterator<InputIteratorA>,
-                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-                  typename = movetk_core::requires_random_access_iterator<InputIteratorB>,
-                  typename = movetk_core::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+                  typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
+                  typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
+                  typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
+                  typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
         typename Kernel::NT operator()(InputIteratorA poly_a, InputIteratorA poly_a_beyond,
                                        InputIteratorB poly_b, InputIteratorB poly_b_beyond)
         {
@@ -917,8 +917,8 @@ namespace movetk::metric
          * @return The weak Frechet distance.
          */
         template <class InputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<GeometryTraits,
                                                                 typename InputIterator::value_type>>
         typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                                                InputIterator polyline_b_first, InputIterator polyline_b_beyond)
@@ -969,9 +969,9 @@ namespace movetk::metric
          * \return The weak Frechet distance between the given polylines.
          */
         template <class InputIterator, class OutputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits, typename InputIterator::value_type>,
-                  typename = movetk_core::requires_equality<std::pair<std::pair<int, int>, NT>, typename OutputIterator::value_type>>
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<GeometryTraits, typename InputIterator::value_type>,
+                  typename = movetk::utils::requires_equality<std::pair<std::pair<int, int>, NT>, typename OutputIterator::value_type>>
         typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                                                InputIterator polyline_b_first, InputIterator polyline_b_beyond, OutputIterator matching_output)
         {

@@ -187,7 +187,7 @@ public:
 };
 
 template <class Container,
-          typename = movetk_core::requires_random_access_iterator<typename Container::value_type::const_iterator>>
+          typename = movetk::utils::requires_random_access_iterator<typename Container::value_type::const_iterator>>
 class movetk_grid_iterator : public std::iterator<std::random_access_iterator_tag,
                                                   Container,
                                                   std::size_t,

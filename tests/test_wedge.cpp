@@ -35,7 +35,7 @@
 template<typename Backend>
 struct WedgeTests : public test_helpers::BaseTestFixture<Backend> {
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-    using Wedge = geom::Wedge<MovetkGeometryKernel, Norm>;
+    using Wedge = movetk::geom::Wedge<MovetkGeometryKernel, Norm>;
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests, "Check wedge construction 1","[is_valid_wedge_1]") {
@@ -102,7 +102,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge construction 3", "
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge construction 4", "[is_valid_wedge_4]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
@@ -146,14 +146,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge construction 5", "
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge construction 6","[is_valid_wedge_6]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
     auto p = make_point({-2, 7});
     auto center = make_point({3, 3});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
     auto slope = wedge.slope();
     auto intercept = wedge.intercept();
     const auto result_m1 = slope * e1;
@@ -211,14 +211,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 1","[is_p
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 2","[is_point_in_wedge_2]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
     auto p = make_point({-4, 3});
     auto center = make_point({3, 3});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
     auto p1 = make_point({-2, 3});
     auto p2 = make_point({-3, 5});
     auto slope = wedge.slope();
@@ -238,14 +238,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 2","[is_p
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 3","[is_point_in_wedge_3]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
     auto p = make_point({-14, -10});
     auto center = make_point({-3, -3});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
     auto p1 = make_point({-7, -5});
     auto p2 = make_point({-7, -6});
     auto slope = wedge.slope();
@@ -265,14 +265,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 3","[is_p
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 4","[is_point_in_wedge_4]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
     auto p = make_point({-14, 10});
     auto center = make_point({-3, -3});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
     auto p1 = make_point({0, -6});
     auto p2 = make_point({-7, -6});
     auto slope = wedge.slope();
@@ -291,14 +291,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 4","[is_p
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 5","[is_point_in_wedge_5]") {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
     auto p = make_point({12, -6});
     auto center = make_point({3, -3});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge(p, center, radius);
     auto p1 = make_point({-7, -6});
     auto p2 = make_point({-3.001944, 1.64825});
     auto slope = wedge.slope();
@@ -316,7 +316,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check point in wedge 5","[is_p
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 1", "[wedge_intersection_1]"){
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
@@ -324,9 +324,9 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 1", "
     auto center1 = make_point({3, 3});
     auto center2 = make_point({-2, 3});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge1(p1, center1, radius);
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge2(p1, center2, radius);
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> intersection = wedge1 * wedge2;
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge1(p1, center1, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge2(p1, center2, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> intersection = wedge1 * wedge2;
     auto slope = intersection.slope();
     auto intercept = intersection.intercept();
     NT result_m1 = slope * e1;
@@ -346,7 +346,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 1", "
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 2", "[wedge_intersection_2]"){
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
@@ -354,9 +354,9 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 2", "
     auto center1 = make_point({3, 3});
     auto center2 = make_point({-2, 5});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge1(p1, center1, radius);
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge2(p1, center2, radius);
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> intersection = wedge1 * wedge2;
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge1(p1, center1, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge2(p1, center2, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> intersection = wedge1 * wedge2;
     auto slope = intersection.slope();
     auto intercept = intersection.intercept();
     NT result_m1 = slope * e1;
@@ -375,7 +375,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 2", "
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 3", "[wedge_intersection_3]"){
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     auto ORIGIN = make_point({0, 0});
     auto e1 = make_point({1, 0}) - ORIGIN;
     auto e2 = make_point({0, 1}) - ORIGIN;
@@ -383,9 +383,9 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests,"Check wedge intersection 3", "
     auto center1 = make_point({3, 3});
     auto center2 = make_point({-0.5, 1});
     NT radius = 1.41421356;
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge1(p1, center1, radius);
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> wedge2(p1, center2, radius);
-    movetk_core::Wedge<MovetkGeometryKernel, Norm> intersection = wedge1 * wedge2;
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge1(p1, center1, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> wedge2(p1, center2, radius);
+    movetk::geom::Wedge<MovetkGeometryKernel, Norm> intersection = wedge1 * wedge2;
     auto slope = intersection.slope();
     auto intercept = intersection.intercept();
     NT result_m1 = slope * e1;

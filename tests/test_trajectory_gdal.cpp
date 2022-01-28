@@ -40,14 +40,7 @@ TEST_CASE("Trajectory GDAL", "[trajectory-gdal]")
 
     movetk::ds::TabularTrajectory<std::string, int, float> t{data};
 
-    std::cout << "trj: ";
-    for (auto x : t.get<2>())
-    {
-        std::cout << x << " ";
-    }
-    std::cout << std::endl;
-
-    auto mp = to_multipoint(t.begin<1>(), t.end<1>(), t.begin<2>());
+    auto mp = movetk::geom::to_multipoint(t.begin<1>(), t.end<1>(), t.begin<2>());
     char *wktStr;
     mp->exportToWkt(&wktStr);
     std::cout << wktStr << std::endl;
@@ -79,7 +72,7 @@ TEST_CASE("Intersection", "[intersection]")
         mp1.importFromWkt((const char **)&mpWkt1);
 #endif
 
-        REQUIRE(!intersects(&p1, &mp1));
+        REQUIRE(!movetk::geom::intersects(&p1, &mp1));
     }
 
     SECTION("Has intersection")
@@ -100,6 +93,6 @@ TEST_CASE("Intersection", "[intersection]")
 #else
         mp2.importFromWkt((const char **)&mpWkt2);
 #endif
-        REQUIRE(intersects(&p2, &mp2));
+        REQUIRE(movetk::geom::intersects(&p2, &mp2));
     }
 }

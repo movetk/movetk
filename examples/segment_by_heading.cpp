@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     ofcsv << ",RAW_TRAJID,HEADING_SEG_ID\n";
 
     // Write time-sorted trajectories and segment them using  range criteria
-    typedef movetk_algorithms::SegmentationTraits<long double,
+    typedef movetk::algo::SegmentationTraits<long double,
                                                   typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
         SegmentationTraits;
     typedef GeometryKernel::MovetkGeometryKernel::NT NT;
@@ -133,10 +133,10 @@ int main(int argc, char **argv)
 
         SegmentStartReferences segIdx;
         segment_by_heading(std::begin(headings_), std::end(headings_),
-                           movetk_core::movetk_back_insert_iterator(segIdx));
+                           movetk::utils::movetk_back_insert_iterator(segIdx));
         BOOST_LOG_TRIVIAL(trace) << "Number of Segments: " << segIdx.size();
 
-        movetk_core::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
+        movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
 
         std::vector<std::size_t> segment_id_col;
         for (auto plit = std::begin(headings_); plit != std::end(headings_); ++plit)

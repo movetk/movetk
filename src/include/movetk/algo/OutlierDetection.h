@@ -54,7 +54,7 @@ namespace movetk::algo
 
 	//Physics-based outlier detection running in O(n) time
     template<class T, class Test>
-    class OutlierDetection<movetk_algorithms::greedy_outlier_detector_tag,
+    class OutlierDetection<movetk::algo::greedy_outlier_detector_tag,
             Test, T>{
     private:
         typedef typename T::NT NT;
@@ -81,9 +81,9 @@ namespace movetk::algo
          * @param result
          */
         template<class InputIterator, class OutputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_output_iterator<OutputIterator>,
+                typename = movetk::utils::requires_equality<typename InputIterator::value_type,
                         typename OutputIterator::value_type::value_type>>
         void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
             auto it = first;
@@ -101,7 +101,7 @@ namespace movetk::algo
 
 	//Physics-based outlier detection running in O(nk) time, where k is the number of outliers
     template <class T, class Test>
-    class OutlierDetection<movetk_algorithms::smart_greedy_outlier_detector_tag,
+    class OutlierDetection<movetk::algo::smart_greedy_outlier_detector_tag,
             Test, T> {
     private:
         typedef typename T::NT NT;
@@ -124,13 +124,13 @@ namespace movetk::algo
          * @param result
          */
         template<class InputIterator, class Container,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_equality<
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_equality<
                         InputIterator,
                         typename Container::value_type::value_type> >
         typename Container::const_iterator operator()(InputIterator first, InputIterator beyond, Container& sequences){
             auto it = first;
-            movetk_core::movetk_back_insert_iterator bit(sequences);
+            movetk::utils::movetk_back_insert_iterator bit(sequences);
             for (; it != beyond; it++)
             {
                 bool extend_subsequence = false;
@@ -139,7 +139,7 @@ namespace movetk::algo
                     InputIterator prev = *(sit->cend() - 1);
                     if (test(*prev, *it))
                     {
-                        movetk_core::movetk_back_insert_iterator node_bit(*sit);
+                        movetk::utils::movetk_back_insert_iterator node_bit(*sit);
                         node_bit = it;
                         extend_subsequence = true;
                     }
@@ -147,7 +147,7 @@ namespace movetk::algo
                 if (!extend_subsequence)
                 {
                     typename Container::value_type node;
-                    movetk_core::movetk_back_insert_iterator node_bit(node);
+                    movetk::utils::movetk_back_insert_iterator node_bit(node);
                     node_bit = it;
                     bit =  node;
                 }
@@ -175,7 +175,7 @@ namespace movetk::algo
 
 	//Physics-based outlier detection running in O(n) time
     template <class T, class Test>
-    class OutlierDetection<movetk_algorithms::zheng_outlier_detector_tag,
+    class OutlierDetection<movetk::algo::zheng_outlier_detector_tag,
             Test, T>{
     private:
         typedef typename T::NT NT;
@@ -199,9 +199,9 @@ namespace movetk::algo
          * @param result
          */
         template <class InputIterator, class OutputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_output_iterator<OutputIterator>,
+                typename = movetk::utils::requires_equality<typename InputIterator::value_type,
                         typename OutputIterator::value_type::value_type >>
         void operator()(InputIterator first, InputIterator beyond, OutputIterator result)
         {
@@ -238,7 +238,7 @@ namespace movetk::algo
 
 	//Optimal physics-based outlier detection running in O(nk) time, where k is the number of outliers 
     template <class T, class Test>
-    class OutlierDetection<movetk_algorithms::output_sensitive_outlier_detector_tag,
+    class OutlierDetection<movetk::algo::output_sensitive_outlier_detector_tag,
             Test, T>{
     private:
         typedef typename T::NT NT;
@@ -429,9 +429,9 @@ namespace movetk::algo
          * @param result
          */
         template <class InputIterator, class OutputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_output_iterator<OutputIterator>,
+                typename = movetk::utils::requires_equality<typename InputIterator::value_type,
                         typename OutputIterator::value_type::value_type >>
         void operator()(InputIterator first, InputIterator beyond, OutputIterator result)
         {

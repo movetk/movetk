@@ -49,7 +49,7 @@ namespace movetk::metric
     template <class GeometryTraits, class Norm>
     struct squared_distance_algorithm<GeometryTraits, Norm, void>
     {
-        typedef movetk_support::squared_distance_d<GeometryTraits, Norm> square_distance;
+        typedef squared_distance_d<GeometryTraits, Norm> square_distance;
     };
 
     /**
@@ -73,7 +73,7 @@ namespace movetk::metric
     template <class GeometryTraits, class Norm>
     struct discrete_hausdorff_distance_algorithm<GeometryTraits, Norm, void>
     {
-        typedef movetk_support::Discrete_Hausdorff<GeometryTraits, Norm> discrete_hausdorff_distance;
+        typedef Discrete_Hausdorff<GeometryTraits, Norm> discrete_hausdorff_distance;
     };
 
     /**
@@ -97,8 +97,8 @@ namespace movetk::metric
     template <class GeometryTraits, class Norm>
     struct discrete_frechet_distance_algorithm<GeometryTraits, Norm, void>
     {
-        typedef movetk_support::Discrete_Frechet<GeometryTraits, Norm> discrete_frechet_distance;
+        typedef Discrete_Frechet<GeometryTraits, Norm> discrete_frechet_distance;
     };
 
-} // namespace movetk_core
+} // namespace movetk::utils
 #endif // DISTANCETRAITS_H

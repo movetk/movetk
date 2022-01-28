@@ -76,8 +76,8 @@ namespace movetk::metric
          * @return GeometryTraits::NT 
          */
         template <class InputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<GeometryTraits,
                                                                 typename InputIterator::value_type>>
         typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                                                InputIterator polyline_b_first, InputIterator polyline_b_beyond)
@@ -109,8 +109,8 @@ namespace movetk::metric
          * @param polyline_b_beyond 
          * @return GeometryTraits::NT 
          */
-        template <class InputIterator, typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits,
+        template <class InputIterator, typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_movetk_point<GeometryTraits,
                                                                 typename InputIterator::value_type>>
         typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                                                InputIterator polyline_b_first, InputIterator polyline_b_beyond)
@@ -135,12 +135,12 @@ namespace movetk::metric
          * @return GeometryTraits::NT 
          */
         template <class DistanceMatrix, class InputIterator,
-                  typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                  typename = movetk_core::requires_random_access_iterator<typename InputIterator::value_type::iterator>,
-                  typename = movetk_core::requires_movetk_point<GeometryTraits, typename InputIterator::value_type::value_type>,
-                  typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::iterator>,
-                  typename = movetk_core::requires_random_access_iterator<typename DistanceMatrix::value_type::iterator>,
-                  typename = movetk_core::requires_NT<GeometryTraits, typename DistanceMatrix::value_type::value_type>>
+                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                  typename = movetk::utils::requires_random_access_iterator<typename InputIterator::value_type::iterator>,
+                  typename = movetk::utils::requires_movetk_point<GeometryTraits, typename InputIterator::value_type::value_type>,
+                  typename = movetk::utils::requires_random_access_iterator<typename DistanceMatrix::iterator>,
+                  typename = movetk::utils::requires_random_access_iterator<typename DistanceMatrix::value_type::iterator>,
+                  typename = movetk::utils::requires_NT<GeometryTraits, typename DistanceMatrix::value_type::value_type>>
         typename GeometryTraits::NT
         operator()(InputIterator first, InputIterator beyond, DistanceMatrix &upper_triag_mat)
         {
@@ -148,13 +148,13 @@ namespace movetk::metric
                                                         typename GeometryTraits::MovetkDiscreteFrechetDistance>
                 algorithm;
             typename algorithm::discrete_frechet_distance distance;
-            movetk_core::movetk_back_insert_iterator bit(upper_triag_mat);
+            movetk::utils::movetk_back_insert_iterator bit(upper_triag_mat);
             auto it = first;
             while (it != beyond)
             {
                 auto nit = it + 1;
                 typename DistanceMatrix::value_type node;
-                movetk_core::movetk_back_insert_iterator node_bit(node);
+                movetk::utils::movetk_back_insert_iterator node_bit(node);
                 while (nit != beyond)
                 {
                     node_bit = distance(std::cbegin(*it), std::cend(*it), std::cbegin(*nit), std::cend(*nit));
@@ -216,5 +216,5 @@ namespace movetk::metric
         }
     };
 
-} // namespace movetk_core
+} // namespace movetk::utils
 #endif // DISTANCEINTERFACE_H

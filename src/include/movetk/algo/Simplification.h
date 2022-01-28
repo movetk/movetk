@@ -43,14 +43,14 @@ namespace movetk::algo {
     {
 
         template <class InputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename = utils::requires_random_access_iterator<InputIterator>,
+            typename = utils::requires_movetk_point<GeometryTraits,
             typename InputIterator::value_type>>
             InputIterator operator()(typename GeometryTraits::MovetkSegment& segment,
                 InputIterator first, InputIterator beyond,
                 typename GeometryTraits::NT& dist)
         {
-            movetk_core::ComputeSquaredDistance<GeometryTraits, Norm> squared_distance;
+            movetk::metric::ComputeSquaredDistance<GeometryTraits, Norm> squared_distance;
             Norm norm;
             InputIterator it = first + 1;
             InputIterator FarthestVertex = it;
@@ -93,11 +93,11 @@ namespace movetk::algo {
         }
 
         template <class InputIterator, class OutputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_output_iterator<OutputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+            typename = movetk::utils::requires_output_iterator<OutputIterator>,
+            typename = movetk::utils::requires_movetk_point<GeometryTraits,
             typename InputIterator::value_type>,
-            typename = movetk_core::requires_equality<typename InputIterator::value_type,
+            typename = movetk::utils::requires_equality<typename InputIterator::value_type,
             typename OutputIterator::value_type::value_type>>
             void operator()(InputIterator first, InputIterator beyond,
                 OutputIterator result, size_t level = 0)
@@ -121,7 +121,7 @@ namespace movetk::algo {
     };
 
     template <class GeometryTraits, class Wedge,
-        typename = movetk_core::requires_planar_geometry<GeometryTraits>>
+        typename = movetk::utils::requires_planar_geometry<GeometryTraits>>
         class ChanChin
     {
     private:
@@ -168,20 +168,20 @@ namespace movetk::algo {
         ChanChin(NT epsilon) : eps(epsilon) {}
 
         template <class InputIterator, class OutputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_output_iterator<OutputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+            typename = movetk::utils::requires_output_iterator<OutputIterator>,
+            typename = movetk::utils::requires_movetk_point<GeometryTraits,
             typename InputIterator::value_type>,
-            typename = movetk_core::requires_pair<typename OutputIterator::value_type>,
-            typename = movetk_core::requires_size_t<typename OutputIterator::value_type::first_type>,
-            typename = movetk_core::requires_size_t<typename OutputIterator::value_type::second_type>>
+            typename = movetk::utils::requires_pair<typename OutputIterator::value_type>,
+            typename = movetk::utils::requires_size_t<typename OutputIterator::value_type::first_type>,
+            typename = movetk::utils::requires_size_t<typename OutputIterator::value_type::second_type>>
             void operator()(InputIterator first, InputIterator beyond, OutputIterator result)
         {
             std::vector<typename OutputIterator::value_type> edges1, edges2;
             std::size_t NumElements = std::distance(first, beyond);
-            algorithm(first, beyond, movetk_core::movetk_back_insert_iterator(edges1));
+            algorithm(first, beyond, movetk::utils::movetk_back_insert_iterator(edges1));
 
-            algorithm(std::make_reverse_iterator(beyond), std::make_reverse_iterator(first), movetk_core::movetk_back_insert_iterator(edges2));
+            algorithm(std::make_reverse_iterator(beyond), std::make_reverse_iterator(first), movetk::utils::movetk_back_insert_iterator(edges2));
 
             for (auto& edge : edges2)
             {
@@ -212,7 +212,7 @@ namespace movetk::algo {
     };
 
     template <class GeometryTraits, class EdgeCreator,
-        typename = movetk_core::requires_planar_geometry<GeometryTraits>>
+        typename = movetk::utils::requires_planar_geometry<GeometryTraits>>
         class ImaiIri
     {
         // based on https://doi.org/10.1142/S0218195996000058
@@ -234,11 +234,11 @@ namespace movetk::algo {
         }
 
         template <class InputIterator, class OutputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_output_iterator<OutputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+            typename = movetk::utils::requires_output_iterator<OutputIterator>,
+            typename = movetk::utils::requires_movetk_point<GeometryTraits,
             typename InputIterator::value_type>,
-            typename = movetk_core::requires_equality<typename InputIterator::value_type,
+            typename = movetk::utils::requires_equality<typename InputIterator::value_type,
             typename OutputIterator::value_type::value_type>>
             void operator()(InputIterator first, InputIterator beyond,
                 OutputIterator result)
@@ -250,7 +250,7 @@ namespace movetk::algo {
             std::size_t start_idx = 0;
             predecessors[start_idx] = 0;
 
-            create_edges(first, beyond, movetk_core::movetk_back_insert_iterator(edges));
+            create_edges(first, beyond, movetk::utils::movetk_back_insert_iterator(edges));
 
             Graph graph{ edges.begin(), edges.end(), NumElems };
 
@@ -290,7 +290,7 @@ namespace movetk::algo {
      * \tparam GeometryTraits The geometry kernel
      * \tparam SqDistanceFunc Algorithm for computing the squared distance between points and points/segments.
      */
-    template <class GeometryTraits, class SqDistanceFunc = movetk_core::squared_distance_algorithm<GeometryTraits, movetk_support::FiniteNorm<GeometryTraits, 2>, void>>
+    template <class GeometryTraits, class SqDistanceFunc = movetk::utils::squared_distance_algorithm<GeometryTraits, movetk_support::FiniteNorm<GeometryTraits, 2>, void>>
     class Agarwal
     {
         using NT = typename GeometryTraits::NT;
@@ -317,9 +317,9 @@ namespace movetk::algo {
         }
 
         template <class InputIterator, class OutputIterator,
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_movetk_point_iterator<GeometryTraits, InputIterator>,
-            typename = movetk_core::requires_output_iterator<OutputIterator>,
+            typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+            typename = movetk::utils::requires_movetk_point_iterator<GeometryTraits, InputIterator>,
+            typename = movetk::utils::requires_output_iterator<OutputIterator>,
             typename = std::enable_if_t<std::is_same_v<typename OutputIterator::value_type, InputIterator>, InputIterator>// Require output iterator assignable with input iterator
         >
             void operator()(InputIterator first, InputIterator beyond, OutputIterator result) const
@@ -420,6 +420,6 @@ namespace movetk::algo {
             }
         }
     };
-} // namespace movetk_algorithms
+} // namespace movetk::algo
 
 #endif //MOVETK_SIMPLIFICATION_H

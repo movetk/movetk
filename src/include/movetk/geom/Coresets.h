@@ -33,9 +33,9 @@
 //
 //public:
 //    template<class InputIterator,
-//            typename = movetk_core::requires_random_access_iterator <PointIterator>,
+//            typename = movetk::utils::requires_random_access_iterator <PointIterator>,
 //            class CenterIterator,
-//            typename = movetk_core::requires_output_iterator <CenterIterator> >
+//            typename = movetk::utils::requires_output_iterator <CenterIterator> >
 //    NumberType operator()(InputIterator iter,CenterIterator citer){
 //        typename Kernel::Wrapper_Vector vec =  *iter - center;
 //        typename Kernel::Wrapper_Segment seg(*iter,center);

@@ -29,10 +29,10 @@ namespace PyMoveTk
             mod.def("douglas_peucker",[](const typename GeometryModule::Polyline& polyline, NT epsilon) -> typename GeometryModule::Polyline
             {
                 std::vector<std::decay_t<decltype(polyline.cbegin())>> result;
-                using FindFarthest = movetk_algorithms::FindFarthest<MovetkKernel, Norm> ;
+                using FindFarthest = movetk::algo::FindFarthest<MovetkKernel, Norm> ;
                 // Apply algorithm
-                movetk_algorithms::DouglasPeucker<MovetkKernel, FindFarthest> douglas_peucker_alg(epsilon);
-                douglas_peucker_alg(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+                movetk::algo::DouglasPeucker<MovetkKernel, FindFarthest> douglas_peucker_alg(epsilon);
+                douglas_peucker_alg(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
                 // Reconstruct output and return
                 typename GeometryModule::Polyline output;
                 reconstruct_from_iterators(result, output);
@@ -45,10 +45,10 @@ namespace PyMoveTk
             {
                 std::vector<std::decay_t<decltype(polyline.cbegin())>> result;
                 // Apply algorithm
-                using ChanChin = movetk_algorithms::ChanChin<MovetkKernel, typename GeometryModule::Wedge>;//Use Chan Chin for constructing viable shortcuts.
-                using ImaiIri = movetk_algorithms::ImaiIri<MovetkKernel, ChanChin>;
-                movetk_algorithms::ImaiIri<MovetkKernel, ChanChin> imai_iri(epsilon);
-                imai_iri(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+                using ChanChin = movetk::algo::ChanChin<MovetkKernel, typename GeometryModule::Wedge>;//Use Chan Chin for constructing viable shortcuts.
+                using ImaiIri = movetk::algo::ImaiIri<MovetkKernel, ChanChin>;
+                movetk::algo::ImaiIri<MovetkKernel, ChanChin> imai_iri(epsilon);
+                imai_iri(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
                 // Reconstruct output and return
                 typename GeometryModule::Polyline output;
                 reconstruct_from_iterators(result, output);
@@ -62,8 +62,8 @@ namespace PyMoveTk
                 std::vector<std::decay_t<decltype(polyline.cbegin())>> result;
                 // Apply algorithm
                 using SqDistance = movetk_support::squared_distance_d<MovetkKernel, Norm>;
-                movetk_algorithms::Agarwal<MovetkKernel,SqDistance> agarwal(epsilon);
-                agarwal(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+                movetk::algo::Agarwal<MovetkKernel,SqDistance> agarwal(epsilon);
+                agarwal(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
                 // Reconstruct output and return
                 typename GeometryModule::Polyline output;
                 reconstruct_from_iterators(result, output);

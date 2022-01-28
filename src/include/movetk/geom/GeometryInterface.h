@@ -45,7 +45,7 @@
 // TODO  Concepts for the Interface
 /*!
  *
- *  @namespace movetk_core
+ *  @namespace movetk::utils
  *  @brief the core of movetk
  */
 namespace movetk::geom {
@@ -193,8 +193,8 @@ struct MakePolygon {
 	 * @return A movetk polygon
 	 */
 	template <class PointIterator,
-	          typename = movetk_core::requires_random_access_iterator<PointIterator>,
-	          typename = movetk_core::requires_movetk_point<GeometryTraits, typename PointIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_movetk_point<GeometryTraits, typename PointIterator::value_type>>
 	typename GeometryTraits::MovetkPolygon operator()(PointIterator first, PointIterator beyond) {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
 		// ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
@@ -219,8 +219,8 @@ struct MakeMinSphere {
 	 * @return Radius of the Minimum Enclosing Ball
 	 */
 	template <class PointIterator,
-	          typename = movetk_core::requires_random_access_iterator<PointIterator>,
-	          typename = movetk_core::requires_movetk_point<GeometryTraits, typename PointIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_movetk_point<GeometryTraits, typename PointIterator::value_type>>
 	typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond) {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
 		// ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
@@ -240,10 +240,10 @@ struct MakeMinSphere {
 	 */
 	template <class PointIterator,
 	          class CenterIterator,
-	          typename = movetk_core::requires_random_access_iterator<PointIterator>,
-	          typename = movetk_core::requires_movetk_point<GeometryTraits, typename PointIterator::value_type>,
-	          typename = movetk_core::requires_output_iterator<CenterIterator>,
-	          typename = movetk_core::requires_NT<GeometryTraits, typename CenterIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_movetk_point<GeometryTraits, typename PointIterator::value_type>,
+	          typename = movetk::utils::requires_output_iterator<CenterIterator>,
+	          typename = movetk::utils::requires_NT<GeometryTraits, typename CenterIterator::value_type>>
 	typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
 		// ASSERT_MOVETK_POINT_TYPE(GeometryTraits, first);
@@ -286,8 +286,8 @@ template <class IntersectionTraits>
 class ComputeIntersections {
 public:
 	template <class PointIterator,
-	          typename = movetk_core::requires_random_access_iterator<PointIterator>,
-	          typename = movetk_core::requires_movetk_point<typename IntersectionTraits::GeometryTraits,
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_movetk_point<typename IntersectionTraits::GeometryTraits,
 	                                                        typename PointIterator::value_type>>
 	std::size_t operator()(PointIterator first, PointIterator beyond) {
 		typename IntersectionTraits::GeometryTraits::MovetkCurveIntersection compute_curve_intersections;
@@ -295,9 +295,9 @@ public:
 	}
 
 	template <class OutputIterator,
-	          typename = movetk_core::requires_output_iterator<OutputIterator>,
-	          typename = movetk_core::requires_tuple<typename OutputIterator::value_type>,
-	          typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm>>
+	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
+	          typename = movetk::utils::requires_tuple<typename OutputIterator::value_type>,
+	          typename = movetk::utils::requires_L2_norm<typename IntersectionTraits::Norm>>
 	void operator()(typename IntersectionTraits::GeometryTraits::MovetkSphere& sphere,
 	                typename IntersectionTraits::GeometryTraits::MovetkSegment& segment,
 	                OutputIterator result) {
@@ -355,7 +355,7 @@ public:
 		}
 	}
 
-	template <typename = movetk_core::requires_L2_norm<typename IntersectionTraits::Norm>>
+	template <typename = movetk::utils::requires_L2_norm<typename IntersectionTraits::Norm>>
 	typename IntersectionTraits::GeometryTraits::MovetkSphere operator()(
 	    typename IntersectionTraits::GeometryTraits::MovetkSphere& sphere_a,
 	    typename IntersectionTraits::GeometryTraits::MovetkSphere& sphere_b) {
@@ -365,7 +365,7 @@ public:
 		typedef typename GeometryTraits::NT NT;
 		typedef typename GeometryTraits::MovetkVector MovetkVector;
 		typedef typename GeometryTraits::MovetkPoint MovetkPoint;
-		movetk_core::MakePoint<GeometryTraits> make_point;
+		movetk::geom::MakePoint<GeometryTraits> make_point;
 		MakeSphere<GeometryTraits> make_sphere;
 		MovetkPoint ORIGIN = make_point({0, 0});
 		NT squared_r_a = sphere_a.squared_radius();
@@ -547,8 +547,8 @@ public:
 
 		NT diff_this = (slopes[0] - slopes[1]) / (1 + (slopes[0] * slopes[1]));
 		NT diff_that = (slopes[2] - slopes[3]) / (1 + (slopes[2] * slopes[3]));
-		NT WedgeAngle_this = 2 * movetk_core::rad2deg(diff_this);
-		NT WedgeAngle_that = 2 * movetk_core::rad2deg(diff_that);
+		NT WedgeAngle_this = 2 * movetk::utils::rad2deg(diff_this);
+		NT WedgeAngle_that = 2 * movetk::utils::rad2deg(diff_that);
 
 		if ((*start + *(start + 1) == sum) || (*(end - 1) + *(end - 2) == sum)) {
 			if ((abs(WedgeAngle_this) < 90) || (abs(WedgeAngle_that) < 90))

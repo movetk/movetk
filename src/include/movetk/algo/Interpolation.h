@@ -121,7 +121,7 @@ public:
 	                TSIterator beyond,
 	                OutputIterator result) {
 		const auto point_for_probe = [this](const auto& probe_point) {
-			return movetk_core::get_point<InterpolationTraits>(std::get<LatIdx>(probe_point),
+			return movetk::utils::get_point<InterpolationTraits>(std::get<LatIdx>(probe_point),
 			                                                   std::get<LonIdx>(probe_point),
 			                                                   ref);
 		};
@@ -152,8 +152,8 @@ public:
 			auto fraction = (*tit - ts_u) / interval;
 			const auto v = scale(p_u, p_v, fraction);
 			auto p = translate(p_u, v);
-			auto x = movetk_core::get_x<GeometryTraits>(p);
-			auto y = movetk_core::get_y<GeometryTraits>(p);
+			auto x = movetk::utils::get_x<GeometryTraits>(p);
+			auto y = movetk::utils::get_y<GeometryTraits>(p);
 			auto geocoordinate = ref.inverse(y, x);
 			std::get<LatIdx>(interpolated_point) = geocoordinate[0];
 			std::get<LonIdx>(interpolated_point) = geocoordinate[1];
@@ -169,14 +169,14 @@ public:
 		if constexpr (SpeedIdx > -1) {
 			std::get<SpeedIdx>(*ip_first) = std::get<SpeedIdx>(probe_u);
 			std::get<SpeedIdx>(*(ip_beyond - 1)) = std::get<SpeedIdx>(probe_v);
-			movetk_core::get_speeds<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, TsIdx, SpeedIdx>(ip_first,
+			movetk::utils::get_speeds<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, TsIdx, SpeedIdx>(ip_first,
 			                                                                                                  ip_beyond);
 		}
 
 		if constexpr (HeadingIdx > -1) {
 			std::get<HeadingIdx>(*ip_first) = std::get<HeadingIdx>(probe_u);
 			std::get<HeadingIdx>(*(ip_beyond - 1)) = std::get<HeadingIdx>(probe_v);
-			movetk_core::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
+			movetk::utils::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
 			                                                                                               ip_beyond);
 		}
 		// Move the result to the output
@@ -185,7 +185,7 @@ public:
 };
 
 template <class InterpolationTraits, int LatIdx, int LonIdx, int TsIdx, int SpeedIdx, int HeadingIdx>
-class Interpolator<movetk_algorithms::kinematic_interpolator_tag,
+class Interpolator<movetk::algo::kinematic_interpolator_tag,
                    InterpolationTraits,
                    LatIdx,
                    LonIdx,
@@ -213,7 +213,7 @@ public:
 	                TSIterator beyond,
 	                OutputIterator result) {
 		const auto point_for_probe = [this](const auto& probe_point) {
-			return movetk_core::get_point<InterpolationTraits>(std::get<LatIdx>(probe_point),
+			return movetk::utils::get_point<InterpolationTraits>(std::get<LatIdx>(probe_point),
 			                                                   std::get<LonIdx>(probe_point),
 			                                                   ref);
 		};
@@ -223,9 +223,9 @@ public:
 		auto p_v = point_for_probe(probe_v);
 
 		auto velocity_u =
-		    movetk_core::get_velocity<GeometryTraits>(std::get<SpeedIdx>(probe_u), std::get<HeadingIdx>(probe_u));
+		    movetk::utils::get_velocity<GeometryTraits>(std::get<SpeedIdx>(probe_u), std::get<HeadingIdx>(probe_u));
 		auto velocity_v =
-		    movetk_core::get_velocity<GeometryTraits>(std::get<SpeedIdx>(probe_v), std::get<HeadingIdx>(probe_v));
+		    movetk::utils::get_velocity<GeometryTraits>(std::get<SpeedIdx>(probe_v), std::get<HeadingIdx>(probe_v));
 
 		auto delta_velocity = velocity_v - velocity_u;
 		auto delta_position = p_v - p_u;
@@ -245,26 +245,26 @@ public:
 		if (norm_delta_position > MOVETK_EPS && norm_delta_velocity < MOVETK_EPS) {
 			typename InterpolationTraits::NT speed_v = displacement / delta_t;
 			velocity_v =
-			    movetk_core::get_velocity<typename InterpolationTraits::GeometryTraits>(speed_v,
+			    movetk::utils::get_velocity<typename InterpolationTraits::GeometryTraits>(speed_v,
 			                                                                            std::get<HeadingIdx>(probe_v));
 			std::get<SpeedIdx>(probe_v) = speed_v;
 		}
 
 		auto scaled_velocity = scale(velocity_u, delta_t);
 
-		auto numerator = movetk_core::get_x<GeometryTraits>(delta_position) -
-		                 movetk_core::get_x<GeometryTraits>(scaled_velocity) -
-		                 movetk_core::get_x<GeometryTraits>(delta_velocity) / 2.0;
+		auto numerator = movetk::utils::get_x<GeometryTraits>(delta_position) -
+		                 movetk::utils::get_x<GeometryTraits>(scaled_velocity) -
+		                 movetk::utils::get_x<GeometryTraits>(delta_velocity) / 2.0;
 		const auto denominator = delta_t_cube / 6.0 - delta_t_squared / 4.0;
 		auto m_x = numerator / denominator;
 
-		numerator = movetk_core::get_y<GeometryTraits>(delta_position) -
-		            movetk_core::get_y<GeometryTraits>(scaled_velocity) -
-		            movetk_core::get_y<GeometryTraits>(delta_velocity) / 2.0;
+		numerator = movetk::utils::get_y<GeometryTraits>(delta_position) -
+		            movetk::utils::get_y<GeometryTraits>(scaled_velocity) -
+		            movetk::utils::get_y<GeometryTraits>(delta_velocity) / 2.0;
 		auto m_y = numerator / denominator;
 
-		auto b_x = movetk_core::get_x<GeometryTraits>(delta_velocity) / delta_t_squared - m_x / 2.0;
-		auto b_y = movetk_core::get_y<GeometryTraits>(delta_velocity) / delta_t_squared - m_y / 2.0;
+		auto b_x = movetk::utils::get_x<GeometryTraits>(delta_velocity) / delta_t_squared - m_x / 2.0;
+		auto b_y = movetk::utils::get_y<GeometryTraits>(delta_velocity) / delta_t_squared - m_y / 2.0;
 
 		auto m = make_point({m_x, m_y});
 		auto b = make_point({b_x, b_y});
@@ -311,17 +311,17 @@ public:
 			scaled_velocity = velocity_u;
 			scaled_velocity *= delta_t;
 
-			auto op1 = movetk_core::get_x<GeometryTraits>(b) * (delta_t_squared / 2.0);
-			auto op2 = movetk_core::get_x<GeometryTraits>(m) * (delta_t_cube / 6.0);
+			auto op1 = movetk::utils::get_x<GeometryTraits>(b) * (delta_t_squared / 2.0);
+			auto op2 = movetk::utils::get_x<GeometryTraits>(m) * (delta_t_cube / 6.0);
 
 			auto interpolated_x =
-			    op1 + op2 + movetk_core::get_x<GeometryTraits>(scaled_velocity) + movetk_core::get_x<GeometryTraits>(p_u);
+			    op1 + op2 + movetk::utils::get_x<GeometryTraits>(scaled_velocity) + movetk::utils::get_x<GeometryTraits>(p_u);
 
-			op1 = movetk_core::get_y<GeometryTraits>(b) * (delta_t_squared / 2.0);
-			op2 = movetk_core::get_y<GeometryTraits>(m) * (delta_t_cube / 6.0);
+			op1 = movetk::utils::get_y<GeometryTraits>(b) * (delta_t_squared / 2.0);
+			op2 = movetk::utils::get_y<GeometryTraits>(m) * (delta_t_cube / 6.0);
 
 			auto interpolated_y =
-			    op1 + op2 + movetk_core::get_y<GeometryTraits>(scaled_velocity) + movetk_core::get_y<GeometryTraits>(p_u);
+			    op1 + op2 + movetk::utils::get_y<GeometryTraits>(scaled_velocity) + movetk::utils::get_y<GeometryTraits>(p_u);
 
 			auto geocoordinate = ref.inverse(interpolated_y, interpolated_x);
 
@@ -365,7 +365,7 @@ public:
 		auto ip_beyond = std::end(interpolated_pts);
 
 		if constexpr (HeadingIdx > -1) {
-			movetk_core::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
+			movetk::utils::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
 			                                                                                               ip_beyond);
 		}
 
@@ -454,11 +454,11 @@ public:
 	                OutputIterator result) {
 		auto lat_u = std::get<LatIdx>(probe_u);
 		auto lon_u = std::get<LonIdx>(probe_u);
-		auto p_u = movetk_core::get_point<InterpolationTraits>(lat_u, lon_u, ref);
+		auto p_u = movetk::utils::get_point<InterpolationTraits>(lat_u, lon_u, ref);
 
 		auto lat_v = std::get<LatIdx>(probe_v);
 		auto lon_v = std::get<LonIdx>(probe_v);
-		auto p_v = movetk_core::get_point<InterpolationTraits>(lat_v, lon_v, ref);
+		auto p_v = movetk::utils::get_point<InterpolationTraits>(lat_v, lon_v, ref);
 
 		auto t_u = std::get<TsIdx>(probe_u);
 		auto t_v = std::get<TsIdx>(probe_v);
@@ -511,17 +511,17 @@ public:
 
 			auto bounds = mbr(*source, *destination, radius_u, radius_v);
 			typename InterpolationTraits::NT x_min =
-			    std::min(movetk_core::get_x<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk_core::get_x<typename InterpolationTraits::GeometryTraits>(bounds.second));
+			    std::min(movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.first),
+			             movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.second));
 			typename InterpolationTraits::NT x_max =
-			    std::max(movetk_core::get_x<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk_core::get_x<typename InterpolationTraits::GeometryTraits>(bounds.second));
+			    std::max(movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.first),
+			             movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.second));
 			typename InterpolationTraits::NT y_min =
-			    std::min(movetk_core::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk_core::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
+			    std::min(movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
+			             movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
 			typename InterpolationTraits::NT y_max =
-			    std::max(movetk_core::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk_core::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
+			    std::max(movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
+			             movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
 			/*    std::cerr<<"x_min: "<<x_min<<"\n";
 			    std::cerr<<"x_max: "<<x_max<<"\n";
 			    std::cerr<<"y_min: "<<y_min<<"\n";
@@ -580,14 +580,14 @@ public:
 		if constexpr (SpeedIdx > -1) {
 			std::get<SpeedIdx>(*ip_first) = std::get<SpeedIdx>(probe_u);
 			std::get<SpeedIdx>(*(ip_beyond - 1)) = std::get<SpeedIdx>(probe_v);
-			movetk_core::get_speeds<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, TsIdx, SpeedIdx>(ip_first,
+			movetk::utils::get_speeds<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, TsIdx, SpeedIdx>(ip_first,
 			                                                                                                  ip_beyond);
 		}
 
 		if constexpr (HeadingIdx > -1) {
 			std::get<HeadingIdx>(*ip_first) = std::get<HeadingIdx>(probe_u);
 			std::get<HeadingIdx>(*(ip_beyond - 1)) = std::get<HeadingIdx>(probe_v);
-			movetk_core::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
+			movetk::utils::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
 			                                                                                               ip_beyond);
 		}
 
@@ -595,6 +595,6 @@ public:
 	}
 };
 
-}  // namespace movetk_algorithms
+}  // namespace movetk::algo
 
 #endif  // MOVETK_INTERPOLATION_H

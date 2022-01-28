@@ -41,7 +41,7 @@ struct CGALBackend {
 	// Define the Geometry Backend
 	using GeometryBackend = movetk_support::CGALTraits<NT, dimensions>;
 	// Using the Geometry Backend define the Movetk Geometry Kernel
-	using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<typename GeometryBackend::Wrapper_CGAL_Geometry>;
+	using MovetkGeometryKernel = movetk::utils::MovetkGeometryKernel<typename GeometryBackend::Wrapper_CGAL_Geometry>;
 };
 }  // namespace movetk::backends
 #else
@@ -49,14 +49,14 @@ struct CGALBackend {
 #if MOVETK_WITH_BOOST_BACKEND
 #include "movetk/geom/BoostGeometryTraits.h"
 namespace movetk::backends {
-struct BoostBackend : public movetk_core::MovetkGeometryKernel<
+struct BoostBackend : public movetk::utils::MovetkGeometryKernel<
                           typename movetk_support::BoostGeometryTraits<long double, 2>::Wrapper_Boost_Geometry> {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
 	// Define the Geometry Backend
 	using GeometryBackend = movetk_support::BoostGeometryTraits<NT, dimensions>;
 	// Using the Geometry Backend define the Movetk Geometry Kernel
-	using MovetkGeometryKernel = movetk_core::MovetkGeometryKernel<typename GeometryBackend::Wrapper_Boost_Geometry>;
+	using MovetkGeometryKernel = movetk::utils::MovetkGeometryKernel<typename GeometryBackend::Wrapper_Boost_Geometry>;
 };
 }  // namespace movetk::backends
 #endif
@@ -90,10 +90,10 @@ struct BaseGeometryKernel : public Backend {
 	using Norm = movetk_support::FiniteNorm<typename Backend::MovetkGeometryKernel, 2>;
 
 	using SphSegIntersectionTraits =
-	    movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_segment_intersection_tag>;
+	    movetk::utils::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::utils::sphere_segment_intersection_tag>;
 
 	using SphSphIntersectionTraits =
-	    movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_sphere_intersection_tag>;
+	    movetk::utils::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::utils::sphere_sphere_intersection_tag>;
 
 	using FreeSpaceCellTraits = movetk_support::FreeSpaceCellTraits<SphSegIntersectionTraits>;
 	using FreeSpaceCell = movetk_support::FreeSpaceCell<FreeSpaceCellTraits>;

@@ -53,7 +53,7 @@ struct OutlierDetectionTests : public test_helpers::BaseTestFixture<Backend> {
         MovetkGeometryKernel,
         Norm>;
     using LinearSpeedboundedTest = movetk::algo::outlier_detection::TEST<movetk::algo::linear_speed_bounded_test_tag,
-        movetk_algorithms::cartesian_coordinates_tag,
+        movetk::algo::cartesian_coordinates_tag,
         OutlierDetectionTraits>;
     using Trajectories = std::vector<Trajectory>;
     using Sequence = std::vector<typename Trajectory::const_iterator>;
@@ -73,7 +73,7 @@ struct OutlierDetectionTests : public test_helpers::BaseTestFixture<Backend> {
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "greedy_outlier_detector 1", "[greedy_outlier_detector 1]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::greedy_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::greedy_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
 
     Trajectory trajectory = {
@@ -99,7 +99,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "greedy_outlier_det
 
     std::vector<Trajectory::const_iterator> result;
 
-    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk_core::movetk_back_insert_iterator(result));
+    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
 
     const auto num_outliers = trajectory_complexity - result.size();
     const auto expected_outliers = trajectory_complexity - expected_trajectory.size();
@@ -115,7 +115,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "greedy_outlier_det
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "greedy_outlier_detector 2", "[greedy_outlier_detector 2]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::greedy_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::greedy_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
 
     Trajectory trajectory = {
@@ -141,7 +141,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "greedy_outlier_det
 
     std::vector<Trajectory::const_iterator> result;
 
-    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk_core::movetk_back_insert_iterator(result));
+    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
 
     const auto num_outliers = trajectory_complexity - result.size();
     const auto expected_num_outliers = trajectory_complexity - expected_trajectory.size();
@@ -155,7 +155,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "greedy_outlier_det
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "smart_greedy_outlier_detector 1", "[smart_greedy_outlier_detector 1]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::smart_greedy_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::smart_greedy_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
     Trajectory trajectory{
     {make_point({ -5, 5 }), 0},
@@ -205,7 +205,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "smart_greedy_outli
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "smart_greedy_outlier_detector 2", "[smart_greedy_outlier_detector 2]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::smart_greedy_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::smart_greedy_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
     Trajectory trajectory = {
     {make_point({ -5, 5 }), 0},
@@ -252,7 +252,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "smart_greedy_outli
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "zheng_greedy_outlier_detector 1", "[zheng_greedy_outlier_detector 1]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::zheng_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::zheng_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
     Trajectory trajectory{
     {make_point({ -5, 5 }), 0},
@@ -274,7 +274,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "zheng_greedy_outli
     OutlierDetector outlier_detector(1.5, 3);
 
     std::vector<Trajectory::const_iterator> result;
-    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk_core::movetk_back_insert_iterator(result));
+    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
 
     std::size_t num_outliers = trajectory.size() - result.size();
     REQUIRE(num_outliers == 8);
@@ -288,7 +288,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "zheng_greedy_outli
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "zheng_greedy_outlier_detector 2", "[zheng_greedy_outlier_detector 2]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::zheng_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::zheng_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
 
     Trajectory trajectory{ {make_point({ -5, 5 }), 0},
@@ -311,14 +311,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "zheng_greedy_outli
 
     std::vector<Trajectory::const_iterator> result;
 
-    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk_core::movetk_back_insert_iterator(result));
+    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
 
     std::size_t num_outliers = trajectory.size() - result.size();
     REQUIRE(num_outliers == 12);
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "output_sensitive_outlier_detector 1", "[output_sensitive_outlier_detector 1]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::output_sensitive_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::output_sensitive_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
     Trajectory trajectory{
     {make_point({ -5, 5 }), 0},
@@ -340,7 +340,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "output_sensitive_o
     OutlierDetector outlier_detector(1.5);
 
     std::vector<Trajectory::const_iterator> result;
-    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk_core::movetk_back_insert_iterator(result));
+    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
     std::reverse(std::begin(result), std::end(result));
     std::size_t num_outliers = trajectory.size() - result.size();
     REQUIRE(num_outliers == 5);
@@ -355,7 +355,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "output_sensitive_o
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "output_sensitive_outlier_detector 2", "[output_sensitive_outlier_detector 2]") {
-    using OutlierDetector = movetk_algorithms::OutlierDetection<movetk_algorithms::output_sensitive_outlier_detector_tag,
+    using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::output_sensitive_outlier_detector_tag,
         LinearSpeedboundedTest, OutlierDetectionTraits>;
     Trajectory trajectory{
     {make_point({ -5, 5 }), 0},
@@ -377,7 +377,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests, "output_sensitive_o
     OutlierDetector outlier_detector(0);
 
     std::vector<Trajectory::const_iterator> result;
-    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk_core::movetk_back_insert_iterator(result));
+    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
     std::reverse(std::begin(result), std::end(result));
     std::size_t num_outliers = trajectory.size() - result.size();
 

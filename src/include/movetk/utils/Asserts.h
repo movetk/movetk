@@ -38,7 +38,7 @@
      * @param IteratorType
      */
     #define  ASSERT_RANDOM_ACCESS_ITERATOR(IteratorType) \
-             static_assert(movetk_core::is_random_access_iterator< \
+             static_assert(movetk::utils::is_random_access_iterator< \
                 typename std::iterator_traits<IteratorType>::iterator_category>::value, \
                 "Expects the Iterator category to be std::random_access_iterator_tag")
 
@@ -48,7 +48,7 @@
      * @param IteratorType
      */
     #define ASSERT_FORWARD_ITERATOR(IteratorType) \
-            static_assert(movetk_core::is_forward_iterator< \
+            static_assert(movetk::utils::is_forward_iterator< \
                 typename std::iterator_traits<IteratorType>::iterator_category>::value, \
                 "Expects the Iterator category to be std::forward_iterator_tag")
 
@@ -58,7 +58,7 @@
      * @param IteratorType
      */
     #define ASSERT_OUTPUT_ITERATOR(IteratorType) \
-            static_assert(movetk_core::is_output_iterator< \
+            static_assert(movetk::utils::is_output_iterator< \
                 typename std::iterator_traits<IteratorType>::iterator_category>::value, \
                 "Expects the Iterator category to be std::output_iterator_tag")
 
@@ -70,7 +70,7 @@
     * @param Iterator
     */
     #define ASSERT_NUMBER_TYPE(Kernel, Iterator) \
-            static_assert(movetk_core::is_NT<Kernel, decltype(*Iterator)>::value, \
+            static_assert(movetk::utils::is_NT<Kernel, decltype(*Iterator)>::value, \
             "Expects Iterator over Kernel::NT")
 
     /*!
@@ -81,7 +81,7 @@
     * @param Iterator
     */
     #define ASSERT_WRAPPER_POINT_TYPE(Kernel, Iterator) \
-            static_assert(movetk_core::is_Wrapper_Point<Kernel, decltype(*Iterator)>::value, \
+            static_assert(movetk::utils::is_Wrapper_Point<Kernel, decltype(*Iterator)>::value, \
             "Expects Iterator over Kernel::Wrapper_Point")
 
 /*!
@@ -92,7 +92,7 @@
 * @param Iterator
 */
 #define ASSERT_MOVETK_POINT_TYPE(Kernel, Iterator) \
-            static_assert(movetk_core::is_MovetkPoint<GeometryTraits,decltype(*Iterator)>::value, \
+            static_assert(movetk::utils::is_MovetkPoint<GeometryTraits,decltype(*Iterator)>::value, \
             "Expects Iterator over Kernel::MovetkPoint")
 
     /*!
@@ -101,7 +101,7 @@
     * @param Iterator
     */
     #define ASSERT_IS_STRING(IteratorType) \
-            static_assert(movetk_core::is_string<typename IteratorType::value_type>::value, \
+            static_assert(movetk::utils::is_string<typename IteratorType::value_type>::value, \
             "Expects Iterator over std::string")
 
     /*!
@@ -110,11 +110,11 @@
     * @param Iterator
     */
     #define ASSERT_IS_PAIR(IteratorType) \
-            static_assert(movetk_core::is_pair<typename IteratorType::value_type>::value,\
+            static_assert(movetk::utils::is_pair<typename IteratorType::value_type>::value,\
             "Expects Iterator over std::pair<T1,T2>" )
 
     #define ASSERT_IS_SIZE_T(IteratorType) \
-          static_assert(movetk_core::is_size_t<typename IteratorType::value_type>::value,\
+          static_assert(movetk::utils::is_size_t<typename IteratorType::value_type>::value,\
             "Expects Iterator over std::size_t")
 
     /*!
@@ -125,7 +125,7 @@
     * @param IteratorType2 - The Iterator that refers
     */
     #define ASSERT_IS_EQUAL(T1,T2) \
-            static_assert(movetk_core::is_equal_to<T1,T2>::value, \
+            static_assert(movetk::utils::is_equal_to<T1,T2>::value, \
             "Expects Iterator2 to be an iterator over Iterator1")
 
     #define ASSERT_MIN_NORM(p)\

@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     ofcsv << ",RAW_TRAJID,VELOCITY_SEG_ID\n";
 
     // Write time-sorted trajectories and segment them using Conjunction of Range and Diff Criteria
-    typedef movetk_algorithms::SegmentationTraits<long double,
+    typedef movetk::algo::SegmentationTraits<long double,
                                                   typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
         SegmentationTraits;
     typedef GeometryKernel::MovetkGeometryKernel::NT NT;
@@ -139,9 +139,9 @@ int main(int argc, char **argv)
 
         SegmentStartReferences segIdx;
         segment_by_heading(std::begin(headings_), std::end(headings_),
-                           movetk_core::movetk_back_insert_iterator(segIdx));
+                           movetk::utils::movetk_back_insert_iterator(segIdx));
 
-        movetk_core::SegmentIdGenerator make_segment_heading(std::begin(segIdx), std::end(segIdx));
+        movetk::utils::SegmentIdGenerator make_segment_heading(std::begin(segIdx), std::end(segIdx));
         SSD heading_ssd;
 
         heading_ssd(std::begin(headings_), std::end(headings_), make_segment_heading);
@@ -159,8 +159,8 @@ int main(int argc, char **argv)
             speeds_.push_back(*sit);
         }
 
-        segment_by_speed(std::begin(speeds_), std::end(speeds_), movetk_core::movetk_back_insert_iterator(segIdx));
-        movetk_core::SegmentIdGenerator make_segment_speed(std::begin(segIdx), std::end(segIdx));
+        segment_by_speed(std::begin(speeds_), std::end(speeds_), movetk::utils::movetk_back_insert_iterator(segIdx));
+        movetk::utils::SegmentIdGenerator make_segment_speed(std::begin(segIdx), std::end(segIdx));
 
         SSD speed_ssd;
         speed_ssd(std::begin(speeds_), std::end(speeds_), make_segment_speed);
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
 
         while (cit != conjunction_result.cend())
         {
-            if (!movetk_core::is_sequence(pit, (cit + 1)))
+            if (!movetk::utils::is_sequence(pit, (cit + 1)))
             {
                 id++;
                 pit = cit;

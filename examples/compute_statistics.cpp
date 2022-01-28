@@ -94,18 +94,18 @@ void run(int argc, char** argv)
         using CoordIt = decltype(lons.begin());
         auto lats = trajectory.template get<LAT_Idx>();
         auto ts = trajectory.template get<TS_Idx>();
-        auto pointIterators = movetk_core::point_iterators_from_coordinates<GeomKernel>(std::array<std::pair<CoordIt, CoordIt>,2>{
+        auto pointIterators = movetk::utils::point_iterators_from_coordinates<GeomKernel>(std::array<std::pair<CoordIt, CoordIt>,2>{
             std::make_pair(lons.begin(), lons.end()),
             std::make_pair(lats.begin(), lats.end())
         });
 
-        movetk_algorithms::TrajectoryLength<GeomKernel, Distance> lenCalc;
+        movetk::algo::TrajectoryLength<GeomKernel, Distance> lenCalc;
         BOOST_LOG_TRIVIAL(info) << "Trajectory length:" << lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end()) << std::endl;
-        movetk_algorithms::TrajectoryDuration duration;
+        movetk::algo::TrajectoryDuration duration;
         BOOST_LOG_TRIVIAL(info) << "Trajectory duration:" << duration(ts.begin(), ts.end()) << std::endl;
 
         // Show speed statistics:
-        using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<GeomKernel, Distance>;
+        using SpeedStat = movetk::algo::TrajectorySpeedStatistic<GeomKernel, Distance>;
         SpeedStat speedStat;
         using Stat = typename SpeedStat::Statistic;
         BOOST_LOG_TRIVIAL(info) << "Trajectory average speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(),Stat::Mean) << std::endl;
@@ -115,7 +115,7 @@ void run(int argc, char** argv)
         BOOST_LOG_TRIVIAL(info) << "Trajectory variance of speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Variance) << std::endl;
 
         // Show time mode
-        movetk_algorithms::ComputeDominantDifference timeMode;
+        movetk::algo::ComputeDominantDifference timeMode;
         BOOST_LOG_TRIVIAL(info) << "Most common time interval: " << timeMode(ts.begin(), ts.end(), 0);
 
         count++;

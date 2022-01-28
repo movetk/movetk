@@ -36,7 +36,7 @@
 #include "test_includes.h"
 
 struct TestTypes {
-	using Trajectory = TabularTrajectory<std::string, double, double, std::time_t>;
+	using Trajectory = movetk::ds::TabularTrajectory<std::string, double, double, std::time_t>;
 	using ProbePoint = std::tuple<std::string, double, double, std::time_t>;
 };
 
@@ -47,7 +47,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory length statistic",
 	using ProbePoint = typename TestTypes::ProbePoint;
 	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	// Setup algorithm
-	movetk_algorithms::TrajectoryLength<MovetkGeometryKernel> lengthCalc;
+	movetk::algo::TrajectoryLength<MovetkGeometryKernel> lengthCalc;
 
 	SECTION("Simple trajectory") {
 		// Construct data
@@ -103,7 +103,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory duration",
                         movetk::test::AvailableBackends) {
 	using Trajectory = typename TestTypes::Trajectory;
 	using ProbePoint = typename TestTypes::ProbePoint;
-	movetk_algorithms::TrajectoryDuration durationCalc;
+	movetk::algo::TrajectoryDuration durationCalc;
 	SECTION("Simple trajectory") {
 		// Construct data
 		ProbePoint base{"test", 0, 0, 0};
@@ -146,7 +146,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory speed statistics",
 	// Construct data
 	ProbePoint base{"test", 0, 0, 0};
 
-	movetk_algorithms::TrajectorySpeedStatistic<MovetkGeometryKernel> speedStat;
+	movetk::algo::TrajectorySpeedStatistic<MovetkGeometryKernel> speedStat;
 	using SpeedStat = decltype(speedStat);
 	using Stat = typename decltype(speedStat)::Statistic;
 	// Approx here since duration is implementation defined, may be double
@@ -159,7 +159,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory speed statistics",
 
 		auto xItPair = std::make_pair(xs.begin(), xs.end());
 		auto yItPair = std::make_pair(ys.begin(), ys.end());
-		auto pointItPair = movetk_core::point_iterators_from_coordinates<MovetkGeometryKernel, decltype(xs.begin())>(
+		auto pointItPair = movetk::utils::point_iterators_from_coordinates<MovetkGeometryKernel, decltype(xs.begin())>(
 		    std::array<decltype(xItPair), 2>{xItPair, yItPair});
 
 		SECTION("The mean speed is properly calculated") {
@@ -201,7 +201,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory speed statistics",
 
 		auto xItPair = std::make_pair(xs.begin(), xs.end());
 		auto yItPair = std::make_pair(ys.begin(), ys.end());
-		auto pointItPair = movetk_core::point_iterators_from_coordinates<MovetkGeometryKernel, decltype(xs.begin())>(
+		auto pointItPair = movetk::utils::point_iterators_from_coordinates<MovetkGeometryKernel, decltype(xs.begin())>(
 		    std::array<decltype(xItPair), 2>{xItPair, yItPair});
 
 		auto v = std::sqrt(2.0 * 2.0 + 4.0 * 4.0) / 5.0;
@@ -251,7 +251,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory speed statistics",
 		std::vector<std::time_t> times;
 		auto xItPair = std::make_pair(xs.begin(), xs.end());
 		auto yItPair = std::make_pair(ys.begin(), ys.end());
-		auto pointItPair = movetk_core::point_iterators_from_coordinates<MovetkGeometryKernel, decltype(xs.begin())>(
+		auto pointItPair = movetk::utils::point_iterators_from_coordinates<MovetkGeometryKernel, decltype(xs.begin())>(
 		    std::array<decltype(xItPair), 2>{xItPair, yItPair});
 
 		auto v = 0;

@@ -55,7 +55,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
 	std::vector<PolyLine::iterator> result;
 	DouglasPeucker DouglasPeucker1(5.47722);
 	ExpectedPolyline = PolyLine({make_point({-6.19, -3.46}), make_point({5.33, -1.12})});
-	DouglasPeucker1(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+	DouglasPeucker1(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 	REQUIRE(result.size() == 2);
 	auto eit = std::begin(ExpectedPolyline);
 	for (auto reference : result) {
@@ -84,7 +84,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
 	                             make_point({0.77, 0.22}),
 	                             make_point({-1.15, 3.06}),
 	                             make_point({5.33, -1.12})});
-	DouglasPeucker2(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+	DouglasPeucker2(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 	REQUIRE(result.size() == 5);
 	auto eit = std::begin(ExpectedPolyline);
 	for (auto reference : result) {
@@ -115,7 +115,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
 	                             make_point({0.77, 0.22}),
 	                             make_point({-1.15, 3.06}),
 	                             make_point({5.33, -1.12})});
-	DouglasPeucker3(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+	DouglasPeucker3(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 	REQUIRE(result.size() == 7);
 	auto eit = std::begin(ExpectedPolyline);
 	for (auto reference : result) {
@@ -139,7 +139,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
 	std::vector<PolyLine::iterator> result;
 	DouglasPeucker DouglasPeucker4(3.162277);
 	ExpectedPolyline = PolyLine({make_point({-6.19, -3.46}), make_point({-6.19, -3.46})});
-	DouglasPeucker4(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+	DouglasPeucker4(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 	REQUIRE(result.size() == 2);
 	auto eit = std::begin(ExpectedPolyline);
 	for (auto reference : result) {

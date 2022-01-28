@@ -66,7 +66,7 @@ public:
 
 	Wrapper_Boost_Point(const Boost_Point &p) : pt(p) {}
 
-	template <class CoordinateIterator, typename = movetk_core::requires_random_access_iterator<CoordinateIterator>>
+	template <class CoordinateIterator, typename = movetk::utils::requires_random_access_iterator<CoordinateIterator>>
 	Wrapper_Boost_Point(CoordinateIterator first, CoordinateIterator beyond) {
 		// ASSERT_NUMBER_TYPE(Kernel, first);
 		pt.template set<0>(*first);
@@ -118,7 +118,7 @@ public:
 
 template <class Kernel>
 std::ostream &operator<<(std::ostream &out, const Wrapper_Boost_Point<Kernel> &point) {
-	return (out << movetk_support::join(point.begin(), point.end()));
+	return (out << movetk::utils::join(point.begin(), point.end()));
 }
 
 template <class Kernel>
@@ -295,10 +295,10 @@ private:
 public:
 	template <class PointIterator,
 	          class CenterIterator,
-	          typename = movetk_core::requires_random_access_iterator<PointIterator>,
-	          typename = movetk_core::requires_wrapper_point<Kernel, typename PointIterator::value_type>,
-	          typename = movetk_core::requires_output_iterator<CenterIterator>,
-	          typename = movetk_core::requires_NT<Kernel, typename CenterIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_wrapper_point<Kernel, typename PointIterator::value_type>,
+	          typename = movetk::utils::requires_output_iterator<CenterIterator>,
+	          typename = movetk::utils::requires_NT<Kernel, typename CenterIterator::value_type>>
 	NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const {
 		auto result = dispatcher(std::distance(first->begin(), first->end()), std::vector<Point>(first, beyond));
 		auto cit = result.first.begin();
@@ -310,8 +310,8 @@ public:
 	}
 
 	template <class PointIterator,
-	          typename = movetk_core::requires_random_access_iterator<PointIterator>,
-	          typename = movetk_core::requires_wrapper_point<Kernel, typename PointIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_wrapper_point<Kernel, typename PointIterator::value_type>>
 	NT operator()(PointIterator first, PointIterator beyond) const {
 		auto result = dispatcher(std::distance(first->begin(), first->end()), std::vector<Point>(first, beyond));
 		return result.second;
@@ -329,8 +329,8 @@ public:
 	Wrapper_Boost_Polygon() = default;
 
 	template <class PointIterator,
-	          typename = movetk_core::requires_random_access_iterator<PointIterator>,
-	          typename = movetk_core::requires_wrapper_point<Kernel, typename PointIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_wrapper_point<Kernel, typename PointIterator::value_type>>
 	Wrapper_Boost_Polygon(PointIterator first, PointIterator beyond) {
 		PointIterator it = first;
 		while (it != beyond) {
@@ -381,8 +381,8 @@ struct Wrapper_Boost_Squared_Distance {
 template <class Kernel>
 struct Wrapper_Boost_Discrete_Hausdorff_Distance {
 	template <class InputIterator,
-	          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-	          typename = movetk_core::requires_wrapper_point<Kernel, typename InputIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	          typename = movetk::utils::requires_wrapper_point<Kernel, typename InputIterator::value_type>>
 	typename Kernel::NT operator()(InputIterator polyline_a_first,
 	                               InputIterator polyline_a_beyond,
 	                               InputIterator polyline_b_first,
@@ -407,8 +407,8 @@ struct Wrapper_Boost_Discrete_Hausdorff_Distance {
 template <class Kernel>
 struct Wrapper_Boost_Discrete_Frechet_Distance {
 	template <class InputIterator,
-	          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-	          typename = movetk_core::requires_wrapper_point<Kernel, typename InputIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	          typename = movetk::utils::requires_wrapper_point<Kernel, typename InputIterator::value_type>>
 	typename Kernel::NT operator()(InputIterator polyline_a_first,
 	                               InputIterator polyline_a_beyond,
 	                               InputIterator polyline_b_first,

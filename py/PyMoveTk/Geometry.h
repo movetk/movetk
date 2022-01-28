@@ -44,8 +44,8 @@ struct GeometryModule {
 	using Polygon = typename MovetkGeometryKernel::MovetkPolygon;
 	using Sphere = typename MovetkGeometryKernel::MovetkSphere;
 	using Polyline = detail::Polyline<Point>;
-	using Wedge = typename movetk_core::Wedge<MovetkGeometryKernel, Norm>;
-	using CoordinateIterator = movetk_core::movetk_basic_iterator<const NT>;
+	using Wedge = typename movetk::utils::Wedge<MovetkGeometryKernel, Norm>;
+	using CoordinateIterator = movetk::utils::movetk_basic_iterator<const NT>;
 
 	static void register_point(pybind11::module &mod) {
 		namespace py = pybind11;
@@ -114,12 +114,12 @@ struct GeometryModule {
 		     */
 		    .def("length",
 		         [](const Segment &m) -> NT {
-			         movetk_core::ComputeLength<MovetkGeometryKernel> compute_length;
+			         movetk::utils::ComputeLength<MovetkGeometryKernel> compute_length;
 			         return compute_length(m);
 		         })
 		    .def("distance",
 		         [](Segment &m, Point &p) {
-			         movetk_core::ComputeSquaredDistance<MovetkGeometryKernel, typename MovetkGeometryKernel::Norm>
+			         movetk::utils::ComputeSquaredDistance<MovetkGeometryKernel, typename MovetkGeometryKernel::Norm>
 			             squared_dist;
 			         NT dist = squared_dist(p, m);
 			         return std::sqrt(dist);
@@ -304,8 +304,8 @@ struct GeometryModule {
 		    .def("min_sphere",
 		         [](Sphere &s, Polyline &p) -> Sphere {
 			         std::vector<NT> vec;
-			         using back_insert_iterator = movetk_core::movetk_back_insert_iterator<decltype(vec)>;
-			         movetk_core::MakeMinSphere<MovetkGeometryKernel> min_sphere;
+			         using back_insert_iterator = movetk::utils::movetk_back_insert_iterator<decltype(vec)>;
+			         movetk::utils::MakeMinSphere<MovetkGeometryKernel> min_sphere;
 			         NT radius = min_sphere(p.cbegin(), p.cend(), back_insert_iterator(vec));
 			         Point center(std::begin(vec), std::end(vec));
 			         Sphere sphere(center, radius);
@@ -314,18 +314,18 @@ struct GeometryModule {
 		         })
 		    .def("intersection",
 		         [](Sphere &sp, Segment &seg) {
-			         movetk_core::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
+			         movetk::utils::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
 			             compute_sphere_segment_intersections;
 			         std::vector<typename MovetkGeometryKernel::SphSegIntersectionTraits::value_type>
 			             sphere_segment_intersections;
 			         compute_sphere_segment_intersections(
 			             sp,
 			             seg,
-			             movetk_core::movetk_back_insert_iterator(sphere_segment_intersections));
+			             movetk::utils::movetk_back_insert_iterator(sphere_segment_intersections));
 			         return sphere_segment_intersections;
 		         })
 		    .def("intersection", [](Sphere &sp1, Sphere &sp2) -> Sphere {
-			    movetk_core::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
+			    movetk::utils::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
 			        compute_sphere_segment_intersections;
 			    typename MovetkGeometryKernel::MovetkSphere sp = compute_sphere_segment_intersections(sp1, sp2);
 			    return sp;

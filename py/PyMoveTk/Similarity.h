@@ -19,7 +19,7 @@ namespace PyMoveTk
             using namespace pybind11::literals;
             mod.def("compute_lcss", [](const Polyline& p0, const Polyline& p1, NT epsilon, std::size_t delta)->std::size_t
             {
-                movetk_algorithms::LongestCommonSubSequence<GeometryKernel, typename GeometryKernel::Norm> lcss(epsilon,delta);
+                movetk::algo::LongestCommonSubSequence<GeometryKernel, typename GeometryKernel::Norm> lcss(epsilon,delta);
 
                 return lcss(p0.begin(), p0.end(), p1.begin(), p1.end());
 

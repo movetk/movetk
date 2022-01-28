@@ -126,7 +126,7 @@ inline bool startsWith(const std::string& str, int offset, const std::string& to
 template <typename MovetkGeometryKernel>
 inline void parseIpePath(const std::string& pathData, std::vector<typename MovetkGeometryKernel::MovetkPoint>& points) {
 	using NT = typename MovetkGeometryKernel::NT;
-	movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	int i = 0;
 	for (; i < pathData.size(); ++i) {
 		if (pathData[i] == '<') {

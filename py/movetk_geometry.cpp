@@ -40,8 +40,8 @@
 namespace py = pybind11;
 
 typedef typename GeometryKernel::MovetkGeometryKernel MovetkGeometryKernel;
-typedef typename movetk_core::movetk_basic_iterator<const typename MovetkGeometryKernel::NT> CoordinateIterator;
-typedef typename movetk_core::Wedge<MovetkGeometryKernel, GeometryKernel::Norm> Wedge;
+typedef typename movetk::utils::movetk_basic_iterator<const typename MovetkGeometryKernel::NT> CoordinateIterator;
+typedef typename movetk::utils::Wedge<MovetkGeometryKernel, GeometryKernel::Norm> Wedge;
 
 PYBIND11_MAKE_OPAQUE(std::vector<MovetkGeometryKernel::MovetkPoint, std::allocator<MovetkGeometryKernel::MovetkPoint>>);
 
@@ -128,13 +128,13 @@ PYBIND11_MODULE(movetk_geometry, m)
          */
         .def("length",
              [](const typename MovetkGeometryKernel::MovetkSegment &m) -> typename MovetkGeometryKernel::NT {
-                 movetk_core::ComputeLength<MovetkGeometryKernel> compute_length;
+                 movetk::utils::ComputeLength<MovetkGeometryKernel> compute_length;
                  return compute_length(m);
              })
         .def("distance",
              [](typename MovetkGeometryKernel::MovetkSegment &m,
                 typename MovetkGeometryKernel::MovetkPoint &p) {
-                 movetk_core::ComputeSquaredDistance<MovetkGeometryKernel,
+                 movetk::utils::ComputeSquaredDistance<MovetkGeometryKernel,
                                                      GeometryKernel::Norm>
                      squared_dist;
                  typename MovetkGeometryKernel::NT dist = squared_dist(p, m);
@@ -253,9 +253,9 @@ PYBIND11_MODULE(movetk_geometry, m)
         })
         .def("min_sphere", [](typename MovetkGeometryKernel::MovetkSphere &s, Points &p) -> MovetkGeometryKernel::MovetkSphere {
             typedef std::vector<MovetkGeometryKernel::NT> vector;
-            typedef movetk_core::movetk_back_insert_iterator<vector> back_insert_iterator;
+            typedef movetk::utils::movetk_back_insert_iterator<vector> back_insert_iterator;
             vector vec;
-            movetk_core::MakeMinSphere<MovetkGeometryKernel> min_sphere;
+            movetk::utils::MakeMinSphere<MovetkGeometryKernel> min_sphere;
             MovetkGeometryKernel::NT radius = min_sphere(std::cbegin(p), std::cend(p), back_insert_iterator(vec));
             MovetkGeometryKernel::MovetkPoint center(std::begin(vec), std::end(vec));
             MovetkGeometryKernel::MovetkSphere sphere(center, radius);
@@ -263,14 +263,14 @@ PYBIND11_MODULE(movetk_geometry, m)
             return s;
         })
         .def("intersection", ([](typename MovetkGeometryKernel::MovetkSphere &sp, typename MovetkGeometryKernel::MovetkSegment &seg) {
-                 movetk_core::ComputeIntersections<GeometryKernel::SphSegIntersectionTraits> compute_sphere_segment_intersections;
+                 movetk::utils::ComputeIntersections<GeometryKernel::SphSegIntersectionTraits> compute_sphere_segment_intersections;
                  std::vector<GeometryKernel::SphSegIntersectionTraits::value_type> sphere_segment_intersections;
                  compute_sphere_segment_intersections(sp, seg,
-                                                      movetk_core::movetk_back_insert_iterator(sphere_segment_intersections));
+                                                      movetk::utils::movetk_back_insert_iterator(sphere_segment_intersections));
                  return sphere_segment_intersections;
              }))
         .def("intersection", ([](typename MovetkGeometryKernel::MovetkSphere &sp1, typename MovetkGeometryKernel::MovetkSphere &sp2) -> MovetkGeometryKernel::MovetkSphere {
-                 movetk_core::ComputeIntersections<GeometryKernel::SphSegIntersectionTraits> compute_sphere_segment_intersections;
+                 movetk::utils::ComputeIntersections<GeometryKernel::SphSegIntersectionTraits> compute_sphere_segment_intersections;
                  typename MovetkGeometryKernel::MovetkSphere sp = compute_sphere_segment_intersections(sp1, sp2);
                  return sp;
              }));

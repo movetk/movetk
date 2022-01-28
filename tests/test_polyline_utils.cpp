@@ -88,7 +88,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(PolylineUtilTests, "trajectory monotonicit
 	                   make_point({31.9003, 8.43149})});
 	std::vector<bool> result, ExpectedResult({true, true, false, true, true, false});
 	movetk::algo::is_monotone<MovetkGeometryKernel> is_monotone;
-	is_monotone(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+	is_monotone(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 
 	REQUIRE(std::accumulate(std::begin(result), std::end(result), 0) ==
 	        std::accumulate(std::begin(ExpectedResult), std::end(ExpectedResult), 0));

@@ -39,7 +39,7 @@ template<class NT, size_t dimensions>
 struct MyTraits {
     // type definitions required for algorithm
     typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
-    typedef movetk_core::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel; // the geometry traits
+    typedef movetk::utils::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel; // the geometry traits
     typedef typename MovetkGeometryKernel::MovetkPoint Point;
     typedef typename MovetkGeometryKernel::MovetkPolygon Polygon;
 };
@@ -79,8 +79,8 @@ void make_polygons(string &PolygonFile, OutputIterator iter) {
     typedef typename GeometryTraits::MovetkGeometryKernel::NT NT;
     movetk_support::cast<NT> cast;
     std::array<NT, 2> point;
-    movetk_core::MakePoint<typename GeometryTraits::MovetkGeometryKernel> make_point;
-    movetk_core::MakePolygon<typename GeometryTraits::MovetkGeometryKernel> make_polygon;
+    movetk::geom::MakePoint<typename GeometryTraits::MovetkGeometryKernel> make_point;
+    movetk::utils::MakePolygon<typename GeometryTraits::MovetkGeometryKernel> make_polygon;
     std::vector<typename GeometryTraits::Point> points;
     vector<string> tokens;
     string PreviousId = "", CurrentId, line;
@@ -90,7 +90,7 @@ void make_polygons(string &PolygonFile, OutputIterator iter) {
     infile.open(PolygonFile);
 
     while (getline(infile, line)) {
-        movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+        movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
         assert(tokens.size() >= 3);
         CurrentId = tokens[id_idx];
         X = cast(tokens[X_idx]);
@@ -135,7 +135,7 @@ void build_index(TreeType &tree, string &CentroidsFile, size_t resolution) {
     infile.open(CentroidsFile);
     while (getline(infile, line)) {
         string geohash;
-        movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+        movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
         assert(tokens.size() >= 3);
         Lat = cast(tokens[lat_idx]);
         Lon = cast(tokens[lon_idx]);
@@ -231,7 +231,7 @@ struct Probe {
     string geohash, id;
     size_t PolygonId = 0;
     int MatchedPolygonId = -1;
-    movetk_core::MakePoint<typename GeometryTraits::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<typename GeometryTraits::MovetkGeometryKernel> make_point;
 
     template<class InputIterator, class PolygonsIterator>
     bool operator()(movetk_support::Tree<Node> &tree, size_t &resolution, InputIterator first,
@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
     //std::vector<Probe<GeometryTraits, Node> > trajectory;
     size_t id_idx = 0, LineCount = 0;
 
-    make_polygons<GeometryTraits>(PolygonFile, movetk_core::movetk_back_insert_iterator(polygons));
+    make_polygons<GeometryTraits>(PolygonFile, movetk::utils::movetk_back_insert_iterator(polygons));
 
     cerr << "Number of Polygons inserted: " << polygons.size() << "\n";
     for (auto &polygon : polygons) {
@@ -304,7 +304,7 @@ int main(int argc, char **argv) {
     }
 
     build_index<GeometryTraits>(tree, CentroidsFile, resolution);
-    tree.find(movetk_core::movetk_back_insert_iterator(leaves));
+    tree.find(movetk::utils::movetk_back_insert_iterator(leaves));
     cerr << "Branch Id, Number of Elements" << endl;
     for (auto &leaf: leaves) {
         std::cerr << leaf.first << "," << leaf.second << std::endl;
@@ -313,7 +313,7 @@ int main(int argc, char **argv) {
 
     while (getline(cin, line)) {
         //cerr<<line<<std::endl;
-        movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+        movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
         assert(tokens.size() >= 5);
         Probe<GeometryTraits, Node> probe;
         CurrentId = tokens[id_idx];

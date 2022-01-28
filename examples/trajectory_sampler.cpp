@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
     std::string key = "-idx";
     string line;
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
     assert(tokens.size() == 5);
 
     std::size_t ts_idx = stold(tokens[0]);
@@ -182,14 +182,14 @@ int main(int argc, char **argv) {
 
     Norm norm;
     typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-    typedef movetk_algorithms::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>  InterpolationTraits;
-    /*typedef movetk_algorithms::Interpolator<movetk_algorithms::kinematic_interpolator_tag,
+    typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>  InterpolationTraits;
+    /*typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
             InterpolationTraits> Interpolator;*/
-    typedef movetk_algorithms::Interpolator<movetk_algorithms::random_trajectory_generator_tag,
+    typedef movetk::algo::Interpolator<movetk::algo::random_trajectory_generator_tag,
             InterpolationTraits,ProbeTraits::ProbeColumns::LAT,
             ProbeTraits::ProbeColumns::LON,ProbeTraits::ProbeColumns::SAMPLE_DATE,
             ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING> Interpolator;
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     std::size_t line_count = 0;
     std::vector<std::string> input;
     std::vector<ProbeTraits::ProbePoint> trajectory;
@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
             }
             input.push_back(line);
             movetk_support::split(line,
-                                  movetk_core::movetk_back_insert_iterator(tokens));
+                                  movetk::utils::movetk_back_insert_iterator(tokens));
             MovetkGeometryKernel::NT lat = std::stold(tokens[lat_idx]);
             MovetkGeometryKernel::NT lon = std::stold(tokens[lon_idx]);
             ParseDate dt(0,date_format);
@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
             }
             input.push_back(line);
             movetk_support::split(line,
-                                  movetk_core::movetk_back_insert_iterator(tokens));
+                                  movetk::utils::movetk_back_insert_iterator(tokens));
             MovetkGeometryKernel::NT lat = std::stold(tokens[lat_idx]);
             MovetkGeometryKernel::NT lon = std::stold(tokens[lon_idx]);
             ParseDate dt(0,date_format);
@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
             idx++;
         }
         ts.push_back(ts_v);
-        movetk_core::movetk_back_insert_iterator result(interpolated_pts);
+        movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
         //result = p_u;
         //interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
         interpolator(p_u, p_v, std::begin(ts), std::end(ts), threshold, result);

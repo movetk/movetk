@@ -84,11 +84,6 @@ TEST_CASE("ProbePoint with custom date format can be sorted", "[probepointcustom
 	std::vector<ProbePoint> v = {p1, p2};
 	std::sort(begin(v), end(v), customLess);
 
-	print_tuple(std::cout, v[0]);
-	std::cout << '\n';
-	print_tuple(std::cout, v[1]);
-	std::cout << '\n';
-
 	//    REQUIRE( std::get<1>(v[0]) <  std::get<1>(v[1]) );
 	REQUIRE(std::get<0>(v[0]) == "def");
 	REQUIRE(std::get<0>(v[1]) == "abc");
@@ -126,21 +121,10 @@ TEST_CASE("HERE ProbePoint with custom date format can be sorted", "[hereprobepo
 	std::istringstream cis5("Provider5");
 	cis5 >> c5;
 
-	std::cout << c3 << c4 << c5 << '\n';
-
 	ProbePoint p1 = {"abc", d1, 5.4, 5.4, 5.4, 5.4, c1};
 	ProbePoint p2 = {"def", d2, 4.5, 4.5, 4.5, 4.5, c2};
 	std::vector<ProbePoint> v = {p1, p2};
 	std::sort(begin(v), end(v), customLess);
-
-	print_tuple(std::cout, v[0]);
-	std::cout << '\n';
-	print_tuple(std::cout, v[1]);
-	std::cout << '\n';
-
-	std::cout << "ProviderCategoricalField::_values sizeof: " << sizeof(ProviderCategoricalField::_values)
-	          << "size: " << ProviderCategoricalField::_values.size() << '\n';
-	std::cout << "sizeof(probepoint): " << sizeof(p1) << " " << sizeof(p2) << '\n';
 
 	//    REQUIRE( std::get<2>(v[0]) <  std::get<2>(v[1]) );
 	REQUIRE(std::get<0>(v[0]) == "def");
@@ -172,13 +156,8 @@ TEST_CASE("HERE ProbePoint can be sorted by field", "[hereprobepointsortbyfield]
 	std::vector<ProbePoint> v = {p1, p2};
 
 	SECTION("sort by date in ascending order") {
-		SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint> asc_date;
+		movetk::io::SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint> asc_date;
 		std::sort(begin(v), end(v), asc_date);
-
-		print_tuple(std::cout, v[0]);
-		std::cout << '\n';
-		print_tuple(std::cout, v[1]);
-		std::cout << '\n';
 
 		//    REQUIRE( std::get<SAMPLE_DATE>(v[0]) <  std::get<SAMPLE_DATE>(v[1]) );
 		REQUIRE(std::get<0>(v[0]) == "def");
@@ -186,13 +165,8 @@ TEST_CASE("HERE ProbePoint can be sorted by field", "[hereprobepointsortbyfield]
 	}
 
 	SECTION("sort by date in descending order") {
-		SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint, false> desc_date;
+		movetk::io::SortByField<SAMPLE_DATE, here::c2d::raw::ProbeTraits::ProbePoint, false> desc_date;
 		std::sort(begin(v), end(v), desc_date);
-
-		print_tuple(std::cout, v[0]);
-		std::cout << '\n';
-		print_tuple(std::cout, v[1]);
-		std::cout << '\n';
 
 		//    REQUIRE( std::get<SAMPLE_DATE>(v[0]) <  std::get<SAMPLE_DATE>(v[1]) );
 		REQUIRE(std::get<0>(v[1]) == "def");
