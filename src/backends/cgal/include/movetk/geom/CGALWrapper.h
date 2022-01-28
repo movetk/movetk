@@ -49,7 +49,7 @@
 #include <list>
 
 
-namespace movetk_support {
+namespace movetk::geom {
     // the support library for Movetk
 
     /*!@struct is_valid_NT

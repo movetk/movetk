@@ -24,25 +24,22 @@
 #ifndef MOVETK_BOOSTGEOMETRYTRAITS_H
 #define MOVETK_BOOSTGEOMETRYTRAITS_H
 
-#include "movetk/geom/GeometryInterface.h"
-#include "BoostGeometryWrapper.h"
-#include <boost/geometry/geometries/adapted/std_array.hpp>
 #include <boost/geometry/algorithms/is_simple.hpp>
+#include <boost/geometry/geometries/adapted/std_array.hpp>
 
-namespace movetk_support {
+#include "BoostGeometryWrapper.h"
+#include "movetk/geom/GeometryInterface.h"
 
-
-    template<class NumberType, size_t dimensions>
-    struct BoostGeometryTraits {
-        static_assert(dimensions < 4);
-        typedef NumberType NT;
-        constexpr static size_t dim = dimensions;
-        typedef boost::geometry::model::point<NT, dimensions,
-                boost::geometry::cs::cartesian> Point_d;
-        typedef movetk_support::Wrapper_Boost_Kernel<BoostGeometryTraits> Wrapper_Boost_Geometry;
-
-    };
+namespace movetk::geom {
+template <class NumberType, size_t dimensions>
+struct BoostGeometryTraits {
+	static_assert(dimensions < 4);
+	typedef NumberType NT;
+	constexpr static size_t dim = dimensions;
+	typedef boost::geometry::model::point<NT, dimensions, boost::geometry::cs::cartesian> Point_d;
+	typedef Wrapper_Boost_Kernel<BoostGeometryTraits> Wrapper_Boost_Geometry;
 };
+};  // namespace movetk::geom
 
 
-#endif //MOVETK_BOOSTGEOMETRYTRAITS_H
+#endif  // MOVETK_BOOSTGEOMETRYTRAITS_H

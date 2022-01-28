@@ -27,30 +27,29 @@
 #ifndef MOVETK_CGALTRAITS_H
 #define MOVETK_CGALTRAITS_H
 
-#include "movetk/geom/GeometryInterface.h"
 #include "CGALWrapper.h"
+#include "movetk/geom/GeometryInterface.h"
 
 
-namespace movetk_support {
+namespace movetk::geom {
 
-    /*!struct CGALTraits
-     * @brief  CGAL traits classes for parameterizing TSL::Wrapper_CGAL_Kernel
-     * @tparam NumberType - The number type for parameterizing the CGAL kernel
-     * and hence the geometry Interface of Movetk
-     * @tparam CoordinateIterType - A random access iterator over a set of
-     * Cartesian coordinates where each coordinate is of type \c NumberType
-     * @tparam dimensions - The dimesionality of the Cartesian coordinate space
-     */
-    template<class NumberType, size_t dimensions,
-            typename = requires_valid_CGAL_NT<NumberType> >
-    struct CGALTraits {
-        typedef NumberType NT;
-        constexpr static size_t dim = dimensions;
-        typedef CGAL::Cartesian_d<NT> GeometryType; // define the geometry type
-        typedef CGAL::Min_sphere_of_points_d_traits_d<GeometryType, NT, dimensions> SphereTraits;
-        typedef movetk_support::Wrapper_CGAL_Kernel<CGALTraits> Wrapper_CGAL_Geometry; // the traits class
-    };
-
+/*!struct CGALTraits
+ * @brief  CGAL traits classes for parameterizing TSL::Wrapper_CGAL_Kernel
+ * @tparam NumberType - The number type for parameterizing the CGAL kernel
+ * and hence the geometry Interface of Movetk
+ * @tparam CoordinateIterType - A random access iterator over a set of
+ * Cartesian coordinates where each coordinate is of type \c NumberType
+ * @tparam dimensions - The dimesionality of the Cartesian coordinate space
+ */
+template <class NumberType, size_t dimensions, typename = requires_valid_CGAL_NT<NumberType>>
+struct CGALTraits {
+	typedef NumberType NT;
+	constexpr static size_t dim = dimensions;
+	using GeometryType = CGAL::Cartesian_d<NT>;  // define the geometry type
+	using SphereTraits = CGAL::Min_sphere_of_points_d_traits_d<GeometryType, NT, dimensions>;
+	using Wrapper_CGAL_Geometry = Wrapper_CGAL_Kernel<CGALTraits>;  // the traits class
 };
 
-#endif //MOVETK_CGALTRAITS_H
+};  // namespace movetk::geom
+
+#endif  // MOVETK_CGALTRAITS_H
