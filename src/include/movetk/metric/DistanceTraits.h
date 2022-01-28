@@ -25,7 +25,7 @@
 #define DISTANCETRAITS_H
 #include "Distances.h"
 
-namespace movetk_core
+namespace movetk::metric
 {
 
     /**

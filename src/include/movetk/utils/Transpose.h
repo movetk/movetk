@@ -24,44 +24,36 @@
 #ifndef MOVETK_TRANSPOSE_H
 #define MOVETK_TRANSPOSE_H
 
-#include <vector>
-#include <tuple>
 #include <string>
+#include <tuple>
+#include <vector>
 
+namespace movetk::utils {
 template <class... fields>
-struct Transpose
-{
+struct Transpose {
+	constexpr static std::size_t N = sizeof...(fields);
+	typedef std::tuple<fields...> row_tuple_type;
+	typedef std::tuple<std::vector<fields>...> tuple_of_vectors_type;
+	std::vector<row_tuple_type> &_inp;
 
-    constexpr static std::size_t N = sizeof...(fields);
-    typedef std::tuple<fields...> row_tuple_type;
-    typedef std::tuple<std::vector<fields>...> tuple_of_vectors_type;
-    std::vector<row_tuple_type> &_inp;
+	explicit Transpose(std::vector<row_tuple_type> &inp) : _inp(inp) {}
 
-    explicit Transpose(std::vector<row_tuple_type> &inp) : _inp(inp) {}
+	template <std::size_t idx>
+	std::vector<typename std::tuple_element<idx, std::tuple<fields...>>::type> convert_rows_to_column() {
+		using type = typename std::tuple_element<idx, std::tuple<fields...>>::type;
+		std::vector<type> v;
+		for (auto x : _inp) {
+			v.push_back(std::get<idx>(x));
+		}
+		return v;
+	}
 
-    template <std::size_t idx>
-    std::vector<typename std::tuple_element<idx, std::tuple<fields...>>::type>
-    convert_rows_to_column()
-    {
-        using type = typename std::tuple_element<idx, std::tuple<fields...>>::type;
-        std::vector<type> v;
-        for (auto x : _inp)
-        {
-            v.push_back(std::get<idx>(x));
-        }
-        return v;
-    }
+	template <std::size_t... idx>
+	tuple_of_vectors_type convert_rows_to_columns(std::index_sequence<idx...>) {
+		return std::make_tuple(convert_rows_to_column<idx>()...);
+	}
 
-    template <std::size_t... idx>
-    tuple_of_vectors_type convert_rows_to_columns(std::index_sequence<idx...>)
-    {
-        return std::make_tuple(convert_rows_to_column<idx>()...);
-    }
-
-    tuple_of_vectors_type operator()()
-    {
-        return convert_rows_to_columns(std::make_index_sequence<N>{});
-    }
+	tuple_of_vectors_type operator()() { return convert_rows_to_columns(std::make_index_sequence<N>{}); }
 };
-
-#endif //MOVETK_TRANSPOSE_H
+}  // namespace movetk::utils
+#endif  // MOVETK_TRANSPOSE_H

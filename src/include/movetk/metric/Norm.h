@@ -30,7 +30,7 @@
 #include <iostream>
 #include "movetk/utils/Asserts.h"
 
-namespace movetk_support
+namespace movetk::metric
 {
 
     template <class Kernel, std::size_t p>

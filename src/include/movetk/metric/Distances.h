@@ -31,7 +31,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
-namespace movetk_support
+namespace movetk::metric
 {
 
     // based on Eiter, T., & Mannila, H. (1994). Computing Discrete Fréchet Distance ∗.
@@ -834,7 +834,7 @@ namespace movetk_support
 
         // Squared norm to use
         SquaredDistance m_sqDist;
-        movetk_core::MakeSegment<GeometryTraits> make_segment;
+        geom::MakeSegment<GeometryTraits> make_segment;
 
         // Combination function for searching minimax paths via boost dijkstra.
         struct MiniMaxCombineDistance

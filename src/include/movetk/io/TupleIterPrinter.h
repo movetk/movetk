@@ -24,37 +24,34 @@
 #ifndef MOVETK_TUPLEITERPRINTER_H
 #define MOVETK_TUPLEITERPRINTER_H
 
+#include <iomanip>
 #include <ostream>
 #include <tuple>
-#include <iomanip>
-using std::setprecision;
 
+namespace movetk::io {
 // helper function to print items in a tuple of iterators of any size
 // used for writing trajectory as CSV
-template<class Tuple, std::size_t N>
+template <class Tuple, std::size_t N>
 struct TupleIterPrinter {
-    static void print_tuple(std::ostream& os, const Tuple& t, int precision)
-    {
-        TupleIterPrinter<Tuple, N-1>::print_tuple(os, t, precision);
-        os << "," << setprecision(precision) << *std::get<N-1>(t);
-    }
+	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
+		TupleIterPrinter<Tuple, N - 1>::print_tuple(os, t, precision);
+		os << "," << setprecision(precision) << *std::get<N - 1>(t);
+	}
 };
 
-template<class Tuple>
-struct TupleIterPrinter<Tuple, 1>{
-    static void print_tuple(std::ostream& os, const Tuple& t, int precision)
-    {
-        os << setprecision(precision) << *std::get<0>(t);
-    }
+template <class Tuple>
+struct TupleIterPrinter<Tuple, 1> {
+	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
+		os << setprecision(precision) << *std::get<0>(t);
+	}
 };
 
-template<class... Args>
-void print_iter_tuple(std::ostream& os, const std::tuple<Args...>& t, int precision=8)
-{
-    os.setf(std::ios::fixed);
-    TupleIterPrinter<decltype(t), sizeof...(Args)>::print_tuple(os, t, precision);
-    os << '\n';
+template <class... Args>
+void print_iter_tuple(std::ostream& os, const std::tuple<Args...>& t, int precision = 8) {
+	os.setf(std::ios::fixed);
+	TupleIterPrinter<decltype(t), sizeof...(Args)>::print_tuple(os, t, precision);
+	os << '\n';
 }
 // end helper function
-
-#endif //MOVETK_TUPLEITERPRINTER_H
+}  // namespace movetk::io
+#endif  // MOVETK_TUPLEITERPRINTER_H

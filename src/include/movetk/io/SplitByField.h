@@ -24,11 +24,11 @@
 #ifndef MOVETK_SPLITBYFIELD_H
 #define MOVETK_SPLITBYFIELD_H
 
-#include <string>
-using std::string;
-#include <tuple>
 #include <optional>
+#include <string>
+#include <tuple>
 
+namespace movetk::io {
 /**
  * To be used with rows of ProbePoints
  * @tparam FieldIndex
@@ -36,28 +36,26 @@ using std::string;
  */
 template <int FieldIndex, class ProbePoint>
 class SplitByField {
-
 public:
-    using field_type = typename std::tuple_element<FieldIndex, ProbePoint>::type;
+	using field_type = typename std::tuple_element<FieldIndex, ProbePoint>::type;
 
-    bool operator()(const ProbePoint& p) {
-        if (!prev_field_value) {
-            prev_field_value = std::get<FieldIndex>(p);
-            return true;
-        }
-        else {
-            field_type curr_field_value = std::get<FieldIndex>(p);
-            if (curr_field_value == prev_field_value)
-                return false;
-            else {
-                prev_field_value = curr_field_value;
-                return true;
-            }
-        }
-    }
+	bool operator()(const ProbePoint& p) {
+		if (!prev_field_value) {
+			prev_field_value = std::get<FieldIndex>(p);
+			return true;
+		} else {
+			field_type curr_field_value = std::get<FieldIndex>(p);
+			if (curr_field_value == prev_field_value)
+				return false;
+			else {
+				prev_field_value = curr_field_value;
+				return true;
+			}
+		}
+	}
 
 private:
-    std::optional<field_type> prev_field_value;
+	std::optional<field_type> prev_field_value;
 };
-
-#endif //MOVETK_SPLITBYFIELD_H
+}  // namespace movetk::io
+#endif  // MOVETK_SPLITBYFIELD_H

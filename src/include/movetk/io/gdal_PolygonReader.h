@@ -25,15 +25,16 @@
 #ifndef MOVETK_GDAL_POLYGONREADER_H
 #define MOVETK_GDAL_POLYGONREADER_H
 
-#include "ogrsf_frmts.h"
-#include <vector>
 #include <string>
+#include <vector>
 
+#include "ogrsf_frmts.h"
 
-class GdalPolygonReader
-{
+namespace movetk::io {
+class GdalPolygonReader {
 public:
-    std::vector<OGRPolygon> read_polygons(const std::string& file_name);
+	std::vector<OGRPolygon> read_polygons(const std::string& file_name);
 };
+}  // namespace movetk::io
 
-#endif //MOVETK_GDAL_POLYGONREADER_H
+#endif  // MOVETK_GDAL_POLYGONREADER_H

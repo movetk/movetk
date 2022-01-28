@@ -37,12 +37,10 @@
 #include <cmath>
 #include "movetk/algo/Search.h"
 
-using namespace std;
-
 /*!
  * @brief a collection of algorithms in movetk
  */
-namespace movetk_algorithms {
+namespace movetk::algo {
 
     /*!
      *

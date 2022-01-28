@@ -36,7 +36,7 @@
 /*!
  *  @brief a collection of algorithms in movetk
  */
-namespace movetk_algorithms {
+namespace movetk::algo {
     /*!
      * @struct geo_coordinates_tag
      * @brief This tag is used to specify whether the input will be a collection of

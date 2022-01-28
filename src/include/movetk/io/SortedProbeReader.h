@@ -24,60 +24,54 @@
 #ifndef MOVETK_SORTEDPROBEREADER_H
 #define MOVETK_SORTEDPROBEREADER_H
 
-#include <vector>
-using std::vector;
 #include <algorithm>
-#include <memory>
 #include <iterator>
+#include <memory>
+#include <vector>
 
-#include "movetk/logging.h"
 #include "SortByField.h"
+#include "movetk/logging.h"
 
+namespace movetk::io {
 template <class ProbeInputIterator, int SortByFieldIdx>
 class SortedProbeReader {
-
 public:
-    using ProbePoint = typename std::iterator_traits<ProbeInputIterator>::value_type;
-    using iterator = typename std::vector<ProbePoint>::iterator;
+	using ProbePoint = typename std::iterator_traits<ProbeInputIterator>::value_type;
+	using iterator = typename std::vector<ProbePoint>::iterator;
 
-    SortedProbeReader(ProbeInputIterator start, ProbeInputIterator beyond)
-    {
-        // Store probe points in memory
-        auto t_start = std::chrono::high_resolution_clock::now();
-        std::size_t probe_count = 0;
-        for (auto pit = start; pit != beyond; ++pit) {
-            buffered_probe.push_back(*pit);
-            ++probe_count;
-        }
-        auto t_end = std::chrono::high_resolution_clock::now();
-        display("read probe", t_start, t_end);
-        BOOST_LOG_TRIVIAL(info) << "Buffered " << probe_count << " probe points.";
+	SortedProbeReader(ProbeInputIterator start, ProbeInputIterator beyond) {
+		// Store probe points in memory
+		auto t_start = std::chrono::high_resolution_clock::now();
+		std::size_t probe_count = 0;
+		for (auto pit = start; pit != beyond; ++pit) {
+			buffered_probe.push_back(*pit);
+			++probe_count;
+		}
+		auto t_end = std::chrono::high_resolution_clock::now();
+		display("read probe", t_start, t_end);
+		BOOST_LOG_TRIVIAL(info) << "Buffered " << probe_count << " probe points.";
 
-        // Sort all probe points by SortByFieldIdx
-        SortByField<SortByFieldIdx, ProbePoint> sort_by_field_id_asc;
-        t_start = std::chrono::high_resolution_clock::now();
+		// Sort all probe points by SortByFieldIdx
+		SortByField<SortByFieldIdx, ProbePoint> sort_by_field_id_asc;
+		t_start = std::chrono::high_resolution_clock::now();
 #ifdef _GLIBCXX_PARALLEL
-        __gnu_parallel::sort(buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
+		__gnu_parallel::sort(buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
 #else
-        std::sort(buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
-        // with <execution> header, since C++17, but not yet available on any compiler/platform.
-        // std::sort(std::execution::par, buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
+		std::sort(buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
+		// with <execution> header, since C++17, but not yet available on any compiler/platform.
+		// std::sort(std::execution::par, buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
 #endif
-        t_end = std::chrono::high_resolution_clock::now();
-        display("sort", t_start, t_end);
-    }
+		t_end = std::chrono::high_resolution_clock::now();
+		display("sort", t_start, t_end);
+	}
 
-    iterator begin() {
-        return std::begin(buffered_probe);
-    }
+	iterator begin() { return std::begin(buffered_probe); }
 
-    iterator end() {
-        return std::end(buffered_probe);
-    }
+	iterator end() { return std::end(buffered_probe); }
 
 private:
-    std::vector<ProbePoint> buffered_probe;
+	std::vector<ProbePoint> buffered_probe;
 };
 
-
-#endif //MOVETK_SORTEDPROBEREADER_H
+}  // namespace movetk::io
+#endif  // MOVETK_SORTEDPROBEREADER_H

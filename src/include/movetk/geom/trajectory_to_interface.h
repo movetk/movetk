@@ -24,46 +24,48 @@
 #ifndef MOVETK_TRAJECTORY_TO_INTERFACE_H
 #define MOVETK_TRAJECTORY_TO_INTERFACE_H
 
-#include <iostream>
-#include <vector>
-#include <optional>
 #include <GeographicLib/Geocentric.hpp>
+#include <iostream>
+#include <optional>
+#include <vector>
 
+#include "movetk/geo/geo.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/utils/Requirements.h"
-#include "movetk/geo/geo.h"
 
 /**
  * Contains adapter functions to make Trajectory class work with agnostic geometry interface.
  */
-namespace movetk {
+namespace movetk::geom {
 
 // Requires GeometryTraits::MovetkPoint has dimension 2
-template <class GeometryTraits, class LatIterator, class LonIterator, class OutputIterator,
-        class LocalCoordRef,
-        typename = movetk_core::requires_movetk_point<GeometryTraits,
-                                                    typename OutputIterator::value_type>>
-OutputIterator
-to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
-                      LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start,
-                      OutputIterator polyline_first,
-                      LocalCoordRef& ref)
-{
-    while(lat_start != lat_beyond) {
-        auto projected_point = ref.project(*lat_start++, *lon_start++);
-        *polyline_first++ = make_point(std::cbegin(projected_point), std::cend(projected_point));
-    }
-    return polyline_first;
+template <class GeometryTraits,
+          class LatIterator,
+          class LonIterator,
+          class OutputIterator,
+          class LocalCoordRef,
+          typename = movetk_core::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
+OutputIterator to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
+                                     LatIterator lat_start,
+                                     LatIterator lat_beyond,
+                                     LonIterator lon_start,
+                                     OutputIterator polyline_first,
+                                     LocalCoordRef &ref) {
+	while (lat_start != lat_beyond) {
+		auto projected_point = ref.project(*lat_start++, *lon_start++);
+		*polyline_first++ = make_point(std::cbegin(projected_point), std::cend(projected_point));
+	}
+	return polyline_first;
 }
 
 template <class GeometryTraits, class LatIterator, class LonIterator, class OutputIterator>
-OutputIterator
-to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
-                      LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start,
-                      OutputIterator polyline_first)
-{
-    LocalCoordinateReference<typename GeometryTraits::NT> ref(*lat_start, *lon_start);
-    return to_projected_polyline(make_point, lat_start, lat_beyond, lon_start, polyline_first, ref);
+OutputIterator to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
+                                     LatIterator lat_start,
+                                     LatIterator lat_beyond,
+                                     LonIterator lon_start,
+                                     OutputIterator polyline_first) {
+	LocalCoordinateReference<typename GeometryTraits::NT> ref(*lat_start, *lon_start);
+	return to_projected_polyline(make_point, lat_start, lat_beyond, lon_start, polyline_first, ref);
 }
 
 /**
@@ -80,21 +82,24 @@ to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
  * @param polyline_first
  * @return
  */
-template <class GeometryTraits, class LatIterator, class LonIterator, class OutputIterator,
-        typename = movetk_core::requires_movetk_point<GeometryTraits,
-                                                    typename OutputIterator::value_type>>
-OutputIterator
-to_geocentered_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
-                        LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start,
-                        OutputIterator polyline_first) {
-    const GeographicLib::Geocentric& earth = GeographicLib::Geocentric::WGS84();
-    while(lat_start != lat_beyond) {
-        *polyline_first++ = to_geocentric_coordinates(make_point, earth, *lat_start++, *lon_start++);
-    }
-    return polyline_first;
+template <class GeometryTraits,
+          class LatIterator,
+          class LonIterator,
+          class OutputIterator,
+          typename = movetk_core::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
+OutputIterator to_geocentered_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
+                                       LatIterator lat_start,
+                                       LatIterator lat_beyond,
+                                       LonIterator lon_start,
+                                       OutputIterator polyline_first) {
+	const GeographicLib::Geocentric &earth = GeographicLib::Geocentric::WGS84();
+	while (lat_start != lat_beyond) {
+		*polyline_first++ = to_geocentric_coordinates(make_point, earth, *lat_start++, *lon_start++);
+	}
+	return polyline_first;
 }
 
 
-} // /namespace movetk
+}  // namespace movetk::geom
 
-#endif //MOVETK_TRAJECTORY_TO_INTERFACE_H
+#endif  // MOVETK_TRAJECTORY_TO_INTERFACE_H

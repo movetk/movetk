@@ -33,7 +33,7 @@
 #include "movetk/geo/geo.h"
 #include "movetk/utils/TrajectoryUtils.h"
 
-namespace movetk_algorithms {
+namespace movetk::algo {
 
 template <class _GeometryTraits, class _GeoProjection, class _ProbeTraits, class _Norm>
 struct InterpolationTraits {
@@ -45,7 +45,7 @@ struct InterpolationTraits {
 	typedef typename GeometryTraits::MovetkVector MovetkVector;
 	typedef typename GeometryTraits::NT NT;
 	typedef _Norm Norm;
-	typedef typename movetk_core::mbr_selector<
+	typedef typename geom::mbr_selector<
 	    GeometryTraits,
 	    Norm,
 	    typename GeometryTraits::MovetkMinimumBoundingRectangle>::MinimumBoundingRectangle MinimumBoundingRectangle;
@@ -83,7 +83,7 @@ template <class AlgorithmTag,
 class Interpolator {};
 
 template <class InterpolationTraits, int LatIdx, int LonIdx, int TsIdx, int SpeedIdx, int HeadingIdx>
-class Interpolator<movetk_algorithms::linear_interpolator_tag,
+class Interpolator<linear_interpolator_tag,
                    InterpolationTraits,
                    LatIdx,
                    LonIdx,
@@ -94,8 +94,8 @@ private:
 	typename InterpolationTraits::Norm norm;
 	typename InterpolationTraits::GeoProjection ref;
 	using GeometryTraits = typename InterpolationTraits::GeometryTraits;
-	movetk_core::Scaling<GeometryTraits> scale;
-	movetk_core::Translation<GeometryTraits> translate;
+	geom::Scaling<GeometryTraits> scale;
+	geom::Translation<GeometryTraits> translate;
 
 public:
 	Interpolator(typename InterpolationTraits::NT reflat, typename InterpolationTraits::NT reflon) {
@@ -197,9 +197,9 @@ private:
 	using GeometryTraits = typename InterpolationTraits::GeometryTraits;
 	typename InterpolationTraits::Norm norm;
 	typename InterpolationTraits::GeoProjection ref;
-	movetk_core::Scaling<GeometryTraits> scale;
-	movetk_core::Translation<GeometryTraits> translate;
-	movetk_core::MakePoint<GeometryTraits> make_point;
+	geom::Scaling<GeometryTraits> scale;
+	geom::Translation<GeometryTraits> translate;
+	geom::MakePoint<GeometryTraits> make_point;
 	typename InterpolationTraits::MovetkPoint ORIGIN = make_point({0, 0});
 
 public:
@@ -385,7 +385,7 @@ public:
 };
 
 template <class InterpolationTraits, int LatIdx, int LonIdx, int TsIdx, int SpeedIdx, int HeadingIdx>
-class Interpolator<movetk_algorithms::random_trajectory_generator_tag,
+class Interpolator<random_trajectory_generator_tag,
                    InterpolationTraits,
                    LatIdx,
                    LonIdx,
@@ -398,9 +398,9 @@ private:
 	typename InterpolationTraits::Norm norm;
 	typename InterpolationTraits::GeoProjection ref;
 	typename InterpolationTraits::MinimumBoundingRectangle mbr;
-	movetk_core::Scaling<typename InterpolationTraits::GeometryTraits> scale;
-	movetk_core::Translation<typename InterpolationTraits::GeometryTraits> translate;
-	movetk_core::MakePoint<typename InterpolationTraits::GeometryTraits> make_point;
+	geom::Scaling<typename InterpolationTraits::GeometryTraits> scale;
+	geom::Translation<typename InterpolationTraits::GeometryTraits> translate;
+	geom::MakePoint<typename InterpolationTraits::GeometryTraits> make_point;
 	typename InterpolationTraits::MovetkPoint ORIGIN = make_point({0, 0});
 	std::default_random_engine rng;
 
@@ -454,11 +454,11 @@ public:
 	                OutputIterator result) {
 		auto lat_u = std::get<LatIdx>(probe_u);
 		auto lon_u = std::get<LonIdx>(probe_u);
-		typename InterpolationTraits::MovetkPoint p_u = movetk_core::get_point<InterpolationTraits>(lat_u, lon_u, ref);
+		auto p_u = movetk_core::get_point<InterpolationTraits>(lat_u, lon_u, ref);
 
 		auto lat_v = std::get<LatIdx>(probe_v);
 		auto lon_v = std::get<LonIdx>(probe_v);
-		typename InterpolationTraits::MovetkPoint p_v = movetk_core::get_point<InterpolationTraits>(lat_v, lon_v, ref);
+		auto p_v = movetk_core::get_point<InterpolationTraits>(lat_v, lon_v, ref);
 
 		auto t_u = std::get<TsIdx>(probe_u);
 		auto t_v = std::get<TsIdx>(probe_v);
@@ -494,12 +494,12 @@ public:
 			auto destination = find_destination(std::end(output), pit);
 			std::size_t position_source = std::distance(std::begin(output), source);
 			std::size_t position_destination = std::distance(std::begin(output), destination);
-			typename InterpolationTraits::NT delta_forward = *tit - *(first + position_source);
-			typename InterpolationTraits::NT delta_backward = *(first + position_destination) - *tit;
-			typename InterpolationTraits::NT radius_u = delta_forward * max_speed;
-			typename InterpolationTraits::NT radius_v = delta_backward * max_speed;
-			typename InterpolationTraits::NT squared_radius_u = radius_u * radius_u;
-			typename InterpolationTraits::NT squared_radius_v = radius_v * radius_v;
+			auto delta_forward = *tit - *(first + position_source);
+			auto delta_backward = *(first + position_destination) - *tit;
+			auto radius_u = delta_forward * max_speed;
+			auto radius_v = delta_backward * max_speed;
+			auto squared_radius_u = radius_u * radius_u;
+			auto squared_radius_v = radius_v * radius_v;
 			/*std::cerr<<"source: "<<*source<<"\n";
 			std::cerr<<"destination: "<<*destination<<"\n";
 			std::cerr<<"radius_u: "<<radius_u<<"\n";

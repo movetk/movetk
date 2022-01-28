@@ -38,7 +38,7 @@
 
 using namespace std;
 
-namespace movetk_algorithms
+namespace movetk::algo
 {
 
     // based on B. Custers & M. van de Kerkhof & W. Meulemans and B. Speckmann & F. Staals (2019) .

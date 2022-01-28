@@ -36,7 +36,7 @@ enum TestCriteria {
     meb, ratio, difference, range
 };
 
-namespace movetk_algorithms {
+namespace movetk::algo {
 
     /*!
      *

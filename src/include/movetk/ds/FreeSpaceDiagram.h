@@ -37,9 +37,7 @@
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
 
-using namespace std;
-
-namespace movetk_support {
+namespace movetk::ds {
 // based on https://doi.org/10.1142/S0218195995000064
 
 template <class _IntersectionTraits>
@@ -50,7 +48,7 @@ struct FreeSpaceCellTraits {
 	typedef typename IntersectionTraits::GeometryTraits GeometryTraits;
 	typedef typename IntersectionTraits::Norm Norm;
 	typedef std::vector<typename IntersectionTraits::value_type> Intersections;
-	typedef movetk_core::movetk_back_insert_iterator<Intersections> OutputIterator;
+	typedef movetk::utils::movetk_back_insert_iterator<Intersections> OutputIterator;
 	typedef std::set<std::size_t> Vertices;
 	typedef typename Vertices::const_iterator vertex_iterator;
 	typedef typename Intersections::const_iterator const_iterator;
@@ -64,8 +62,8 @@ struct FreeSpaceCellTraits {
 template <class CellTraits>
 class FreeSpaceCell {
 private:
-	movetk_core::MakeSphere<typename CellTraits::GeometryTraits> make_sphere;
-	movetk_core::ComputeIntersections<typename CellTraits::IntersectionTraits> compute_intersections;
+	geom::MakeSphere<typename CellTraits::GeometryTraits> make_sphere;
+	geom::ComputeIntersections<typename CellTraits::IntersectionTraits> compute_intersections;
 	typename CellTraits::Intersections intersections;
 	typename CellTraits::Vertices vertices;
 	typedef typename CellTraits::GeometryTraits::NT NT;
@@ -251,15 +249,15 @@ struct FreeSpaceDiagramTraits {
 	typedef FreeSpaceCell Cell;
 	typedef std::vector<Cell> Cells;
 	typedef std::vector<Cells> Rows;
-	typedef movetk_core::movetk_back_insert_iterator<typename Rows::value_type> CellsOutputIterator;
-	typedef movetk_core::movetk_back_insert_iterator<Rows> RowsOutputIterator;
-	typedef movetk_core::movetk_grid_iterator<Rows> iterator;
+	typedef movet::utils::movetk_back_insert_iterator<typename Rows::value_type> CellsOutputIterator;
+	typedef movet::utils::movetk_back_insert_iterator<Rows> RowsOutputIterator;
+	typedef movet::utils::movetk_grid_iterator<Rows> iterator;
 };
 
 template <class _FreeSpaceDiagramTraits>
 class FreeSpaceDiagram {
 private:
-	movetk_core::MakeSegment<typename _FreeSpaceDiagramTraits::GeometryTraits> make_segment;
+	geom::MakeSegment<typename _FreeSpaceDiagramTraits::GeometryTraits> make_segment;
 	typename _FreeSpaceDiagramTraits::Rows rows;
 
 public:
@@ -293,16 +291,12 @@ public:
 			pit++;
 		}
 	}
-	typename FreeSpaceDiagramTraits::iterator begin() {
-		return typename FreeSpaceDiagramTraits::iterator(rows);
-	}
+	typename FreeSpaceDiagramTraits::iterator begin() { return typename FreeSpaceDiagramTraits::iterator(rows); }
 
-	typename FreeSpaceDiagramTraits::iterator end() {
-		return typename FreeSpaceDiagramTraits::iterator(rows, true);
-	}
+	typename FreeSpaceDiagramTraits::iterator end() { return typename FreeSpaceDiagramTraits::iterator(rows, true); }
 };
 
 
-}  // namespace movetk_support
+}  // namespace movetk::ds
 
 #endif  // MOVETK_FREESPACEDIAGRAM_H

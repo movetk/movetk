@@ -28,7 +28,7 @@
 #include "movetk/io/csv/CategoricalField.h"
 #include "ProbeTraits.h"
 
-namespace movetk_kernel {
+namespace movetk::io {
 
 /*    struct geo_coordinates_tag {
     };

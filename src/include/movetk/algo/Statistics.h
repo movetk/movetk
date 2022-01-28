@@ -36,7 +36,7 @@
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/TrajectoryTraits.h"
 
-namespace movetk_algorithms {
+namespace movetk::algo {
 template <class GeometryKernel, typename PointDistanceFunc = movetk_core::ComputeLength<GeometryKernel>>
 class TrajectoryLength {
 private:
