@@ -35,11 +35,11 @@
 
 #include "movetk/io/csv/ParseDate.h"
 
-#define MOVETK_DEFINE_HAS_TYPE(target_type)             \
+#define MOVETK_DEFINE_HAS_TYPE_METAMETHOD(target_type)  \
 	template <typename T, typename = void>                \
 	struct has_##target_type : public std::false_type {}; \
 	template <typename T>                                 \
-	    struct has_##target_type<T, std::void_t<typename T::target_type>> > : public std::true_type {};
+	struct has_##target_type<T, std::void_t<typename T::target_type>> : public std::true_type {};
 
 
 /*!
@@ -57,9 +57,7 @@ namespace movetk::utils {
  * in std::iterator_traits
  */
 template <class IteratorTag>
-struct is_random_access_iterator {
-	static constexpr bool value = std::is_same_v<IteratorTag, std::random_access_iterator_tag>;
-};
+struct is_random_access_iterator : public std::is_same<IteratorTag, std::random_access_iterator_tag> {};
 
 /*!@struct is_forward_iterator
  * @brief  A class for checking whether an iterator is
@@ -68,9 +66,7 @@ struct is_random_access_iterator {
  * in std::iterator_traits
  */
 template <class IteratorTag>
-struct is_forward_iterator {
-	static constexpr bool value = std::is_same_v<IteratorTag, std::forward_iterator_tag>;
-};
+struct is_forward_iterator : public std::is_same<IteratorTag, std::forward_iterator_tag> {};
 
 /*!@struct is_output_iterator
  * @brief  A class for checking whether an iterator is
@@ -81,6 +77,12 @@ struct is_forward_iterator {
 template <class IteratorTag>
 struct is_output_iterator {
 	static constexpr bool value = std::is_same_v<IteratorTag, std::output_iterator_tag>;
+};
+
+template <class OutputIterator, typename ValueType>
+struct is_output_iterator_assignable_with {
+	static constexpr bool value = is_output_iterator<typename std::iterator_traits<OutputIterator>::iterator_category> &&
+	                              std::is_assignable_v<decltype(*std::declval<OutputIterator>()), ValueType>;
 };
 
 template <size_t dimensions>
@@ -95,10 +97,13 @@ struct is_planar_geometry {
  * @tparam Type - The actual type
  */
 template <class Kernel, class Type>
-struct is_NT {
-	static const bool value = std::is_same_v<typename Kernel::NT, std::remove_cv_t<std::remove_reference_t<Type>>>;
-};
+struct is_NT : public std::is_same<typename Kernel::NT, std::remove_cv_t<std::remove_reference_t<Type>>> {};
 
+#define MAKE_KERNEL_ELEMENT_CHECK(type_name)                                                      \
+	template <typename Kernel, typename Type>                                                       \
+	struct is_##type_name {                                                                         \
+		static constexpr bool value = std::is_same_v<std::decay_t<Type>, typename Kernel::type_name>; \
+	};
 
 /*!@struct is_Wrapper_Point
  * @brief  A class for checking if the  value pointed
@@ -106,28 +111,8 @@ struct is_NT {
  * @tparam Kernel - A traits class containing collection of expected types
  * @tparam Type - The actual type
  */
-template <class Kernel, class Type>
-struct is_Wrapper_Point {
-	static const bool value = false;
-};
+MAKE_KERNEL_ELEMENT_CHECK(Wrapper_Point)
 
-/*!
- * @brief A partial specialization of is_Wrapper_Point
- * @details sets value to true iff \c Type == \c const Kernel::Wrapper_Point&
- */
-template <class Kernel>
-struct is_Wrapper_Point<Kernel, const typename Kernel::Wrapper_Point &> {
-	static const bool value = true;
-};
-
-/*!
- * @brief A partial specialization of is_Wrapper_Point
- * @details sets value to true iff \c Type == \c Kernel::Wrapper_Point
- */
-template <class Kernel>
-struct is_Wrapper_Point<Kernel, typename Kernel::Wrapper_Point> {
-	static const bool value = true;
-};
 
 /*!@struct is_MovetkPoint
  * @brief A class for checking if the value pointed to
@@ -135,33 +120,7 @@ struct is_Wrapper_Point<Kernel, typename Kernel::Wrapper_Point> {
  * @tparam Kernel - A traits class containing collection of expected types
  * @tparam Type - The actual type
  */
-template <class Kernel, class Type>
-struct is_MovetkPoint {
-	static const bool value = false;
-};
-
-/*!
- *@brief A partial specialization of is_MovetkPoint
- *@details sets value to true iff \c Type == \c const Kernel::MovetkPoint&
- */
-template <class Kernel>
-struct is_MovetkPoint<Kernel, const typename Kernel::MovetkPoint &> {
-	static const bool value = true;
-};
-
-/*!
- *@brief A partial specialization of is_MovetkPoint
- *@details sets value to true iff \c Type == \c Kernel::MovetkPoint
- */
-template <class Kernel>
-struct is_MovetkPoint<Kernel, typename Kernel::MovetkPoint> {
-	static const bool value = true;
-};
-
-template <class Kernel>
-struct is_MovetkPoint<Kernel, const typename Kernel::MovetkPoint> {
-	static const bool value = true;
-};
+MAKE_KERNEL_ELEMENT_CHECK(MovetkPoint)
 
 /*!@struct is_MovetkLine
  * @brief A class for checking if the value pointed to
@@ -169,28 +128,7 @@ struct is_MovetkPoint<Kernel, const typename Kernel::MovetkPoint> {
  * @tparam Kernel - A traits class containing collection of expected types
  * @tparam Type - The actual type
  */
-template <class Kernel, class Type>
-struct is_MovetkLine {
-	static const bool value = false;
-};
-
-/*!
- *@brief A partial specialization of is_MovetkLine
- *@details sets value to true iff \c Type == \c const Kernel::MovetkLine&
- */
-template <class Kernel>
-struct is_MovetkLine<Kernel, const typename Kernel::MovetkLine &> {
-	static const bool value = true;
-};
-
-/*!
- *@brief A partial specialization of is_MovetkLine
- *@details sets value to true iff \c Type == \c Kernel::MovetkLine
- */
-template <class Kernel>
-struct is_MovetkLine<Kernel, typename Kernel::MovetkLine> {
-	static const bool value = true;
-};
+MAKE_KERNEL_ELEMENT_CHECK(MovetkLine)
 
 /*!@struct is_MovetkSegment
  * @brief A class for checking if the value pointed to
@@ -198,28 +136,7 @@ struct is_MovetkLine<Kernel, typename Kernel::MovetkLine> {
  * @tparam Kernel - A traits class containing collection of expected types
  * @tparam Type - The actual type
  */
-template <class Kernel, class Type>
-struct is_MovetkSegment {
-	static const bool value = false;
-};
-
-/*!
- *@brief A partial specialization of is_MovetkSegment
- *@details sets value to true iff \c Type == \c const Kernel::MovetkSegment&
- */
-template <class Kernel>
-struct is_MovetkSegment<Kernel, const typename Kernel::MovetkSegment &> {
-	static const bool value = true;
-};
-
-/*!
- *@brief A partial specialization of is_MovetkSegment
- *@details sets value to true iff \c Type == \c Kernel::MovetkSegment
- */
-template <class Kernel>
-struct is_MovetkSegment<Kernel, typename Kernel::MovetkSegment> {
-	static const bool value = true;
-};
+MAKE_KERNEL_ELEMENT_CHECK(MovetkSegment)
 
 /*!@struct is_string
  * @brief A class for checking if the value pointed to
@@ -227,18 +144,7 @@ struct is_MovetkSegment<Kernel, typename Kernel::MovetkSegment> {
  * @tparam Type - The actual type
  */
 template <class Type>
-struct is_string {
-	static const bool value = false;
-};
-
-/*!
- * @brief A partial specialization of is_string
- * @details sets value to true iff \c Type == \c std::string
- */
-template <>
-struct is_string<std::string> {
-	static const bool value = true;
-};
+struct is_string : public std::is_same<std::decay_t<Type>, std::string> {};
 
 /*!@struct is_pair
  * @brief A class for checking if the value pointed to
@@ -266,16 +172,7 @@ struct is_pair<std::pair<T1, T2>> {
  */
 template <class T1, class T2>
 struct is_equal_to {
-	static const bool value = false;
-};
-
-/*!
- * @brief A partial specialization of is_equal_to
- * @details sets value to true iff \c T1 == \c T2
- */
-template <class T1>
-struct is_equal_to<T1, T1> {
-	static const bool value = true;
+	static const bool value = std::is_same_v<T1, T2>;
 };
 
 /*!@struct is_size_t
@@ -283,32 +180,11 @@ struct is_equal_to<T1, T1> {
  * @tparam Type
  */
 template <class Type>
-struct is_size_t {
-	static const bool value = false;
-};
-
-/*!
- * @brief a partial specialization of is_size_t
- * @details sets value to true iff \c Type == \c std::size_t
- */
-template <>
-struct is_size_t<std::size_t> {
-	static const bool value = true;
-};
-
-template <>
-struct is_size_t<const std::size_t> {
-	static const bool value = true;
-};
+struct is_size_t : public is_equal_to<std::decay_t<Type>, std::size_t> {};
 
 template <std::size_t p>
 struct is_L2_norm {
-	static const bool value = false;
-};
-
-template <>
-struct is_L2_norm<2> {
-	static const bool value = true;
+	static const bool value = p == 2;
 };
 
 template <class ValueType, class Container>
@@ -337,19 +213,11 @@ struct is_directed_graph<boost::directedS> {
 };
 
 template <class T>
-struct is_tuple {
-	static const bool value = false;
-};
+struct is_tuple
+    : public std::conditional_t<std::is_same_v<std::decay_t<T>, T>, std::false_type, is_tuple<std::decay_t<T>>> {};
 
 template <class... Types>
-struct is_tuple<std::tuple<Types...>> {
-	static const bool value = true;
-};
-
-template <class... Types>
-struct is_tuple<const std::tuple<Types...>> {
-	static const bool value = true;
-};
+struct is_tuple<std::tuple<Types...>> : public std::true_type {};
 
 /*template <class T, class Container>
 struct is_stack{
@@ -363,28 +231,9 @@ struct is_stack<T, std::stack<T>>{
 
 template <class T>
 struct is_date {
-	static const bool value = false;
+	using decayed_t = std::decay_t<T>;
+	static const bool value = std::is_same_v<decayed_t, std::size_t> || std::is_same_v<decayed_t, ParseDate> ||
+	                          std::is_same_v<decayed_t,std::time_t>;
 };
-
-template <>
-struct is_date<std::size_t> {
-	static const bool value = true;
-};
-
-template <>
-struct is_date<const ParseDate> {
-	static const bool value = true;
-};
-
-template <>
-struct is_date<ParseDate> {
-	static const bool value = true;
-};
-
-template <>
-struct is_date<std::time_t> {
-	static const bool value = true;
-};
-
 };      // namespace movetk::utils
 #endif  // MOVETK_TYPECHECKS_H

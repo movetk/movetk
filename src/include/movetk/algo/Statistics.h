@@ -276,7 +276,7 @@ public:
 			maxIt = std::find_if(maxIt, differences.end(), isDifferent);
 
 			// Count occurences of elements deemed the same
-			const auto count = std::distance(minIt, maxIt);
+			const auto count = static_cast<std::size_t>(std::distance(minIt, maxIt));
 			// Save element with maximum count.
 			if (count > maxCount) {
 				maxVal = prevVal;

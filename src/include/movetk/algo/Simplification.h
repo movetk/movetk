@@ -290,7 +290,7 @@ namespace movetk::algo {
      * \tparam GeometryTraits The geometry kernel
      * \tparam SqDistanceFunc Algorithm for computing the squared distance between points and points/segments.
      */
-    template <class GeometryTraits, class SqDistanceFunc = movetk::utils::squared_distance_algorithm<GeometryTraits, movetk_support::FiniteNorm<GeometryTraits, 2>, void>>
+    template <class GeometryTraits, class SqDistanceFunc = movetk::metric::squared_distance_algorithm<GeometryTraits, movetk::metric::FiniteNorm<GeometryTraits, 2>, void>>
     class Agarwal
     {
         using NT = typename GeometryTraits::NT;
@@ -338,7 +338,7 @@ namespace movetk::algo {
                 return;
             }
 
-            const auto polyLength = std::distance(first, beyond);
+            const auto polyLength = static_cast<std::size_t>(std::distance(first, beyond));
 
             // Assign initial point as output
             *result = first;
