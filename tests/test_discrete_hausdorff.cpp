@@ -35,8 +35,8 @@
 template<typename Backend>
 struct DiscreteHausdorffTests {
     using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
-    using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
 };
 

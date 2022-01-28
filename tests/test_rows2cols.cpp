@@ -35,7 +35,7 @@ TEST_CASE("convert row to col", "[row2col]")
     std::vector<int> col1{ 5, 4, 3 };
     std::vector<float> col2{ 33.13, 11.30, 21.20 };
 
-    auto output = Transpose(input)();
+    auto output = movetk::utils::Transpose(input)();
 
     auto [out0, out1, out2] = output;
 

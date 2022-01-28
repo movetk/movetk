@@ -21,84 +21,75 @@
 // Created by Mitra, Aniket on 09/01/2019.
 //
 
-#include "catch2/catch.hpp"
+#include <catch2/catch.hpp>
+
 #include "movetk/ds/Tree.h"
 #include "movetk/utils/Iterators.h"
 
-using namespace std;
 /*!
  *
  * @brief values stored by each node of the tree
  */
 template <class T>
-class Values{
+class Values {
 private:
-    std::string id;
-    std::vector<T> values;
+	std::string id;
+	std::vector<T> values;
+
 public:
-    typedef typename std::vector<T>::const_iterator Iterator;
+	typedef typename std::vector<T>::const_iterator Iterator;
 
-    Values(const std::string& identifier):id(identifier){}
+	Values(const std::string& identifier) : id(identifier) {}
 
-    void operator()(const T& value){
-        values.push_back(value);
-    }
+	void operator()(const T& value) { values.push_back(value); }
 
-    const std::string& operator()(){
-        return id;
-    }
-    Iterator begin() const{
-        return cbegin(values);
-    }
+	const std::string& operator()() { return id; }
+	Iterator begin() const { return cbegin(values); }
 
-    Iterator end() const {
-        return cend(values);
-    }
+	Iterator end() const { return cend(values); }
 };
 
 TEST_CASE("Create and search in a Trie", "[test_trie") {
-    typedef movetk_support::TrieNode<const char, Values<int> > _Node;
-    movetk_support::Tree<_Node> tree(std::make_unique<_Node>('1'));
-    std::vector< std::pair<std::string, size_t> > leaves;
-    std::string str = "aabc";
-    int value = 1;
-    tree.insert( begin(str), end(str), value );
-    str = "aabda";
-    value = 2;
-    tree.insert( begin(str), end(str), value );
-    str = "aabda";
-    value = 4;
-    tree.insert( begin(str), end(str), value );
-    std::string search_str = "aabcaj";
-    _Node::reference result = tree.find( cbegin(search_str), cend(search_str) );
+	typedef movetk::ds::TrieNode<const char, Values<int>> _Node;
+	movetk::ds::Tree<_Node> tree(std::make_unique<_Node>('1'));
+	std::vector<std::pair<std::string, size_t>> leaves;
+	std::string str = "aabc";
+	int value = 1;
+	tree.insert(begin(str), end(str), value);
+	str = "aabda";
+	value = 2;
+	tree.insert(begin(str), end(str), value);
+	str = "aabda";
+	value = 4;
+	tree.insert(begin(str), end(str), value);
+	std::string search_str = "aabcaj";
+	_Node::reference result = tree.find(cbegin(search_str), cend(search_str));
 
-    REQUIRE (tree.get_match_size() == 4);
+	REQUIRE(tree.get_match_size() == 4);
 
-    REQUIRE ((*result)() == 'c');
+	REQUIRE((*result)() == 'c');
 
-    REQUIRE (std::distance(result->v_begin(), result->v_end()) == 1);
+	REQUIRE(std::distance(result->v_begin(), result->v_end()) == 1);
 
-    auto it = result->v_begin();
+	auto it = result->v_begin();
 
-    REQUIRE (*it == 1);
+	REQUIRE(*it == 1);
 
-    // counts number of leaves in each branch of the tree
-    tree.find(movetk_core::movetk_back_insert_iterator(leaves));
+	// counts number of leaves in each branch of the tree
+	tree.find(movetk_core::movetk_back_insert_iterator(leaves));
 
-    REQUIRE (leaves.size() == 2);
+	REQUIRE(leaves.size() == 2);
 
-    REQUIRE ( leaves[0].first.compare("aabc") == 0 );
+	REQUIRE(leaves[0].first.compare("aabc") == 0);
 
-    REQUIRE (leaves[0].second == 1);
+	REQUIRE(leaves[0].second == 1);
 
-    REQUIRE ( leaves[1].first.compare("aabda") == 0 );
+	REQUIRE(leaves[1].first.compare("aabda") == 0);
 
-    REQUIRE (leaves[1].second == 2);
-
-
+	REQUIRE(leaves[1].second == 2);
 }
 
-//TEST_CASE("Create and search in a binary tree", "[test_btree") {
+// TEST_CASE("Create and search in a binary tree", "[test_btree") {
 ////    typedef movetk_support::BinaryNode<int, Values<char> > Node;
 ////    int rkey = 0;
 ////    movetk_support::Tree<Node> tree( std::make_unique<Node >(rkey) );

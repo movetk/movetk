@@ -33,20 +33,20 @@
 template <typename Backend>
 struct FreeSpaceDiagramTests {
 	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
-	using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
+	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	using NT = typename MovetkGeometryKernel::NT;
 	using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
 	using MovetkSegment = typename MovetkGeometryKernel::MovetkSegment;
-	movetk_core::MakePoint<MovetkGeometryKernel> make_point;
-	movetk_core::MakeSegment<MovetkGeometryKernel> make_segment;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
+	movetk::geom::MakeSegment<MovetkGeometryKernel> make_segment;
 
 	using IntersectionTraits =
-	    movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_segment_intersection_tag>;
-	using FreeSpaceCellTraits = movetk_support::FreeSpaceCellTraits<IntersectionTraits>;
+	    movetk::geom::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::geom::sphere_segment_intersection_tag>;
+	using FreeSpaceCellTraits = movetk::ds::FreeSpaceCellTraits<IntersectionTraits>;
 	using ExpectedIntersections = std::vector<typename IntersectionTraits::value_type>;
-	using FreeSpaceCell = movetk_support::FreeSpaceCell<FreeSpaceCellTraits>;
-	using FreeSpaceDiagramTraits = movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell>;
-	using FreeSpaceDiagram = movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
+	using FreeSpaceCell = movetk::ds::FreeSpaceCell<FreeSpaceCellTraits>;
+	using FreeSpaceDiagramTraits = movetk::ds::FreeSpaceDiagramTraits<FreeSpaceCell>;
+	using FreeSpaceDiagram = movetk::ds::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
 	using ExpectedFsd = std::vector<ExpectedIntersections>;
 };
 
@@ -207,7 +207,6 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 			++eit;
 			num_intersections++;
 			does_intersect = true;
-
 		}
 
 		if (does_intersect) {
@@ -350,8 +349,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 	auto eit = movetk_core::movetk_grid_iterator<ExpectedFsd>(expected);
 	auto it = expected.begin();
 	auto evit = movetk_core::movetk_grid_iterator<ExpectedVertices>(expected_free_vertices);
-	//std::cout << "CellId, EdgeID, Intersection_Ratio, Enclosed, Intersects\n";
-	//for (auto cell : fsd) {
+	// std::cout << "CellId, EdgeID, Intersection_Ratio, Enclosed, Intersects\n";
+	// for (auto cell : fsd) {
 	//	std::size_t num_intersections = 0;
 	//	bool does_intersect = false;
 	//	for (auto intersection : cell) {

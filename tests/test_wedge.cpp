@@ -34,8 +34,8 @@
 
 template<typename Backend>
 struct WedgeTests : public test_helpers::BaseTestFixture<Backend> {
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
-    using Wedge = movetk_core::Wedge<MovetkGeometryKernel, Norm>;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
+    using Wedge = geom::Wedge<MovetkGeometryKernel, Norm>;
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WedgeTests, "Check wedge construction 1","[is_valid_wedge_1]") {
