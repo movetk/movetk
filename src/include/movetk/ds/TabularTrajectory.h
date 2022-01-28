@@ -78,7 +78,7 @@ public:
 
 	std::size_t size() { return _points.size(); }
 
-	constexpr static io::StorageScheme storage_scheme() { return StorageScheme::tabular; }
+	constexpr static io::StorageScheme storage_scheme() { return io::StorageScheme::tabular; }
 
 	constexpr std::size_t num_fields() { return sizeof...(fields); }
 

@@ -218,7 +218,7 @@ void get_distances(InputIterator first, InputIterator beyond) {
 		typename Traits::NT lon0 = std::get<LonIdx>(*pit);
 		typename Traits::NT lat1 = std::get<LatIdx>(*cit);
 		typename Traits::NT lon1 = std::get<LonIdx>(*cit);
-		std::get<DistIdx>(*cit) = distance_exact(lat0, lon0, lat1, lon1);
+		std::get<DistIdx>(*cit) = movetk::geo::distance_exact(lat0, lon0, lat1, lon1);
 		pit = cit;
 		cit++;
 	}
@@ -312,7 +312,7 @@ void get_headings(InputIterator first, InputIterator beyond, PointsIterator pfir
 	// formula from: https://www.movable-type.co.uk/scripts/latlong.html
 	// TODO use default implementation of Geographiclib
 	typedef typename GeometryKernel::NT NT;
-	movetk::utils::ComputeLength<GeometryKernel> distance;
+	movetk::geom::ComputeLength<GeometryKernel> distance;
 	InputIterator pit = first;
 	InputIterator cit = first + 1;
 	PointsIterator p_pit = pfirst;
@@ -322,13 +322,13 @@ void get_headings(InputIterator first, InputIterator beyond, PointsIterator pfir
 	NT phi_1, lambda_1, phi_2, lambda_2;
 	NT x, y, c_heading, p_heading = 0;
 	while (cit != beyond) {
-		phi_1 = deg2radians(pit->first);
-		lambda_1 = deg2radians(pit->second);
-		phi_2 = deg2radians(cit->first);
-		lambda_2 = deg2radians(cit->second);
-		y = sin(lambda_2 - lambda_1) * cos(phi_2);
-		x = cos(phi_1) * sin(phi_2) - sin(phi_1) * cos(phi_2) * cos(lambda_2 - lambda_1);
-		c_heading = fmod(rad2deg(atan2(y, x)) + 360.0, 360.0);
+		phi_1 = geom::deg2radians(pit->first);
+		lambda_1 = geom::deg2radians(pit->second);
+		phi_2 = geom::deg2radians(cit->first);
+		lambda_2 = geom::deg2radians(cit->second);
+		y = std::sin(lambda_2 - lambda_1) * std::cos(phi_2);
+		x = std::cos(phi_1) * std::sin(phi_2) - std::sin(phi_1) * std::cos(phi_2) * std::cos(lambda_2 - lambda_1);
+		c_heading = std::fmod(geom::rad2deg(atan2(y, x)) + 360.0, 360.0);
 		if ((c_heading < MOVETK_EPS) && (distance(*p_pit, *c_pit) < MOVETK_EPS)) {
 			*iter = p_heading;
 		} else {
@@ -347,8 +347,10 @@ template <class Traits, class InputIterator, std::size_t LatIdx, std::size_t Lon
 void get_headings(InputIterator first, InputIterator beyond) {
 	auto it = first;
 	while (++it != (beyond - 1)) {
-		typename Traits::NT azimuth =
-		    bearing_exact(std::get<LatIdx>(*first), std::get<LonIdx>(*first), std::get<LatIdx>(*it), std::get<LonIdx>(*it));
+		typename Traits::NT azimuth = movetk::geo::bearing_exact(std::get<LatIdx>(*first),
+		                                                         std::get<LonIdx>(*first),
+		                                                         std::get<LatIdx>(*it),
+		                                                         std::get<LonIdx>(*it));
 		typename Traits::NT heading = fmod(azimuth + 360.0, 360.0);
 		std::get<HeadingIdx>(*it) = heading;
 	}
@@ -386,8 +388,8 @@ void get_velocities(MagnitudeIterator Mfirst,
 	std::array<typename GeometryKernel::NT, 2> PointContainer;
 	movetk::geom::MakePoint<GeometryKernel> make_point;
 	while (mit != Mbeyond) {
-		PointContainer[0] = (*mit) * cos(deg2radians(*dit));
-		PointContainer[1] = (*mit) * sin(deg2radians(*dit));
+		PointContainer[0] = (*mit) * std::cos(movetk::geom::deg2radians(*dit));
+		PointContainer[1] = (*mit) * std::sin(movetk::geom::deg2radians(*dit));
 		typename GeometryKernel::MovetkPoint P = make_point(std::cbegin(PointContainer), std::cend(PointContainer));
 		*iter = P;
 		mit++;
@@ -401,8 +403,8 @@ typename GeometryTraits::MovetkVector get_velocity(typename GeometryTraits::NT s
 	movetk::geom::MakePoint<GeometryTraits> make_point;
 	typename GeometryTraits::MovetkPoint ORIGIN = make_point({0, 0});
 	std::array<typename GeometryTraits::NT, 2> point_container;
-	point_container[0] = speed * cos(movetk::utils::deg2radians(heading));
-	point_container[1] = speed * sin(movetk::utils::deg2radians(heading));
+	point_container[0] = speed * std::cos(movetk::geom::deg2radians(heading));
+	point_container[1] = speed * std::sin(movetk::geom::deg2radians(heading));
 	return make_point(std::cbegin(point_container), std::cend(point_container)) - ORIGIN;
 }
 
@@ -502,7 +504,7 @@ public:
 	template <class PolyLineIteratorType,
 	          typename = movetk::utils::requires_random_access_iterator<PolyLineIdxIterator>,
 	          typename = movetk::utils::requires_equality<typename PolyLineIteratorType::value_type,
-	                                                    typename PolyLineIdxIterator::value_type::value_type>>
+	                                                      typename PolyLineIdxIterator::value_type::value_type>>
 	size_t getSegmentID(PolyLineIteratorType iter) {
 		if (it == __beyond) {
 			return SegmentId;

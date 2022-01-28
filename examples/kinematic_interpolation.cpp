@@ -175,7 +175,7 @@ int main(int argc, char **argv)
     std::string key = "-idx";
     string line;
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+    movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
     assert(tokens.size() == 5);
 
     std::size_t ts_idx = stold(tokens[0]);
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
     std::cerr << "Threshold: " << threshold << "\n";
 
     Norm norm;
-    typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
+    typedef movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
     typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
     typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
                                             InterpolationTraits, ProbeTraits::ProbeColumns::LAT,
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
                 }
             }
             input.push_back(line);
-            movetk_support::split(line,
+            movetk::utils::split(line,
                                   movetk::utils::movetk_back_insert_iterator(tokens));
             MovetkGeometryKernel::NT lat = std::stold(tokens[lat_idx]);
             MovetkGeometryKernel::NT lon = std::stold(tokens[lon_idx]);
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
                 }
             }
             input.push_back(line);
-            movetk_support::split(line,
+            movetk::utils::split(line,
                                   movetk::utils::movetk_back_insert_iterator(tokens));
             MovetkGeometryKernel::NT lat = std::stold(tokens[lat_idx]);
             MovetkGeometryKernel::NT lon = std::stold(tokens[lon_idx]);

@@ -255,7 +255,7 @@ PYBIND11_MODULE(movetk_geometry, m)
             typedef std::vector<MovetkGeometryKernel::NT> vector;
             typedef movetk::utils::movetk_back_insert_iterator<vector> back_insert_iterator;
             vector vec;
-            movetk::utils::MakeMinSphere<MovetkGeometryKernel> min_sphere;
+            movetk::geom::MakeMinSphere<MovetkGeometryKernel> min_sphere;
             MovetkGeometryKernel::NT radius = min_sphere(std::cbegin(p), std::cend(p), back_insert_iterator(vec));
             MovetkGeometryKernel::MovetkPoint center(std::begin(vec), std::end(vec));
             MovetkGeometryKernel::MovetkSphere sphere(center, radius);

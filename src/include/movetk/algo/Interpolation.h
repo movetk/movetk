@@ -45,10 +45,8 @@ struct InterpolationTraits {
 	typedef typename GeometryTraits::MovetkVector MovetkVector;
 	typedef typename GeometryTraits::NT NT;
 	typedef _Norm Norm;
-	typedef typename geom::mbr_selector<
-	    GeometryTraits,
-	    Norm,
-	    typename GeometryTraits::MovetkMinimumBoundingRectangle>::MinimumBoundingRectangle MinimumBoundingRectangle;
+	typedef typename geom::mbr_selector<GeometryTraits, Norm, typename GeometryTraits::MovetkMinimumBoundingRectangle>::
+	    MinimumBoundingRectangle MinimumBoundingRectangle;
 };
 
 template <class TrajectoryPoint, int LatIdx, int LonIdx, int SpeedIdx = -1, int HeadingIdx = -1>
@@ -61,10 +59,10 @@ public:
 	TrajectoryPoint operator()(const TrajectoryPoint& p1, const TrajectoryPoint& p2, double offset) {
 		double lat1 = std::get<LatIdx>(p1), lon1 = std::get<LonIdx>(p1), lat2 = std::get<LatIdx>(p2),
 		       lon2 = std::get<LonIdx>(p2);
-		double bearing = bearing_exact(lat1, lon1, lat2, lon2);
+		double bearing = movetk::geo::bearing_exact(lat1, lon1, lat2, lon2);
 
 		double lat, lon;
-		destination_by_bearing_exact(lat1, lon1, bearing, offset, lat, lon);
+		movetk::geo::destination_by_bearing_exact(lat1, lon1, bearing, offset, lat, lon);
 
 		TrajectoryPoint p = p2;
 		std::get<LatIdx>(p) = lat;
@@ -83,13 +81,7 @@ template <class AlgorithmTag,
 class Interpolator {};
 
 template <class InterpolationTraits, int LatIdx, int LonIdx, int TsIdx, int SpeedIdx, int HeadingIdx>
-class Interpolator<linear_interpolator_tag,
-                   InterpolationTraits,
-                   LatIdx,
-                   LonIdx,
-                   TsIdx,
-                   SpeedIdx,
-                   HeadingIdx> {
+class Interpolator<linear_interpolator_tag, InterpolationTraits, LatIdx, LonIdx, TsIdx, SpeedIdx, HeadingIdx> {
 private:
 	typename InterpolationTraits::Norm norm;
 	typename InterpolationTraits::GeoProjection ref;
@@ -122,8 +114,8 @@ public:
 	                OutputIterator result) {
 		const auto point_for_probe = [this](const auto& probe_point) {
 			return movetk::utils::get_point<InterpolationTraits>(std::get<LatIdx>(probe_point),
-			                                                   std::get<LonIdx>(probe_point),
-			                                                   ref);
+			                                                     std::get<LonIdx>(probe_point),
+			                                                     ref);
 		};
 		// Points
 		auto p_u = point_for_probe(probe_u);
@@ -170,14 +162,14 @@ public:
 			std::get<SpeedIdx>(*ip_first) = std::get<SpeedIdx>(probe_u);
 			std::get<SpeedIdx>(*(ip_beyond - 1)) = std::get<SpeedIdx>(probe_v);
 			movetk::utils::get_speeds<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, TsIdx, SpeedIdx>(ip_first,
-			                                                                                                  ip_beyond);
+			                                                                                                    ip_beyond);
 		}
 
 		if constexpr (HeadingIdx > -1) {
 			std::get<HeadingIdx>(*ip_first) = std::get<HeadingIdx>(probe_u);
 			std::get<HeadingIdx>(*(ip_beyond - 1)) = std::get<HeadingIdx>(probe_v);
 			movetk::utils::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
-			                                                                                               ip_beyond);
+			                                                                                                 ip_beyond);
 		}
 		// Move the result to the output
 		std::move(ip_first, ip_beyond, result);
@@ -214,8 +206,8 @@ public:
 	                OutputIterator result) {
 		const auto point_for_probe = [this](const auto& probe_point) {
 			return movetk::utils::get_point<InterpolationTraits>(std::get<LatIdx>(probe_point),
-			                                                   std::get<LonIdx>(probe_point),
-			                                                   ref);
+			                                                     std::get<LonIdx>(probe_point),
+			                                                     ref);
 		};
 		using ProbePoint = typename InterpolationTraits::ProbePoint;
 
@@ -246,7 +238,7 @@ public:
 			typename InterpolationTraits::NT speed_v = displacement / delta_t;
 			velocity_v =
 			    movetk::utils::get_velocity<typename InterpolationTraits::GeometryTraits>(speed_v,
-			                                                                            std::get<HeadingIdx>(probe_v));
+			                                                                              std::get<HeadingIdx>(probe_v));
 			std::get<SpeedIdx>(probe_v) = speed_v;
 		}
 
@@ -273,15 +265,15 @@ public:
 		auto v2 = scale(m, ORIGIN, delta_t_squared / 2.0);
 
 		auto rhs = v1 + v2;
-		//auto eps = delta_velocity - rhs;
-		//assert(eps * eps < MOVETK_EPS);
+		// auto eps = delta_velocity - rhs;
+		// assert(eps * eps < MOVETK_EPS);
 
 		v1 = scale(b, ORIGIN, delta_t_squared / 2.0);
 		v2 = scale(m, ORIGIN, delta_t_squared / 6.0);
 
 		rhs = v1 + v2;
-		//eps = delta_position - scaled_velocity - rhs;
-		//assert(eps * eps < MOVETK_EPS);
+		// eps = delta_position - scaled_velocity - rhs;
+		// assert(eps * eps < MOVETK_EPS);
 
 		std::size_t num_elements = std::distance(first, beyond);
 
@@ -366,7 +358,7 @@ public:
 
 		if constexpr (HeadingIdx > -1) {
 			movetk::utils::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
-			                                                                                               ip_beyond);
+			                                                                                                 ip_beyond);
 		}
 
 		if constexpr (SpeedIdx > -1) {
@@ -385,13 +377,7 @@ public:
 };
 
 template <class InterpolationTraits, int LatIdx, int LonIdx, int TsIdx, int SpeedIdx, int HeadingIdx>
-class Interpolator<random_trajectory_generator_tag,
-                   InterpolationTraits,
-                   LatIdx,
-                   LonIdx,
-                   TsIdx,
-                   SpeedIdx,
-                   HeadingIdx> {
+class Interpolator<random_trajectory_generator_tag, InterpolationTraits, LatIdx, LonIdx, TsIdx, SpeedIdx, HeadingIdx> {
 	// based on https://doi.org/10.1080/13658816.2014.999682
 private:
 	typename InterpolationTraits::NT eps;
@@ -581,14 +567,14 @@ public:
 			std::get<SpeedIdx>(*ip_first) = std::get<SpeedIdx>(probe_u);
 			std::get<SpeedIdx>(*(ip_beyond - 1)) = std::get<SpeedIdx>(probe_v);
 			movetk::utils::get_speeds<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, TsIdx, SpeedIdx>(ip_first,
-			                                                                                                  ip_beyond);
+			                                                                                                    ip_beyond);
 		}
 
 		if constexpr (HeadingIdx > -1) {
 			std::get<HeadingIdx>(*ip_first) = std::get<HeadingIdx>(probe_u);
 			std::get<HeadingIdx>(*(ip_beyond - 1)) = std::get<HeadingIdx>(probe_v);
 			movetk::utils::get_headings<InterpolationTraits, decltype(ip_first), LatIdx, LonIdx, HeadingIdx>(ip_first,
-			                                                                                               ip_beyond);
+			                                                                                                 ip_beyond);
 		}
 
 		std::move(ip_first, ip_beyond, result);

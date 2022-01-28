@@ -48,7 +48,7 @@ typedef std::vector<NonGeoAttributes::const_iterator> NonGeoAttributesReference;
 typedef std::vector<DiscretePosValuedAttributes::const_iterator> DiscretePosValuedAttributesReference;
 
 // Atribute  Iterators defined here
-typedef movetk_support::StartStopDiagram<SsdType::compressed,
+typedef movetk::ds::StartStopDiagram<movetk::ds::SsdType::compressed,
         typename GeometryKernel::MovetkGeometryKernel, DiscretePosValuedAttributes> SSD;
 //typedef DiscretePosValuedAttributes::iterator TimeAttributesIterator;
 typedef DiscretePosValuedAttributes::const_iterator TimeAttributesConstIterator;
@@ -214,7 +214,7 @@ int main(int argc, char **argv) {
     std::string key = "-t";
     line = parse.get_parameter(key);
     std::vector<string> tokens;
-    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+    movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
 
     assert(tokens.size() == 4);
 
@@ -233,7 +233,7 @@ int main(int argc, char **argv) {
     tokens.clear();
     key = "-idx";
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+    movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
 
     if (parse.compute_attributes())
         assert(tokens.size() == 6);
@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
             }
             linecount++;
 
-            movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+            movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
             if (parse.compute_attributes()) {
                 assert(tokens.size() >= 6);
             } else {
@@ -334,7 +334,7 @@ int main(int argc, char **argv) {
             }
             linecount++;
 
-            movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+            movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
             if (parse.compute_attributes()) {
                 assert(tokens.size() >= 6);
             } else {
@@ -403,7 +403,7 @@ int main(int argc, char **argv) {
                                                                                              std::end(ts_ref));
     ts_segments_ssd( std::begin(ts), std::end(ts), make_ts_segment );
 //    cerr<<"TS Segments\n";
-//    cerr<<movetk_support::join(ts_segments_ssd.cbegin(), ts_segments_ssd.cend());
+//    cerr<<movetk::utils::join(ts_segments_ssd.cbegin(), ts_segments_ssd.cend());
 
 
     SegmentationTraits::LocationSegmentation segment_by_meb(RadiusThreshold);
@@ -412,7 +412,7 @@ int main(int argc, char **argv) {
                                                                               std::end(points_ref));
     location_segments_ssd(std::begin(poly), std::end(poly), make_location_segment);
 //    cerr<<"Location Segments\n";
-//    cerr<<movetk_support::join(location_segments_ssd.cbegin(), location_segments_ssd.cend());
+//    cerr<<movetk::utils::join(location_segments_ssd.cbegin(), location_segments_ssd.cend());
 
     SegmentationTraits::SpeedSegmentation segment_by_diff(DifferenceThreshold);
     segment_by_diff(std::begin(speeds), std::end(speeds), movetk::utils::movetk_back_insert_iterator(speed_ref));

@@ -85,7 +85,7 @@ namespace movetk::algo {
                 auto t2 = std::get<ProbeTraits::ProbeColumns::SAMPLE_DATE>(p2);
                 NT tdiff = abs(static_cast<NT>(t1) - static_cast<NT>(t2));
                 assert(tdiff > 0);
-                auto len = distance_exact(lat0, lon0, lat1, lon1);
+                auto len = movetk::geo::distance_exact(lat0, lon0, lat1, lon1);
                 return len / tdiff <= threshold;
             } //operator()
 

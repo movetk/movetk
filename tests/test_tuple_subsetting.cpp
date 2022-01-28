@@ -53,7 +53,7 @@ TEST_CASE( "Tuple subsetting", "[tuplesubsetting]" ) {
     fields_of_interest foi;
     auto row0_ = subset_tuple(row0, foi);
 //    auto row0_ = subset_tuple<1, 3>(row0);
-    print_tuple(std::cout, row0_);
+    movetk::io::print_tuple(std::cout, row0_);
     std::cout << std::endl;
 
 //    REQUIRE( os.str() == "Provider1" );

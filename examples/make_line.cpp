@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     std::cout << P2;
     std::cout << std::endl;
 
-    movetk::utils::MakeLine<GeometryKernel::MovetkGeometryKernel> make_line;
+    movetk::geom::MakeLine<GeometryKernel::MovetkGeometryKernel> make_line;
     GeometryKernel::MovetkGeometryKernel::MovetkLine line = make_line(P1, P2);
     //====================================
 

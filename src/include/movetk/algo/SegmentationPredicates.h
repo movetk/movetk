@@ -56,7 +56,7 @@ namespace movetk::algo {
     private:
         typedef TEST<TestCriteria::meb, GeometryTraits> TEST_;
         typedef typename GeometryTraits::NT NT;
-        movetk::utils::MakeMinSphere<GeometryTraits> make_min_sphere;
+        movetk::geom::MakeMinSphere<GeometryTraits> make_min_sphere;
         NT threshold;
         size_t NumPoints = 0;
     public:

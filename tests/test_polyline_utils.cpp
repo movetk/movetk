@@ -66,7 +66,7 @@ TEST_CASE("trajectory length 3d 2pts 2", "[trajectory_length_3d_2pts_2]") {
 template <typename Backend>
 struct PolylineUtilTests : public test_helpers::BaseTestFixture<Backend> {
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	using PolyLine = std::vector<MovetkGeometryKernel::MovetkPoint>;
+	using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(PolylineUtilTests,
@@ -74,7 +74,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(PolylineUtilTests,
                                       "[trajectory_length_movetk_pts]") {
 	PolyLine polyline(
 	    {make_point({0, 0}), make_point({1, 0}), make_point({1, 1}), make_point({0, 1}), make_point({0, 0})});
-	double length = polyline_length_m(std::begin(polyline), std::end(polyline));
+	double length = movetk::algo::polyline_length_m(std::begin(polyline), std::end(polyline));
 	REQUIRE(length == Approx(4.0).epsilon(0.00001));
 }
 

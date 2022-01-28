@@ -249,9 +249,9 @@ struct FreeSpaceDiagramTraits {
 	typedef FreeSpaceCell Cell;
 	typedef std::vector<Cell> Cells;
 	typedef std::vector<Cells> Rows;
-	typedef movet::utils::movetk_back_insert_iterator<typename Rows::value_type> CellsOutputIterator;
-	typedef movet::utils::movetk_back_insert_iterator<Rows> RowsOutputIterator;
-	typedef movet::utils::movetk_grid_iterator<Rows> iterator;
+	typedef movetk::utils::movetk_back_insert_iterator<typename Rows::value_type> CellsOutputIterator;
+	typedef movetk::utils::movetk_back_insert_iterator<Rows> RowsOutputIterator;
+	typedef movetk::utils::movetk_grid_iterator<Rows> iterator;
 };
 
 template <class _FreeSpaceDiagramTraits>

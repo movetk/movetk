@@ -99,7 +99,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space c
 	std::size_t test_case_num = 1;
 	for (const auto& test_case : test_cases) {
 		SECTION(std::to_string(test_case_num)) {
-			movetk_support::FreeSpaceCell<FreeSpaceCellTraits> fsc(test_case.P, test_case.Q, test_case.radius);
+			movetk::ds::FreeSpaceCell<FreeSpaceCellTraits> fsc(test_case.P, test_case.Q, test_case.radius);
 			const auto size = std::distance(fsc.begin(), fsc.end());
 			REQUIRE(size == test_case.expected.size());
 			auto eit = test_case.expected.begin();
@@ -227,12 +227,12 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space diagram 2", "[free_space_diagram_2]") {
 	typedef typename MovetkGeometryKernel::NT NT;
 	typedef typename MovetkGeometryKernel::MovetkPoint MovetkPoint;
-	typedef movetk::utils::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::utils::sphere_segment_intersection_tag>
+	typedef movetk::geom::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::geom::sphere_segment_intersection_tag>
 	    IntersectionTraits;
-	typedef movetk_support::FreeSpaceCellTraits<IntersectionTraits> FreeSpaceCellTraits;
-	typedef movetk_support::FreeSpaceCell<FreeSpaceCellTraits> FreeSpaceCell;
-	typedef movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;
-	typedef movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits> FreeSpaceDiagram;
+	typedef movetk::ds::FreeSpaceCellTraits<IntersectionTraits> FreeSpaceCellTraits;
+	typedef movetk::ds::FreeSpaceCell<FreeSpaceCellTraits> FreeSpaceCell;
+	typedef movetk::ds::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;
+	typedef movetk::ds::FreeSpaceDiagram<FreeSpaceDiagramTraits> FreeSpaceDiagram;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	typedef std::vector<IntersectionTraits::value_type> ExpectedIntersections;
 	typedef std::vector<ExpectedIntersections> ExpectedFsd;

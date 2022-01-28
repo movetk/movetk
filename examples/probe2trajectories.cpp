@@ -43,25 +43,25 @@ int main(int argc, char **argv)
     using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 
     // Create trajectory reader
-    std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
+    std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
     if (argc < 2)
     {
         // Use built-in test data if a file is not specified
-        probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
+        probe_reader = movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
     }
     else
     {
         // Example: Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
-        probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
+        probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
     using ProbeInputIterator = decltype(probe_reader->begin());
-    auto trajectory_reader = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
+    auto trajectory_reader = movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
 
     // Create an output csv file
     std::ofstream ofcsv("output_trajectories.csv");
 
     // Write the header
-    print_tuple(ofcsv, probe_reader->columns());
+    movetk::io::print_tuple(ofcsv, probe_reader->columns());
     ofcsv << ",TRAJ_ID" << std::endl;
 
     // Process trajectories in a streaming fashion

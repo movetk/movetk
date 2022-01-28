@@ -93,7 +93,7 @@ private:
 				using SplitByTimeDiff = SplitByDifferenceThreshold<DateIdx, ProbePoint>;
 				SplitByTimeDiff split_by_time_diff(_time_diff_threshold_s);
 				using SplitByDistance = SplitByDistanceThreshold<LatIdx, LonIdx, ProbePoint>;
-				std::function<double(float, float, float, float)> distancefn = distance_exact;
+				std::function<double(float, float, float, float)> distancefn = geo::distance_exact;
 				SplitByDistance split_by_dist(_distance_threshold_m, distancefn);
 				auto split_by_time_diff_or_distance = [&](const ProbePoint& p) {
 					bool t = split_by_time_diff(p);

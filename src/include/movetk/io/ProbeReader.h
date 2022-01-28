@@ -32,6 +32,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <utility>  // for move
 
 #include "movetk/io/csv/csv.h"
@@ -92,13 +93,15 @@ private:
 
 class ProbeReaderFactory {
 public:
+	static constexpr std::string_view CSV_EXT = ".csv";
+	static constexpr std::string_view GZ_EXT = ".gz";
 	template <class ProbeTraits>
-	static std::unique_ptr<ProbeReader<ProbeTraits>> create(const char *file_name) {
+	static std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> create(const std::string& file_name) {
 		// TODO: check if file exists
-		if (ends_with(file_name, ".csv")) {
+		if (file_name.find(CSV_EXT, 0) == file_name.size() - CSV_EXT.size()) {
 			auto fin = std::make_unique<std::ifstream>(file_name);
 			return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(fin));
-		} else if (ends_with(file_name, ".gz")) {
+		} else if (file_name.find(GZ_EXT, 0) == file_name.size() - GZ_EXT.size()) {
 			auto fin = std::make_unique<std::ifstream>(file_name, std::ios_base::in | std::ios_base::binary);
 			return std::make_unique<ZippedProbeReader<ProbeTraits>>(std::move(fin));
 		} else {
@@ -107,7 +110,7 @@ public:
 	}
 
 	template <class ProbeTraits>
-	static std::unique_ptr<ProbeReader<ProbeTraits>> create_from_string(const char *csv_string) {
+	static std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> create_from_string(const char* csv_string) {
 		auto ss = std::make_unique<std::istringstream>(csv_string);
 		return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(ss));
 	}

@@ -34,14 +34,14 @@ template <class Tuple, std::size_t N>
 struct TuplePrinter {
 	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
 		TuplePrinter<Tuple, N - 1>::print_tuple(os, t, precision);
-		os << "," << setprecision(precision) << std::get<N - 1>(t);
+		os << "," << std::setprecision(precision) << std::get<N - 1>(t);
 	}
 };
 
 template <class Tuple>
 struct TuplePrinter<Tuple, 1> {
 	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
-		os << setprecision(precision) << std::get<0>(t);
+		os << std::setprecision(precision) << std::get<0>(t);
 	}
 };
 

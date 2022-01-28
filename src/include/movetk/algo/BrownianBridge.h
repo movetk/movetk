@@ -70,7 +70,7 @@ namespace brownian_bridge {
  * @brief This traits class serves as a collection of types
  * for parameterization of BBMM
  * @tparam _GeometryTraits -  This class is a collection of movetk
- *  geometry types. For example @refitem movetk::utils::MovetkGeometryKernel
+ *  geometry types. For example @refitem movetk::geom::MovetkGeometryKernel
  * @tparam TrajectoryIterator - An iterator type.
  * For example @refitem TabularTrajectory::TrajectoryIterator
  */
@@ -80,18 +80,18 @@ struct ParameterTraits {
 	/*!*
 	 * @typedef ::NT
 	 * @brief typedef  of the number type defined in GeometryTraits.
-	 * For example @refitem  movetk::utils::MovetkGeometryKernel::NT
+	 * For example @refitem  movetk::geom::MovetkGeometryKernel::NT
 	 * */
 	typedef typename GeometryTraits::NT NT;
 	/*!*
 	 * @typedef ::Point
 	 * @brief typedef of the point type defined in GeometryTraits.
-	 * For example @refitem movetk::utils::MovetkGeometryKernel::MovetkPoint
+	 * For example @refitem movetk::geom::MovetkGeometryKernel::MovetkPoint
 	 *  */
 	typedef typename GeometryTraits::MovetkPoint Point;
 	/*!* @typedef ::Vector
 	 * @brief typedef of the vector type defined in GeometryTraits.
-	 * For example @refitem  movetk::utils::MovetkGeometryKernel::MovetkVector
+	 * For example @refitem  movetk::geom::MovetkGeometryKernel::MovetkVector
 	 * */
 	typedef typename GeometryTraits::MovetkVector Vector;
 	/*!* @typedef ::Parameters
@@ -116,7 +116,7 @@ struct ParameterTraits {
  *  class Norm, class InputIterator, std::size_t MaxIter> MLE
  * @brief The Maximum Likelihood Estimator
  * @tparam GeometryTraits -   This class is a collection of movetk
- *  geometry types. For example @refitem movetk::utils::MovetkGeometryKernel
+ *  geometry types. For example @refitem movetk::geom::MovetkGeometryKernel
  * @tparam ParameterTraits -  This traits class serves as a collection of types
  * for parameterization of BBMM
  * @tparam Norm - The type that models Euclidean distance
@@ -421,7 +421,7 @@ public:
 	                                                               typename InputIterator::value_type>,
 	          typename = movetk::utils::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
-		assert(std::distance(first, beyond) >= SIZE);
+		assert(static_cast<std::size_t>(std::distance(first, beyond)) >= SIZE);
 		std::vector<typename ParameterTraits::NT> coeffs;
 		std::transform(first, beyond, std::back_inserter(coeffs), [](auto a) {
 			return std::get<ParameterTraits::ParameterColumns::SIGMA_SQUARED>(a);

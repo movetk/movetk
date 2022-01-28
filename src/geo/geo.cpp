@@ -30,6 +30,7 @@
 #include <GeographicLib/Geodesic.hpp>
 using namespace GeographicLib;
 
+namespace movetk::geo {
 double distance_exact(double lat0, double lon0, double lat1, double lon1) {
     const Geodesic& geod = Geodesic::WGS84();
     double s12;
@@ -76,4 +77,5 @@ double euclidean_distance_3d(double x0, double y0, double z0, double x1, double 
     auto dy = y1-y0;
     auto dz = z1-z0;
     return sqrt(dx*dx + dy*dy + dz*dz);
+}
 }

@@ -24,14 +24,14 @@
 #include <parallel/algorithm>
 #endif
 
-#include "movetk/logging.h"
-#include "movetk/test_data.h"
-#include "movetk/utils/HereTrajectoryTraits.h"
+#include "movetk/geo/geo.h"
+#include "movetk/io/HighFrequencyTrajectorySplitter.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortedProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/io/HighFrequencyTrajectorySplitter.h"
-#include "movetk/geo/geo.h"
+#include "movetk/logging.h"
+#include "movetk/test_data.h"
+#include "movetk/utils/HereTrajectoryTraits.h"
 
 /**
  * Example: Create trajectories from raw probe points by
@@ -42,86 +42,85 @@
  *          - retaining only high frequency pieces (with time and distance threshold)
  *          - writing trajectories to a CSV file.
  */
-int main(int argc, char **argv)
-{
-    std::ios_base::sync_with_stdio(false);
-    init_logging(logging::trivial::trace);
-    BOOST_LOG_TRIVIAL(info) << "Started";
+int main(int argc, char **argv) {
+	std::ios_base::sync_with_stdio(false);
+	init_logging(logging::trivial::trace);
+	BOOST_LOG_TRIVIAL(info) << "Started";
 #ifdef _GLIBCXX_PARALLEL
-    BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
+	BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
 #endif
 
-    // Specializations for the Commit2Data raw probe format
-    using TrajectoryTraits = here::c2d::raw::TabularTrajectoryTraits;
-    using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
+	// Specializations for the Commit2Data raw probe format
+	using TrajectoryTraits = here::c2d::raw::TabularTrajectoryTraits;
+	using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 
-    // Create trajectory reader
-    std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
-    if (argc < 2)
-    {
-        // Use built-in test data if a file is not specified
-        probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
-    }
-    else
-    {
-        // Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
-        probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
-    }
-    using ProbeInputIterator = decltype(probe_reader->begin());
+	// Create trajectory reader
+	std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
+	if (argc < 2) {
+		// Use built-in test data if a file is not specified
+		probe_reader = movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
+	} else {
+		// Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
+		probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(argv[1]);
+	}
+	using ProbeInputIterator = decltype(probe_reader->begin());
 
-    // If the probe points are
-    // a) already grouped into sessions (trajectories)
-    // auto trajectory_reader = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
-    // b) not grouped
-    constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
-    SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
-    using SortedProbeInputIterator = decltype(sorted_probe_reader.begin());
-    auto trajectory_reader = TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
-                                                                                          sorted_probe_reader.end());
+	// If the probe points are
+	// a) already grouped into sessions (trajectories)
+	// auto trajectory_reader = movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(),
+	// probe_reader->end()); b) not grouped
+	constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
+	movetk::io::SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
+	using SortedProbeInputIterator = decltype(sorted_probe_reader.begin());
+	auto trajectory_reader =
+	    movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
+	                                                                             sorted_probe_reader.end());
 
-    using TrajectoryInputIterator = decltype(trajectory_reader.begin());
-    auto hifreq_splitter = HighFrequencyTrajectorySplitter<TrajectoryInputIterator,
-                                                           ProbeTraits::ProbeColumns::SAMPLE_DATE,
-                                                           ProbeTraits::ProbeColumns::LAT,
-                                                           ProbeTraits::ProbeColumns::LON>(
-        trajectory_reader.begin(), trajectory_reader.end(), 30.0, 900.0, 2);
+	using TrajectoryInputIterator = decltype(trajectory_reader.begin());
+	auto hifreq_splitter =
+	    movetk::io::HighFrequencyTrajectorySplitter<TrajectoryInputIterator,
+	                                                ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	                                                ProbeTraits::ProbeColumns::LAT,
+	                                                ProbeTraits::ProbeColumns::LON>(trajectory_reader.begin(),
+	                                                                                trajectory_reader.end(),
+	                                                                                30.0,
+	                                                                                900.0,
+	                                                                                2);
 
-    auto t_start = std::chrono::high_resolution_clock::now();
+	auto t_start = std::chrono::high_resolution_clock::now();
 
-    // Create an output csv file
-    std::ofstream ofcsv("output_trajectories.csv");
+	// Create an output csv file
+	std::ofstream ofcsv("output_trajectories.csv");
 
-    // Write the header
-    print_tuple(ofcsv, probe_reader->columns());
-    ofcsv << ",RAW_TRAJID,TS\n";
+	// Write the header
+	movetk::io::print_tuple(ofcsv, probe_reader->columns());
+	ofcsv << ",RAW_TRAJID,TS\n";
 
-    // Write trajectories
-    std::size_t trajectory_count = 0;
-    for (auto trajectory : hifreq_splitter)
-    {
-        // std::cout << "New trajectory:\n";
+	// Write trajectories
+	std::size_t trajectory_count = 0;
+	for (auto trajectory : hifreq_splitter) {
+		// std::cout << "New trajectory:\n";
 
-        // Create the new trajectory id column
-        std::vector<std::size_t> trajectory_id_col;
-        trajectory_id_col.assign(trajectory.size(), trajectory_count);
-        // Create the timestamp column
-        std::vector<ProbeTraits::ProbeParseDate> dates = trajectory.get<ProbeTraits::ProbeColumns::SAMPLE_DATE>();
-        std::vector<std::time_t> ts_col;
-        for (auto &d : dates)
-        {
-            ts_col.push_back(d.ts());
-        }
+		// Create the new trajectory id column
+		std::vector<std::size_t> trajectory_id_col;
+		trajectory_id_col.assign(trajectory.size(), trajectory_count);
+		// Create the timestamp column
+		std::vector<ProbeTraits::ProbeParseDate> dates = trajectory.get<ProbeTraits::ProbeColumns::SAMPLE_DATE>();
+		std::vector<std::time_t> ts_col;
+		for (auto &d : dates) {
+			ts_col.push_back(d.ts());
+		}
 
-        // Add new fields to the trajectory
-        auto augmented_trajectory = concat_field(trajectory, trajectory_id_col, ts_col);
+		// Add new fields to the trajectory
+		auto augmented_trajectory = movetk::ds::concat_field(trajectory, trajectory_id_col, ts_col);
 
-        ofcsv << augmented_trajectory;
+		ofcsv << augmented_trajectory;
 
-        ++trajectory_count;
-    }
-    auto t_end = std::chrono::high_resolution_clock::now();
-    display("rest", t_start, t_end);
-    BOOST_LOG_TRIVIAL(info) << "Wrote " << trajectory_count << " trajectories.";
+		++trajectory_count;
+	}
+	auto t_end = std::chrono::high_resolution_clock::now();
+	display("rest", t_start, t_end);
+	BOOST_LOG_TRIVIAL(info) << "Wrote " << trajectory_count << " trajectories.";
 
-    return 0;
+	return 0;
 }

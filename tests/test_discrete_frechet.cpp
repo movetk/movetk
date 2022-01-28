@@ -61,9 +61,9 @@ const static size_t dimensions = 2;
 
 //==============================
 // Define the Geometry Backend
-typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
+typedef movetk::geom::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
 // Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk::utils::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
+typedef movetk::geom::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
 #else
 //==============================
 // Define the Number Type

@@ -70,7 +70,7 @@ public:
 	 */
 	std::size_t size() { return std::get<0>(_points).size(); }
 
-	constexpr static io::StorageScheme storage_scheme() { return StorageScheme::columnar; }
+	constexpr static io::StorageScheme storage_scheme() { return io::StorageScheme::columnar; }
 
 	constexpr std::size_t num_fields() { return sizeof...(fields); }
 
@@ -108,7 +108,7 @@ public:
 		auto iters_end = trajectory._field_iterators_end(std::make_index_sequence<NUM_FIELDS>{});
 
 		while (iters != iters_end) {
-			print_iter_tuple(os, iters);
+			movetk::io::print_iter_tuple(os, iters);
 			trajectory._field_iterators_increment(iters, std::make_index_sequence<NUM_FIELDS>{});
 		}
 		return os;

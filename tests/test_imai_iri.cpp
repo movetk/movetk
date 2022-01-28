@@ -53,14 +53,6 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ImaiIriTests, "Check Imai-Iri Simplificati
 	                   make_point({10, -5}),
 	                   make_point({11, -2}),
 	                   make_point({13, -4})});
-	std::cout << "Polyline to be simplified: ";
-	std::cout << "{";
-	for (auto& vertex : polyline) {
-		cout << vertex;
-		std::cout << ";";
-	}
-	std::cout << "}\n";
-
 	ImaiIri simplification(2);
 	std::vector<PolyLine::iterator> result;
 	simplification(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));

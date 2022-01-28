@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     while (getline(std::cin, line))
     {
         input.push_back(line);
-        movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+        movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
         X = stold(tokens[XIdx]);
         Y = stold(tokens[YIdx]);
         polyline.push_back(make_point({X, Y}));

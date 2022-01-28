@@ -39,7 +39,7 @@ struct GroupedHighFrequencyTrajectoryReader {
 	using ProbeInputIterator = typename ProbeTraits::ProbeInputIterator;
 	using sorted_probe_reader_type = SortedProbeReader<ProbeInputIterator,
 	                                                   TrajectoryTraits::SplitByFieldIdx>;  // not used
-	using trajectory_reader_type = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>;
+	using trajectory_reader_type = movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>;
 };
 
 template <class HighFrequencyTrajectoryTraits>
@@ -49,7 +49,7 @@ struct NotGroupedHighFrequencyTrajectoryReader {
 	using ProbeInputIterator = typename ProbeTraits::ProbeInputIterator;
 	using sorted_probe_reader_type = SortedProbeReader<ProbeInputIterator, TrajectoryTraits::SplitByFieldIdx>;
 	using SortedProbeInputIterator = typename sorted_probe_reader_type::iterator;
-	using trajectory_reader_type = TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>;
+	using trajectory_reader_type = movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>;
 };
 
 template <class HighFrequencyTrajectoryTraits, bool TrajectoriesAreGrouped>
@@ -100,14 +100,14 @@ public:
 
 	void init_from_string(const char* csv_string) {
 		// Use built-in test data if a file is not specified
-		probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(csv_string);
+		probe_reader = movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(csv_string);
 		_init();
 	}
 
 	void init(std::string file_name) {
 		BOOST_LOG_TRIVIAL(trace) << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
 		// Process trajectories from a (zipped) CSV file
-		probe_reader = ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
+		probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
 		_init();
 	}
 
@@ -122,7 +122,7 @@ private:
 	double _distance_threshold_m;
 	std::size_t _min_points;  // min number of points required for a split to qualify as a trajectory
 
-	std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
+	std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
 	std::unique_ptr<sorted_probe_reader_type> sorted_probe_reader;  // only for not grouped trajectories
 	std::unique_ptr<trajectory_reader_type> trajectory_reader;
 	std::unique_ptr<hifreq_splitter_type> hifreq_splitter;
@@ -152,7 +152,7 @@ private:
 //    using ProbeInputIterator       = typename ProbeTraits::ProbeInputIterator;
 //    using sorted_probe_reader_type = SortedProbeReader<ProbeInputIterator,
 //                                                       TrajectoryTraits::SplitByFieldIdx>;  // not used
-//    using trajectory_reader_type   = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>;
+//    using trajectory_reader_type   = movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>;
 //};
 //
 // template<class HighFrequencyTrajectoryTraits>
@@ -162,7 +162,7 @@ private:
 //    using ProbeInputIterator       = typename ProbeTraits::ProbeInputIterator;
 //    using sorted_probe_reader_type = SortedProbeReader<ProbeInputIterator, TrajectoryTraits::SplitByFieldIdx>;
 //    using SortedProbeInputIterator = typename sorted_probe_reader_type::iterator;
-//    using trajectory_reader_type   = TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>;
+//    using trajectory_reader_type   = movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>;
 //};
 //
 // template<class HighFrequencyTrajectoryTraits, bool TrajectoriesAreGrouped>
@@ -227,7 +227,7 @@ private:
 //    void init_from_string(const char* csv_string)
 //    {
 //        // Use built-in test data if a file is not specified
-//        probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(csv_string);
+//        probe_reader = movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(csv_string);
 //        _init();
 //    }
 //
@@ -235,7 +235,7 @@ private:
 //    {
 //        BOOST_LOG_TRIVIAL(trace) << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
 //        // Process trajectories from a (zipped) CSV file
-//        probe_reader = ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
+//        probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
 //        _init();
 //    }
 //
@@ -259,7 +259,7 @@ private:
 //    double      _distance_threshold_m;
 //    std::size_t _min_points;  // min number of points required for a split to qualify as a trajectory
 //
-//    std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
+//    std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
 //    std::unique_ptr<sorted_probe_reader_type> sorted_probe_reader;  // only for not grouped trajectories
 //    std::unique_ptr<trajectory_reader_type>   trajectory_reader;
 //    std::unique_ptr<hifreq_splitter_type>     hifreq_splitter;
@@ -288,7 +288,7 @@ private:
 //    using TrajectoryTraits = typename HighFrequencyTrajectoryTraits::TrajectoryTraits;
 //    using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 //    using ProbeInputIterator = typename ProbeTraits::ProbeInputIterator;
-//    using trajectory_reader_type = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>;
+//    using trajectory_reader_type = movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>;
 //    // not used
 //    using sorted_probe_reader_type = SortedProbeReader<ProbeInputIterator, TrajectoryTraits::SplitByFieldIdx>;
 //};
@@ -300,7 +300,7 @@ private:
 //    using ProbeInputIterator = typename ProbeTraits::ProbeInputIterator;
 //    using sorted_probe_reader_type = SortedProbeReader<ProbeInputIterator, TrajectoryTraits::SplitByFieldIdx>;
 //    using SortedProbeInputIterator = typename sorted_probe_reader_type::iterator;
-//    using trajectory_reader_type = TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>;
+//    using trajectory_reader_type = movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>;
 //};
 //
 // template <class HighFrequencyTrajectoryTraits, bool TrajectoriesAreGrouped>
@@ -366,7 +366,7 @@ private:
 //
 //    void init_from_string(const char* csv_string) {
 //        // Use built-in test data if a file is not specified
-//        probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(csv_string);
+//        probe_reader = movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(csv_string);
 //        _init();
 //    }
 //
@@ -374,7 +374,7 @@ private:
 //    {
 //        BOOST_LOG_TRIVIAL(trace) << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
 //        // Process trajectories from a (zipped) CSV file
-//        probe_reader = ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
+//        probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
 //        _init();
 //    }
 //
@@ -396,7 +396,7 @@ private:
 //    double _distance_threshold_m;
 //    std::size_t _min_points;  // min number of points required for a split to qualify as a trajectory
 //
-//    std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
+//    std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
 //    std::unique_ptr<trajectory_reader_type> trajectory_reader;
 //    std::unique_ptr<hifreq_splitter_type> hifreq_splitter;
 //    typename hifreq_splitter_type::iterator hifreq_splitter_it;
