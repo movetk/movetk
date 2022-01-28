@@ -39,19 +39,19 @@ int main(int argc, char **argv)
     using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 
     // Create trajectory reader
-    std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
+    std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
     if (argc < 2)
     {
         // Use built-in test data if a file is not specified
-        probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::geolife_raw_csv);
+        probe_reader = movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::geolife_raw_csv);
     }
     else
     {
         // Example: Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
-        probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
+        probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
     using ProbeInputIterator = decltype(probe_reader->begin());
-    auto trajectory_reader = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
+    auto trajectory_reader = movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
 
     for (auto trajectory : trajectory_reader)
     {
@@ -75,8 +75,8 @@ int main(int argc, char **argv)
             {
                 double curr_lat = get<LAT>(probe);
                 double curr_lon = get<LON>(probe);
-                double d = distance_exact(prev_lat, prev_lon, curr_lat, curr_lon);
-                double b = bearing_exact(prev_lat, prev_lon, curr_lat, curr_lon);
+                double d = movetk::geo::distance_exact(prev_lat, prev_lon, curr_lat, curr_lon);
+                double b = movetk::geo::bearing_exact(prev_lat, prev_lon, curr_lat, curr_lon);
                 BOOST_LOG_TRIVIAL(trace) << d << " " << b;
                 prev_lat = curr_lat;
                 prev_lon = curr_lon;

@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     //====================================
     std::cout<<"\n";
 
-    movetk::utils::MakeSphere<GeometryKernel::MovetkGeometryKernel> make_sphere;
+    movetk::geom::MakeSphere<GeometryKernel::MovetkGeometryKernel> make_sphere;
     GeometryKernel::MovetkGeometryKernel::MovetkSphere s = make_sphere(center, 10);
     return 0;
 }

@@ -101,7 +101,7 @@ private:
 
 		if constexpr (value_type::storage_scheme() == StorageScheme::columnar) {
 			// Convert vector of tuples to tuple of vectors
-			auto trans_segment = Transpose(segment)();
+			auto trans_segment = movetk::utils::Transpose(segment)();
 			// Construct the trajectory
 			value_type traj{trans_segment};
 			return traj;

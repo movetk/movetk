@@ -67,13 +67,13 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests, "trajectory interpolat
 	int i = 1;
 	for (auto& [x, y] : true_xys) {
 		double lat1, lon1;
-		destination_exact(lat0, lon0, x, y, lat1, lon1);
+		movetk::geo::destination_exact(lat0, lon0, x, y, lat1, lon1);
 		data.push_back(ProbePoint{lat1, lon1, std::to_string(i)});
 		i++;
 	}
 	std::get<2>(data[1]) = "2";  // other fields of interpolated are taken from end point
 
-	DummyOffsetInterpolator_2<ProbePoint, 0, 1> interpolator;
+	movetk::algo::DummyOffsetInterpolator_2<ProbePoint, 0, 1> interpolator;
 	ProbePoint p = interpolator(data[0], data[2], 50);
 
 	REQUIRE(std::get<0>(p) == Approx(std::get<0>(data[1])).epsilon(0.0001));

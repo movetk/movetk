@@ -305,7 +305,7 @@ struct GeometryModule {
 		         [](Sphere &s, Polyline &p) -> Sphere {
 			         std::vector<NT> vec;
 			         using back_insert_iterator = movetk::utils::movetk_back_insert_iterator<decltype(vec)>;
-			         movetk::utils::MakeMinSphere<MovetkGeometryKernel> min_sphere;
+			         movetk::geom::MakeMinSphere<MovetkGeometryKernel> min_sphere;
 			         NT radius = min_sphere(p.cbegin(), p.cend(), back_insert_iterator(vec));
 			         Point center(std::begin(vec), std::end(vec));
 			         Sphere sphere(center, radius);

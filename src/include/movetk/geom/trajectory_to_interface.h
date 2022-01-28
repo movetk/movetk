@@ -64,7 +64,7 @@ OutputIterator to_projected_polyline(geom::MakePoint<GeometryTraits> &make_point
                                      LatIterator lat_beyond,
                                      LonIterator lon_start,
                                      OutputIterator polyline_first) {
-	LocalCoordinateReference<typename GeometryTraits::NT> ref(*lat_start, *lon_start);
+	movetk::geo::LocalCoordinateReference<typename GeometryTraits::NT> ref(*lat_start, *lon_start);
 	return to_projected_polyline(make_point, lat_start, lat_beyond, lon_start, polyline_first, ref);
 }
 
@@ -94,7 +94,7 @@ OutputIterator to_geocentered_polyline(geom::MakePoint<GeometryTraits> &make_poi
                                        OutputIterator polyline_first) {
 	const GeographicLib::Geocentric &earth = GeographicLib::Geocentric::WGS84();
 	while (lat_start != lat_beyond) {
-		*polyline_first++ = to_geocentric_coordinates(make_point, earth, *lat_start++, *lon_start++);
+		*polyline_first++ = movetk::geo::to_geocentric_coordinates(make_point, earth, *lat_start++, *lon_start++);
 	}
 	return polyline_first;
 }

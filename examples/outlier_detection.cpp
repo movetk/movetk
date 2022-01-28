@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
     std::string key = "-idx";
     string line;
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+    movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
     assert(tokens.size() == 3);
 
     std::vector<std::size_t> col_idx;
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
 
     std::cerr << "Threshold: " << threshold << "\n";
 
-    typedef movetk_kernel::ProbeTraits<MovetkGeometryKernel> CartesianProbeTraits;
+    typedef movetk::io::ProbeTraits<MovetkGeometryKernel> CartesianProbeTraits;
 
     typedef CartesianProbeTraits::ProbePoint Probe;
     typedef std::vector<CartesianProbeTraits::ProbePoint> Trajectory;
@@ -207,7 +207,7 @@ int main(int argc, char **argv) {
                 }
             }
             input.push_back(line);
-            movetk_support::split(line,
+            movetk::utils::split(line,
                                   movetk::utils::movetk_back_insert_iterator(tokens));
             x = std::stold(tokens[col_idx[0]]);
             y = std::stold(tokens[col_idx[1]]);
@@ -230,7 +230,7 @@ int main(int argc, char **argv) {
                 }
             }
             input.push_back(line);
-            movetk_support::split(line,
+            movetk::utils::split(line,
                                   movetk::utils::movetk_back_insert_iterator(tokens));
             x = std::stold(tokens[col_idx[0]]);
             y = std::stold(tokens[col_idx[1]]);

@@ -183,7 +183,7 @@ namespace movetk::algo {
                     NT log_likelihood = ll(*rit, *cit);
                     NT ic_extend = dp_table[i - 1][j];
                     NT ic_append =  *min_ic + ic.penalty_factor;
-                    dp_row[j] = min(ic_extend, ic_append) - 2 * log_likelihood;
+                    dp_row[j] = std::min(ic_extend, ic_append) - 2 * log_likelihood;
                     cit++;
                     j++;
                 }

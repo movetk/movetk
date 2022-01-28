@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
     std::string key = "-idx";
     string line;
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+    movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
     assert(tokens.size() == 3);
 
     std::vector<std::size_t> col_idx;
@@ -218,7 +218,7 @@ int main(int argc, char **argv) {
                     continue;
                 }
             }
-            movetk_support::split(line,
+            movetk::utils::split(line,
                                   movetk::utils::movetk_back_insert_iterator(tokens));
             lon = std::stold(tokens[col_idx[0]]);
             lat = std::stold(tokens[col_idx[1]]);
@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
                     continue;
                 }
             }
-            movetk_support::split(line,
+            movetk::utils::split(line,
                                   movetk::utils::movetk_back_insert_iterator(tokens));
             lon = std::stold(tokens[col_idx[0]]);
             lat = std::stold(tokens[col_idx[1]]);
@@ -253,7 +253,7 @@ int main(int argc, char **argv) {
 
     typedef movetk::algo::brownian_bridge::ParameterTraits<MovetkGeometryKernel, decltype(trajectory.begin())> ParameterTraits;
     typedef std::vector<typename ParameterTraits::Parameters>::const_iterator BridgeIterator;
-    typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
+    typedef movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
     std::vector<typename ParameterTraits::Parameters> bridges;
 
     typedef movetk::algo::brownian_bridge::Model<MovetkGeometryKernel, ProbeTraits,

@@ -38,8 +38,8 @@ using namespace GeographicLib;
 template<class NT, size_t dimensions>
 struct MyTraits {
     // type definitions required for algorithm
-    typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
-    typedef movetk::utils::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel; // the geometry traits
+    typedef movetk::geom::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
+    typedef movetk::geom::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel; // the geometry traits
     typedef typename MovetkGeometryKernel::MovetkPoint Point;
     typedef typename MovetkGeometryKernel::MovetkPolygon Polygon;
 };
@@ -77,10 +77,10 @@ void make_polygons(string &PolygonFile, OutputIterator iter) {
     cerr << "Reading in Polygons from: " << PolygonFile << endl;
     ifstream infile;
     typedef typename GeometryTraits::MovetkGeometryKernel::NT NT;
-    movetk_support::cast<NT> cast;
+    movetk::utils::cast<NT> cast;
     std::array<NT, 2> point;
     movetk::geom::MakePoint<typename GeometryTraits::MovetkGeometryKernel> make_point;
-    movetk::utils::MakePolygon<typename GeometryTraits::MovetkGeometryKernel> make_polygon;
+    movetk::geom::MakePolygon<typename GeometryTraits::MovetkGeometryKernel> make_polygon;
     std::vector<typename GeometryTraits::Point> points;
     vector<string> tokens;
     string PreviousId = "", CurrentId, line;
@@ -90,7 +90,7 @@ void make_polygons(string &PolygonFile, OutputIterator iter) {
     infile.open(PolygonFile);
 
     while (getline(infile, line)) {
-        movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+        movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
         assert(tokens.size() >= 3);
         CurrentId = tokens[id_idx];
         X = cast(tokens[X_idx]);
@@ -126,7 +126,7 @@ void build_index(TreeType &tree, string &CentroidsFile, size_t resolution) {
     cerr << "Building Indexes: " << endl;
     assert(resolution > 0);
     typedef typename GeometryTraits::MovetkGeometryKernel::NT NT;
-    movetk_support::cast<NT> cast;
+    movetk::utils::cast<NT> cast;
     size_t linecount = 0, id_idx = 0, lat_idx = 1, lon_idx = 2;
     vector<string> tokens;
     ifstream infile;
@@ -135,7 +135,7 @@ void build_index(TreeType &tree, string &CentroidsFile, size_t resolution) {
     infile.open(CentroidsFile);
     while (getline(infile, line)) {
         string geohash;
-        movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+        movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
         assert(tokens.size() >= 3);
         Lat = cast(tokens[lat_idx]);
         Lon = cast(tokens[lon_idx]);
@@ -224,7 +224,7 @@ bool parse_input(int argc, char **argv, string &PolygonsFile, string &CentroidsF
 template<class GeometryTraits, class Node>
 struct Probe {
     typedef typename GeometryTraits::MovetkGeometryKernel::NT NT;
-    movetk_support::cast<NT> cast;
+    movetk::utils::cast<NT> cast;
     std::array<NT, 2> point;
     size_t lat_idx = 1, lon_idx = 2, x_idx = 3, y_idx = 4;
     NT Lat, Lon;
@@ -234,7 +234,7 @@ struct Probe {
     movetk::geom::MakePoint<typename GeometryTraits::MovetkGeometryKernel> make_point;
 
     template<class InputIterator, class PolygonsIterator>
-    bool operator()(movetk_support::Tree<Node> &tree, size_t &resolution, InputIterator first,
+    bool operator()(movetk::ds::Tree<Node> &tree, size_t &resolution, InputIterator first,
                     PolygonsIterator pfirst, PolygonsIterator pbeyond) {
         Lat = cast(*(first + lat_idx));
         Lon = cast(*(first + lon_idx));
@@ -249,7 +249,7 @@ struct Probe {
         if (tree.get_match_size() == resolution) {
             PolygonsIterator it = pfirst;
             while (it != pbeyond) {
-                if (movetk_support::CGAL_Algorithms::point_in_polygon(P, *it)) {
+                if (movetk::geom::CGAL_Algorithms::point_in_polygon(P, *it)) {
                     MatchedPolygonId = PolygonId;
                     //std::cerr<<"Matched Polygon is: "<< MatchedPolygonId << std::endl;
                     return true;
@@ -283,10 +283,10 @@ int main(int argc, char **argv) {
         return 0;
 
     typedef MyTraits<long double, 2> GeometryTraits;
-    typedef movetk_support::TrieNode<const char, Values<string> > Node;
+    typedef movetk::ds::TrieNode<const char, Values<string> > Node;
 
 
-    movetk_support::Tree<Node> tree(std::make_unique<Node>('a'));
+    movetk::ds::Tree<Node> tree(std::make_unique<Node>('a'));
     std::vector<typename GeometryTraits::Polygon> polygons;
     std::vector<std::pair<std::string, size_t> > leaves;
     std::vector<string> tokens;
@@ -313,7 +313,7 @@ int main(int argc, char **argv) {
 
     while (getline(cin, line)) {
         //cerr<<line<<std::endl;
-        movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+        movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
         assert(tokens.size() >= 5);
         Probe<GeometryTraits, Node> probe;
         CurrentId = tokens[id_idx];

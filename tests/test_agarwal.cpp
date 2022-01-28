@@ -153,7 +153,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct", "[agarwal_
     // The norm to be used in weak Frechet distance computations.
     using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
     using NT = typename MovetkGeometryKernel::NT;
-    using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel, movetk_support::squared_distance_d<MovetkGeometryKernel, Norm>>;
+    using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel, movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>>;
     using SqDistance = movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>;
     movetk::algo::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
     simplifier.setTolerance(0.0001);

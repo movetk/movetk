@@ -547,8 +547,8 @@ public:
 
 		NT diff_this = (slopes[0] - slopes[1]) / (1 + (slopes[0] * slopes[1]));
 		NT diff_that = (slopes[2] - slopes[3]) / (1 + (slopes[2] * slopes[3]));
-		NT WedgeAngle_this = 2 * movetk::utils::rad2deg(diff_this);
-		NT WedgeAngle_that = 2 * movetk::utils::rad2deg(diff_that);
+		NT WedgeAngle_this = 2 * movetk::geom::rad2deg(diff_this);
+		NT WedgeAngle_that = 2 * movetk::geom::rad2deg(diff_that);
 
 		if ((*start + *(start + 1) == sum) || (*(end - 1) + *(end - 2) == sum)) {
 			if ((abs(WedgeAngle_this) < 90) || (abs(WedgeAngle_that) < 90))

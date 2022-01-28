@@ -21,28 +21,25 @@
 // Created by Mitra, Aniket on 2019-02-19.
 //
 
-#include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/metric/DistanceInterface.h"
+#include "movetk/utils/GeometryBackendTraits.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 #if CGAL_BACKEND_ENABLED
-    std::cerr << "Using CGAL Backend for Geometry\n";
+	std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr << "Using Boost Backend for Geometry\n";
+	std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
-    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
-    GeometryKernel::MovetkGeometryKernel::MovetkPoint pt1 = make_point({3, 3});
+	movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+	auto pt1 = make_point({3, 3});
 
-    GeometryKernel::MovetkGeometryKernel::MovetkPoint pt2 = make_point({3, 1});
-    GeometryKernel::MovetkGeometryKernel::MovetkPoint pt3 = make_point({5, 3});
-    movetk::utils::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
-    GeometryKernel::MovetkGeometryKernel::MovetkSegment seg = make_segment(pt2, pt3);
+	auto pt2 = make_point({3, 1});
+	auto pt3 = make_point({5, 3});
+	movetk::geom::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
+	auto seg = make_segment(pt2, pt3);
 
-    movetk::utils::ComputeSquaredDistance<GeometryKernel::MovetkGeometryKernel,
-                                        GeometryKernel::Norm>
-        squared_dist;
-    std::cout << "Squared Distance from Point to Segment: " << squared_dist(pt1, seg) << std::endl;
-    return 0;
+	movetk::metric::ComputeSquaredDistance<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm> squared_dist;
+	std::cout << "Squared Distance from Point to Segment: " << squared_dist(pt1, seg) << std::endl;
+	return 0;
 }

@@ -150,9 +150,9 @@ public:
 			movetk::utils::get_time_diffs(timeBegin, timeEnd, movetk::utils::movetk_back_insert_iterator(timeDiffs), true);
 
 			movetk::utils::get_speeds<GeometryKernel>(timeDiffs.begin(),
-			                                        timeDiffs.end(),
-			                                        distances.begin(),
-			                                        movetk::utils::movetk_back_insert_iterator(speeds));
+			                                          timeDiffs.end(),
+			                                          distances.begin(),
+			                                          movetk::utils::movetk_back_insert_iterator(speeds));
 		}
 
 		// Calculate the statistics
@@ -233,20 +233,24 @@ public:
 	template <typename InputIterator, typename = movetk::utils::requires_random_access_iterator<InputIterator>>
 	Difference_t<typename InputIterator::value_type>
 	operator()(InputIterator begin, InputIterator end, Difference_t<typename InputIterator::value_type> threshold) const {
+		// No differences to compute
+		if (begin == end) {
+			return 0;
+		}
+
 		using Difference = Difference_t<typename InputIterator::value_type>;
 		std::vector<Difference> differences;
 		differences.reserve(std::distance(begin, end) - 1);
 
-		if (begin == end)
-			return 0;
 
 		auto current = begin;
 		// Determine all time intervals
 		for (; std::next(current) != end; ++current) {
 			differences.push_back(*std::next(current) - *current);
 		}
-		if (differences.size() == 1)
+		if (differences.size() == 1) {
 			return differences[0];
+		}
 
 		// Sort the intervals
 		std::sort(differences.begin(), differences.end());

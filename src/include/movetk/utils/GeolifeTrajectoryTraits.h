@@ -42,8 +42,8 @@ namespace geolife {
 			typedef geolife::c2d::raw::ProbeTraits ProbeTraits;
 			constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::TRAJID;
 			constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::DATETIME;
-			using tabular_trajectory_type = TabularTrajectory<double, double, double, std::time_t, std::string, std::string>;
-			using TabularTrajectoryTraits = _TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, tabular_trajectory_type>;
+			using tabular_trajectory_type = movetk::ds::TabularTrajectory<double, double, double, std::time_t, std::string, std::string>;
+			using TabularTrajectoryTraits = movetk::io::_TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, tabular_trajectory_type>;
 		}  // namespace raw
 	}  // namespace c2d
 }  // namespace here

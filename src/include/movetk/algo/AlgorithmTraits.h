@@ -88,7 +88,7 @@ namespace movetk::algo {
      * @tparam _ProbeTraits - This class is a collection of types
      * required to define a Probe. For example @refitem _ProbeTraits
      * @tparam _GeometryTraits - This class is a collection of movetk
-     * geometry types. For example @refitem movetk::utils::MovetkGeometryKernel
+     * geometry types. For example @refitem movetk::geom::MovetkGeometryKernel
      * @tparam _Norm - The type that models Euclidean distance
      * For example @refitem movetk_support::FiniteNorm
      * @tparam _ContainerTraits - This class models the data structure used
@@ -140,7 +140,7 @@ namespace movetk::algo {
          * @brief This traits class serves as a collection of types
          * for parameterization of BBMM
          * @tparam _GeometryTraits -  This class is a collection of movetk
-         *  geometry types. For example @refitem movetk::utils::MovetkGeometryKernel
+         *  geometry types. For example @refitem movetk::geom::MovetkGeometryKernel
          * @tparam TrajectoryIterator - An iterator type.
          * For example @refitem TabularTrajectory::TrajectoryIterator
          */
@@ -151,18 +151,18 @@ namespace movetk::algo {
         /*!*
          * @typedef ::NT
          * @brief typedef  of the number type defined in GeometryTraits.
-         * For example @refitem  movetk::utils::MovetkGeometryKernel::NT
+         * For example @refitem  movetk::geom::MovetkGeometryKernel::NT
          * */
         typedef typename GeometryTraits::NT NT;
         /*!*
          * @typedef ::Point
          * @brief typedef of the point type defined in GeometryTraits.
-         * For example @refitem movetk::utils::MovetkGeometryKernel::MovetkPoint
+         * For example @refitem movetk::geom::MovetkGeometryKernel::MovetkPoint
          *  */
         typedef typename GeometryTraits::MovetkPoint Point;
         /*!* @typedef ::Vector
          * @brief typedef of the vector type defined in GeometryTraits.
-         * For example @refitem  movetk::utils::MovetkGeometryKernel::MovetkVector
+         * For example @refitem  movetk::geom::MovetkGeometryKernel::MovetkVector
          * */
         typedef typename GeometryTraits::MovetkVector Vector;
         /*!* @typedef ::Parameters

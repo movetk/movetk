@@ -348,7 +348,7 @@ namespace movetk::algo {
             // Index within the polyline of the first point that we are searching with
             std::size_t startPointIndex = 0;
             // Setup Frechet distance
-            movetk_support::StrongFrechet<GeometryTraits, SqDistanceFunc> sfd;
+            movetk::metric::StrongFrechet<GeometryTraits, SqDistanceFunc> sfd;
             sfd.setTolerance(m_tolerance);
 
             // The segment to check with

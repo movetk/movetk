@@ -32,12 +32,12 @@ int main(int argc, char **argv){
 #endif
 
     movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
-    GeometryKernel::MovetkGeometryKernel::MovetkPoint pt1 = make_point({1, 1});
-    GeometryKernel::MovetkGeometryKernel::MovetkPoint pt2 = make_point({2, 2});
-    movetk::utils::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
-    GeometryKernel::MovetkGeometryKernel::MovetkSegment seg = make_segment(pt1, pt2);
+    auto pt1 = make_point({1, 1});
+    auto pt2 = make_point({2, 2});
+    movetk::geom::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
+    auto seg = make_segment(pt1, pt2);
 
-    movetk::utils::ComputeLength<GeometryKernel::MovetkGeometryKernel> compute_length;
+    movetk::geom::ComputeLength<GeometryKernel::MovetkGeometryKernel> compute_length;
     std::cout<<"Length of the Segment: "<<compute_length(seg)<<std::endl;
     return 0;
 }

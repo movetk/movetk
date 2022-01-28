@@ -25,6 +25,7 @@
 #define MOVETK_POLYLINEUTILS_H
 
 #include <numeric>
+
 #include "movetk/geo/geo.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/utils/Iterators.h"
@@ -38,24 +39,27 @@ namespace movetk::algo {
  *                       Requires Points to be CoordinateIterable.
  * @return length in meters
  */
-    template<class PointIterator>
-    double polyline_length_m(PointIterator start, PointIterator beyond) {
-        using point_type = typename std::iterator_traits<PointIterator>::value_type;
-        std::function<double(point_type &, point_type &)> distancefn = (double (*)(point_type &,
-                                                                                   point_type &)) &euclidean_distance<point_type>;
-        return std::inner_product(start, beyond - 1, start + 1, 0.0, std::plus<>(), distancefn);
-    }
+template <class PointIterator>
+double polyline_length_m(PointIterator start, PointIterator beyond) {
+	using point_type = typename std::iterator_traits<PointIterator>::value_type;
+	std::function<double(point_type &, point_type &)> distancefn =
+	    (double (*)(point_type &, point_type &)) & movetk::geo::euclidean_distance<point_type>;
+	return std::inner_product(start, beyond - 1, start + 1, 0.0, std::plus<>(), distancefn);
+}
 
 
-    template<class GeometryTraits, class LatIterator, class LonIterator>
-    double geopolyline_length_m(LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start) {
-        using MovetkPoint = typename GeometryTraits::MovetkPoint;
-        movetk::geom::MakePoint<GeometryTraits> make_point;
-        std::vector<MovetkPoint> xyzs;
-        movetk::to_geocentered_polyline(make_point, lat_start, lat_beyond, lon_start,
-                                        movetk::utils::movetk_back_insert_iterator(xyzs));
-        return polyline_length_m(std::begin(xyzs), std::end(xyzs));
-    }
+template <class GeometryTraits, class LatIterator, class LonIterator>
+double geopolyline_length_m(LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start) {
+	using MovetkPoint = typename GeometryTraits::MovetkPoint;
+	movetk::geom::MakePoint<GeometryTraits> make_point;
+	std::vector<MovetkPoint> xyzs;
+	movetk::to_geocentered_polyline(make_point,
+	                                lat_start,
+	                                lat_beyond,
+	                                lon_start,
+	                                movetk::utils::movetk_back_insert_iterator(xyzs));
+	return polyline_length_m(std::begin(xyzs), std::end(xyzs));
+}
 
 /**
  * Calculates the lengths between consecutive points.
@@ -65,57 +69,58 @@ namespace movetk::algo {
  * @param beyond
  * @return
  */
-    template<class PointIterator>
-    std::vector<double> polyline_lengths_m(PointIterator start, PointIterator beyond) {
-        using point_type = typename std::iterator_traits<PointIterator>::value_type;
-        std::function<double(point_type &, point_type &)> distancefn = (double (*)(point_type &,
-                                                                                   point_type &)) &euclidean_distance<point_type>;
-        std::vector<double> lengths;
-        std::transform(start, beyond - 1, start + 1, std::back_inserter(lengths), distancefn);
-        return lengths;
-    }
+template <class PointIterator>
+std::vector<double> polyline_lengths_m(PointIterator start, PointIterator beyond) {
+	using point_type = typename std::iterator_traits<PointIterator>::value_type;
+	std::function<double(point_type &, point_type &)> distancefn =
+	    (double (*)(point_type &, point_type &)) & movetk::geo::euclidean_distance<point_type>;
+	std::vector<double> lengths;
+	std::transform(start, beyond - 1, start + 1, std::back_inserter(lengths), distancefn);
+	return lengths;
+}
 
-    template<class GeometryTraits, class LatIterator, class LonIterator>
-    std::vector<double>
-    geopolyline_offsets_m(LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start) {
-        using MovetkPoint = typename GeometryTraits::MovetkPoint;
-        movetk::geom::MakePoint<GeometryTraits> make_point;
-        std::vector<MovetkPoint> xyzs;
-        movetk::to_geocentered_polyline(make_point, lat_start, lat_beyond, lon_start,
-                                        movetk::utils::movetk_back_insert_iterator(xyzs));
+template <class GeometryTraits, class LatIterator, class LonIterator>
+std::vector<double> geopolyline_offsets_m(LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start) {
+	using MovetkPoint = typename GeometryTraits::MovetkPoint;
+	movetk::geom::MakePoint<GeometryTraits> make_point;
+	std::vector<MovetkPoint> xyzs;
+	movetk::geom::to_geocentered_polyline(make_point,
+	                                lat_start,
+	                                lat_beyond,
+	                                lon_start,
+	                                movetk::utils::movetk_back_insert_iterator(xyzs));
 
-        auto lengths = polyline_lengths_m(std::begin(xyzs), std::end(xyzs));
-        std::vector<double> offsets;
-        offsets.reserve(1 + lengths.size());
-        offsets.push_back(0); // add origin offset as well
-        std::partial_sum(std::begin(lengths), std::end(lengths), std::back_inserter(offsets));
-        return offsets;
-    }
+	auto lengths = polyline_lengths_m(std::begin(xyzs), std::end(xyzs));
+	std::vector<double> offsets;
+	offsets.reserve(1 + lengths.size());
+	offsets.push_back(0);  // add origin offset as well
+	std::partial_sum(std::begin(lengths), std::end(lengths), std::back_inserter(offsets));
+	return offsets;
+}
 
-    template<class GeometryTraits>
-    struct is_monotone {
-        template<class InputIterator, class OutputIterator>
-        void operator()(InputIterator first, InputIterator beyond,
-                        OutputIterator result) {
-            InputIterator cit = first + 2;
-            *result = true;
-            while (cit != beyond) {
-                typename GeometryTraits::MovetkVector u = *(cit - 1) - *(cit - 2);
-                typename GeometryTraits::MovetkVector v = *cit - *(cit - 1);
-                typename GeometryTraits::NT uv = u * v;
-                if (uv < 0) {
-                    *result = false;
-                } else {
-                    *result = true;
-                }
-                cit++;
-            }
-        }
-    };
+template <class GeometryTraits>
+struct is_monotone {
+	template <class InputIterator, class OutputIterator>
+	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
+		InputIterator cit = first + 2;
+		*result = true;
+		while (cit != beyond) {
+			typename GeometryTraits::MovetkVector u = *(cit - 1) - *(cit - 2);
+			typename GeometryTraits::MovetkVector v = *cit - *(cit - 1);
+			typename GeometryTraits::NT uv = u * v;
+			if (uv < 0) {
+				*result = false;
+			} else {
+				*result = true;
+			}
+			cit++;
+		}
+	}
+};
 
-    /*template<class GeometryTraits, std::size_t>
-    struct sort_by_X*/
+/*template<class GeometryTraits, std::size_t>
+struct sort_by_X*/
 
-} // /namespace
+}  // namespace movetk::algo
 
-#endif //MOVETK_POLYLINEUTILS_H
+#endif  // MOVETK_POLYLINEUTILS_H

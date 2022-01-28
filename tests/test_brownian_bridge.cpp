@@ -135,7 +135,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	ProbePoint p3 = {51.444081916, 5.480219126, 1003};
 
 	std::vector<ProbePoint> data = {p1, p2, p3};
-	TabularTrajectory<long double, long double, std::size_t> t{data};
+	movetk::ds::TabularTrajectory<long double, long double, std::size_t> t{data};
 
 	using Ts = TrajectoryTs<long double, long double, std::size_t>;
 
@@ -149,12 +149,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 
 	NT upper_bound = 0;
 	NT squared_length = 0;
-	std::cout << "Parameters: \n";
 	for (auto bridge : bridges) {
-		std::cout << std::get<Ts::ParameterColumns::POINT>(bridge);
-		std::cout << ";";
-		std::cout << std::get<Ts::ParameterColumns::MU>(bridge);
-		std::cout << "\n";
 		auto v = std::get<Ts::ParameterColumns::POINT>(bridge) - std::get<Ts::ParameterColumns::MU>(bridge);
 		auto l = norm(v);
 		squared_length += l;
@@ -165,7 +160,6 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	movetk::algo::brownian_bridge::
 	    MLE<MovetkGeometryKernel, Ts::ParameterTraits, Norm, Ts::BridgeIterator, MAX_ITERATIONS>
 	        mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
-	std::cout << "Maximum Likelihood Estimate: " << mle() << "\n";
 	REQUIRE(std::abs(mle() - 2.416917) < MOVETK_EPS);
 }
 

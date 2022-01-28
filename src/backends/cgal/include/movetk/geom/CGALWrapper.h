@@ -125,7 +125,7 @@ namespace movetk::geom {
     template<class Kernel>
     struct OutputRep<true, Kernel, typename Kernel::Wrapper_Point> {
         std::ostream& operator()(std::ostream &out, const typename Kernel::Wrapper_Point &pt) {
-            return (out << movetk_support::join(pt.begin(), pt.end()));
+            return (out << movetk::utils::join(pt.begin(), pt.end()));
         }
     };
 
@@ -139,7 +139,7 @@ namespace movetk::geom {
     template<class Kernel>
     struct OutputRep<true, Kernel, typename Kernel::Wrapper_Vector>{
         std::ostream& operator()(std::ostream &out, const typename Kernel::Wrapper_Vector &v) {
-            return (out << movetk_support::join(v.begin(), v.end()));
+            return (out << movetk::utils::join(v.begin(), v.end()));
         }
     };
 
@@ -154,7 +154,7 @@ namespace movetk::geom {
     struct OutputRep<true, Kernel, typename Kernel::Wrapper_Sphere> {
         std::ostream& operator()(std::ostream &out, const typename Kernel::Wrapper_Sphere &s) {
             typename Kernel::Wrapper_Point center = s.center();
-            out << movetk_support::join(center.begin(), center.end()) + ";";
+            out << movetk::utils::join(center.begin(), center.end()) + ";";
             out << s.squared_radius();
             return out;
         }
@@ -178,11 +178,11 @@ namespace movetk::geom {
             auto it = poly.get().vertices_begin();
             auto beyond = poly.get().vertices_end();
             //out << "Number of vertices: " << std::distance(it, beyond) << "\n";
-            std::string mergedTokens = movetk_support::join(it->cartesian_begin(), it->cartesian_end(), ';');
+            std::string mergedTokens = movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
             it++;
             while (it != beyond) {
                 mergedTokens += ',';
-                mergedTokens += movetk_support::join(it->cartesian_begin(), it->cartesian_end(), ';');
+                mergedTokens += movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
                 it++;
             }
             out << mergedTokens;

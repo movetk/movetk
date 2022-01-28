@@ -69,23 +69,23 @@ int main(int argc, char **argv)
     using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 
     // Create trajectory reader
-    std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
+    std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
     if (argc < 2)
     {
         // Use built-in test data if a file is not specified
-        probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
+        probe_reader = movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_raw_csv);
     }
     else
     {
         // Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
-        probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
+        probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
     using ProbeInputIterator = decltype(probe_reader->begin());
 
     constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
-    SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
+    movetk::io::SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
     using SortedProbeInputIterator = decltype(sorted_probe_reader.begin());
-    auto trajectory_reader = TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
+    auto trajectory_reader = movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
                                                                                           sorted_probe_reader.end());
 
     auto t_start = std::chrono::high_resolution_clock::now();
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
     std::ofstream ofcsv("output_trajectories_speed.csv");
 
     // Write the header
-    print_tuple(ofcsv, probe_reader->columns());
+    movetk::io::print_tuple(ofcsv, probe_reader->columns());
     ofcsv << ",RAW_TRAJID,SPEED_SEG_ID\n";
 
     // Write time-sorted trajectories and segment them using diff criteria
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
     //TSL::MakePoint<SegmentationTraits::Geometry_Kernel > make_point;
     //std::array<NT, 2> pt;
 
-    typedef movetk_support::StartStopDiagram<SsdType::compressed,
+    typedef movetk::ds::StartStopDiagram<movetk::ds::SsdType::compressed,
                                              typename GeometryKernel::MovetkGeometryKernel,
                                              std::vector<size_t>>
         SSD;

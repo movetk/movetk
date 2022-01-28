@@ -276,7 +276,7 @@ public:
 
 template <class Kernel>
 std::ostream &operator<<(std::ostream &out, const Wrapper_Boost_Vector<Kernel> &vec) {
-	return (out << movetk_support::join(vec.begin(), vec.end()));
+	return (out << movetk::utils::join(vec.begin(), vec.end()));
 }
 
 template <class Kernel>
@@ -456,7 +456,7 @@ public:
 template <class Kernel>
 std::ostream &operator<<(std::ostream &out, const Wrapper_Boost_Sphere<Kernel> &sphere) {
 	Wrapper_Boost_Point<Kernel> center = sphere.center();
-	out << movetk_support::join(center.begin(), center.end()) + ";";
+	out << movetk::utils::join(center.begin(), center.end()) + ";";
 	out << sphere.squared_radius();
 	return out;
 }
