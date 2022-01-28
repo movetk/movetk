@@ -61,7 +61,7 @@ namespace PyMoveTk
             {
                 std::vector<std::decay_t<decltype(polyline.cbegin())>> result;
                 // Apply algorithm
-                using SqDistance = movetk_support::squared_distance_d<MovetkKernel, Norm>;
+                using SqDistance = movetk::metric::squared_distance_d<MovetkKernel, Norm>;
                 movetk::algo::Agarwal<MovetkKernel,SqDistance> agarwal(epsilon);
                 agarwal(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
                 // Reconstruct output and return

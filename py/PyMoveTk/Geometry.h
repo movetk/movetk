@@ -44,7 +44,7 @@ struct GeometryModule {
 	using Polygon = typename MovetkGeometryKernel::MovetkPolygon;
 	using Sphere = typename MovetkGeometryKernel::MovetkSphere;
 	using Polyline = detail::Polyline<Point>;
-	using Wedge = typename movetk::utils::Wedge<MovetkGeometryKernel, Norm>;
+	using Wedge = typename movetk::geom::Wedge<MovetkGeometryKernel, Norm>;
 	using CoordinateIterator = movetk::utils::movetk_basic_iterator<const NT>;
 
 	static void register_point(pybind11::module &mod) {
@@ -114,12 +114,12 @@ struct GeometryModule {
 		     */
 		    .def("length",
 		         [](const Segment &m) -> NT {
-			         movetk::utils::ComputeLength<MovetkGeometryKernel> compute_length;
+			         movetk::geom::ComputeLength<MovetkGeometryKernel> compute_length;
 			         return compute_length(m);
 		         })
 		    .def("distance",
 		         [](Segment &m, Point &p) {
-			         movetk::utils::ComputeSquaredDistance<MovetkGeometryKernel, typename MovetkGeometryKernel::Norm>
+			         movetk::metric::ComputeSquaredDistance<MovetkGeometryKernel, typename MovetkGeometryKernel::Norm>
 			             squared_dist;
 			         NT dist = squared_dist(p, m);
 			         return std::sqrt(dist);
@@ -314,7 +314,7 @@ struct GeometryModule {
 		         })
 		    .def("intersection",
 		         [](Sphere &sp, Segment &seg) {
-			         movetk::utils::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
+			         movetk::geom::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
 			             compute_sphere_segment_intersections;
 			         std::vector<typename MovetkGeometryKernel::SphSegIntersectionTraits::value_type>
 			             sphere_segment_intersections;
@@ -325,7 +325,7 @@ struct GeometryModule {
 			         return sphere_segment_intersections;
 		         })
 		    .def("intersection", [](Sphere &sp1, Sphere &sp2) -> Sphere {
-			    movetk::utils::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
+			    movetk::geom::ComputeIntersections<typename MovetkGeometryKernel::SphSegIntersectionTraits>
 			        compute_sphere_segment_intersections;
 			    typename MovetkGeometryKernel::MovetkSphere sp = compute_sphere_segment_intersections(sp1, sp2);
 			    return sp;
