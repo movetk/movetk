@@ -44,8 +44,8 @@ template <class GeometryTraits,
           class LonIterator,
           class OutputIterator,
           class LocalCoordRef,
-          typename = movetk_core::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
-OutputIterator to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
+          typename = utils::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
+OutputIterator to_projected_polyline(geom::MakePoint<GeometryTraits> &make_point,
                                      LatIterator lat_start,
                                      LatIterator lat_beyond,
                                      LonIterator lon_start,
@@ -59,7 +59,7 @@ OutputIterator to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &mak
 }
 
 template <class GeometryTraits, class LatIterator, class LonIterator, class OutputIterator>
-OutputIterator to_projected_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
+OutputIterator to_projected_polyline(geom::MakePoint<GeometryTraits> &make_point,
                                      LatIterator lat_start,
                                      LatIterator lat_beyond,
                                      LonIterator lon_start,
@@ -86,8 +86,8 @@ template <class GeometryTraits,
           class LatIterator,
           class LonIterator,
           class OutputIterator,
-          typename = movetk_core::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
-OutputIterator to_geocentered_polyline(movetk_core::MakePoint<GeometryTraits> &make_point,
+          typename = utils::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
+OutputIterator to_geocentered_polyline(geom::MakePoint<GeometryTraits> &make_point,
                                        LatIterator lat_start,
                                        LatIterator lat_beyond,
                                        LonIterator lon_start,

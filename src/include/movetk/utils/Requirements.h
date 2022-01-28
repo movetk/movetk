@@ -222,7 +222,7 @@ using requires_tuple_element_as_NT = typename requires_NT<Traits, std::tuple_ele
 
 
 /*template<class T1, class T2 = void>
-using requires_stack  = typename std::enable_if<movetk_core::is_stack<T1, T2>::value, T2>::type;*/
+using requires_stack  = typename std::enable_if<movetk::utils::is_stack<T1, T2>::value, T2>::type;*/
 
 };      // namespace movetk::utils
 #endif  // MOVETK_REQUIREMENTS_H

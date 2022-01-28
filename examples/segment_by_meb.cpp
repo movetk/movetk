@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     ofcsv << ",RAW_TRAJID,MEB_SEG_ID\n";
 
     // Write time-sorted trajectories and segment them using Monotone MEB Criteria
-    typedef movetk_algorithms::SegmentationTraits<long double,
+    typedef movetk::algo::SegmentationTraits<long double,
                                                   typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
         SegmentationTraits;
     typedef GeometryKernel::MovetkGeometryKernel::NT NT;
@@ -113,20 +113,20 @@ int main(int argc, char **argv)
         BOOST_LOG_TRIVIAL(trace) << "New trajectory: \n";
 
         PolyLine polyline;
-        movetk_core::MakePoint<typename GeometryKernel::MovetkGeometryKernel> make_point;
+        movetk::geom::MakePoint<typename GeometryKernel::MovetkGeometryKernel> make_point;
         // Alternatively use movetk::to_geocentered_polyline() (requires dimension = 3)
         // Project to local coordinates (requires dimension = 2)
         movetk::to_projected_polyline(make_point,
                                       trajectory.begin<ProbeTraits::ProbeColumns::LAT>(),
                                       trajectory.end<ProbeTraits::ProbeColumns::LAT>(),
                                       trajectory.begin<ProbeTraits::ProbeColumns::LON>(),
-                                      movetk_core::movetk_back_insert_iterator(polyline));
+                                      movetk::utils::movetk_back_insert_iterator(polyline));
 
         SegmentIdx segIdx;
-        segment_by_meb(std::cbegin(polyline), std::cend(polyline), movetk_core::movetk_back_insert_iterator(segIdx));
+        segment_by_meb(std::cbegin(polyline), std::cend(polyline), movetk::utils::movetk_back_insert_iterator(segIdx));
         BOOST_LOG_TRIVIAL(trace) << "Number of Segments: " << segIdx.size();
 
-        movetk_core::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
+        movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
 
         std::vector<std::size_t> segment_id_col;
         for (auto plit = std::begin(polyline); plit != std::end(polyline); ++plit)

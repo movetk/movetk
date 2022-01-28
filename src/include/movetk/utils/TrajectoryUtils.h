@@ -151,10 +151,10 @@ InputIterator min_non_zero_element(InputIterator first, InputIterator beyond) {
 template <class InputIterator,
           class OutputIterator,
           typename = requires_random_access_iterator<InputIterator>,
-          /* typename = movetk_core::requires_date_t<
+          /* typename = movetk::utils::requires_date_t<
            typename InputIterator::value_type>,*/
           typename = requires_output_iterator<OutputIterator>
-          /*typename = movetk_core::requires_size_t<
+          /*typename = movetk::utils::requires_size_t<
           typename OutputIterator::value_type> */
           >
 void get_time_diffs(InputIterator first, InputIterator beyond, OutputIterator iter, bool without_leading_zero = false) {
@@ -241,7 +241,7 @@ template <class GeometryKernel,
           typename = requires_random_access_iterator<TDiffIterator>,
           typename = requires_random_access_iterator<DistanceIterator>,
           typename = requires_output_iterator<OutputIterator>,
-          /*typename = movetk_core::requires_size_t<
+          /*typename = movetk::utils::requires_size_t<
           typename TDiffIterator::value_type>,*/
           typename = requires_NT<GeometryKernel, typename DistanceIterator::value_type>,
           typename = requires_NT<GeometryKernel, typename OutputIterator::value_type>>
@@ -312,7 +312,7 @@ void get_headings(InputIterator first, InputIterator beyond, PointsIterator pfir
 	// formula from: https://www.movable-type.co.uk/scripts/latlong.html
 	// TODO use default implementation of Geographiclib
 	typedef typename GeometryKernel::NT NT;
-	movetk_core::ComputeLength<GeometryKernel> distance;
+	movetk::utils::ComputeLength<GeometryKernel> distance;
 	InputIterator pit = first;
 	InputIterator cit = first + 1;
 	PointsIterator p_pit = pfirst;
@@ -384,7 +384,7 @@ void get_velocities(MagnitudeIterator Mfirst,
 	MagnitudeIterator mit = Mfirst;
 	DirectionIterator dit = DFirst;
 	std::array<typename GeometryKernel::NT, 2> PointContainer;
-	movetk_core::MakePoint<GeometryKernel> make_point;
+	movetk::geom::MakePoint<GeometryKernel> make_point;
 	while (mit != Mbeyond) {
 		PointContainer[0] = (*mit) * cos(deg2radians(*dit));
 		PointContainer[1] = (*mit) * sin(deg2radians(*dit));
@@ -398,11 +398,11 @@ void get_velocities(MagnitudeIterator Mfirst,
 template <class GeometryTraits>
 typename GeometryTraits::MovetkVector get_velocity(typename GeometryTraits::NT speed,
                                                    typename GeometryTraits::NT heading) {
-	movetk_core::MakePoint<GeometryTraits> make_point;
+	movetk::geom::MakePoint<GeometryTraits> make_point;
 	typename GeometryTraits::MovetkPoint ORIGIN = make_point({0, 0});
 	std::array<typename GeometryTraits::NT, 2> point_container;
-	point_container[0] = speed * cos(movetk_core::deg2radians(heading));
-	point_container[1] = speed * sin(movetk_core::deg2radians(heading));
+	point_container[0] = speed * cos(movetk::utils::deg2radians(heading));
+	point_container[1] = speed * sin(movetk::utils::deg2radians(heading));
 	return make_point(std::cbegin(point_container), std::cend(point_container)) - ORIGIN;
 }
 
@@ -441,7 +441,7 @@ auto point_iterators_from_coordinates(
 	using tuple_t = typename detail::TransferTypes<tuple_t_std, boost::tuple>::type;
 
 	std::function<typename GeometryKernel::MovetkPoint(const tuple_t&)> toPoint = [](const tuple_t& coordinateTuple) {
-		movetk_core::MakePoint<GeometryKernel> makePoint;
+		movetk::geom::MakePoint<GeometryKernel> makePoint;
 		return makePoint({coordinateTuple.template get<Is>()...});
 	};
 	auto begin =
@@ -474,7 +474,7 @@ auto point_iterators_from_coordinates(
  *
  * @tparam PolyLineIdxIterator
  */
-template <class PolyLineIdxIterator, typename = movetk_core::requires_random_access_iterator<PolyLineIdxIterator>>
+template <class PolyLineIdxIterator, typename = movetk::utils::requires_random_access_iterator<PolyLineIdxIterator>>
 class SegmentIdGenerator {
 private:
 	size_t SegmentId = 0;
@@ -500,8 +500,8 @@ public:
 	 * @return
 	 */
 	template <class PolyLineIteratorType,
-	          typename = movetk_core::requires_random_access_iterator<PolyLineIdxIterator>,
-	          typename = movetk_core::requires_equality<typename PolyLineIteratorType::value_type,
+	          typename = movetk::utils::requires_random_access_iterator<PolyLineIdxIterator>,
+	          typename = movetk::utils::requires_equality<typename PolyLineIteratorType::value_type,
 	                                                    typename PolyLineIdxIterator::value_type::value_type>>
 	size_t getSegmentID(PolyLineIteratorType iter) {
 		if (it == __beyond) {
@@ -537,10 +537,10 @@ public:
 // by Mees van de Kerkhof
 template <class GeometryKernel,
           class InputIterator,
-          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-          typename = movetk_core::requires_pair<typename InputIterator::value_type>,
-          typename = movetk_core::requires_NT<GeometryKernel, typename InputIterator::value_type::first_type>,
-          typename = movetk_core::requires_NT<GeometryKernel, typename InputIterator::value_type::second_type>>
+          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+          typename = movetk::utils::requires_pair<typename InputIterator::value_type>,
+          typename = movetk::utils::requires_NT<GeometryKernel, typename InputIterator::value_type::first_type>,
+          typename = movetk::utils::requires_NT<GeometryKernel, typename InputIterator::value_type::second_type>>
 InputIterator merge_intervals(InputIterator first, InputIterator beyond, bool sorted = false) {
 	if (!sorted) {
 		// Sort in descending order, lexicographically.

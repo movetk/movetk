@@ -183,10 +183,10 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 	using Attributes = typename IntersectionTraits::Attributes;
 
 	std::size_t cell_idx = 1;
-	auto eit = movetk_core::movetk_grid_iterator<ExpectedFsd>(expected);
-	auto eit_end = movetk_core::movetk_grid_iterator<ExpectedFsd>(expected, true);
+	auto eit = movetk::utils::movetk_grid_iterator<ExpectedFsd>(expected);
+	auto eit_end = movetk::utils::movetk_grid_iterator<ExpectedFsd>(expected, true);
 	auto it = expected.begin();
-	auto evit = movetk_core::movetk_grid_iterator<ExpectedVertices>(expected_free_vertices);
+	auto evit = movetk::utils::movetk_grid_iterator<ExpectedVertices>(expected_free_vertices);
 	std::cout << "CellId, EdgeID, Intersection_Ratio, Enclosed, Intersects\n";
 	for (auto cell : fsd) {
 		std::size_t num_intersections = 0;
@@ -227,13 +227,13 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space diagram 2", "[free_space_diagram_2]") {
 	typedef typename MovetkGeometryKernel::NT NT;
 	typedef typename MovetkGeometryKernel::MovetkPoint MovetkPoint;
-	typedef movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_segment_intersection_tag>
+	typedef movetk::utils::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::utils::sphere_segment_intersection_tag>
 	    IntersectionTraits;
 	typedef movetk_support::FreeSpaceCellTraits<IntersectionTraits> FreeSpaceCellTraits;
 	typedef movetk_support::FreeSpaceCell<FreeSpaceCellTraits> FreeSpaceCell;
 	typedef movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;
 	typedef movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits> FreeSpaceDiagram;
-	movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	typedef std::vector<IntersectionTraits::value_type> ExpectedIntersections;
 	typedef std::vector<ExpectedIntersections> ExpectedFsd;
 	using edge_orientation = FreeSpaceCellTraits::edge_orientation;
@@ -346,9 +346,9 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 	FreeSpaceDiagram fsd(std::begin(polyline_a), std::end(polyline_a), std::begin(polyline_b), std::end(polyline_b), 1);
 
 	std::size_t cell_idx = 1;
-	auto eit = movetk_core::movetk_grid_iterator<ExpectedFsd>(expected);
+	auto eit = movetk::utils::movetk_grid_iterator<ExpectedFsd>(expected);
 	auto it = expected.begin();
-	auto evit = movetk_core::movetk_grid_iterator<ExpectedVertices>(expected_free_vertices);
+	auto evit = movetk::utils::movetk_grid_iterator<ExpectedVertices>(expected_free_vertices);
 	// std::cout << "CellId, EdgeID, Intersection_Ratio, Enclosed, Intersects\n";
 	// for (auto cell : fsd) {
 	//	std::size_t num_intersections = 0;

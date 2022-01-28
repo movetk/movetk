@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     std::vector<typename GeometryKernel::MovetkGeometryKernel::NT> CenterMinSphere;
     //===================================
     // Create a  Movetk min sphere and print it's center and radius
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
 
 
     points.push_back(make_point({1, 1}));
@@ -61,10 +61,10 @@ int main(int argc, char **argv) {
     std::cout << points.back();
     std::cout << std::endl;
 
-    movetk_core::MakeMinSphere<GeometryKernel::MovetkGeometryKernel> min_sphere;
+    movetk::utils::MakeMinSphere<GeometryKernel::MovetkGeometryKernel> min_sphere;
 
     GeometryKernel::MovetkGeometryKernel::NT radius = min_sphere(std::cbegin(points), std::cend(points),
-                                                                 movetk_core::movetk_back_insert_iterator(
+                                                                 movetk::utils::movetk_back_insert_iterator(
                                                                          CenterMinSphere));
 
     std::cout<<"Radius: "<<std::endl;

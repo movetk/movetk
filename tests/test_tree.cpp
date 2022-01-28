@@ -76,7 +76,7 @@ TEST_CASE("Create and search in a Trie", "[test_trie") {
 	REQUIRE(*it == 1);
 
 	// counts number of leaves in each branch of the tree
-	tree.find(movetk_core::movetk_back_insert_iterator(leaves));
+	tree.find(movetk::utils::movetk_back_insert_iterator(leaves));
 
 	REQUIRE(leaves.size() == 2);
 
@@ -116,7 +116,7 @@ TEST_CASE("Create and search in a Trie", "[test_trie") {
 ////    REQUIRE (*it == 1);
 ////
 ////    // counts number of leaves in each branch of the tree
-////    tree.find(movetk_core::movetk_back_insert_iterator(leaves));
+////    tree.find(movetk::utils::movetk_back_insert_iterator(leaves));
 ////
 ////    REQUIRE (leaves.size() == 2);
 ////

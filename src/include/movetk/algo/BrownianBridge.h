@@ -70,7 +70,7 @@ namespace brownian_bridge {
  * @brief This traits class serves as a collection of types
  * for parameterization of BBMM
  * @tparam _GeometryTraits -  This class is a collection of movetk
- *  geometry types. For example @refitem movetk_core::MovetkGeometryKernel
+ *  geometry types. For example @refitem movetk::utils::MovetkGeometryKernel
  * @tparam TrajectoryIterator - An iterator type.
  * For example @refitem TabularTrajectory::TrajectoryIterator
  */
@@ -80,18 +80,18 @@ struct ParameterTraits {
 	/*!*
 	 * @typedef ::NT
 	 * @brief typedef  of the number type defined in GeometryTraits.
-	 * For example @refitem  movetk_core::MovetkGeometryKernel::NT
+	 * For example @refitem  movetk::utils::MovetkGeometryKernel::NT
 	 * */
 	typedef typename GeometryTraits::NT NT;
 	/*!*
 	 * @typedef ::Point
 	 * @brief typedef of the point type defined in GeometryTraits.
-	 * For example @refitem movetk_core::MovetkGeometryKernel::MovetkPoint
+	 * For example @refitem movetk::utils::MovetkGeometryKernel::MovetkPoint
 	 *  */
 	typedef typename GeometryTraits::MovetkPoint Point;
 	/*!* @typedef ::Vector
 	 * @brief typedef of the vector type defined in GeometryTraits.
-	 * For example @refitem  movetk_core::MovetkGeometryKernel::MovetkVector
+	 * For example @refitem  movetk::utils::MovetkGeometryKernel::MovetkVector
 	 * */
 	typedef typename GeometryTraits::MovetkVector Vector;
 	/*!* @typedef ::Parameters
@@ -116,7 +116,7 @@ struct ParameterTraits {
  *  class Norm, class InputIterator, std::size_t MaxIter> MLE
  * @brief The Maximum Likelihood Estimator
  * @tparam GeometryTraits -   This class is a collection of movetk
- *  geometry types. For example @refitem movetk_core::MovetkGeometryKernel
+ *  geometry types. For example @refitem movetk::utils::MovetkGeometryKernel
  * @tparam ParameterTraits -  This traits class serves as a collection of types
  * for parameterization of BBMM
  * @tparam Norm - The type that models Euclidean distance
@@ -131,15 +131,15 @@ template <class GeometryTraits,
           class Norm,
           class InputIterator,
           std::size_t MaxIter,
-          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-          typename = movetk_core::requires_tuple<typename InputIterator::value_type>,
-          typename = movetk_core::requires_tuple_element_as_movetk_point<GeometryTraits,
+          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+          typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
+          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
                                                                          ParameterTraits::ParameterColumns::POINT,
                                                                          typename InputIterator::value_type>,
-          typename = movetk_core::requires_tuple_element_as_movetk_point<GeometryTraits,
+          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
                                                                          ParameterTraits::ParameterColumns::MU,
                                                                          typename InputIterator::value_type>,
-          typename = movetk_core::requires_tuple_element_as_NT<GeometryTraits,
+          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
                                                                ParameterTraits::ParameterColumns::SIGMA_SQUARED,
                                                                typename InputIterator::value_type>>
 class MLE {
@@ -303,23 +303,23 @@ public:
 	 */
 	template <class TrajectoryIterator,
 	          class OutputIterator,
-	          typename = movetk_core::requires_random_access_iterator<TrajectoryIterator>,
-	          typename = movetk_core::requires_tuple<typename TrajectoryIterator::value_type>,
-	          typename = movetk_core::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
+	          typename = movetk::utils::requires_random_access_iterator<TrajectoryIterator>,
+	          typename = movetk::utils::requires_tuple<typename TrajectoryIterator::value_type>,
+	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
 	                                                                       typename TrajectoryIterator::value_type>,
-	          typename = movetk_core::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON,
+	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON,
 	                                                                       typename TrajectoryIterator::value_type>,
-	          typename = movetk_core::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	          typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
 	                                                                   typename TrajectoryIterator::value_type>,
-	          typename = movetk_core::requires_output_iterator<OutputIterator>,
-	          typename = movetk_core::requires_tuple<typename OutputIterator::value_type>,
-	          typename = movetk_core::requires_tuple_element_as_movetk_point<GeometryTraits,
+	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
+	          typename = movetk::utils::requires_tuple<typename OutputIterator::value_type>,
+	          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
 	                                                                         ParameterTraits::ParameterColumns::POINT,
 	                                                                         typename OutputIterator::value_type>,
-	          typename = movetk_core::requires_tuple_element_as_movetk_point<GeometryTraits,
+	          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
 	                                                                         ParameterTraits::ParameterColumns::MU,
 	                                                                         typename OutputIterator::value_type>,
-	          typename = movetk_core::requires_tuple_element_as_NT<GeometryTraits,
+	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
 	                                                               ParameterTraits::ParameterColumns::SIGMA_SQUARED,
 	                                                               typename OutputIterator::value_type>>
 	Model(TrajectoryIterator first, TrajectoryIterator beyond, OutputIterator result) {
@@ -413,13 +413,13 @@ public:
 	 */
 	template <class InputIterator,
 	          class OutputIterator,
-	          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-	          typename = movetk_core::requires_output_iterator<OutputIterator>,
-	          typename = movetk_core::requires_tuple<typename InputIterator::value_type>,
-	          typename = movetk_core::requires_tuple_element_as_NT<GeometryTraits,
+	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
+	          typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
+	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
 	                                                               ParameterTraits::ParameterColumns::SIGMA_SQUARED,
 	                                                               typename InputIterator::value_type>,
-	          typename = movetk_core::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
+	          typename = movetk::utils::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		assert(std::distance(first, beyond) >= SIZE);
 		std::vector<typename ParameterTraits::NT> coeffs;
@@ -446,10 +446,10 @@ public:
 
 	template <class InputIterator,
 	          class OutputIterator,
-	          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-	          typename = movetk_core::requires_output_iterator<OutputIterator>,
-	          typename = movetk_core::requires_NT<GeometryTraits, typename InputIterator::value_type>,
-	          typename = movetk_core::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
+	          typename = movetk::utils::requires_NT<GeometryTraits, typename InputIterator::value_type>,
+	          typename = movetk::utils::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
 	void operator()(const Parameters &params, InputIterator first, InputIterator beyond, OutputIterator result) {
 		Norm norm;
 		typename GeometryTraits::MovetkVector v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -

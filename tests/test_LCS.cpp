@@ -33,9 +33,9 @@
 #include "test_includes.h"
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 1", "[longest_common_sense_1]") {
-	using MovetkGeometryKernel typename TestType::MovetkGeometryKernel;
+	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
-	movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
 	PolyLine polyline1({make_point({-5, -4}),
 	                    make_point({-4.79, -1.62}),
@@ -57,12 +57,12 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 1", "[longest_c
 	    std::make_pair(make_point({-2, -1}), make_point({-1.61, -1.02})),
 	    std::make_pair(make_point({2.03, -0.74}), make_point({2.57, -0.56}))};
 	std::vector<std::pair<PolyLine::const_iterator, PolyLine::const_iterator>> output;
-	movetk_algorithms::LongestCommonSubSequence<MovetkGeometryKernel, Norm> lcs(2, 7);
+	movetk::algo::LongestCommonSubSequence<MovetkGeometryKernel, Norm> lcs(2, 7);
 	std::size_t lcs_length = lcs(std::cbegin(polyline1),
 	                             std::cend(polyline1),
 	                             std::cbegin(polyline2),
 	                             std::cend(polyline2),
-	                             movetk_core::movetk_back_insert_iterator(output));
+	                             movetk::utils::movetk_back_insert_iterator(output));
 	REQUIRE(lcs_length == ExpectedLCSS.size());
 
 	auto eit = std::cbegin(ExpectedLCSS);
@@ -77,7 +77,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 1", "[longest_c
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 2", "[longest_common_sense_2]") {
-	using MovetkGeometryKernel typename TestType::MovetkGeometryKernel;
+	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
@@ -105,7 +105,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 2", "[longest_c
 	                             std::cend(polyline1),
 	                             std::cbegin(polyline2),
 	                             std::cend(polyline2),
-	                             movetk_core::movetk_back_insert_iterator(output));
+	                             movetk::utils::movetk_back_insert_iterator(output));
 	REQUIRE(lcs_length == ExpectedLCSS.size());
 
 	auto eit = std::cbegin(ExpectedLCSS);
@@ -120,7 +120,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 2", "[longest_c
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 3", "[longest_common_sense_3]") {
-	using MovetkGeometryKernel typename TestType::MovetkGeometryKernel;
+	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
@@ -144,7 +144,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 3", "[longest_c
 	                             std::cend(polyline1),
 	                             std::cbegin(polyline2),
 	                             std::cend(polyline2),
-	                             movetk_core::movetk_back_insert_iterator(output));
+	                             movetk::utils::movetk_back_insert_iterator(output));
 	REQUIRE(lcs_length == 0);
 	REQUIRE(output.size() == 0);
 }

@@ -85,24 +85,24 @@ public:
         auto timeStamps = trajectory.template get<TS_Idx>();
 
         //Compute length
-        movetk_algorithms::TrajectoryLength<MovetkGeometryKernel,Distance> lenCalc;
+        movetk::algo::TrajectoryLength<MovetkGeometryKernel,Distance> lenCalc;
         length = lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end());
         trajectory_properties.push_back(std::make_pair("length", std::to_string(length)));
 
         // Compute duration 
-        movetk_algorithms::TrajectoryDuration duration;
+        movetk::algo::TrajectoryDuration duration;
         traj_duration = duration(timeStamps.begin(), timeStamps.end());
         trajectory_properties.push_back(std::make_pair("duration", std::to_string(traj_duration)));
 
         // Show speed statistics:
-        //using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<Trajectory_t, MovetkGeometryKernel, Distance, LON_Idx, LAT_Idx, TS_Idx>;
-        using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<MovetkGeometryKernel, Distance>;
+        //using SpeedStat = movetk::algo::TrajectorySpeedStatistic<Trajectory_t, MovetkGeometryKernel, Distance, LON_Idx, LAT_Idx, TS_Idx>;
+        using SpeedStat = movetk::algo::TrajectorySpeedStatistic<MovetkGeometryKernel, Distance>;
         SpeedStat speedStat;
         using Stat = typename SpeedStat::Statistic;
 
         using CoordItPair = std::pair<decltype(lons.begin()), decltype(lons.begin())>;
 
-        auto lonLatPoints = movetk_core::point_iterators_from_coordinates<MovetkGeometryKernel>(
+        auto lonLatPoints = movetk::utils::point_iterators_from_coordinates<MovetkGeometryKernel>(
             std::array<CoordItPair, 2>{std::make_pair(lons.begin(), lons.end()), std::make_pair(lats.begin(), lats.end())}
         );
 
@@ -123,7 +123,7 @@ public:
         trajectory_properties.push_back(std::make_pair("var_speed", std::to_string(var_speed)));
 
         // Show time mode
-        movetk_algorithms::ComputeDominantDifference timeMode;
+        movetk::algo::ComputeDominantDifference timeMode;
 
         time_mode = timeMode(timeStamps.begin(), timeStamps.end(), 0);
         trajectory_properties.push_back(std::make_pair("time_mode", std::to_string(time_mode)));

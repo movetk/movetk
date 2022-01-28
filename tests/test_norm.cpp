@@ -62,7 +62,7 @@ const size_t dimensions = 2;
 // Define the Geometry Backend
 typedef movetk_support::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
 // Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk_core::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
+typedef movetk::utils::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
 //==============================
 #else
 //==============================

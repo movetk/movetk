@@ -63,7 +63,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ImaiIriTests, "Check Imai-Iri Simplificati
 
 	ImaiIri simplification(2);
 	std::vector<PolyLine::iterator> result;
-	simplification(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+	simplification(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 
 	PolyLine ExpectedPolyline({make_point({1, -6}), make_point({4, -4}), make_point({13, -4})});
 	REQUIRE(result.size() == ExpectedPolyline.size());

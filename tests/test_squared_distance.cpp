@@ -42,10 +42,10 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DistanceTests,"Check Distance between poin
     auto p1 = make_point({5.5, 3.1});
     auto p2 = make_point({3.22, 1.3});
     auto p3 = make_point({5, 5});
-    movetk_core::MakeSegment<MovetkGeometryKernel> make_segment;
+    movetk::geom::MakeSegment<MovetkGeometryKernel> make_segment;
     auto seg = make_segment(p1, p2);
-    movetk_core::ComputeSquaredDistance<MovetkGeometryKernel, Norm> squared_dist;
-    MovetkGeometryKernel::NT result = squared_dist(p3, seg);
+    movetk::metric::ComputeSquaredDistance<MovetkGeometryKernel, Norm> squared_dist;
+    auto result = squared_dist(p3, seg);
     REQUIRE(abs(result - 3.86) < MOVETK_EPS);
 
     p3 = make_point({3.85, 4.12});

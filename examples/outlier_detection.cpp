@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
     std::string key = "-idx";
     string line;
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
     assert(tokens.size() == 3);
 
     std::vector<std::size_t> col_idx;
@@ -179,17 +179,17 @@ int main(int argc, char **argv) {
     typedef CartesianProbeTraits::ProbePoint Probe;
     typedef std::vector<CartesianProbeTraits::ProbePoint> Trajectory;
     typedef std::vector<Trajectory> Trajectories;
-    typedef movetk_algorithms::OutlierDetectionTraits<CartesianProbeTraits,
+    typedef movetk::algo::OutlierDetectionTraits<CartesianProbeTraits,
             MovetkGeometryKernel,
             Norm> OutlierDetectionTraits;
-    typedef movetk_algorithms::outlier_detection::TEST<movetk_algorithms::linear_speed_bounded_test_tag,
-            movetk_algorithms::cartesian_coordinates_tag,
+    typedef movetk::algo::outlier_detection::TEST<movetk::algo::linear_speed_bounded_test_tag,
+            movetk::algo::cartesian_coordinates_tag,
             OutlierDetectionTraits> Test;
-    typedef movetk_algorithms::OutlierDetection<movetk_algorithms::output_sensitive_outlier_detector_tag,
+    typedef movetk::algo::OutlierDetection<movetk::algo::output_sensitive_outlier_detector_tag,
             Test, OutlierDetectionTraits> OutlierDetector;
-    /* typedef movetk_algorithms::OutlierDetection<movetk_algorithms::greedy_outlier_detector_tag,
+    /* typedef movetk::algo::OutlierDetection<movetk::algo::greedy_outlier_detector_tag,
              Test, OutlierDetectionTraits> OutlierDetector;*/
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 
 
     MovetkGeometryKernel::NT ts, x, y;
@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
             }
             input.push_back(line);
             movetk_support::split(line,
-                                  movetk_core::movetk_back_insert_iterator(tokens));
+                                  movetk::utils::movetk_back_insert_iterator(tokens));
             x = std::stold(tokens[col_idx[0]]);
             y = std::stold(tokens[col_idx[1]]);
             ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
             }
             input.push_back(line);
             movetk_support::split(line,
-                                  movetk_core::movetk_back_insert_iterator(tokens));
+                                  movetk::utils::movetk_back_insert_iterator(tokens));
             x = std::stold(tokens[col_idx[0]]);
             y = std::stold(tokens[col_idx[1]]);
             ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -243,7 +243,7 @@ int main(int argc, char **argv) {
 
     std::vector<Trajectory::const_iterator> result;
     OutlierDetector outlier_detector(threshold);
-    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk_core::movetk_back_insert_iterator(result));
+    outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
     std::reverse(std::begin(result), std::end(result));
     std::size_t num_outliers = trajectory.size() - result.size();
     std::cerr << "Number of Outliers Detected: " << num_outliers;

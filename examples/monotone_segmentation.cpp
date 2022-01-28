@@ -35,7 +35,7 @@
 using namespace std;
 
 
-typedef movetk_algorithms::SegmentationTraits<typename GeometryKernel::MovetkGeometryKernel::NT, typename GeometryKernel::MovetkGeometryKernel,
+typedef movetk::algo::SegmentationTraits<typename GeometryKernel::MovetkGeometryKernel::NT, typename GeometryKernel::MovetkGeometryKernel,
         GeometryKernel::dimensions> SegmentationTraits;
 typedef typename GeometryKernel::MovetkGeometryKernel::NT NT;
 // Atribute Containers defined here
@@ -214,7 +214,7 @@ int main(int argc, char **argv) {
     std::string key = "-t";
     line = parse.get_parameter(key);
     std::vector<string> tokens;
-    movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
 
     assert(tokens.size() == 4);
 
@@ -233,7 +233,7 @@ int main(int argc, char **argv) {
     tokens.clear();
     key = "-idx";
     line = parse.get_parameter(key);
-    movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+    movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
 
     if (parse.compute_attributes())
         assert(tokens.size() == 6);
@@ -268,15 +268,15 @@ int main(int argc, char **argv) {
     DiscretePosValuedAttributes tdiffs;
 
 
-    movetk_core::MakePoint<typename GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<typename GeometryKernel::MovetkGeometryKernel> make_point;
 
     PointsReference points_ref;
     NonGeoAttributesReference speed_ref, heading_ref;
     DiscretePosValuedAttributesReference ts_ref;
 
-    movetk_core::SegmentIdGenerator<PointsReferenceConstIter> make_location_segment;
-    movetk_core::SegmentIdGenerator<NonGeoAttributesReferenceConstIter> make_speed_segment, make_heading_segment;
-    movetk_core::SegmentIdGenerator<DiscretePosValuedAttributesReferenceConstIter> make_ts_segment;
+    movetk::utils::SegmentIdGenerator<PointsReferenceConstIter> make_location_segment;
+    movetk::utils::SegmentIdGenerator<NonGeoAttributesReferenceConstIter> make_speed_segment, make_heading_segment;
+    movetk::utils::SegmentIdGenerator<DiscretePosValuedAttributesReferenceConstIter> make_ts_segment;
     SSD location_segments_ssd, speed_segments_ssd, heading_segments_ssd, ts_segments_ssd;
     SSD conjunction_segments_ts_location_ssd, conjunction_segments_ts_speed_ssd, conjunction_segments_ts_heading_ssd;
     SSD conjunction_segments_ssd, disjunction_segments_ssd;
@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
             }
             linecount++;
 
-            movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+            movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
             if (parse.compute_attributes()) {
                 assert(tokens.size() >= 6);
             } else {
@@ -334,7 +334,7 @@ int main(int argc, char **argv) {
             }
             linecount++;
 
-            movetk_support::split(line, movetk_core::movetk_back_insert_iterator(tokens));
+            movetk_support::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
             if (parse.compute_attributes()) {
                 assert(tokens.size() >= 6);
             } else {
@@ -362,44 +362,44 @@ int main(int argc, char **argv) {
 
     size_t NumPoints = std::distance(std::begin(ts), std::end(ts));
 
-    movetk_core::get_distances<typename GeometryKernel::MovetkGeometryKernel>(std::begin(poly),
+    movetk::utils::get_distances<typename GeometryKernel::MovetkGeometryKernel>(std::begin(poly),
                                                                               std::end(poly),
-                                                                              movetk_core::movetk_back_insert_iterator(
+                                                                              movetk::utils::movetk_back_insert_iterator(
                                                                                         distances));
     assert(distances.size() == NumPoints);
 
-    movetk_core::get_time_diffs(std::begin(ts), std::end(ts), movetk_core::movetk_back_insert_iterator(tdiffs));
+    movetk::utils::get_time_diffs(std::begin(ts), std::end(ts), movetk::utils::movetk_back_insert_iterator(tdiffs));
     assert(tdiffs.size() == NumPoints);
 
     if (parse.compute_attributes()) {
 
 
-        movetk_core::get_speeds<typename GeometryKernel::MovetkGeometryKernel>(std::begin(tdiffs), std::end(tdiffs),
+        movetk::utils::get_speeds<typename GeometryKernel::MovetkGeometryKernel>(std::begin(tdiffs), std::end(tdiffs),
                                                                                std::begin(distances),
-                                                                               movetk_core::movetk_back_insert_iterator(
+                                                                               movetk::utils::movetk_back_insert_iterator(
                                                                                          speeds));
         assert(speeds.size() == NumPoints);
 
 
-        movetk_core::get_headings<typename GeometryKernel::MovetkGeometryKernel>(std::begin(GeoCoords),
+        movetk::utils::get_headings<typename GeometryKernel::MovetkGeometryKernel>(std::begin(GeoCoords),
                                                                                  std::end(GeoCoords),
                                                                                  std::begin(poly),
-                                                                                 movetk_core::movetk_back_insert_iterator(
+                                                                                 movetk::utils::movetk_back_insert_iterator(
                                                                                            headings));
         assert(headings.size() == NumPoints);
 
     }
 
-    movetk_core::get_velocities<typename GeometryKernel::MovetkGeometryKernel>(std::begin(speeds),
+    movetk::utils::get_velocities<typename GeometryKernel::MovetkGeometryKernel>(std::begin(speeds),
                                                                                std::end(speeds), std::begin(headings),
-                                                                               movetk_core::movetk_back_insert_iterator(
+                                                                               movetk::utils::movetk_back_insert_iterator(
                                                                                          velocities));
     assert(velocities.size() == NumPoints);
 
 
     SegmentationTraits::TSSegmentation segment_by_ts(TSThreshold);
-    segment_by_ts(std::cbegin(ts), std::cend(ts), movetk_core::movetk_back_insert_iterator(ts_ref));
-    make_ts_segment = movetk_core::SegmentIdGenerator<DiscretePosValuedAttributesReferenceConstIter>(std::begin(ts_ref),
+    segment_by_ts(std::cbegin(ts), std::cend(ts), movetk::utils::movetk_back_insert_iterator(ts_ref));
+    make_ts_segment = movetk::utils::SegmentIdGenerator<DiscretePosValuedAttributesReferenceConstIter>(std::begin(ts_ref),
                                                                                              std::end(ts_ref));
     ts_segments_ssd( std::begin(ts), std::end(ts), make_ts_segment );
 //    cerr<<"TS Segments\n";
@@ -407,24 +407,24 @@ int main(int argc, char **argv) {
 
 
     SegmentationTraits::LocationSegmentation segment_by_meb(RadiusThreshold);
-    segment_by_meb(std::cbegin(poly), std::cend(poly), movetk_core::movetk_back_insert_iterator(points_ref));
-    make_location_segment = movetk_core::SegmentIdGenerator<PointsReferenceConstIter>(std::begin(points_ref),
+    segment_by_meb(std::cbegin(poly), std::cend(poly), movetk::utils::movetk_back_insert_iterator(points_ref));
+    make_location_segment = movetk::utils::SegmentIdGenerator<PointsReferenceConstIter>(std::begin(points_ref),
                                                                               std::end(points_ref));
     location_segments_ssd(std::begin(poly), std::end(poly), make_location_segment);
 //    cerr<<"Location Segments\n";
 //    cerr<<movetk_support::join(location_segments_ssd.cbegin(), location_segments_ssd.cend());
 
     SegmentationTraits::SpeedSegmentation segment_by_diff(DifferenceThreshold);
-    segment_by_diff(std::begin(speeds), std::end(speeds), movetk_core::movetk_back_insert_iterator(speed_ref));
-    make_speed_segment = movetk_core::SegmentIdGenerator<NonGeoAttributesReferenceConstIter>(std::begin(speed_ref),
+    segment_by_diff(std::begin(speeds), std::end(speeds), movetk::utils::movetk_back_insert_iterator(speed_ref));
+    make_speed_segment = movetk::utils::SegmentIdGenerator<NonGeoAttributesReferenceConstIter>(std::begin(speed_ref),
                                                                                      std::end(speed_ref));
     speed_segments_ssd(std::begin(speeds), std::end(speeds), make_speed_segment);
 //    cerr<<"Speed Segments\n";
 //    cerr<<TSL::join(speed_segments_ssd.cbegin(), speed_segments_ssd.cend());
 
     SegmentationTraits::HeadingSegmentation segment_by_range(RangeThreshold);
-    segment_by_range(std::begin(headings), std::end(headings), movetk_core::movetk_back_insert_iterator(heading_ref));
-    make_heading_segment = movetk_core::SegmentIdGenerator<NonGeoAttributesReferenceConstIter>(std::begin(heading_ref),
+    segment_by_range(std::begin(headings), std::end(headings), movetk::utils::movetk_back_insert_iterator(heading_ref));
+    make_heading_segment = movetk::utils::SegmentIdGenerator<NonGeoAttributesReferenceConstIter>(std::begin(heading_ref),
                                                                                        std::end(heading_ref));
     heading_segments_ssd(std::begin(headings), std::end(headings), make_heading_segment);
 //    cerr<<"Heading Segments\n";
@@ -471,24 +471,24 @@ int main(int argc, char **argv) {
     cout << "ID,Lat,Lon,Timestamp,Speed,Heading,Tdiff,Distance,X,Y,Velocity_X,Velocity_Y,TSSegments,";
     cout << "LocationSegments,SpeedSegments,HeadingSegments,VelocitySegments,Distance_or_VelocitySegments\n";
     while (disjunction_ssd_it != disjunction_segments_ssd.cend()) {
-        if (!movetk_core::is_sequence(disjunction_prev_ssd_it, (disjunction_ssd_it + 1))) {
+        if (!movetk::utils::is_sequence(disjunction_prev_ssd_it, (disjunction_ssd_it + 1))) {
             disjunction_segment_idx++;
             disjunction_prev_ssd_it = disjunction_ssd_it;
         }
 
-        if (!movetk_core::is_sequence(conjunction_prev_ssd_it, (conjunction_ssd_it + 1))) {
+        if (!movetk::utils::is_sequence(conjunction_prev_ssd_it, (conjunction_ssd_it + 1))) {
             conjunction_segment_idx++;
             conjunction_prev_ssd_it = conjunction_ssd_it;
         }
-        if (!movetk_core::is_sequence(conjunction_ts_location_ssd_prev_it, (conjunction_ts_location_ssd_it + 1))) {
+        if (!movetk::utils::is_sequence(conjunction_ts_location_ssd_prev_it, (conjunction_ts_location_ssd_it + 1))) {
             conjunction_segment_ts_loc_idx++;
             conjunction_ts_location_ssd_prev_it = conjunction_ts_location_ssd_it;
         }
-        if (!movetk_core::is_sequence(conjunction_ts_speed_ssd_prev_it, (conjunction_ts_speed_ssd_it + 1))) {
+        if (!movetk::utils::is_sequence(conjunction_ts_speed_ssd_prev_it, (conjunction_ts_speed_ssd_it + 1))) {
             conjunction_segment_ts_speed_idx++;
             conjunction_ts_speed_ssd_prev_it = conjunction_ts_speed_ssd_it;
         }
-        if (!movetk_core::is_sequence(conjunction_ts_heading_ssd_prev_it, (conjunction_ts_heading_ssd_it + 1))) {
+        if (!movetk::utils::is_sequence(conjunction_ts_heading_ssd_prev_it, (conjunction_ts_heading_ssd_it + 1))) {
             conjunction_segment_ts_heading_idx++;
             conjunction_ts_heading_ssd_prev_it = conjunction_ts_heading_ssd_it;
         }

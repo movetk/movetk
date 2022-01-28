@@ -34,12 +34,12 @@ namespace movetk::algo {
         // type definitions required for algorithm
 
         typedef typename MovetkGeometryKernel::MovetkPoint Point;
-        typedef movetk_algorithms::TEST<TestCriteria::meb, MovetkGeometryKernel> MebCriteria;
-        typedef movetk_algorithms::MonotoneSegmentation<MovetkGeometryKernel, MebCriteria> LocationSegmentation;
-        typedef movetk_algorithms::TEST<TestCriteria::difference, MovetkGeometryKernel> DiffCriteria;
-        typedef movetk_algorithms::MonotoneSegmentation<MovetkGeometryKernel, DiffCriteria> SpeedSegmentation, TSSegmentation;
-        typedef movetk_algorithms::TEST<TestCriteria::range, MovetkGeometryKernel> RangeCriteria;
-        typedef movetk_algorithms::MonotoneSegmentation<MovetkGeometryKernel, RangeCriteria> HeadingSegmentation;
+        typedef movetk::algo::TEST<TestCriteria::meb, MovetkGeometryKernel> MebCriteria;
+        typedef movetk::algo::MonotoneSegmentation<MovetkGeometryKernel, MebCriteria> LocationSegmentation;
+        typedef movetk::algo::TEST<TestCriteria::difference, MovetkGeometryKernel> DiffCriteria;
+        typedef movetk::algo::MonotoneSegmentation<MovetkGeometryKernel, DiffCriteria> SpeedSegmentation, TSSegmentation;
+        typedef movetk::algo::TEST<TestCriteria::range, MovetkGeometryKernel> RangeCriteria;
+        typedef movetk::algo::MonotoneSegmentation<MovetkGeometryKernel, RangeCriteria> HeadingSegmentation;
     };
 
 }

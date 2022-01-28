@@ -53,14 +53,14 @@ namespace movetk::algo {
         }
 
         template <class InputIterator, class OutputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_movetk_point<GeometryTraits,
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_output_iterator<OutputIterator>,
+                typename = movetk::utils::requires_movetk_point<GeometryTraits,
                         typename InputIterator::value_type>,
-                typename = movetk_core::requires_pair<typename OutputIterator::value_type>,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                typename = movetk::utils::requires_pair<typename OutputIterator::value_type>,
+                typename = movetk::utils::requires_equality<typename InputIterator::value_type,
                         typename OutputIterator::value_type::first_type::value_type >,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                typename = movetk::utils::requires_equality<typename InputIterator::value_type,
                         typename OutputIterator::value_type::second_type::value_type > >
         std::size_t operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                         InputIterator polyline_b_first, InputIterator polyline_b_beyond, OutputIterator result){
@@ -105,8 +105,8 @@ namespace movetk::algo {
             return dp_row.back();
         }
         template <class InputIterator, 
-            typename = movetk_core::requires_random_access_iterator<InputIterator>,
-            typename = movetk_core::requires_movetk_point<GeometryTraits,
+            typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+            typename = movetk::utils::requires_movetk_point<GeometryTraits,
             typename InputIterator::value_type>>
             std::size_t operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
                 InputIterator polyline_b_first, InputIterator polyline_b_beyond) {

@@ -41,14 +41,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check subtrajectory clustering 1", "[subtrajecto
     using Norm = movetk_support::FiniteNorm<MovetkGeometryKernel, 2>;
     using NT = typename MovetkGeometryKernel::NT;
     using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
-    using IntersectionTraits = movetk_core::IntersectionTraits<MovetkGeometryKernel, Norm, movetk_core::sphere_segment_intersection_tag>;
+    using IntersectionTraits = movetk::utils::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::utils::sphere_segment_intersection_tag>;
     using FreeSpaceCellTraits = movetk_support::FreeSpaceCellTraits<IntersectionTraits>;
     using FreeSpaceCell = movetk_support::FreeSpaceCell<FreeSpaceCellTraits>;
     using FreeSpaceDiagramTraits = movetk_support::FreeSpaceDiagramTraits<FreeSpaceCell>;
     using FreeSpaceDiagram = movetk_support::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
-    using ClusteringTraits = movetk_algorithms::ClusteringTraits<FreeSpaceDiagram>;
-    using SubTrajectoryClustering = movetk_algorithms::SubTrajectoryClustering<ClusteringTraits>;
-    movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+    using ClusteringTraits = movetk::algo::ClusteringTraits<FreeSpaceDiagram>;
+    using SubTrajectoryClustering = movetk::algo::SubTrajectoryClustering<ClusteringTraits>;
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
     std::vector<MovetkPoint> polyline_a{
             make_point({69.5, 10.5}), make_point({70, 11}),
             make_point({70.1511, 11.5301}), make_point({69.9253, 11.89154}),

@@ -65,8 +65,8 @@ namespace movetk::algo {
          * @return
          */
         template<class InputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_valid_type<GeometryTraits,
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_valid_type<GeometryTraits,
                         typename InputIterator::value_type> >
         size_t operator()(InputIterator first,size_t min,size_t left,size_t right){
             //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);

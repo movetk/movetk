@@ -31,13 +31,13 @@ int main(int argc, char **argv){
     std::cerr<<"Using Boost Backend for Geometry\n";
 #endif
 
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt1 = make_point({1, 1});
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt2 = make_point({2, 2});
-    movetk_core::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
+    movetk::utils::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
     GeometryKernel::MovetkGeometryKernel::MovetkSegment seg = make_segment(pt1, pt2);
 
-    movetk_core::ComputeLength<GeometryKernel::MovetkGeometryKernel> compute_length;
+    movetk::utils::ComputeLength<GeometryKernel::MovetkGeometryKernel> compute_length;
     std::cout<<"Length of the Segment: "<<compute_length(seg)<<std::endl;
     return 0;
 }

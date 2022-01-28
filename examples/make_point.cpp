@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 
     //===================================
     // Create a  Movetk point and print it
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint pt = make_point(std::cbegin(p),
                                                      std::cend(p));
     std::cout<<"Point\n";

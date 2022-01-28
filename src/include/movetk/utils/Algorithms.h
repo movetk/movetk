@@ -102,7 +102,7 @@ double euclidean_distance_3d(double x0, double y0, double z0, double x1, double 
     return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-typedef movetk_algorithms::SegmentationTraits<MovetkGeometryKernel::NT, MovetkGeometryKernel, MovetkGeometryKernel::dim> SegmentationTraits;
+typedef movetk::algo::SegmentationTraits<MovetkGeometryKernel::NT, MovetkGeometryKernel, MovetkGeometryKernel::dim> SegmentationTraits;
 typedef std::vector<std::size_t> Segments;
 typedef movetk_support::StartStopDiagram<SsdType::compressed, MovetkGeometryKernel, Segments> StartStopDiagram;
 
@@ -112,39 +112,39 @@ template <class GeometryTraits,
           class ProbeTraits>
 struct BBMMTraits
 {
-    typedef movetk_algorithms::brownian_bridge::ParameterTraits<GeometryTraits, TrajectoryIterator> ParameterTraits;
+    typedef movetk::algo::brownian_bridge::ParameterTraits<GeometryTraits, TrajectoryIterator> ParameterTraits;
     typedef typename std::vector<typename ParameterTraits::Parameters>::const_iterator BridgeIterator;
     typedef LocalCoordinateReference<typename GeometryTraits::NT> Projection;
-    typedef movetk_algorithms::brownian_bridge::Model<GeometryTraits, ProbeTraits,
+    typedef movetk::algo::brownian_bridge::Model<GeometryTraits, ProbeTraits,
                                                       ParameterTraits, Norm, Projection>
         BBMM;
-    typedef movetk_algorithms::brownian_bridge::MLE<GeometryTraits, ParameterTraits, Norm, BridgeIterator, 1000> MLE;
-    typedef movetk_algorithms::brownian_bridge::ParameterSelector<GeometryTraits, ParameterTraits> ParameterSelector;
-    typedef movetk_algorithms::brownian_bridge::LogLikelihood<GeometryTraits, ParameterTraits, Norm> LogLikelihood;
-    typedef movetk_algorithms::ModelBasedSegmentation<GeometryTraits, LogLikelihood> ModelBasedSegmentation;
+    typedef movetk::algo::brownian_bridge::MLE<GeometryTraits, ParameterTraits, Norm, BridgeIterator, 1000> MLE;
+    typedef movetk::algo::brownian_bridge::ParameterSelector<GeometryTraits, ParameterTraits> ParameterSelector;
+    typedef movetk::algo::brownian_bridge::LogLikelihood<GeometryTraits, ParameterTraits, Norm> LogLikelihood;
+    typedef movetk::algo::ModelBasedSegmentation<GeometryTraits, LogLikelihood> ModelBasedSegmentation;
 };
 
-typedef movetk_algorithms::FindFarthest<MovetkGeometryKernel, Norm> FindFarthest;
-typedef movetk_algorithms::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker;
+typedef movetk::algo::FindFarthest<MovetkGeometryKernel, Norm> FindFarthest;
+typedef movetk::algo::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker;
 
-typedef movetk_core::Wedge<MovetkGeometryKernel, Norm> Wedge;
-typedef movetk_algorithms::ChanChin<MovetkGeometryKernel, Wedge> ChanChin;
-typedef movetk_algorithms::ImaiIri<MovetkGeometryKernel, ChanChin> ImaiIri;
+typedef movetk::utils::Wedge<MovetkGeometryKernel, Norm> Wedge;
+typedef movetk::algo::ChanChin<MovetkGeometryKernel, Wedge> ChanChin;
+typedef movetk::algo::ImaiIri<MovetkGeometryKernel, ChanChin> ImaiIri;
 
-typedef movetk_algorithms::ClusteringTraits<FreeSpaceDiagram> ClusteringTraits;
-typedef movetk_algorithms::SubTrajectoryClustering<ClusteringTraits> SubTrajectoryClustering;
+typedef movetk::algo::ClusteringTraits<FreeSpaceDiagram> ClusteringTraits;
+typedef movetk::algo::SubTrajectoryClustering<ClusteringTraits> SubTrajectoryClustering;
 
 template <class ProbeTraits>
 struct IPTraits
 {
     typedef LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-    typedef movetk_algorithms::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
-    typedef movetk_algorithms::Interpolator<movetk_algorithms::linear_interpolator_tag, InterpolationTraits,
+    typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
+    typedef movetk::algo::Interpolator<movetk::algo::linear_interpolator_tag, InterpolationTraits,
                                             ProbeTraits::ProbeColumns::LAT,
                                             ProbeTraits::ProbeColumns::LON, ProbeTraits::ProbeColumns::SAMPLE_DATE,
                                             ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING>
         LinearInterpolator;
-    typedef movetk_algorithms::Interpolator<movetk_algorithms::kinematic_interpolator_tag, InterpolationTraits,
+    typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag, InterpolationTraits,
                                             ProbeTraits::ProbeColumns::LAT,
                                             ProbeTraits::ProbeColumns::LON, ProbeTraits::ProbeColumns::SAMPLE_DATE,
                                             ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING>

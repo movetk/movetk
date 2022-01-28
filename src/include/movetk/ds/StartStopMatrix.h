@@ -44,7 +44,7 @@ class StartStopDiagram<SsdType::compressed, GeometryTraits, NodeType> {
 	// TODO Requirements for  NodeType
 private:
 	NodeType node;
-	movetk_core::movetk_back_insert_iterator<NodeType> result = movetk_core::movetk_back_insert_iterator(node);
+	movetk::utils::movetk_back_insert_iterator<NodeType> result = movetk::utils::movetk_back_insert_iterator(node);
 	ASSERT_OUTPUT_ITERATOR(decltype(result));
 	ASSERT_IS_SIZE_T(decltype(result));
 
@@ -60,11 +60,11 @@ public:
 	 */
 	template <class InputIterator,
 	          class PolylineIdxIterator,
-	          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-	          typename = movetk_core::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
 	void operator()(InputIterator first,
 	                InputIterator beyond,
-	                movetk_core::SegmentIdGenerator<PolylineIdxIterator> &segments) {
+	                movetk::utils::SegmentIdGenerator<PolylineIdxIterator> &segments) {
 		ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		size_t idx = 0;
 		size_t SegmentId, PreviousSegmentId = 0;
@@ -82,8 +82,8 @@ public:
 	}
 
 	template <class InputIterator,
-	          typename = movetk_core::requires_random_access_iterator<InputIterator>,
-	          typename = movetk_core::requires_size_t<typename InputIterator::value_type>>
+	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	          typename = movetk::utils::requires_size_t<typename InputIterator::value_type>>
 	void operator()(InputIterator first, InputIterator beyond) {
 		ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		size_t idx = 0;
@@ -116,7 +116,7 @@ public:
 		// TODO: Gets fixed when the return type of * / + operator overloading is fixed
 		const_iterator it = rhs.cbegin();
 		this->node.clear();
-		this->result = movetk_core::movetk_back_insert_iterator(this->node);
+		this->result = movetk::utils::movetk_back_insert_iterator(this->node);
 		while (it != rhs.cend()) {
 			*this->result = *it;
 			it++;

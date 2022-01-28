@@ -50,10 +50,10 @@ namespace movetk::algo {
     template<class GeometryTraits, class LatIterator, class LonIterator>
     double geopolyline_length_m(LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start) {
         using MovetkPoint = typename GeometryTraits::MovetkPoint;
-        movetk_core::MakePoint<GeometryTraits> make_point;
+        movetk::geom::MakePoint<GeometryTraits> make_point;
         std::vector<MovetkPoint> xyzs;
         movetk::to_geocentered_polyline(make_point, lat_start, lat_beyond, lon_start,
-                                        movetk_core::movetk_back_insert_iterator(xyzs));
+                                        movetk::utils::movetk_back_insert_iterator(xyzs));
         return polyline_length_m(std::begin(xyzs), std::end(xyzs));
     }
 
@@ -79,10 +79,10 @@ namespace movetk::algo {
     std::vector<double>
     geopolyline_offsets_m(LatIterator lat_start, LatIterator lat_beyond, LonIterator lon_start) {
         using MovetkPoint = typename GeometryTraits::MovetkPoint;
-        movetk_core::MakePoint<GeometryTraits> make_point;
+        movetk::geom::MakePoint<GeometryTraits> make_point;
         std::vector<MovetkPoint> xyzs;
         movetk::to_geocentered_polyline(make_point, lat_start, lat_beyond, lon_start,
-                                        movetk_core::movetk_back_insert_iterator(xyzs));
+                                        movetk::utils::movetk_back_insert_iterator(xyzs));
 
         auto lengths = polyline_lengths_m(std::begin(xyzs), std::end(xyzs));
         std::vector<double> offsets;

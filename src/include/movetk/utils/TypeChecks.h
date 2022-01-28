@@ -44,7 +44,7 @@
 
 /*!
  *
- *  @namespace movetk_core
+ *  @namespace movetk::utils
  *  @brief the core of movetk
  */
 namespace movetk::utils {

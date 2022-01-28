@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 
     //===================================
     // Create a  Movetk point and print it
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint center = make_point(std::cbegin(p),
                                                                      std::cend(p));
     std::cout<<"Center\n";
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     //====================================
     std::cout<<"\n";
 
-    movetk_core::MakeSphere<GeometryKernel::MovetkGeometryKernel> make_sphere;
+    movetk::utils::MakeSphere<GeometryKernel::MovetkGeometryKernel> make_sphere;
     GeometryKernel::MovetkGeometryKernel::MovetkSphere s = make_sphere(center, 10);
     return 0;
 }

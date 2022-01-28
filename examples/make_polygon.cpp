@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
     //===================================
     // Create a  Movetk polygon and print its vertices
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
 
     points.push_back(make_point({1, 1}));
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
     std::cout << points.back();
     std::cout << std::endl;
 
-    movetk_core::MakePolygon<GeometryKernel::MovetkGeometryKernel> make_polygon;
+    movetk::utils::MakePolygon<GeometryKernel::MovetkGeometryKernel> make_polygon;
 
     GeometryKernel::MovetkGeometryKernel::MovetkPolygon polygon = make_polygon(std::cbegin(points),
                                                                                std::cend(points));

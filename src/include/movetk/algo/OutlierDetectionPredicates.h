@@ -40,7 +40,7 @@
 namespace movetk::algo {
 
     namespace outlier_detection{
-        //using speed_test_tag = movetk_algorithms::outlier_detection_traits::linear_speed_bounded_test_tag;
+        //using speed_test_tag = movetk::algo::outlier_detection_traits::linear_speed_bounded_test_tag;
 
         template<class TestTag,
                 class CoordinateTag,
@@ -69,12 +69,12 @@ namespace movetk::algo {
 
 
             template<class T1,
-                    typename = movetk_core::requires_tuple<T1>,
-                    typename = movetk_core::requires_tuple_element_as_arithmetic<
+                    typename = movetk::utils::requires_tuple<T1>,
+                    typename = movetk::utils::requires_tuple_element_as_arithmetic<
                             ProbeTraits::ProbeColumns::LAT, T1>,
-                    typename = movetk_core::requires_tuple_element_as_arithmetic<
+                    typename = movetk::utils::requires_tuple_element_as_arithmetic<
                             ProbeTraits::ProbeColumns::LON, T1>,
-                    typename = movetk_core::requires_tuple_element_as_size_t<
+                    typename = movetk::utils::requires_tuple_element_as_size_t<
                             ProbeTraits::ProbeColumns::SAMPLE_DATE, T1>>
             bool operator()(T1 &p1, T1 &p2) {
                 auto lat0 = std::get<ProbeTraits::ProbeColumns::LAT>(p1);
@@ -95,8 +95,8 @@ namespace movetk::algo {
 
 
         template <class T>
-        class TEST<movetk_algorithms::linear_speed_bounded_test_tag,
-                movetk_algorithms::cartesian_coordinates_tag,
+        class TEST<movetk::algo::linear_speed_bounded_test_tag,
+                movetk::algo::cartesian_coordinates_tag,
                 T> {
 
         private:
@@ -127,12 +127,12 @@ namespace movetk::algo {
              */
 
             template<class T1,
-                    typename = movetk_core::requires_tuple<typename std::add_const<T1>::type>,
-                    typename = movetk_core::requires_tuple_element_as_movetk_point<
+                    typename = movetk::utils::requires_tuple<typename std::add_const<T1>::type>,
+                    typename = movetk::utils::requires_tuple_element_as_movetk_point<
                             GeometryTraits,
                             ProbeTraits::ProbeColumns::PROJECTED_COORDS,
                             typename std::add_const<T1>::type>,
-                    typename = movetk_core::requires_tuple_element_as_size_t<
+                    typename = movetk::utils::requires_tuple_element_as_size_t<
                             ProbeTraits::ProbeColumns::SAMPLE_DATE,
                             typename std::add_const<T1>::type> >
             bool operator()(const T1 &p1, const T1 &p2){

@@ -45,7 +45,7 @@ struct InterpolationTests : public test_helpers::BaseTestFixture<Backend> {
 
 	using Projection = movetk::geo::LocalCoordinateReference<NT>;
 	using InterpolationTraits = movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>;
-	using KinematicInterpolator = movetk::algo::Interpolator<movetk_algorithms::kinematic_interpolator_tag,
+	using KinematicInterpolator = movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
 	                                           InterpolationTraits,
 	                                           ProbeTraits::ProbeColumns::LAT,
 	                                           ProbeTraits::ProbeColumns::LON,
@@ -97,13 +97,13 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests,
 	std::vector<typename ProbeTraits::ProbePoint> data = {p1, p2};
 	Norm norm;
 
-	movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 
 	KinematicInterpolator interpolator(40.84812546, -73.84451294);
 	std::vector<typename MovetkGeometryKernel::NT> ts{0, 0.25, 0.5, 0.75, 1};
 	std::vector<typename ProbeTraits::ProbePoint> interpolated_pts;
 
-	movetk_core::movetk_back_insert_iterator result(interpolated_pts);
+	movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
 	// result = p1;
 	interpolator(p1, p2, std::cbegin(ts), std::cend(ts), result);
 	// result = p2;
@@ -119,12 +119,12 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests,
 
 	std::vector<typename ProbeTraits::ProbePoint> data = {p1, p2};
 	Norm norm;
-	movetk_core::MakePoint<MovetkGeometryKernel> make_point;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	KinematicInterpolator interpolator(40.84812546, -73.84451294);
 	std::vector<std::size_t> ts{1461862301, 1461862302, 1461862303, 1461862304, 1461862305};
 	std::vector<typename ProbeTraits::ProbePoint> interpolated_pts;
 
-	movetk_core::movetk_back_insert_iterator result(interpolated_pts);
+	movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
 	// result = p1;
 	interpolator(p1, p2, std::cbegin(ts), std::cend(ts), result);
 	// result = p2;

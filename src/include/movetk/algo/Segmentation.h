@@ -73,11 +73,11 @@ namespace movetk::algo {
          * @param result
          */
         template <class InputIterator, class OutputIterator,
-                typename = movetk_core::requires_random_access_iterator<InputIterator>,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_valid_type<GeometryTraits,
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_output_iterator<OutputIterator>,
+                typename = movetk::utils::requires_valid_type<GeometryTraits,
                         typename InputIterator::value_type>,
-                typename = movetk_core::requires_equality<typename InputIterator::value_type,
+                typename = movetk::utils::requires_equality<typename InputIterator::value_type,
                         typename OutputIterator::value_type::value_type >>
         void operator()(InputIterator first, InputIterator beyond, OutputIterator result){
             //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
@@ -150,10 +150,10 @@ namespace movetk::algo {
         }
 
         template<class RowIterator, class ColumnIterator, class OutputIterator,
-                typename = movetk_core::requires_random_access_iterator<RowIterator>,
-                typename = movetk_core::requires_random_access_iterator<ColumnIterator>,
-                typename = movetk_core::requires_output_iterator<OutputIterator>,
-                typename = movetk_core::requires_equality<
+                typename = movetk::utils::requires_random_access_iterator<RowIterator>,
+                typename = movetk::utils::requires_random_access_iterator<ColumnIterator>,
+                typename = movetk::utils::requires_output_iterator<OutputIterator>,
+                typename = movetk::utils::requires_equality<
                         typename RowIterator::value_type,
                         typename OutputIterator::value_type::value_type>>
         void operator()(RowIterator rfirst, RowIterator rbeyond,
@@ -167,7 +167,7 @@ namespace movetk::algo {
             Table dp_table (num_rows);
 
             // Fill up Dynamic Programming Table
-            ll(*rfirst, cfirst, cbeyond, movetk_core::movetk_back_insert_iterator(dp_row));
+            ll(*rfirst, cfirst, cbeyond, movetk::utils::movetk_back_insert_iterator(dp_row));
 
             std::transform(std::begin(dp_row), std::end(dp_row), std::begin(dp_row),ic);
             auto min_ic = std::min_element(std::cbegin(dp_row), std::cend(dp_row));

@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 #else
     std::cerr << "Using Boost Backend for Geometry\n";
 #endif
-    movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
+    movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     typedef std::vector<GeometryKernel::MovetkGeometryKernel::MovetkPoint> PolyLine;
     PolyLine polyline({make_point({-6.19, -3.46}), make_point({-4.99, 1.16}),
                        make_point({-2.79, -2.22}), make_point({-1.87, 0.58}),
@@ -49,9 +49,9 @@ int main(int argc, char **argv)
     std::cout << "}\n";
 
     std::vector<PolyLine::const_iterator> result;
-    typedef movetk_algorithms::FindFarthest<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm> FindFarthest;
-    movetk_algorithms::DouglasPeucker<GeometryKernel::MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
-    DouglasPeucker(std::begin(polyline), std::end(polyline), movetk_core::movetk_back_insert_iterator(result));
+    typedef movetk::algo::FindFarthest<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm> FindFarthest;
+    movetk::algo::DouglasPeucker<GeometryKernel::MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
+    DouglasPeucker(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
     std::cout << "Simplified polyline has: " << result.size() << " vertices\n";
     std::cout << "Simplified Polyline: ";
     std::cout << "{";
