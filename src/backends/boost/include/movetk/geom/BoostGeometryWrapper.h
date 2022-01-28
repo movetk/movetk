@@ -40,7 +40,7 @@
 
 // TODO Rename this to a Wrapper
 
-namespace movetk_support {
+namespace movetk::geom {
 
 namespace bg = boost::geometry;
 
@@ -49,7 +49,7 @@ class Wrapper_Boost_Point {
 private:
 	typedef typename Kernel::Boost_Point_ Boost_Point;
 	typedef typename Kernel::NT NT;
-	typedef typename movetk_core::movetk_basic_iterator<const NT> CoordinateIterator;
+	typedef typename utils::movetk_basic_iterator<const NT> CoordinateIterator;
 	typedef typename Kernel::Wrapper_Vector Wrapper_Vector;
 	typedef std::array<typename Kernel::NT, Kernel::dim> Point_Container;
 	Boost_Point pt;
@@ -466,9 +466,9 @@ struct Wrapper_Boost_Kernel {
 	typedef typename Boost_Kernel::NT NT;
 	constexpr static size_t dim = Boost_Kernel::dim;
 	typedef typename Boost_Kernel::Point_d Boost_Point_;
-	typedef typename movetk_support::bg::model::segment<Boost_Point_> Boost_Segment_;
-	typedef typename movetk_support::bg::model::linestring<Boost_Point_> Boost_PolyLine_;
-	typedef typename movetk_support::bg::model::polygon<Boost_Point_> Boost_Polygon_;
+	typedef typename bg::model::segment<Boost_Point_> Boost_Segment_;
+	typedef typename bg::model::linestring<Boost_Point_> Boost_PolyLine_;
+	typedef typename bg::model::polygon<Boost_Point_> Boost_Polygon_;
 	typedef Wrapper_Boost_Point<Wrapper_Boost_Kernel> Wrapper_Point;
 	typedef Wrapper_Boost_Segment<Wrapper_Boost_Kernel> Wrapper_Segment;
 	typedef Wrapper_Boost_Line<Wrapper_Boost_Kernel> Wrapper_Line;

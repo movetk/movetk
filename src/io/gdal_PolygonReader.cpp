@@ -22,43 +22,39 @@
 // Created by onur on 10/9/18.
 //
 
-#include <iostream>
 #include "movetk/io/gdal_PolygonReader.h"
 
-std::vector<OGRPolygon> GdalPolygonReader::read_polygons(const std::string& file_name) {
+#include <iostream>
+namespace movetk::io {
+std::vector<OGRPolygon> GdalPolygonReader::read_polygons(const std::string &file_name) {
+	GDALAllRegister();
+	auto poDS = static_cast<GDALDataset *>(GDALOpenEx(file_name.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr));
+	if (poDS == nullptr) {
+		printf("Open failed.\n");
+		exit(1);
+	}
+	std::vector<OGRPolygon> polygons;
 
-    GDALAllRegister();
-    auto poDS = static_cast<GDALDataset*>(
-            GDALOpenEx( file_name.c_str(), GDAL_OF_VECTOR, nullptr, nullptr, nullptr ));
-    if( poDS == nullptr )
-    {
-        printf( "Open failed.\n" );
-        exit( 1 );
-    }
-    std::vector<OGRPolygon> polygons;
+	std::cout << "Number of layers in shp: " << poDS->GetLayerCount() << std::endl;
+	//    OGRLayer  *poLayer = poDS->GetLayerByName( "point" );
+	OGRLayer *poLayer = poDS->GetLayer(0);
+	std::cout << "Number of features in layer 0: " << poLayer->GetFeatureCount() << std::endl;
+	//    OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
+	poLayer->ResetReading();
+	OGRFeature *poFeature;
+	while ((poFeature = poLayer->GetNextFeature()) != nullptr) {
+		std::cout << "Feature:" << std::endl;
+		OGRGeometry *poGeometry = poFeature->GetGeometryRef();
+		if (poGeometry != nullptr && wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon) {
+			auto poPolygon = (OGRPolygon *)poGeometry;
+			std::cout << "Area: " << poPolygon->get_Area() << std::endl;
+			polygons.push_back(*(OGRPolygon *)poPolygon->clone());
+		}
 
-    std::cout << "Number of layers in shp: " << poDS->GetLayerCount() << std::endl;
-//    OGRLayer  *poLayer = poDS->GetLayerByName( "point" );
-    OGRLayer  *poLayer = poDS->GetLayer(0);
-    std::cout << "Number of features in layer 0: " << poLayer->GetFeatureCount() << std::endl;
-//    OGRFeatureDefn *poFDefn = poLayer->GetLayerDefn();
-    poLayer->ResetReading();
-    OGRFeature *poFeature;
-    while( (poFeature = poLayer->GetNextFeature()) != nullptr )
-    {
-        std::cout << "Feature:" << std::endl;
-        OGRGeometry *poGeometry = poFeature->GetGeometryRef();
-        if( poGeometry != nullptr
-                && wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon )
-        {
-            auto poPolygon = (OGRPolygon*) poGeometry;
-            std::cout << "Area: " << poPolygon->get_Area() << std::endl;
-            polygons.push_back(*(OGRPolygon*)poPolygon->clone());
-        }
+		OGRFeature::DestroyFeature(poFeature);
+	}
+	GDALClose(poDS);
 
-        OGRFeature::DestroyFeature( poFeature );
-    }
-    GDALClose( poDS );
-
-    return polygons;
+	return polygons;
 }
+}  // namespace movetk::io
