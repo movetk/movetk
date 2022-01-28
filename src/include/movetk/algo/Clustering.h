@@ -29,7 +29,7 @@
 
 using namespace std;
 
-namespace movetk_algorithms {
+namespace movetk::algo {
 
     template<class ClusteringTraits>
     class SubTrajectoryClustering {

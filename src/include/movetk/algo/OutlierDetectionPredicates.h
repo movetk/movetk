@@ -37,7 +37,7 @@
 #include <iterator>
 #include <algorithm>
 
-namespace movetk_algorithms {
+namespace movetk::algo {
 
     namespace outlier_detection{
         //using speed_test_tag = movetk_algorithms::outlier_detection_traits::linear_speed_bounded_test_tag;
@@ -51,8 +51,8 @@ namespace movetk_algorithms {
 
 
         template <class T>
-        class TEST<movetk_algorithms::linear_speed_bounded_test_tag,
-                movetk_algorithms::geo_coordinates_tag,
+        class TEST<linear_speed_bounded_test_tag,
+                geo_coordinates_tag,
                 T> {
         private:
             typedef typename T::NT NT;

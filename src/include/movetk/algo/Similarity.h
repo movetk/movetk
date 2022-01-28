@@ -31,10 +31,7 @@
 #include "movetk/geom/GeometryInterface.h"
 
 
-using namespace std;
-
-
-namespace movetk_algorithms {
+namespace movetk::algo {
 
 
     template <class GeometryTraits, class Norm>

@@ -24,36 +24,34 @@
 #ifndef MOVETK_SPLITBYDIFFERENCETHRESHOLD_H
 #define MOVETK_SPLITBYDIFFERENCETHRESHOLD_H
 
-#include <string>
-using std::string;
-#include <tuple>
-#include <optional>
 #include <cmath>
+#include <optional>
+#include <string>
+#include <tuple>
 
+namespace movetk::io {
 template <int FieldIndex, class ProbePoint>
 class SplitByDifferenceThreshold {
-
 public:
-    using field_type = typename std::tuple_element<FieldIndex, ProbePoint>::type;
+	using field_type = typename std::tuple_element<FieldIndex, ProbePoint>::type;
 
-    explicit SplitByDifferenceThreshold(float threshold) : _threshold(threshold) {}
+	explicit SplitByDifferenceThreshold(float threshold) : _threshold(threshold) {}
 
-    bool operator()(const ProbePoint& p) {
-        if (!prev_field_value) {
-            prev_field_value = std::get<FieldIndex>(p);
-            return true;
-        }
-        else {
-            field_type curr_field_value = std::get<FieldIndex>(p);
-            bool above_threshold = std::abs(curr_field_value - prev_field_value.value()) > _threshold;
-            prev_field_value = curr_field_value;
-            return above_threshold;
-        }
-    }
+	bool operator()(const ProbePoint& p) {
+		if (!prev_field_value) {
+			prev_field_value = std::get<FieldIndex>(p);
+			return true;
+		} else {
+			field_type curr_field_value = std::get<FieldIndex>(p);
+			bool above_threshold = std::abs(curr_field_value - prev_field_value.value()) > _threshold;
+			prev_field_value = curr_field_value;
+			return above_threshold;
+		}
+	}
 
 private:
-    std::optional<field_type> prev_field_value;
-    float _threshold;
+	std::optional<field_type> prev_field_value;
+	float _threshold;
 };
-
-#endif //MOVETK_SPLITBYDIFFERENCETHRESHOLD_H
+}  // namespace movetk::io
+#endif  // MOVETK_SPLITBYDIFFERENCETHRESHOLD_H

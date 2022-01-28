@@ -35,7 +35,7 @@
  * @namespace movetk_support
  * @brief support system of movetk
  */
-namespace movetk_support {
+namespace movetk::utils {
 
 
     /*!

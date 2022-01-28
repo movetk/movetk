@@ -24,50 +24,49 @@
 #ifndef MOVETK_SPLITBYDISTANCEFFERENCETHRESHOLD_H
 #define MOVETK_SPLITBYDISTANCEFFERENCETHRESHOLD_H
 
-#include <string>
-using std::string;
-#include <tuple>
-#include <optional>
 #include <cmath>
 #include <functional>
+#include <optional>
+#include <string>
+#include <tuple>
 
+namespace movetk::io {
 template <int LatFieldIndex, int LonFieldIndex, class ProbePoint>
 class SplitByDistanceThreshold {
-
 public:
-    using field_type = typename std::tuple_element<LatFieldIndex, ProbePoint>::type;
+	using field_type = typename std::tuple_element<LatFieldIndex, ProbePoint>::type;
 
-    explicit SplitByDistanceThreshold(float threshold, std::function<double(float, float, float, float)> distance)
-            :_threshold(threshold), _distance(std::move(distance)) { }
+	explicit SplitByDistanceThreshold(float threshold, std::function<double(float, float, float, float)> distance)
+	    : _threshold(threshold)
+	    , _distance(std::move(distance)) {}
 
-    bool operator()(const ProbePoint& p) {
-//        if (!prev_coord) {
-//            prev_coord = std::make_tuple(std::get<LatFieldIndex>(p), std::get<LonFieldIndex>(p));
-        if (!prev_lat_value) {
-            prev_lat_value = std::get<LatFieldIndex>(p);
-            prev_lon_value = std::get<LonFieldIndex>(p);
-            return true;
-        }
-        else {
-//            auto curr_coord = std::make_tuple(std::get<LatFieldIndex>(p), std::get<LonFieldIndex>(p));
-            field_type curr_lat_value = std::get<LatFieldIndex>(p);
-            field_type curr_lon_value = std::get<LonFieldIndex>(p);
-            bool above_threshold = _distance(curr_lat_value, curr_lon_value, *prev_lat_value, *prev_lon_value) > _threshold;
-//            bool above_threshold = _distance(curr_coord, prev_coord) > _threshold;
-//            bool above_threshold = std::abs(curr_field_value - prev_field_value.value()) > _threshold;
-//            prev_coord = curr_coord;
-            prev_lat_value = curr_lat_value;
-            prev_lon_value = curr_lon_value;
-            return above_threshold;
-        }
-    }
+	bool operator()(const ProbePoint& p) {
+		//        if (!prev_coord) {
+		//            prev_coord = std::make_tuple(std::get<LatFieldIndex>(p), std::get<LonFieldIndex>(p));
+		if (!prev_lat_value) {
+			prev_lat_value = std::get<LatFieldIndex>(p);
+			prev_lon_value = std::get<LonFieldIndex>(p);
+			return true;
+		} else {
+			//            auto curr_coord = std::make_tuple(std::get<LatFieldIndex>(p), std::get<LonFieldIndex>(p));
+			field_type curr_lat_value = std::get<LatFieldIndex>(p);
+			field_type curr_lon_value = std::get<LonFieldIndex>(p);
+			bool above_threshold = _distance(curr_lat_value, curr_lon_value, *prev_lat_value, *prev_lon_value) > _threshold;
+			//            bool above_threshold = _distance(curr_coord, prev_coord) > _threshold;
+			//            bool above_threshold = std::abs(curr_field_value - prev_field_value.value()) > _threshold;
+			//            prev_coord = curr_coord;
+			prev_lat_value = curr_lat_value;
+			prev_lon_value = curr_lon_value;
+			return above_threshold;
+		}
+	}
 
 private:
-//    std::optional<std::tuple<field_type, field_type>> prev_coord;
-    std::optional<field_type> prev_lat_value;
-    std::optional<field_type> prev_lon_value;
-    float _threshold;
-    std::function<double(float, float, float, float)> _distance;
+	//    std::optional<std::tuple<field_type, field_type>> prev_coord;
+	std::optional<field_type> prev_lat_value;
+	std::optional<field_type> prev_lon_value;
+	float _threshold;
+	std::function<double(float, float, float, float)> _distance;
 };
-
-#endif //MOVETK_SPLITBYDISTANCEFFERENCETHRESHOLD_H
+}  // namespace movetk::io
+#endif  // MOVETK_SPLITBYDISTANCEFFERENCETHRESHOLD_H

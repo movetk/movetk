@@ -24,6 +24,7 @@
 #ifndef MOVETK_TRAJECTORYTRAITS_H
 #define MOVETK_TRAJECTORYTRAITS_H
 
+namespace movetk::io {
 enum class StorageScheme { tabular, columnar };
 
 /**
@@ -31,19 +32,22 @@ enum class StorageScheme { tabular, columnar };
  * @tparam _ProbeTraits
  * @tparam _SortedSessions  All points of a trajectory are already sorted by the field at index SortByFieldIdx
  * @tparam _SplitByFieldIdx  The field at this index specifies the trajectory (session)
- * @tparam _SortByFieldIdx  The trajectory is to be sorted in ascending order by the values of this field (typically time)
+ * @tparam _SortByFieldIdx  The trajectory is to be sorted in ascending order by the values of this field (typically
+ * time)
  * @tparam _trajectory_type  Specialization of the Trajectory class type with specific field types of trajectory points
  */
 template <class _ProbeTraits,
-//        bool _SortedSessions,
-          int _SplitByFieldIdx, int _SortByFieldIdx, class _trajectory_type>
+          //        bool _SortedSessions,
+          int _SplitByFieldIdx,
+          int _SortByFieldIdx,
+          class _trajectory_type>
 struct _TrajectoryTraits {
-    typedef _ProbeTraits ProbeTraits;
-//    constexpr static bool SortedSessions = _SortedSessions;
-    constexpr static int SplitByFieldIdx = _SplitByFieldIdx;
-    constexpr static int SortByFieldIdx = _SortByFieldIdx;
-    typedef _trajectory_type trajectory_type;
+	typedef _ProbeTraits ProbeTraits;
+	//    constexpr static bool SortedSessions = _SortedSessions;
+	constexpr static int SplitByFieldIdx = _SplitByFieldIdx;
+	constexpr static int SortByFieldIdx = _SortByFieldIdx;
+	typedef _trajectory_type trajectory_type;
 };
 
-
-#endif //MOVETK_TRAJECTORYTRAITS_H
+}  // namespace movetk::io
+#endif  // MOVETK_TRAJECTORYTRAITS_H

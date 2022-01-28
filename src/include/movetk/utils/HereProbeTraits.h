@@ -76,7 +76,7 @@ namespace here
 
             typedef typename ProbeCsv::value_type ProbePoint;
 
-            typedef _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
+            typedef movetk::io::_ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
 
         } // namespace raw
     }     // namespace c2d

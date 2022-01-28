@@ -29,7 +29,7 @@
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/utils/Iterators.h"
 
-namespace movetk_algorithms {
+namespace movetk::algo {
 
 
 /**

@@ -28,7 +28,7 @@
 #include "SegmentationPredicates.h"
 #include "Segmentation.h"
 
-namespace movetk_algorithms {
+namespace movetk::algo {
     template<class NT, class MovetkGeometryKernel, size_t dimensions>
     struct SegmentationTraits {
         // type definitions required for algorithm

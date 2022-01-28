@@ -25,7 +25,7 @@
 #define DISTANCEINTERFACE_H
 #include "DistanceTraits.h"
 
-namespace movetk_core
+namespace movetk::metric
 {
     /**
      * @brief Interface for the squared distance algorithm

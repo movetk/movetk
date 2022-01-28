@@ -30,17 +30,17 @@ using std::cout, std::endl;
 #include <vector>
 using std::vector;
 #include <algorithm>
-#include <memory>
 #include <iterator>
+#include <memory>
 
-#include "movetk/io/TrajectoryTraits.h"
-#include "Splitter.h"
-#include "SplitByField.h"
 #include "SortByField.h"
-#include "movetk/utils/Transpose.h"
-//#include "ColumnarTrajectory.h"
+#include "SplitByField.h"
+#include "Splitter.h"
+#include "movetk/io/TrajectoryTraits.h"
 #include "movetk/io/TuplePrinter.h"
+#include "movetk/utils/Transpose.h"
 
+namespace movetk::io {
 /**
  *
  * @tparam TrajectoryTraits
@@ -51,80 +51,68 @@ using std::vector;
  */
 template <class TrajectoryTraits, class ProbeInputIterator, bool SortTrajectory = true, bool RemoveDuplicates = true>
 class TrajectoryReader {
-
 public:
-    using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
-    constexpr static int SplitOnFieldIdx = TrajectoryTraits::SplitByFieldIdx;
-    constexpr static int SortByFieldIdx = TrajectoryTraits::SortByFieldIdx;
-    using ProbePoint = typename std::iterator_traits<ProbeInputIterator>::value_type;
-    using value_type = typename TrajectoryTraits::trajectory_type;
-    class iterator;
-    using SplitByFieldIdx = SplitByField<SplitOnFieldIdx, ProbePoint>;
+	using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
+	constexpr static int SplitOnFieldIdx = TrajectoryTraits::SplitByFieldIdx;
+	constexpr static int SortByFieldIdx = TrajectoryTraits::SortByFieldIdx;
+	using ProbePoint = typename std::iterator_traits<ProbeInputIterator>::value_type;
+	using value_type = typename TrajectoryTraits::trajectory_type;
+	class iterator;
+	using SplitByFieldIdx = SplitByField<SplitOnFieldIdx, ProbePoint>;
 
-    TrajectoryReader(ProbeInputIterator start, ProbeInputIterator beyond)
-    {
-        // Split trajectory by attribute
-        _splitter = std::make_unique<Splitter<SplitByFieldIdx, ProbeInputIterator>>(start, beyond);
-        _splitit = std::begin(*_splitter);
-        _splitit_end = std::end(*_splitter);
-    }
+	TrajectoryReader(ProbeInputIterator start, ProbeInputIterator beyond) {
+		// Split trajectory by attribute
+		_splitter = std::make_unique<Splitter<SplitByFieldIdx, ProbeInputIterator>>(start, beyond);
+		_splitit = std::begin(*_splitter);
+		_splitit_end = std::end(*_splitter);
+	}
 
-    /// Status of the underlying stream
-    /// @{
-    inline bool good() {
-        return _splitit != _splitit_end;
-    }
+	/// Status of the underlying stream
+	/// @{
+	inline bool good() { return _splitit != _splitit_end; }
 
-    iterator begin() {
-        return iterator(*this);
-    }
+	iterator begin() { return iterator(*this); }
 
-    iterator end() {
-        return iterator();
-    }
+	iterator end() { return iterator(); }
 
 private:
-    std::unique_ptr<Splitter<SplitByFieldIdx, ProbeInputIterator>> _splitter;
-    typename Splitter<SplitByFieldIdx, ProbeInputIterator>::iterator _splitit;
-    typename Splitter<SplitByFieldIdx, ProbeInputIterator>::iterator _splitit_end;
+	std::unique_ptr<Splitter<SplitByFieldIdx, ProbeInputIterator>> _splitter;
+	typename Splitter<SplitByFieldIdx, ProbeInputIterator>::iterator _splitit;
+	typename Splitter<SplitByFieldIdx, ProbeInputIterator>::iterator _splitit_end;
 
-    inline value_type read_trajectory() {
+	inline value_type read_trajectory() {
+		// Splitter<SplitByFieldIdx, ProbeInputIterator>::iterator::value_type
+		auto segment = *_splitit;
 
-        // Splitter<SplitByFieldIdx, ProbeInputIterator>::iterator::value_type
-        auto segment = *_splitit;
+		if constexpr (SortTrajectory || RemoveDuplicates) {
+			// Sort trajectory by attribute
+			SortByField<SortByFieldIdx, ProbePoint> sort_by_field_asc;
+			std::sort(segment.begin(), segment.end(), sort_by_field_asc);
+		}
 
-        if constexpr (SortTrajectory || RemoveDuplicates) {
-            // Sort trajectory by attribute
-            SortByField<SortByFieldIdx, ProbePoint> sort_by_field_asc;
-            std::sort(segment.begin(), segment.end(), sort_by_field_asc);
-        }
+		if constexpr (RemoveDuplicates) {
+			// Eliminate if there are points with same field value.
+			auto has_same_field_value = [](ProbePoint &p1, ProbePoint &p2) {
+				return std::get<SortByFieldIdx>(p1) == std::get<SortByFieldIdx>(p2);
+			};
+			auto last = std::unique(segment.begin(), segment.end(), has_same_field_value);
+			segment.erase(last, segment.end());
+		}
 
-        if constexpr (RemoveDuplicates) {
-            // Eliminate if there are points with same field value.
-            auto has_same_field_value = [] (ProbePoint& p1, ProbePoint& p2) {
-                return std::get<SortByFieldIdx>(p1) == std::get<SortByFieldIdx>(p2);
-            };
-            auto last = std::unique(segment.begin(), segment.end(), has_same_field_value);
-            segment.erase(last, segment.end());
-        }
+		if constexpr (value_type::storage_scheme() == StorageScheme::columnar) {
+			// Convert vector of tuples to tuple of vectors
+			auto trans_segment = Transpose(segment)();
+			// Construct the trajectory
+			value_type traj{trans_segment};
+			return traj;
+		} else {
+			// Construct the trajectory
+			value_type traj{segment};
+			return traj;
+		}
+	}
 
-        if constexpr (value_type::storage_scheme() == StorageScheme::columnar) {
-            // Convert vector of tuples to tuple of vectors
-            auto trans_segment = Transpose(segment)();
-            // Construct the trajectory
-            value_type traj { trans_segment };
-            return traj;
-        }
-        else {
-            // Construct the trajectory
-            value_type traj { segment };
-            return traj;
-        }
-    }
-
-    inline void increment_underlying_iterator() {
-        _splitit++;
-    }
+	inline void increment_underlying_iterator() { _splitit++; }
 };
 
 
@@ -132,56 +120,48 @@ private:
 template <class TrajectoryTraits, class ProbeInputIterator, bool SortTrajectory, bool RemoveDuplicates>
 class TrajectoryReader<TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates>::iterator {
 private:
-    TrajectoryReader::value_type _trajectory;
-    TrajectoryReader* _parent;
+	TrajectoryReader::value_type _trajectory;
+	TrajectoryReader *_parent;
+
 public:
-    typedef std::input_iterator_tag         iterator_category;
-    typedef TrajectoryReader::value_type    value_type;
-    typedef std::size_t                     difference_type;
-    typedef TrajectoryReader::value_type *  pointer;
-    typedef TrajectoryReader::value_type &  reference;
+	typedef std::input_iterator_tag iterator_category;
+	typedef TrajectoryReader::value_type value_type;
+	typedef std::size_t difference_type;
+	typedef TrajectoryReader::value_type *pointer;
+	typedef TrajectoryReader::value_type &reference;
 
-    /// Construct an empty/end iterator
-    inline iterator() : _parent(nullptr) {}
-    /// Construct an iterator at the beginning of the @p parent object.
-    inline iterator(TrajectoryReader &parent) : _parent(parent.good() ? &parent : nullptr) {
-        ++(*this);
-    }
+	/// Construct an empty/end iterator
+	inline iterator() : _parent(nullptr) {}
+	/// Construct an iterator at the beginning of the @p parent object.
+	inline iterator(TrajectoryReader &parent) : _parent(parent.good() ? &parent : nullptr) { ++(*this); }
 
-    /// Read one segment, if possible. Set to end if parent is not good anymore.
-    inline iterator &operator++() {
-        if (_parent != nullptr) {
-            _trajectory = _parent->read_trajectory();
-            if (!_parent->good()) {
-                _parent = nullptr;
-            }
-            else {
-                _parent->increment_underlying_iterator();
-            }
-        }
-        return *this;
-    }
+	/// Read one segment, if possible. Set to end if parent is not good anymore.
+	inline iterator &operator++() {
+		if (_parent != nullptr) {
+			_trajectory = _parent->read_trajectory();
+			if (!_parent->good()) {
+				_parent = nullptr;
+			} else {
+				_parent->increment_underlying_iterator();
+			}
+		}
+		return *this;
+	}
 
-    inline iterator operator++(int) {
-        iterator copy = *this;
-        ++(*this);
-        return copy;
-    }
+	inline iterator operator++(int) {
+		iterator copy = *this;
+		++(*this);
+		return copy;
+	}
 
-    inline TrajectoryReader::value_type &operator*() {
-        return _trajectory;
-    }
+	inline TrajectoryReader::value_type &operator*() { return _trajectory; }
 
-    inline TrajectoryReader::value_type *operator->() {
-        return &_trajectory;
-    }
+	inline TrajectoryReader::value_type *operator->() { return &_trajectory; }
 
-    bool operator==(iterator const &other) {
-        return (this == &other) || (_parent == nullptr && other._parent == nullptr);
-    }
-    bool operator!=(iterator const &other) {
-        return !(*this == other);
-    }
+	bool operator==(iterator const &other) {
+		return (this == &other) || (_parent == nullptr && other._parent == nullptr);
+	}
+	bool operator!=(iterator const &other) { return !(*this == other); }
 };
-
-#endif //MOVETK_TRAJECTORYREADER_H
+}  // namespace movetk::io
+#endif  // MOVETK_TRAJECTORYREADER_H

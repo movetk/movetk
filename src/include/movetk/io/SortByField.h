@@ -25,27 +25,22 @@
 #define MOVETK_SORTBYFIELD_H
 
 #include <string>
-using std::string;
 #include <tuple>
 
-
+namespace movet::io {
 // sort using a custom function object
 template <int FieldIndex, class ProbePoint, bool asc = true>
 class SortByField {
-
 public:
+	template <bool enable = asc>
+	bool operator()(ProbePoint a, ProbePoint b, typename std::enable_if<enable>::type* = 0) const {
+		return std::get<FieldIndex>(a) < std::get<FieldIndex>(b);
+	}
 
-    template <bool enable=asc>
-    bool operator()(ProbePoint a, ProbePoint b, typename std::enable_if<enable>::type* = 0) const
-    {
-        return std::get<FieldIndex>(a) < std::get<FieldIndex>(b);
-    }
-
-    template <bool enable=asc>
-    bool operator()(ProbePoint a, ProbePoint b, typename std::enable_if<!enable>::type* = 0) const
-    {
-        return !(std::get<FieldIndex>(a) < std::get<FieldIndex>(b));
-    }
+	template <bool enable = asc>
+	bool operator()(ProbePoint a, ProbePoint b, typename std::enable_if<!enable>::type* = 0) const {
+		return !(std::get<FieldIndex>(a) < std::get<FieldIndex>(b));
+	}
 };
-
-#endif //MOVETK_SORTBYFIELD_H
+}  // namespace movet::io
+#endif  // MOVETK_SORTBYFIELD_H

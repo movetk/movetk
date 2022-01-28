@@ -35,7 +35,7 @@
 /*!
  * @brief the core of movetk
  */
-namespace movetk_core {
+namespace movetk::utils {
 /*!
  * @brief an adaptor to std::iterator for for inserting at the end of a container
  * @details unlike the std::back_inserter, ths iterator has a value_type.
@@ -282,5 +282,5 @@ private:
 		}
 	}
 };
-}  // namespace movetk_core
+}  // namespace movetk::utils
 #endif  // MOVETK_ITERATORS_H

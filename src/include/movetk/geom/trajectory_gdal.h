@@ -25,39 +25,39 @@
 #ifndef MOVETK_TRAJECTORY_GDAL_H
 #define MOVETK_TRAJECTORY_GDAL_H
 
-#include <iostream>
-#include <memory>
 #include <ogr_geometry.h>
 
+#include <iostream>
+#include <memory>
+
+namespace movetk::geom {
+
 template <class LatIterator, class LonIterator>
-std::unique_ptr<OGRMultiPoint> to_multipoint(LatIterator first_lat, LatIterator last_lat, LonIterator first_lon)
-{
-    auto mp = std::make_unique<OGRMultiPoint>();
-    while(first_lat != last_lat) {
-        mp->addGeometryDirectly(new OGRPoint(*first_lon++, *first_lat++));
-    }
-    return mp;
+std::unique_ptr<OGRMultiPoint> to_multipoint(LatIterator first_lat, LatIterator last_lat, LonIterator first_lon) {
+	auto mp = std::make_unique<OGRMultiPoint>();
+	while (first_lat != last_lat) {
+		mp->addGeometryDirectly(new OGRPoint(*first_lon++, *first_lat++));
+	}
+	return mp;
 }
 
 template <class LatIterator, class LonIterator>
-std::unique_ptr<OGRPoint> to_point(LatIterator first_lat, LonIterator first_lon)
-{
-    return std::make_unique<OGRPoint>(*first_lon, *first_lat);
+std::unique_ptr<OGRPoint> to_point(LatIterator first_lat, LonIterator first_lon) {
+	return std::make_unique<OGRPoint>(*first_lon, *first_lat);
 }
 
 template <class LatIterator, class LonIterator>
-std::unique_ptr<OGRLineString> to_linestring(LatIterator first_lat, LatIterator last_lat, LonIterator first_lon)
-{
-    auto mp = std::make_unique<OGRLineString>();
-    while(first_lat != last_lat) {
-        mp->addPoint(*first_lon++, *first_lat++);
-    }
-    return mp;
+std::unique_ptr<OGRLineString> to_linestring(LatIterator first_lat, LatIterator last_lat, LonIterator first_lon) {
+	auto mp = std::make_unique<OGRLineString>();
+	while (first_lat != last_lat) {
+		mp->addPoint(*first_lon++, *first_lat++);
+	}
+	return mp;
 }
 
 bool intersects(const OGRGeometry* p1, const OGRGeometry* p2) {
-    return p1->Intersects(p2);
+	return p1->Intersects(p2);
 }
 
-
-#endif //MOVETK_TRAJECTORY_GDAL_H
+}  // namespace movetk::geom
+#endif  // MOVETK_TRAJECTORY_GDAL_H

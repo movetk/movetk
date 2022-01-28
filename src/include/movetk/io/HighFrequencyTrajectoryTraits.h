@@ -24,6 +24,7 @@
 #ifndef MOVETK_HIGH_FREQUENCY_TRAJECTORYTRAITS_H
 #define MOVETK_HIGH_FREQUENCY_TRAJECTORYTRAITS_H
 
+namespace movetk::io {
 /**
  * Packs the template parameters required for high freq traj generation (fed to HighFrequencyTrajectoryReader)
  * @tparam _TrajectoryTraits
@@ -33,10 +34,12 @@
  */
 template <class _TrajectoryTraits, int _DateIdx, int _LatIdx, int _LonIdx>
 struct _HighFrequencyTrajectoryTraits {
-    typedef _TrajectoryTraits TrajectoryTraits;
-    constexpr static int DateIdx = _DateIdx;
-    constexpr static int LatIdx = _LatIdx;
-    constexpr static int LonIdx = _LonIdx;
+	typedef _TrajectoryTraits TrajectoryTraits;
+	constexpr static int DateIdx = _DateIdx;
+	constexpr static int LatIdx = _LatIdx;
+	constexpr static int LonIdx = _LonIdx;
 };
+}  // namespace movetk::io
 
-#endif //MOVETK_HIGH_FREQUENCY_TRAJECTORYTRAITS_H
+
+#endif  // MOVETK_HIGH_FREQUENCY_TRAJECTORYTRAITS_H

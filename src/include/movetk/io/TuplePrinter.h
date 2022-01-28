@@ -24,34 +24,31 @@
 #ifndef MOVETK_TUPLEPRINTER_H
 #define MOVETK_TUPLEPRINTER_H
 
+#include <iomanip>
 #include <ostream>
 #include <tuple>
-#include <iomanip>
-using std::setprecision;
 
+namespace movetk::io {
 // helper function to print a tuple of any size
-template<class Tuple, std::size_t N>
+template <class Tuple, std::size_t N>
 struct TuplePrinter {
-    static void print_tuple(std::ostream& os, const Tuple& t, int precision)
-    {
-        TuplePrinter<Tuple, N-1>::print_tuple(os, t, precision);
-        os << "," << setprecision(precision) << std::get<N-1>(t);
-    }
+	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
+		TuplePrinter<Tuple, N - 1>::print_tuple(os, t, precision);
+		os << "," << setprecision(precision) << std::get<N - 1>(t);
+	}
 };
 
-template<class Tuple>
-struct TuplePrinter<Tuple, 1>{
-    static void print_tuple(std::ostream& os, const Tuple& t, int precision)
-    {
-        os << setprecision(precision) << std::get<0>(t);
-    }
+template <class Tuple>
+struct TuplePrinter<Tuple, 1> {
+	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
+		os << setprecision(precision) << std::get<0>(t);
+	}
 };
 
-template<class... Args>
-void print_tuple(std::ostream& os, const std::tuple<Args...>& t, int precision=8)
-{
-    os.setf(std::ios::fixed);
-    TuplePrinter<decltype(t), sizeof...(Args)>::print_tuple(os, t, precision);
+template <class... Args>
+void print_tuple(std::ostream& os, const std::tuple<Args...>& t, int precision = 8) {
+	os.setf(std::ios::fixed);
+	TuplePrinter<decltype(t), sizeof...(Args)>::print_tuple(os, t, precision);
 }
 // end helper function
 
@@ -59,13 +56,12 @@ void print_tuple(std::ostream& os, const std::tuple<Args...>& t, int precision=8
  * Print arguments to os enclosed by square braces, for example, for printing coordinates in GeoJSON.
  */
 template <class Arg, class... Args>
-inline void variadic_print(std::ostream& os, Arg&& first, Args&&... rest)
-{
-    os << "[";
-    os << std::forward<Arg>(first);
-    ((os << ", " << setprecision(8) << std::forward<Args>(rest)), ...);
-    os << "]";
+inline void variadic_print(std::ostream& os, Arg&& first, Args&&... rest) {
+	os << "[";
+	os << std::forward<Arg>(first);
+	((os << ", " << setprecision(8) << std::forward<Args>(rest)), ...);
+	os << "]";
 }
 
-
-#endif //MOVETK_TUPLEPRINTER_H
+}  // namespace movetk::io
+#endif  // MOVETK_TUPLEPRINTER_H

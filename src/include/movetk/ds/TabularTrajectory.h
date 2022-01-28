@@ -29,39 +29,38 @@
 #ifndef MOVETK_TABULAR_TRAJECTORY_H
 #define MOVETK_TABULAR_TRAJECTORY_H
 
-#include <iostream>
-#include <tuple>
-#include <vector>
-
-using std::tuple;
-
 #include <algorithm>
 #include <array>
 #include <exception>
+#include <iostream>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "movetk/algo/Interpolation.h"
 #include "movetk/algo/PolylineUtils.h"
 #include "movetk/io/TrajectoryTraits.h"
 #include "movetk/io/TuplePrinter.h"
 
-
+namespace movetk::ds {
 template <class... fields>
 class TabularTrajectory {
 public:
 	constexpr static int NUM_FIELDS = sizeof...(fields);
-	typedef std::tuple<fields...> value_type;
+	using value_type = std::tuple<fields...>;
+	using ValueList = std::vector<value_type>;
 	/*!
 	 * TrajectoryIterator
 	 */
-	using TrajectoryIterator = typename std::vector<std::tuple<fields...>>::iterator;
-	using ConstTrajectoryIterator = typename std::vector<std::tuple<fields...>>::const_iterator;
-	using ReverseTrajectoryIterator = typename std::vector<std::tuple<fields...>>::reverse_iterator;
+	using TrajectoryIterator = typename ValueList::iterator;
+	using ConstTrajectoryIterator = typename ValueList::const_iterator;
+	using ReverseTrajectoryIterator = typename ValueList::reverse_iterator;
 
 	template <int FieldIdx>
 	using FieldType = std::tuple_element_t<FieldIdx, value_type>;
 
-	explicit TabularTrajectory(std::vector<std::tuple<fields...>> points) : _points(points) {}
+	explicit TabularTrajectory(ValueList &&points) : _points(std::move(points)) {}
+	explicit TabularTrajectory(const ValueList &points) : _points(points) {}
 
 	TabularTrajectory(TrajectoryIterator first, TrajectoryIterator last) {
 		std::copy(first, last, std::back_inserter(_points));
@@ -79,13 +78,13 @@ public:
 
 	std::size_t size() { return _points.size(); }
 
-	constexpr static StorageScheme storage_scheme() { return StorageScheme::tabular; }
+	constexpr static io::StorageScheme storage_scheme() { return StorageScheme::tabular; }
 
 	constexpr std::size_t num_fields() { return sizeof...(fields); }
 
 	template <int field_idx>
-	auto get() -> std::vector<typename std::tuple_element<field_idx, tuple<fields...>>::type> {
-		std::vector<typename std::tuple_element<field_idx, tuple<fields...>>::type> field_vector;
+	auto get() -> std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type> {
+		std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type> field_vector;
 		for (auto &p : _points) {
 			field_vector.push_back(std::get<field_idx>(p));
 		}
@@ -96,10 +95,11 @@ public:
 	 * @brief Retrieves the vector of raw data points
 	 * @return Const reference to the data points
 	 */
-	const std::vector<std::tuple<fields...>> &data() { return _points; }
+	const ValueList &data() { return _points; }
 
 	template <int field_idx>
-	void update_field(std::vector<typename std::tuple_element<field_idx, tuple<fields...>>::type> &new_field_values) {
+	void update_field(
+	    std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type> &new_field_values) {
 		assert(new_field_values.size() == _points.size());
 		auto it = std::begin(_points);
 		for (auto fv : new_field_values) {
@@ -112,9 +112,9 @@ public:
 
 	TrajectoryIterator end() { return _points.end(); }
 
-	typename std::vector<std::tuple<fields...>>::reverse_iterator rbegin() { return _points.rbegin(); }
+	ReverseTrajectoryIterator rbegin() { return _points.rbegin(); }
 
-	typename std::vector<std::tuple<fields...>>::reverse_iterator rend() { return _points.rend(); }
+	ReverseTrajectoryIterator rend() { return _points.rend(); }
 
 	/**
 	 * Insert points [first, last) before pos.
@@ -265,7 +265,7 @@ public:
 
 	public:
 		typedef std::input_iterator_tag iterator_category;
-		typedef typename std::tuple_element<field_idx, tuple<fields...>>::type value_type;
+		typedef typename std::tuple_element<field_idx, std::tuple<fields...>>::type value_type;
 		typedef std::size_t difference_type;
 		typedef value_type *pointer;
 		typedef value_type &reference;
@@ -273,7 +273,7 @@ public:
 		/// Construct an iterator at the beginning of the @p parent object.
 		inline FieldIterator(TabularTrajectory &parent) : _parent(&parent) { _it = _parent->begin(); }
 
-		static FieldIterator end_it(TabularTrajectory& parent){
+		static FieldIterator end_it(TabularTrajectory &parent) {
 			FieldIterator iterator(parent);
 			iterator._it = parent.end();
 			return iterator;
@@ -376,5 +376,5 @@ TabularTrajectory<fields..., new_fields...> concat_field(TabularTrajectory<field
 	}
 	return TabularTrajectory<fields..., new_fields...>(new_data);
 }
-
+}  // namespace movetk::ds
 #endif  // MOVETK_TABULAR_TRAJECTORY_H

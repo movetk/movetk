@@ -37,11 +37,7 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/property_map/property_map.hpp>
 
-using namespace std;
-
-namespace movetk_algorithms
-{
-
+namespace movetk::algo {
     template <class GeometryTraits, class Norm>
     struct FindFarthest
     {
@@ -86,7 +82,7 @@ namespace movetk_algorithms
         // based on http://doi.acm.org/10.1145/177424.178097
     private:
         typedef typename GeometryTraits::NT NT;
-        movetk_core::MakeSegment<GeometryTraits> make_segment;
+        geom::MakeSegment<GeometryTraits> make_segment;
         FindFarthest farthest;
         NT eps;
 

@@ -26,7 +26,7 @@
 #define MOVETK_TEXT_H
 
 #include <string>
-
-bool ends_with(std::string const & value, std::string const & ending);
-
-#endif //MOVETK_TEXT_H
+namespace movetk::utils {
+bool ends_with(std::string const& value, std::string const& ending);
+}
+#endif  // MOVETK_TEXT_H

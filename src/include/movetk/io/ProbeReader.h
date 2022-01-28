@@ -24,122 +24,93 @@
 #ifndef MOVETK_PROBEREADER_H
 #define MOVETK_PROBEREADER_H
 
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <utility> // for move
-#include <exception>
-
-#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
+#include <exception>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <utility>  // for move
 
 #include "movetk/io/csv/csv.h"
-#include "movetk/utils/text.h" // for ends_with
+#include "movetk/utils/text.h"  // for ends_with
 
+namespace movetk::io {
 template <class ProbeTraits>
-class ProbeReader
-{
-
+class ProbeReader {
 public:
-    typedef typename ProbeTraits::ProbeCsv ProbeCsv;
-    typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
+	typedef typename ProbeTraits::ProbeCsv ProbeCsv;
+	typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
 
-    explicit ProbeReader(std::unique_ptr<std::istream> in) : _in(std::move(in)) {}
+	explicit ProbeReader(std::unique_ptr<std::istream> in) : _in(std::move(in)) {}
 
-    virtual ProbeInputIterator begin() = 0;
+	virtual ProbeInputIterator begin() = 0;
 
-    inline virtual ProbeInputIterator end()
-    {
-        return ProbeInputIterator();
-    }
+	inline virtual ProbeInputIterator end() { return ProbeInputIterator(); }
 
-    inline auto columns()
-    {
-        return _table->columns();
-    }
+	inline auto columns() { return _table->columns(); }
 
-    virtual ~ProbeReader() = default;
+	virtual ~ProbeReader() = default;
 
 protected:
-    std::unique_ptr<std::istream> _in;
-    std::unique_ptr<ProbeCsv> _table = nullptr;
+	std::unique_ptr<std::istream> _in;
+	std::unique_ptr<ProbeCsv> _table = nullptr;
 };
 
 template <class ProbeTraits>
-class CsvProbeReader : public ProbeReader<ProbeTraits>
-{
-
+class CsvProbeReader : public ProbeReader<ProbeTraits> {
 public:
-    typedef typename ProbeTraits::ProbeCsv ProbeCsv;
-    typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
+	typedef typename ProbeTraits::ProbeCsv ProbeCsv;
+	typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
 
-    explicit CsvProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in))
-    {
-        this->_table = std::make_unique<ProbeCsv>(*this->_in, ProbeTraits::delimiter, ProbeTraits::header);
-    }
+	explicit CsvProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in)) {
+		this->_table = std::make_unique<ProbeCsv>(*this->_in, ProbeTraits::delimiter, ProbeTraits::header);
+	}
 
-    inline virtual ProbeInputIterator begin()
-    {
-        return ProbeInputIterator(*this->_table);
-    }
+	inline virtual ProbeInputIterator begin() { return ProbeInputIterator(*this->_table); }
 };
 
 template <class ProbeTraits>
-class ZippedProbeReader : public ProbeReader<ProbeTraits>
-{
-
+class ZippedProbeReader : public ProbeReader<ProbeTraits> {
 public:
-    typedef typename ProbeTraits::ProbeCsv ProbeCsv;
-    typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
+	typedef typename ProbeTraits::ProbeCsv ProbeCsv;
+	typedef typename ProbeTraits::ProbeInputIterator ProbeInputIterator;
 
-    explicit ZippedProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in))
-    {
-        flt_in.push(boost::iostreams::gzip_decompressor());
-        flt_in.push(*this->_in);
-        this->_table = std::make_unique<ProbeCsv>(flt_in, ProbeTraits::delimiter, ProbeTraits::header);
-    }
+	explicit ZippedProbeReader(std::unique_ptr<std::istream> in) : ProbeReader<ProbeTraits>(std::move(in)) {
+		flt_in.push(boost::iostreams::gzip_decompressor());
+		flt_in.push(*this->_in);
+		this->_table = std::make_unique<ProbeCsv>(flt_in, ProbeTraits::delimiter, ProbeTraits::header);
+	}
 
-    inline virtual ProbeInputIterator begin()
-    {
-        return ProbeInputIterator(*this->_table);
-    }
+	inline virtual ProbeInputIterator begin() { return ProbeInputIterator(*this->_table); }
 
 private:
-    boost::iostreams::filtering_stream<boost::iostreams::input> flt_in;
+	boost::iostreams::filtering_stream<boost::iostreams::input> flt_in;
 };
 
-class ProbeReaderFactory
-{
-
+class ProbeReaderFactory {
 public:
-    template <class ProbeTraits>
-    static std::unique_ptr<ProbeReader<ProbeTraits>> create(const char *file_name)
-    {
-        // TODO: check if file exists
-        if (ends_with(file_name, ".csv"))
-        {
-            auto fin = std::make_unique<std::ifstream>(file_name);
-            return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(fin));
-        }
-        else if (ends_with(file_name, ".gz"))
-        {
-            auto fin = std::make_unique<std::ifstream>(file_name, std::ios_base::in | std::ios_base::binary);
-            return std::make_unique<ZippedProbeReader<ProbeTraits>>(std::move(fin));
-        }
-        else
-        {
-            throw std::invalid_argument("Unsupported probe file extension!");
-        }
-    }
+	template <class ProbeTraits>
+	static std::unique_ptr<ProbeReader<ProbeTraits>> create(const char *file_name) {
+		// TODO: check if file exists
+		if (ends_with(file_name, ".csv")) {
+			auto fin = std::make_unique<std::ifstream>(file_name);
+			return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(fin));
+		} else if (ends_with(file_name, ".gz")) {
+			auto fin = std::make_unique<std::ifstream>(file_name, std::ios_base::in | std::ios_base::binary);
+			return std::make_unique<ZippedProbeReader<ProbeTraits>>(std::move(fin));
+		} else {
+			throw std::invalid_argument("Unsupported probe file extension!");
+		}
+	}
 
-    template <class ProbeTraits>
-    static std::unique_ptr<ProbeReader<ProbeTraits>> create_from_string(const char *csv_string)
-    {
-        auto ss = std::make_unique<std::istringstream>(csv_string);
-        return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(ss));
-    }
+	template <class ProbeTraits>
+	static std::unique_ptr<ProbeReader<ProbeTraits>> create_from_string(const char *csv_string) {
+		auto ss = std::make_unique<std::istringstream>(csv_string);
+		return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(ss));
+	}
 };
-
-#endif //MOVETK_PROBEREADER_H
+}  // namespace movetk::io
+#endif  // MOVETK_PROBEREADER_H
