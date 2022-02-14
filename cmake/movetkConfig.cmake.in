@@ -7,6 +7,35 @@ set_and_check(MOVETK_DEPENDENCIES_FILE "${CMAKE_CURRENT_LIST_DIR}/helpers/Resolv
 # Perform nice find_package checks
 include(CMakeFindDependencyMacro)
 
+# Include dependencies of backends
+
+# Macro to get subdirectories
+# https://stackoverflow.com/questions/7787823/cmake-how-to-get-the-name-of-all-subdirectories-of-a-directory
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+    IF(IS_DIRECTORY ${curdir}/${child})
+      LIST(APPEND dirlist ${child})
+    ENDIF()
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
+
+SUBDIRLIST(_BACKEND_DIRS ${CMAKE_CURRENT_LIST_DIR}/backends)
+foreach(_BACKEND_DIR ${_BACKEND_DIRS})
+    message(STATUS "Checking ${CMAKE_CURRENT_LIST_DIR}/backends/${_BACKEND_DIR}")
+    file(GLOB _BACKEND_CMAKE_FILES LIST_DIRECTORIES FALSE ${CMAKE_CURRENT_LIST_DIR}/backends/${_BACKEND_DIR}/cmake/*.cmake)
+    foreach(_FILE ${_BACKEND_CMAKE_FILES})
+        string(TOLOWER ${_FILE} _FILE_LC)
+        message(STATUS "Checking ${_FILE}")
+        if(${_FILE_LC} MATCHES "${_BACKEND_DIR}backenddependencies.cmake")
+            message(STATUS "Found dependencies file")
+            include(${_FILE})
+        endif()
+    endforeach()
+endforeach()
+
 # Include the files
 include(${MOVETK_DEPENDENCIES_FILE})
 include(${MOVETK_TARGETS_FILE})
