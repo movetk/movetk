@@ -9,11 +9,6 @@ elseif(MSVC)
         list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/msvc")
 endif()
 
-#
-# Include common CMake tools and workarounds
-#
-include(tools)
-
 set(SOURCES
         geo/geo.cpp
         include/movetk/algo/AlgorithmTraits.h
@@ -41,9 +36,9 @@ set(SOURCES
         include/movetk/geom/trajectory_gdal.h
         include/movetk/geom/trajectory_to_interface.h
         include/movetk/io/CartesianProbeTraits.h
-        include/movetk/io/csv/CategoricalField.h
+        include/movetk/io/CategoricalField.h
         include/movetk/io/csv/csv.h
-        include/movetk/io/csv/ParseDate.h
+        include/movetk/io/ParseDate.h
         include/movetk/io/gdal_PolygonReader.h
         include/movetk/io/GeoJSON.h
         include/movetk/io/HighFrequencyTrajectoryReader.h
@@ -68,11 +63,7 @@ set(SOURCES
         include/movetk/metric/Norm.h
         include/movetk/test_data.h
         include/movetk/utils/Asserts.h
-        include/movetk/utils/GeolifeProbeTraits.h
-        include/movetk/utils/GeolifeTrajectoryTraits.h
         include/movetk/utils/GeometryBackendTraits.h
-        include/movetk/utils/HereProbeTraits.h
-        include/movetk/utils/HereTrajectoryTraits.h
         include/movetk/utils/Iterators.h
         include/movetk/utils/Requirements.h
         include/movetk/utils/StringUtils.h
@@ -83,7 +74,6 @@ set(SOURCES
         include/movetk/utils/unituple.h
         io/gdal_PolygonReader.cpp
         logging.cpp
-        utils/text.cpp
 )
 
 #Potentially more options than Boost and CGAL
@@ -104,7 +94,7 @@ endif()
 
 # Add source groups for visual studio
 if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
-	source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SOURCES})
+    source_group(TREE ${CMAKE_CURRENT_LIST_DIR} FILES ${SOURCES})
 endif()
 
 #
@@ -204,8 +194,20 @@ install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR}
         COMPONENT Devel
         )
 # Install our dependencies resolution script
-install(FILES ${CMAKE_CURRENT_LIST_DIR}/../cmake/ResolveMovetkDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
-install(FILES ${CMAKE_CURRENT_LIST_DIR}/../cmake/PatchGdalInclude.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
+set(_MOVETK_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR}/../cmake)
+install(FILES ${_MOVETK_CMAKE_DIR}/ResolveMovetkDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
+install(FILES ${_MOVETK_CMAKE_DIR}/PatchGdalInclude.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
+install(FILES ${_MOVETK_CMAKE_DIR}/FindMPFR.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
+install(FILES ${_MOVETK_CMAKE_DIR}/FindGMP.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
+
+# Install backend data
+foreach(_BACKEND ${MOVETK_BACKENDS})
+	# Include the backend code. These should register necessary properties on the
+	# movetk target.
+        if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/backends/${_BACKEND}/cmake)
+                install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/backends/${_BACKEND}/cmake/ DESTINATION ${_CFG_CMAKE_DIR}/backends/${_BACKEND}/cmake)
+        endif()
+endforeach()
 
 # Make sure we export the exportset containing movetk and the associated targets file.
 install(EXPORT ${CMAKE_PROJECT_NAME}Targets
