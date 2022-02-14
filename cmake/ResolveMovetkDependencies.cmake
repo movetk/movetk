@@ -1,5 +1,5 @@
 #
-# Find dependencies of MoveTk
+# Find dependencies of MoveTk core library
 #
 find_package(Boost REQUIRED COMPONENTS iostreams log thread system log_setup graph)
 set(Boost_USE_MULTITHREADED 1)
@@ -15,4 +15,6 @@ endif()
 find_package(GeographicLib REQUIRED COMPONENTS SHARED)
 
 find_package(GSL 2.4 REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 find_package(MPFR REQUIRED)
+list(POP_BACK CMAKE_MODULE_PATH)
