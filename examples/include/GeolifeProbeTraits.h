@@ -27,8 +27,8 @@
 #ifndef MOVETK_GEOLIFEPROBETRAITS_H
 #define MOVETK_GEOLIFEPROBETRAITS_H
 
-#include "movetk/io/csv/ParseDate.h"
-#include "movetk/io/csv/CategoricalField.h"
+#include "movetk/io/ParseDate.h"
+#include "movetk/io/CategoricalField.h"
 #include "movetk/io/csv/csv.h"
 #include "movetk/io/ProbeTraits.h"
 
@@ -60,14 +60,14 @@ namespace geolife
 				MODEID
 			};
 
-			class ProbeParseDate : public ParseDate
+			class ProbeParseDate : public movetk::io::ParseDate
 			{
 			public:
 				explicit ProbeParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d %H:%M:%S")
 					: ParseDate(ts, std::move(date_format)) {}
 			};
 
-			class ProviderCategoricalField : public CategoricalField<std::string, ProviderCategoricalField>
+			class ProviderCategoricalField : public movetk::io::CategoricalField<std::string, ProviderCategoricalField>
 			{
 			};
 

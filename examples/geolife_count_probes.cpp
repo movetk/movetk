@@ -27,7 +27,7 @@
 #include "movetk/io/TrajectoryReader.h"
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/utils/GeolifeTrajectoryTraits.h"
+#include "GeolifeTrajectoryTraits.h"
 
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);

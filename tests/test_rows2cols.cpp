@@ -25,7 +25,7 @@
 TEST_CASE("convert row to col", "[row2col]")
 {
 
-    using Row = std::tuple<std::string, int, float>;
+    using Row = std::tuple<std::string, int, double>;
     Row row0{ "abc", 5, 33.13 };
     Row row1{ "ghi", 4, 11.30 };
     Row row2{ "aaa", 3, 21.20 };
@@ -33,7 +33,7 @@ TEST_CASE("convert row to col", "[row2col]")
 
     std::vector<std::string> col0{ "abc", "ghi", "aaa" };
     std::vector<int> col1{ 5, 4, 3 };
-    std::vector<float> col2{ 33.13, 11.30, 21.20 };
+    std::vector<double> col2{ 33.13, 11.30, 21.20 };
 
     auto output = movetk::utils::Transpose(input)();
 

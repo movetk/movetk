@@ -31,6 +31,7 @@
 #include <vector>
 #include <utility>
 
+namespace movetk::io{
 /**
  *
  * @tparam T type of the field
@@ -102,5 +103,5 @@ std::vector<T> CategoricalField<T, CRTP>::_values;
 
 template <class T, class CRTP>
 std::unordered_map<T, std::size_t> CategoricalField<T, CRTP>::_indexOf;
-
+}
 #endif //MOVETK_CATEGORICALFIELD_H

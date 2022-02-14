@@ -32,7 +32,7 @@
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
-#include "movetk/utils/HereTrajectoryTraits.h"
+#include "HereTrajectoryTraits.h"
 
 constexpr int LON_Idx = here::c2d::raw::ProbeColumns::LON;
 constexpr int LAT_Idx = here::c2d::raw::ProbeColumns::LAT;

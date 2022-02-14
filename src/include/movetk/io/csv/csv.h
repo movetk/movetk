@@ -82,7 +82,7 @@ class csv {
 public:
     constexpr static size_t _num_columns = sizeof...(selidx);
     using header_tuple = decltype(here::unituple<std::string, _num_columns>());
-    typedef std::tuple<typename std::tuple_element<selidx, Tuple>::type...> value_type;
+    using value_type =  std::tuple<typename std::tuple_element<selidx, Tuple>::type...>;
     class iterator;
 
     /// Construct from a stream.

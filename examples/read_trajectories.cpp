@@ -31,7 +31,7 @@
 #include "movetk/io/TrajectoryReader.h"
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/utils/HereTrajectoryTraits.h"
+#include "HereTrajectoryTraits.h"
 
 /**
  * Example: Create trajectories from raw probe points by

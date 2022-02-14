@@ -23,7 +23,7 @@
 
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/utils/GeolifeTrajectoryTraits.h"
+#include "GeolifeTrajectoryTraits.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"

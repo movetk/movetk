@@ -156,7 +156,7 @@ using requires_equality = typename std::enable_if<is_equal_to<T1, T2>::value, T2
  */
 template <class Traits, class T = void>
 using requires_valid_type = typename std::enable_if<is_NT<Traits, T>::value || is_size_t<T>::value ||
-                                                        is_date<ParseDate>::value || is_MovetkPoint<Traits, T>::value,
+                                                        is_date<io::ParseDate>::value || is_MovetkPoint<Traits, T>::value,
                                                     T>::type;
 
 /*!

@@ -24,8 +24,8 @@
 #ifndef MOVETK_CARTESIANPROBETRAITS_H
 #define MOVETK_CARTESIANPROBETRAITS_H
 
-#include "movetk/io/csv/ParseDate.h"
-#include "movetk/io/csv/CategoricalField.h"
+#include "movetk/io/ParseDate.h"
+#include "movetk/io/CategoricalField.h"
 #include "ProbeTraits.h"
 
 namespace movetk::io {

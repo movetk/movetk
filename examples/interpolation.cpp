@@ -40,7 +40,7 @@
 #include "movetk/io/SplitByDistanceThreshold.h"
 #include "movetk/io/SplitByField.h"
 #include "movetk/io/TrajectoryTraits.h"
-#include "movetk/io/csv/ParseDate.h"
+#include "movetk/io/ParseDate.h"
 #include "movetk/io/csv/csv.h"
 #include "movetk/logging.h"
 #include "movetk/utils/GeometryBackendTraits.h"

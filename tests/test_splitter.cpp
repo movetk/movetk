@@ -23,18 +23,18 @@
 #include <string>
 
 #include "movetk/geo/geo.h"
+#include "movetk/io/ParseDate.h"
 #include "movetk/io/ProbeTraits.h"
 #include "movetk/io/SplitByDifferenceThreshold.h"
 #include "movetk/io/SplitByDistanceThreshold.h"
 #include "movetk/io/SplitByField.h"
 #include "movetk/io/Splitter.h"
 #include "movetk/io/TuplePrinter.h"
-#include "movetk/utils/HereProbeTraits.h"
 
 
 TEST_CASE("Splitter", "[splitter]") {
 	auto create_probe_parsedate = [](const std::string& str) {
-		here::c2d::raw::ProbeParseDate date;
+		movetk::io::ParseDate date(0, "%Y-%m-%d %H:%M:%S");
 		std::istringstream stream(str);
 		stream >> date;
 		return date;
@@ -47,7 +47,7 @@ TEST_CASE("Splitter", "[splitter]") {
 	auto d4 = create_probe_parsedate("2018-09-18 00:58:52");
 	auto d5 = create_probe_parsedate("2018-09-18 00:58:57");
 
-	using Row = std::tuple<std::string, std::string, int, float, here::c2d::raw::ProbeParseDate, float>;
+	using Row = std::tuple<std::string, std::string, int, float, movetk::io::ParseDate, float>;
 	Row row0{"abc", "def", 5, 1.2, d0, 50.2};
 	Row row1{"aaa", "jkl", 4, 2.5, d1, 50.3};
 	Row row2{"aaa", "bbb", 3, 3.4, d2, 50.4};
