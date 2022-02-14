@@ -12,8 +12,6 @@ else ()
   set(CGAL_BACKEND_ENABLED 0)
 endif ()
 
-MOVETK_LOG(STATUS "Examples: CGAL_BACKEND_ENABLED ${CGAL_BACKEND_ENABLED}")
-
 # Enable folders
 if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
     set_property( GLOBAL PROPERTY USE_FOLDERS ON)
@@ -25,9 +23,10 @@ function(CreateExample name)
         if(${ARGC} GREATER 1)
                 set(SRC_NAME ${ARGV1})
         endif()
-        MOVETK_LOG(STATUS "Created example ${name}")
+        MOVETK_LOG(VERBOSE "Created example ${name}")
         add_executable(${name} ${SRC_NAME})
         target_compile_definitions(${name} PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
+        target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
         target_link_libraries(${name}
                 PRIVATE
                 c2d::movetk

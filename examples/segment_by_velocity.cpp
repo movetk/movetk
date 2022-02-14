@@ -46,7 +46,7 @@
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
-#include "movetk/utils/HereTrajectoryTraits.h"
+#include "HereTrajectoryTraits.h"
 
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);

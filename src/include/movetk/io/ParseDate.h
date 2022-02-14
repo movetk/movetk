@@ -33,6 +33,7 @@
 #include <string>
 #include <ctime>
 
+namespace movetk::io{
 class ParseDate
 {
 
@@ -92,8 +93,6 @@ public:
 
     friend std::istream &operator>>(std::istream &is, ParseDate &date)
     {
-        //        std::istringstream ss("2011-Februar-18 23:12:34");
-        //        ss.imbue(std::locale("de_DE.utf-8"));
         if (!date._date_format.empty())
         {
             std::tm _tm = {};
@@ -125,5 +124,5 @@ public:
 };
 
 //char* ParseDate::date_format = "%Y-%m-%d"; //  %H:%M:%S
-
+}
 #endif //MOVETK_PARSEDATE_H

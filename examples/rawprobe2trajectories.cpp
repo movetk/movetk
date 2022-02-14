@@ -33,7 +33,7 @@
 #include "movetk/io/Splitter.h"
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
-#include "movetk/utils/HereProbeTraits.h"
+#include "HereProbeTraits.h"
 
 /**
  * Example: Create trajectories from raw probe points by

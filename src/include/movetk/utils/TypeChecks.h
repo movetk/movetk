@@ -33,7 +33,7 @@
 #include <stack>
 #include <utility>
 
-#include "movetk/io/csv/ParseDate.h"
+#include "movetk/io/ParseDate.h"
 
 #define MOVETK_DEFINE_HAS_TYPE_METAMETHOD(target_type)  \
 	template <typename T, typename = void>                \
@@ -83,6 +83,12 @@ template <class OutputIterator, typename ValueType>
 struct is_output_iterator_assignable_with {
 	static constexpr bool value = is_output_iterator<typename std::iterator_traits<OutputIterator>::iterator_category> &&
 	                              std::is_assignable_v<decltype(*std::declval<OutputIterator>()), ValueType>;
+};
+
+template <class InputIterator, typename ValueType>
+struct is_input_iterator_with_value {
+	static constexpr bool value = is_input_iterator<typename std::iterator_traits<InputIterator>::iterator_category> &&
+	                              std::is_same_v<typename InputIterator::value_type, ValueType>;
 };
 
 template <size_t dimensions>
@@ -232,7 +238,7 @@ struct is_stack<T, std::stack<T>>{
 template <class T>
 struct is_date {
 	using decayed_t = std::decay_t<T>;
-	static const bool value = std::is_same_v<decayed_t, std::size_t> || std::is_same_v<decayed_t, ParseDate> ||
+	static const bool value = std::is_same_v<decayed_t, std::size_t> || std::is_same_v<decayed_t, io::ParseDate> ||
 	                          std::is_same_v<decayed_t,std::time_t>;
 };
 };      // namespace movetk::utils

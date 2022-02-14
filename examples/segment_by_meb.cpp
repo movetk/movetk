@@ -45,7 +45,7 @@
 #include "movetk/logging.h"
 #include "movetk/test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
-#include "movetk/utils/HereTrajectoryTraits.h"
+#include "HereTrajectoryTraits.h"
 #include "movetk/utils/Iterators.h"
 
 int main(int argc, char **argv) {

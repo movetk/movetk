@@ -25,9 +25,9 @@
 #include <sstream>
 using std::string;
 
-#include "movetk/io/csv/CategoricalField.h"
+#include "movetk/io/CategoricalField.h"
 
-class CategoricalStringField : public CategoricalField<std::string, CategoricalStringField> {};
+class CategoricalStringField : public movetk::io::CategoricalField<std::string, CategoricalStringField> {};
 
 
 TEST_CASE( "Categorical field", "[categoricalfield]" ) {
