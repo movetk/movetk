@@ -55,7 +55,7 @@ struct SimilarityModule {
 
 		mod.def(
 		    "decide_strong_frechet",
-		    [](const Polyline& p0, const Polyline& p1, NT epsilon) -> std::size_t {
+		    [](const Polyline& p0, const Polyline& p1, NT epsilon) -> bool {
 			    movetk::metric::StrongFrechet<MoveTkKernel, movetk::metric::squared_distance_d<MoveTkKernel, Norm>>
 			        strong_frechet;
 			    return strong_frechet.decide(p0.begin(), p0.end(), p1.begin(), p1.end(), epsilon);
@@ -67,7 +67,7 @@ struct SimilarityModule {
 
 		mod.def(
 		    "compute_strong_frechet",
-		    [](const Polyline& p0, const Polyline& p1, NT tolerance) -> std::size_t {
+		    [](const Polyline& p0, const Polyline& p1, NT tolerance) -> NT {
 			    using StrongFrechet =
 			        movetk::metric::StrongFrechet<MoveTkKernel, movetk::metric::squared_distance_d<MoveTkKernel, Norm>>;
 			    StrongFrechet strong_frechet;

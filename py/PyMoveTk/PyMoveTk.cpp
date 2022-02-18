@@ -38,21 +38,24 @@
 #include "Simplification.h"
 #include "movetk/metric/DistanceInterface.h"
 
-// TODO: replace with choices.
+
 namespace PyMoveTk {
+// TODO: replace with choices.
 using Backend = movetk::BaseGeometryKernel<movetk::backends::BoostBackend>;
-using GeometryKernel = Backend::GeometryBackend;
-using MovetkGeometryKernel = Backend::MovetkGeometryKernel;
+
+template <typename Backend>
+void setup_movetk_modules(pybind11::module& parent_module) {
+	auto geometry_module = parent_module.def_submodule("geometry", "MoveTk geometric objects");
+	PyMoveTk::GeometryModule<Backend, typename Backend::Norm>::register_module(geometry_module);
+
+	auto simplification_module = parent_module.def_submodule("simplification", "MoveTk geometric objects");
+	PyMoveTk::SimplificationModule<Backend, typename Backend::Norm>::register_module(simplification_module);
+
+	auto distances_module = parent_module.def_submodule("distances", "Distances and similarity measures for polylines");
+	PyMoveTk::SimilarityModule<Backend, typename Backend::Norm>::register_module(distances_module);
+}
 }  // namespace PyMoveTk
 
 PYBIND11_MODULE(PyMoveTk, m) {
-	// Or maybe not. Depends on what we consider top level
-	auto geometry_module = m.def_submodule("geometry", "MoveTk geometric objects");
-	PyMoveTk::GeometryModule<PyMoveTk::Backend, PyMoveTk::Backend::Norm>::register_module(geometry_module);
-
-	auto simplification_module = m.def_submodule("simplification", "MoveTk geometric objects");
-	PyMoveTk::SimplificationModule<PyMoveTk::Backend, PyMoveTk::Backend::Norm>::register_module(simplification_module);
-
-	auto distances_module = m.def_submodule("distances", "Distances and similarity measures for polylines");
-	PyMoveTk::SimilarityModule<PyMoveTk::Backend, PyMoveTk::Backend::Norm>::register_module(distances_module);
+	PyMoveTk::setup_movetk_modules<PyMoveTk::Backend>(m);
 }
