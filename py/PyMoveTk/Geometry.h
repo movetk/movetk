@@ -174,6 +174,7 @@ struct GeometryModule {
 		    .def(py::self * NT())
 		    .def(py::self / NT())
 		    .def(py::self /= NT())
+			// Inner product
 		    .def(py::self * py::self)
 		    .def(py::self - py::self)
 		    .def(py::self + py::self)
