@@ -25,7 +25,6 @@ set(SOURCES
         include/movetk/algo/Similarity.h
         include/movetk/algo/Simplification.h
         include/movetk/algo/Statistics.h
-        include/movetk/Documentation.h
         include/movetk/ds/ColumnarTrajectory.h
         include/movetk/ds/FreeSpaceDiagram.h
         include/movetk/ds/StartStopMatrix.h
