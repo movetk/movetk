@@ -31,10 +31,11 @@
 #include "test_includes.h"
 
 template <typename Backend>
-struct TrajectoryUtilsTests : public test_helpers::BaseTestFixture<Backend> {
+struct TrajectoryUtilsTests : public test_helpers::GeometryConstructors<Backend> {
+	using NT = test_helpers::NTFromBackend<Backend>;
+	using MovetkGeometryKernel = test_helpers::MovetkKernelFromBackend<Backend>;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	using PointList = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 };
 
 
@@ -49,8 +50,10 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Check if values are
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests,
                                       "Find minimum non zero element",
                                       "[test_min_non_zero_element]") {
-	std::vector<NT> values{3.1, 2.2, 0, 1};
-	REQUIRE(*movetk::utils::min_non_zero_element<MovetkGeometryKernel>(cbegin(values), cend(values)) == 1);
+	using Fixture = TrajectoryUtilsTests<TestType>;
+	std::vector<typename Fixture::NT> values{3.1, 2.2, 0, 1};
+	REQUIRE(*movetk::utils::min_non_zero_element<typename Fixture::MovetkGeometryKernel>(cbegin(values), cend(values)) ==
+	        1);
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate tdiff", "[test_get_time_diffs]") {
@@ -65,167 +68,138 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate tdiff", "
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests,
                                       "Calculate Euclidean distance",
                                       "[test_calculate_distance]") {
-	PointList points;
-	std::vector<NT> result;
-	points.push_back(make_point({-8226858, 4993143}));
-	points.push_back(make_point({-8226854, 4993146}));
-	points.push_back(make_point({-8226855, 4993146}));
-	movetk::utils::get_distances<MovetkGeometryKernel>(cbegin(points),
-	                                                   cend(points),
-	                                                   movetk::utils::movetk_back_insert_iterator(result));
+	using FixtureType = TrajectoryUtilsTests<TestType>;
+	typename FixtureType::PointList points{FixtureType::make_point({-8226858, 4993143}),
+	                                       FixtureType::make_point({-8226854, 4993146}),
+	                                       FixtureType::make_point({-8226855, 4993146})};
+	std::vector<typename FixtureType::NT> result;
+	movetk::utils::get_distances<typename FixtureType::MovetkGeometryKernel>(
+	    cbegin(points),
+	    cend(points),
+	    movetk::utils::movetk_back_insert_iterator(result));
 	REQUIRE(result[0] == 0);
 	REQUIRE(result[1] == 5);
 	REQUIRE(result[2] == 1);
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate Speed", "[test_get_speeds]") {
-	std::vector<NT> distance{0, 5, 1};
+	using FixtureType = TrajectoryUtilsTests<TestType>;
+	std::vector<typename FixtureType::NT> distance{0, 5, 1};
 	std::vector<size_t> tdiff{0, 7, 9};
-	std::vector<NT> result;
-	movetk::utils::get_speeds<MovetkGeometryKernel>(cbegin(tdiff),
-	                                                cend(tdiff),
-	                                                cbegin(distance),
-	                                                movetk::utils::movetk_back_insert_iterator(result));
+	std::vector<typename FixtureType::NT> result;
+	movetk::utils::get_speeds<typename FixtureType::MovetkGeometryKernel>(
+	    cbegin(tdiff),
+	    cend(tdiff),
+	    cbegin(distance),
+	    movetk::utils::movetk_back_insert_iterator(result));
 	REQUIRE(result[0] == 0);
 	REQUIRE(abs(result[1] - 0.714286) < MOVETK_EPS);
 	REQUIRE(abs(result[2] - 0.111111) < MOVETK_EPS);
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate Heading", "[test_get_headings]") {
-	std::vector<std::pair<NT, NT>> GeoCoords{std::make_pair(40.75348, -73.90441),
-	                                         std::make_pair(40.75348, -73.90439),
-	                                         std::make_pair(40.75352, -73.90439)};
-	PointList projections;
-	std::vector<NT> result;
-	projections.push_back(make_point({-8227001.290000, 4976047.740000}));
-	projections.push_back(make_point({-8226999.060000, 4976047.740000}));
-	projections.push_back(make_point({-8226974.570000, 4976053.620000}));
-	movetk::utils::get_headings<MovetkGeometryKernel>(cbegin(GeoCoords),
-	                                                  cend(GeoCoords),
-	                                                  cbegin(projections),
-	                                                  movetk::utils::movetk_back_insert_iterator(result));
+	using FixtureType = TrajectoryUtilsTests<TestType>;
+	std::vector<std::pair<typename FixtureType::NT, typename FixtureType::NT>> GeoCoords{
+	    std::make_pair(40.75348, -73.90441),
+	    std::make_pair(40.75348, -73.90439),
+	    std::make_pair(40.75352, -73.90439)};
+	typename FixtureType::PointList projections;
+	std::vector<typename FixtureType::NT> result;
+	projections.push_back(FixtureType::make_point({-8227001.290000, 4976047.740000}));
+	projections.push_back(FixtureType::make_point({-8226999.060000, 4976047.740000}));
+	projections.push_back(FixtureType::make_point({-8226974.570000, 4976053.620000}));
+	movetk::utils::get_headings<typename FixtureType::MovetkGeometryKernel>(
+	    cbegin(GeoCoords),
+	    cend(GeoCoords),
+	    cbegin(projections),
+	    movetk::utils::movetk_back_insert_iterator(result));
 	REQUIRE(result[0] == 0);
 	REQUIRE(abs(result[1] - 90) < MOVETK_EPS);
 	REQUIRE(result[2] == 0);
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate Velocity", "[test_get_velocities]") {
-	std::vector<NT> speed{1, 1, 4};
-	std::vector<NT> heading{46, 12, 297};
-	PointList expected_velocities, actual_velocties;
-	expected_velocities.push_back(make_point({0.694658, 0.719340}));
-	expected_velocities.push_back(make_point({0.978148, 0.207912}));
-	expected_velocities.push_back(make_point({1.815962, -3.564026}));
+	using FixtureType = TrajectoryUtilsTests<TestType>;
+	std::vector<typename FixtureType::NT> speed{1, 1, 4};
+	std::vector<typename FixtureType::NT> heading{46, 12, 297};
+	typename FixtureType::PointList expected_velocities{FixtureType::make_point({0.694658, 0.719340}),
+	                                                    FixtureType::make_point({0.978148, 0.207912}),
+	                                                    FixtureType::make_point({1.815962, -3.564026})};
 
-	movetk::utils::get_velocities<MovetkGeometryKernel>(cbegin(speed),
-	                                                    cend(speed),
-	                                                    cbegin(heading),
-	                                                    movetk::utils::movetk_back_insert_iterator(actual_velocties));
-	MovetkGeometryKernel::MovetkVector vector = actual_velocties[0] - expected_velocities[0];
+	typename FixtureType::PointList actual_velocties;
+	movetk::utils::get_velocities<typename FixtureType::MovetkGeometryKernel>(
+	    cbegin(speed),
+	    cend(speed),
+	    cbegin(heading),
+	    movetk::utils::movetk_back_insert_iterator(actual_velocties));
+	const auto vector = actual_velocties[0] - expected_velocities[0];
 	REQUIRE((vector * vector) < MOVETK_EPS);
 }
 
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Merge Intervals 1", "[test_merge_intervals_1]") {
-	std::vector<std::pair<NT, NT>> items{{1, 3}, {6, 8}, {5, 7}, {2, 4}};
-	std::vector<std::pair<NT, NT>> expected{{5, 8}, {1, 4}};
-	auto beyond = movetk::utils::merge_intervals<MovetkGeometryKernel>(std::begin(items), std::end(items));
-	auto it = std::begin(items);
-	REQUIRE(std::distance(it, beyond) == expected.size());
-	auto eit = std::begin(expected);
-	while (it != beyond) {
-		REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
-		REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
-		eit++;
-		it++;
+template <typename Backend>
+struct IntervalTests {
+	using NT = typename Backend::NT;
+	using Interval = std::pair<NT, NT>;
+	using IntervalList = std::vector<Interval>;
+	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+
+	struct TestCase {
+		IntervalList input;
+		IntervalList expected;
+	};
+
+	auto get_testcases() {
+		std::map<std::string, TestCase> test_cases;
+		test_cases["test1"] = TestCase{IntervalList{{1, 3}, {6, 8}, {5, 7}, {2, 4}}, {{5, 8}, {1, 4}}};
+		test_cases["test2"] = TestCase{{{1, 3}, {1, 8}, {1, 8}, {1, 4}}, {{1, 8}}};
+		test_cases["test3"] = TestCase{{{1, 2}, {3, 4}, {5, 6}, {7, 8}}, {{7, 8}, {5, 6}, {3, 4}, {1, 2}}};
+		test_cases["test4"] = TestCase{{{1, 4}, {2, 4}, {1, 2}, {7, 8}}, {{7, 8}, {1, 4}}};
+		test_cases["test5"] = TestCase{{{1, 7}, {2, 4}, {1, 2}, {7, 8}}, {{7, 8}, {1, 7}}};
+		return test_cases;
 	}
-}
+};
 
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Merge Intervals 2", "[test_merge_intervals_2]") {
-	std::vector<std::pair<NT, NT>> items{{1, 3}, {1, 8}, {1, 8}, {1, 4}};
-	std::vector<std::pair<NT, NT>> expected{{1, 8}};
-	auto beyond = movetk::utils::merge_intervals<MovetkGeometryKernel>(std::begin(items), std::end(items));
-	auto it = std::begin(items);
-	REQUIRE(std::distance(it, beyond) == expected.size());
-	auto eit = std::begin(expected);
-	while (it != beyond) {
-		REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
-		REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
-		eit++;
-		it++;
-	}
-}
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntervalTests, "Verify merge_intervals correctness", "[test_merge_intervals]") {
+	using Fixture = IntervalTests<TestType>;
+	auto test_cases = Fixture::get_testcases();
 
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Merge Intervals 3", "[test_merge_intervals_3]") {
-	std::vector<std::pair<NT, NT>> items{{1, 2}, {3, 4}, {5, 6}, {7, 8}};
-	std::vector<std::pair<NT, NT>> expected{{7, 8}, {5, 6}, {3, 4}, {1, 2}};
-	auto beyond = movetk::utils::merge_intervals<MovetkGeometryKernel>(std::begin(items), std::end(items));
-	auto it = std::begin(items);
-	REQUIRE(std::distance(it, beyond) == expected.size());
-	std::cout << "Merged Interval:\n";
-	auto eit = std::begin(expected);
-	while (it != beyond) {
-		std::cout << it->first << "," << it->second << "\n";
-		REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
-		REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
-		eit++;
-		it++;
-	}
-}
-
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Merge Intervals 4", "[test_merge_intervals_4]") {
-	std::vector<std::pair<NT, NT>> items{{1, 4}, {2, 4}, {1, 2}, {7, 8}};
-	std::vector<std::pair<NT, NT>> expected{{7, 8}, {1, 4}};
-	auto beyond = movetk::utils::merge_intervals<MovetkGeometryKernel>(std::begin(items), std::end(items));
-	auto it = std::begin(items);
-	REQUIRE(std::distance(it, beyond) == expected.size());
-	std::cout << "Merged Interval:\n";
-	auto eit = std::begin(expected);
-	while (it != beyond) {
-		std::cout << it->first << "," << it->second << "\n";
-		REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
-		REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
-		eit++;
-		it++;
-	}
-}
-
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Merge Intervals 5", "[test_merge_intervals_5]") {
-	std::vector<std::pair<NT, NT>> items{{1, 7}, {2, 4}, {1, 2}, {7, 8}};
-	std::vector<std::pair<NT, NT>> expected{{7, 8}, {1, 7}};
-	auto beyond = movetk::utils::merge_intervals<MovetkGeometryKernel>(std::begin(items), std::end(items));
-	auto it = std::begin(items);
-	REQUIRE(std::distance(it, beyond) == expected.size());
-	std::cout << "Merged Interval:\n";
-	auto eit = std::begin(expected);
-	while (it != beyond) {
-		std::cout << it->first << "," << it->second << "\n";
-		REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
-		REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
-		eit++;
-		it++;
+	for (auto& [name, test_case] : test_cases) {
+		SECTION(name) {
+			auto beyond = movetk::utils::merge_intervals<typename Fixture::MovetkGeometryKernel>(std::begin(test_case.input),
+			                                                                                     std::end(test_case.input));
+			auto it = std::begin(test_case.input);
+			REQUIRE(std::distance(it, beyond) == test_case.expected.size());
+			auto eit = std::begin(test_case.expected);
+			while (it != beyond) {
+				REQUIRE(abs(eit->first - it->first) < MOVETK_EPS);
+				REQUIRE(abs(eit->second - it->second) < MOVETK_EPS);
+				eit++;
+				it++;
+			}
+		}
 	}
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Compute Curve Length", "[compute_curve_length]") {
-	PointList polyline{make_point({2, 2}),
-	                   make_point({4, 6}),
-	                   make_point({8, 6}),
-	                   make_point({6, 4}),
-	                   make_point({8, 4}),
-	                   make_point({7.16, 2.84}),
-	                   make_point({4.93, 2.69}),
-	                   make_point({4.64, 4.65}),
-	                   make_point({6.05, 6.37}),
-	                   make_point({5.1, 7.89}),
-	                   make_point({1.67, 7.51}),
-	                   make_point({1.93, 4.63})};
+	using FixtureType = TrajectoryUtilsTests<TestType>;
+	using NT = typename FixtureType::NT;
+	using PointList = typename FixtureType::PointList;
+	PointList polyline{FixtureType::make_point({2, 2}),
+	                   FixtureType::make_point({4, 6}),
+	                   FixtureType::make_point({8, 6}),
+	                   FixtureType::make_point({6, 4}),
+	                   FixtureType::make_point({8, 4}),
+	                   FixtureType::make_point({7.16, 2.84}),
+	                   FixtureType::make_point({4.93, 2.69}),
+	                   FixtureType::make_point({4.64, 4.65}),
+	                   FixtureType::make_point({6.05, 6.37}),
+	                   FixtureType::make_point({5.1, 7.89}),
+	                   FixtureType::make_point({1.67, 7.51}),
+	                   FixtureType::make_point({1.93, 4.63})};
 	std::vector<NT> result;
-	movetk::utils::compute_curve_squared_length<MovetkGeometryKernel, Norm>(
+	movetk::utils::compute_curve_squared_length<typename FixtureType::MovetkGeometryKernel, typename FixtureType::Norm>(
 	    std::begin(polyline),
 	    std::end(polyline),
-	    movetk::utils::movetk_back_insert_iterator(result));
+	    std::back_inserter(result));
 	// TODO: checks
 }

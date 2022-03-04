@@ -32,12 +32,9 @@
 #include "test_includes.h"
 
 template <typename Backend>
-struct IntersectionTests : public test_helpers::BaseTestFixture<Backend> {
+struct IntersectionTests : public test_helpers::GeometryConstructors<Backend> {
+	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
-
-	movetk::geom::MakeSphere<MovetkGeometryKernel> make_sphere;
-	movetk::geom::MakeSegment<MovetkGeometryKernel> make_segment;
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 
 	using SphereSegmentIntersectionTraits =
 	    movetk::geom::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::geom::sphere_segment_intersection_tag>;
@@ -48,81 +45,77 @@ struct IntersectionTests : public test_helpers::BaseTestFixture<Backend> {
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests,
-                                      "Check sphere segment intersection 1",
-                                      "[sphere_segment_intersection_1]") {
-	auto sphere = make_sphere({5, 3}, 1.371);
-	auto segment = make_segment({2, 2}, {4, 6});
-	using intersection_t = typename SphereSegmentIntersectionTraits::value_type;
-	std::vector<intersection_t> intersections;
-	using OutputIterator = movetk::utils::movetk_back_insert_iterator<std::vector<intersection_t>>;
-	movetk::geom::ComputeIntersections<SphereSegmentIntersectionTraits> compute_intersections;
-	compute_intersections(sphere, segment, OutputIterator(intersections));
-	REQUIRE(intersections.size() == 1);
-	REQUIRE(std::get<SphereSegmentIntersectionTraits::Attributes::SIGN_DISCRIMINANT>(intersections[0]) == -1);
-	REQUIRE(std::get<SphereSegmentIntersectionTraits::Attributes::SQUARED_RATIO>(intersections[0]) == -1.0);
-}
+                                      "Check sphere-segment intersections",
+                                      "[sphere_segment_intersection]") {
+	using Fixture = IntersectionTests<TestType>;
+	using BaseTest = test_helpers::BaseTestFixture<TestType>;
+	using IntersectionTraits = typename Fixture::SphereSegmentIntersectionTraits;
+	using MovetkPoint = typename TestType::MovetkGeometryKernel::MovetkPoint;
+	auto make_sphere = Fixture::make_sphere;
+	auto make_point = Fixture::make_point;
+	auto make_segment = Fixture::make_segment;
+	auto spheres = BaseTest::create_vector_of(make_sphere({5, 3}, 1.371),
+	                                          make_sphere({5, 3}, 2.2364778),
+	                                          make_sphere({5, 3}, 2.509885));
+	auto segments = BaseTest::create_vector_of(make_segment({2, 2}, {4, 6}),
+	                                           make_segment({2, 2}, {4, 6}),
+	                                           make_segment({2, 2}, {4, 6}));
 
+	// Expectations
+	std::vector<std::optional<int>> discriminant_signs{-1, {}, {}};
+	std::vector<size_t> expected_intersections{1, 1, 2};
+	std::vector<std::optional<typename TestType::NT>> squared_ratios{-1.0, {}, {}};
+	std::vector<std::vector<MovetkPoint>> intersection_points{
+	    {},
+	    {make_point({3, 4})},
+	    {make_point({3.509808, 5.019617}), make_point({2.490192, 2.980383})}};
 
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests,
-                                      "Check sphere segment intersection 2",
-                                      "[sphere_segment_intersection_2]") {
-	auto sphere = make_sphere({5, 3}, 2.2364778);
-	auto segment = make_segment({2, 2}, {4, 6});
-	using intersection_t = typename SphereSegmentIntersectionTraits::value_type;
-	std::vector<intersection_t> intersections;
-	std::vector<MovetkPoint> expected_intersection{make_point({3, 4})};
-	movetk::geom::ComputeIntersections<SphereSegmentIntersectionTraits> compute_intersections;
-	compute_intersections(sphere, segment, movetk::utils::make_back_inserter(intersections));
-	REQUIRE(intersections.size() == 1);
-	auto v = std::get<SphereSegmentIntersectionTraits::Attributes::POINT>(intersections[0]) - expected_intersection[0];
-	REQUIRE(v * v < MOVETK_EPS);
-}
-
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests,
-                                      "Check sphere segment intersection 3",
-                                      "[sphere_segment_intersection_3]") {
-	auto sphere = make_sphere({5, 3}, 2.509885);
-	auto segment = make_segment({2, 2}, {4, 6});
-	using intersection_t = typename SphereSegmentIntersectionTraits::value_type;
-	std::vector<intersection_t> intersections;
-	std::vector<MovetkPoint> expected_intersection{make_point({3.509808, 5.019617}), make_point({2.490192, 2.980383})};
-	movetk::geom::ComputeIntersections<SphereSegmentIntersectionTraits> compute_intersections;
-	compute_intersections(sphere, segment, movetk::utils::make_back_inserter(intersections));
-	REQUIRE(intersections.size() == 2);
-	auto v = std::get<SphereSegmentIntersectionTraits::Attributes::POINT>(intersections[0]) - expected_intersection[0];
-	REQUIRE(v * v < MOVETK_EPS);
-	v = std::get<SphereSegmentIntersectionTraits::Attributes::POINT>(intersections[1]) - expected_intersection[1];
-	REQUIRE(v * v < MOVETK_EPS);
+	for (std::size_t i = 0; i < spheres.size(); ++i) {
+		SECTION(std::string{"test"} + std::to_string(i)) {
+			using intersection_t = typename IntersectionTraits::value_type;
+			std::vector<intersection_t> intersections;
+			movetk::geom::ComputeIntersections<IntersectionTraits> compute_intersections;
+			compute_intersections(spheres[i], segments[i], movetk::utils::movetk_back_insert_iterator(intersections));
+			REQUIRE(intersections.size() == expected_intersections[i]);
+			if (discriminant_signs[i].has_value()) {
+				REQUIRE(std::get<IntersectionTraits::Attributes::SIGN_DISCRIMINANT>(intersections[0]) ==
+				        *discriminant_signs[i]);
+			}
+			if (squared_ratios[i].has_value()) {
+				REQUIRE(std::get<IntersectionTraits::Attributes::SQUARED_RATIO>(intersections[0]) == *squared_ratios[i]);
+			}
+			if (expected_intersections[i] > 0) {
+				for (std::size_t j = 0; j < intersection_points[i].size(); ++j) {
+					const auto v = std::get<IntersectionTraits::Attributes::POINT>(intersections[j]) - intersection_points[i][j];
+					REQUIRE(v * v < MOVETK_EPS);
+				}
+			}
+		}
+	}
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests,
                                       "Check sphere sphere intersection 1",
                                       "[sphere_sphere_intersection_1]") {
-	auto sphere1 = make_sphere({6, 6}, 5);
-	auto sphere2 = make_sphere({14, 10}, 5);
-	movetk::geom::ComputeIntersections<SphereSphereIntersectionTraits> compute_intersections;
-	auto sphere3 = compute_intersections(sphere1, sphere2);
-	auto expected_center = make_point({10, 8});
-	NT expected_squared_radius = 5;
-	auto eps = sphere3.center() - expected_center;
-	REQUIRE((eps * eps) < MOVETK_EPS);
-	REQUIRE(abs(expected_squared_radius - sphere3.squared_radius()) < MOVETK_EPS);
-}
+	using Fixture = IntersectionTests<TestType>;
+	using IntersectionTraits = typename IntersectionTests<TestType>::SphereSphereIntersectionTraits;
+	using MovetkSphere = typename TestType::MovetkGeometryKernel::MovetkSphere;
+	using MovetkPoint = typename TestType::MovetkGeometryKernel::MovetkPoint;
+	using NT = typename TestType::MovetkGeometryKernel::NT;
+	auto make_sphere = Fixture::make_sphere;
+	auto make_point = Fixture::make_point;
+	std::vector<MovetkSphere> first_spheres{make_sphere({6, 6}, 5), make_sphere({6, 6}, 2.5)};
+	std::vector<MovetkSphere> second_spheres{make_sphere({14, 10}, 5), make_sphere({14, 10}, 5)};
+	std::vector<MovetkPoint> expected_centers{make_point({10, 8}), make_point({0, 0})};
+	std::vector<NT> expected_radii{5, 0};
 
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests,
-                                      "Check sphere sphere intersection 2",
-                                      "[sphere_sphere_intersection_2]") {
-	auto sphere1 = make_sphere({6, 6}, 2.5);
-	auto sphere2 = make_sphere({14, 10}, 5);
-	movetk::geom::ComputeIntersections<SphereSphereIntersectionTraits> compute_intersections;
-	auto sphere3 = compute_intersections(sphere1, sphere2);
-	auto expected_center = make_point({0, 0});
-	NT expected_squared_radius = 0;
-	auto eps = sphere3.center() - expected_center;
-	std::cout << "Input Sphere 1: {" << sphere1 << " }\n";
-	std::cout << "Input Sphere 2: {" << sphere2 << " }\n";
-	std::cout << "Output Sphere: {" << sphere3 << " }\n";
-	REQUIRE((eps * eps) < MOVETK_EPS);
-	REQUIRE(abs(expected_squared_radius - sphere3.squared_radius()) < MOVETK_EPS);
+	movetk::geom::ComputeIntersections<IntersectionTraits> compute_intersections;
+	for (std::size_t i = 0; i < first_spheres.size(); ++i) {
+		SECTION(std::string{"test"} + std::to_string(i)) {
+			auto sphere3 = compute_intersections(first_spheres[i], second_spheres[i]);
+			auto eps = sphere3.center() - expected_centers[i];
+			REQUIRE((eps * eps) < MOVETK_EPS);
+			REQUIRE(abs(expected_radii[i] - sphere3.squared_radius()) < MOVETK_EPS);
+		}
+	}
 }

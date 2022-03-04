@@ -53,17 +53,28 @@ TEST_CASE("Create and search in a Trie", "[test_trie") {
 	typedef movetk::ds::TrieNode<const char, Values<int>> _Node;
 	movetk::ds::Tree<_Node> tree(std::make_unique<_Node>('1'));
 	std::vector<std::pair<std::string, size_t>> leaves;
-	std::string str = "aabc";
-	int value = 1;
-	tree.insert(begin(str), end(str), value);
-	str = "aabda";
-	value = 2;
-	tree.insert(begin(str), end(str), value);
-	str = "aabda";
-	value = 4;
-	tree.insert(begin(str), end(str), value);
+	{
+		int value = 1;
+		const std::string str = "aabc";
+		using str_it = std::remove_reference_t<std::remove_cv_t<decltype(begin(str))>>;
+		// static_assert(std::same_as<str_it, typename std::string::const_iterator>);
+		// static_assert(std::random_access_iterator<str_it>);
+		// static_assert(std::same_as<typename std::iterator_traits<str_it>::value_type,char>);
+		// static_assert(movetk::utils::RandomAccessIteratorWithType<str_it, const char>);
+		tree.insert(begin(str), end(str), value);
+	}
+	{
+		const std::string str = "aabda";
+		int value = 2;
+		tree.insert(begin(str), end(str), value);
+	}
+	{
+		const std::string str = "aabda";
+		int value = 4;
+		tree.insert(begin(str), end(str), value);
+	}
 	std::string search_str = "aabcaj";
-	_Node::reference result = tree.find(cbegin(search_str), cend(search_str));
+	auto& result = tree.find(cbegin(search_str), cend(search_str));
 
 	REQUIRE(tree.get_match_size() == 4);
 
@@ -116,7 +127,7 @@ TEST_CASE("Create and search in a Trie", "[test_trie") {
 ////    REQUIRE (*it == 1);
 ////
 ////    // counts number of leaves in each branch of the tree
-////    tree.find(movetk::utils::movetk_back_insert_iterator(leaves));
+////    tree.find(std::back_inserter(leaves));
 ////
 ////    REQUIRE (leaves.size() == 2);
 ////

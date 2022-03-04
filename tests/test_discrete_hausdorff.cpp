@@ -24,6 +24,7 @@
 #include <array>
 #include <catch2/catch.hpp>
 
+#include "helpers/TestJsonReader.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/DistanceInterface.h"
 #include "movetk/metric/Norm.h"
@@ -33,93 +34,68 @@
 
 template <typename Backend>
 struct DiscreteHausdorffTests {
-	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+	using NT = test_helpers::NTFromBackend<Backend>;
+	using MovetkGeometryKernel = test_helpers::MovetkKernelFromBackend<Backend>;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
+
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
+
+	PolyLine make_polyline(std::initializer_list<typename MovetkGeometryKernel::MovetkPoint> points) {
+		return PolyLine(points);
+	}
+
+	movetk::metric::ComputeDiscreteHausdorffDistance<MovetkGeometryKernel, Norm> discrete_hausdorff;
+
+	struct TestCase {
+		PolyLine input0;
+		PolyLine input1;
+		NT expected_distance;
+
+		void read(const rapidjson::Value& value) {
+			using namespace movetk::test;
+			io::load(value["input0"], input0, io::construct_point<MovetkGeometryKernel>);
+			io::load(value["input1"], input1, io::construct_point<MovetkGeometryKernel>);
+			long double expected_distance_ld;
+			io::load(value["expected_distance"], expected_distance_ld);
+			expected_distance = NT(expected_distance_ld);
+		}
+	};
+
+	auto create_testcases() {
+		std::map<std::string, TestCase> test_cases;
+		auto doc = movetk::test::io::get_json_doc("data/discretehausdorff_tests.json");
+
+		const auto& tests_root = doc["distance_tests"];
+		assert(tests_root.IsObject());
+		for (auto it = tests_root.MemberBegin(); it != tests_root.MemberEnd(); ++it) {
+			TestCase test_case;
+			test_case.read(it->value);
+			std::string name = it->name.GetString();
+
+			test_cases[name] = test_case;
+		}
+		return test_cases;
+	}
 };
 
 
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DiscreteHausdorffTests, "Check Discrete Hausdorff 1", "[discrete_hausdorff_1]") {
-	PolyLine polyline1(
-	    {make_point({0, 0}), make_point({1, 1}), make_point({1, 2}), make_point({2, 1}), make_point({2, 2})});
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DiscreteHausdorffTests,
+                                      "Check Discrete Hausdorff distances",
+                                      "[discrete_hausdorff]") {
+	using Fixture = DiscreteHausdorffTests<TestType>;
+	auto test_cases = Fixture::create_testcases();
 
-	PolyLine polyline2(
-	    {make_point({1, 0}), make_point({0, 1}), make_point({1, 1}), make_point({2, 1}), make_point({3, 1})});
-
-	movetk::metric::ComputeDiscreteHausdorffDistance<MovetkGeometryKernel, Norm> discrete_hausdorff;
-	auto distance1 =
-	    discrete_hausdorff(std::begin(polyline1), std::end(polyline1), std::begin(polyline2), std::end(polyline2));
-	auto distance2 =
-	    discrete_hausdorff(std::begin(polyline2), std::end(polyline2), std::begin(polyline1), std::end(polyline1));
-	auto distance = std::max(distance1, distance2);
-	REQUIRE(distance == 1);
-}
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DiscreteHausdorffTests, "Check Discrete Hausdorff 2", "[discrete_hausdorff_2]") {
-	PolyLine polyline1(
-	    {make_point({7, 10.5}), make_point({11, 10.5}), make_point({11, 7}), make_point({7, 7}), make_point({7, 10})});
-
-	PolyLine polyline2({make_point({7.09, 10.2}),
-	                    make_point({10.80, 10.19}),
-	                    make_point({10.799, 7.312}),
-	                    make_point({7.197, 7.312}),
-	                    make_point({7.203, 9.813}),
-	                    make_point({10.6, 9.813}),
-	                    make_point({10.6, 7.505}),
-	                    make_point({7.5, 7.5}),
-	                    make_point({7.5, 9.5})});
-
-	movetk::metric::ComputeDiscreteHausdorffDistance<MovetkGeometryKernel, Norm> discrete_hausdorff;
-	auto distance1 =
-	    discrete_hausdorff(std::begin(polyline1), std::end(polyline1), std::begin(polyline2), std::end(polyline2));
-	auto distance2 =
-	    discrete_hausdorff(std::begin(polyline2), std::end(polyline2), std::begin(polyline1), std::end(polyline1));
-	auto distance = std::max(distance1, distance2);
-	REQUIRE(std::abs(distance - 0.794965) < MOVETK_EPS);
-}
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DiscreteHausdorffTests, "Check Discrete Hausdorff 3", "[discrete_hausdorff_3]") {
-	PolyLine polyline1({make_point({27, 15}),
-	                    make_point({26, 16}),
-	                    make_point({26.986, 15.596}),
-	                    make_point({25, 18}),
-	                    make_point({27.220, 16.389}),
-	                    make_point({24.483, 20.207}),
-	                    make_point({28.1394, 16.695}),
-	                    make_point({28.481, 21.03}),
-	                    make_point({30, 17}),
-	                    make_point({31.799, 20.817}),
-	                    make_point({31.1023, 17.454}),
-	                    make_point({33.488, 19.073}),
-	                    make_point({31.13, 16.324}),
-	                    make_point({32.483, 16.449}),
-	                    make_point({30.934, 15.4731})});
-
-	PolyLine polyline2({make_point({26.33, 14.705}),
-	                    make_point({26.24, 16.15}),
-	                    make_point({25.84, 17.607}),
-	                    make_point({26.818, 18.347}),
-	                    make_point({29.26, 19.533}),
-	                    make_point({31.674, 18.87}),
-	                    make_point({32.511, 17.482}),
-	                    make_point({33.0417, 16.184}),
-	                    make_point({26.98, 15.33}),
-	                    make_point({26.344, 17.287}),
-	                    make_point({27.223, 17.789}),
-	                    make_point({29.107, 18.57}),
-	                    make_point({31.004, 18.375}),
-	                    make_point({31.9116, 17.747}),
-	                    make_point({31.799, 16.536}),
-	                    make_point({27.655, 16.449}),
-	                    make_point({28.395, 17.817}),
-	                    make_point({30.6, 17.859})});
-
-	movetk::metric::ComputeDiscreteHausdorffDistance<MovetkGeometryKernel, Norm> discrete_hausdorff;
-	auto distance1 =
-	    discrete_hausdorff(std::begin(polyline1), std::end(polyline1), std::begin(polyline2), std::end(polyline2));
-	auto distance2 =
-	    discrete_hausdorff(std::begin(polyline2), std::end(polyline2), std::begin(polyline1), std::end(polyline1));
-	auto distance = std::max(distance1, distance2);
-	REQUIRE(std::abs(distance - 2.93282) < MOVETK_EPS);
+	for (const auto& [name, test_case] : test_cases) {
+		auto distance1 = Fixture::discrete_hausdorff(std::begin(test_case.input0),
+		                                             std::end(test_case.input0),
+		                                             std::begin(test_case.input1),
+		                                             std::end(test_case.input1));
+		auto distance2 = Fixture::discrete_hausdorff(std::begin(test_case.input1),
+		                                             std::end(test_case.input1),
+		                                             std::begin(test_case.input0),
+		                                             std::end(test_case.input0));
+		const auto distance = std::max(distance1, distance2);
+		REQUIRE(distance == test_case.expected_distance);
+	}
 }

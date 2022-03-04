@@ -40,25 +40,38 @@ struct FreeSpaceDiagramTests {
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	movetk::geom::MakeSegment<MovetkGeometryKernel> make_segment;
 
+	// Freespace types
 	using IntersectionTraits =
 	    movetk::geom::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::geom::sphere_segment_intersection_tag>;
 	using FreeSpaceCellTraits = movetk::ds::FreeSpaceCellTraits<IntersectionTraits>;
-	using ExpectedIntersections = std::vector<typename IntersectionTraits::value_type>;
 	using FreeSpaceCell = movetk::ds::FreeSpaceCell<FreeSpaceCellTraits>;
 	using FreeSpaceDiagramTraits = movetk::ds::FreeSpaceDiagramTraits<FreeSpaceCell>;
 	using FreeSpaceDiagram = movetk::ds::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
+
+	using edge_orientation = typename FreeSpaceCellTraits::edge_orientation;
+	using vertex_orientation = typename FreeSpaceCellTraits::vertex_orientation;
+
+	// Expectation types
+	using ExpectedIntersections = std::vector<typename IntersectionTraits::value_type>;
 	using ExpectedFsd = std::vector<ExpectedIntersections>;
+
+	using ResultAttributes = typename IntersectionTraits::Attributes;
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space cells", "[free_space_cell_1]") {
-	using edge_orientation = FreeSpaceCellTraits::edge_orientation;
-	using vertex_orientation = FreeSpaceCellTraits::vertex_orientation;
+	using Fixture = FreeSpaceDiagramTests<TestType>;
+	using edge_orientation = typename Fixture::edge_orientation;
+	using vertex_orientation = typename Fixture::vertex_orientation;
+	using ResultAttributes = typename Fixture::ResultAttributes;
+	auto make_point = Fixture::make_point;
+	auto make_segment = Fixture::make_segment;
+
 	struct TestCase {
-		ExpectedIntersections expected;
+		typename Fixture::ExpectedIntersections expected;
 		std::vector<std::size_t> expected_free_vertices;
-		MovetkSegment P;
-		MovetkSegment Q;
-		NT radius;
+		typename Fixture::MovetkSegment P;
+		typename Fixture::MovetkSegment Q;
+		typename Fixture::NT radius;
 	};
 	const std::vector<TestCase> test_cases{
 	    {{std::make_tuple(edge_orientation::Left, -1, -1, make_point({1.000000, 1.000000})),
@@ -99,19 +112,17 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space c
 	std::size_t test_case_num = 1;
 	for (const auto& test_case : test_cases) {
 		SECTION(std::to_string(test_case_num)) {
-			movetk::ds::FreeSpaceCell<FreeSpaceCellTraits> fsc(test_case.P, test_case.Q, test_case.radius);
+			movetk::ds::FreeSpaceCell<typename Fixture::FreeSpaceCellTraits> fsc(test_case.P, test_case.Q, test_case.radius);
 			const auto size = std::distance(fsc.begin(), fsc.end());
 			REQUIRE(size == test_case.expected.size());
 			auto eit = test_case.expected.begin();
 			for (auto intersection : fsc) {
-				REQUIRE(std::get<IntersectionTraits::Attributes::ID>(intersection) ==
-				        std::get<IntersectionTraits::Attributes::ID>(*eit));
-				REQUIRE(std::get<IntersectionTraits::Attributes::SIGN_DISCRIMINANT>(intersection) ==
-				        std::get<IntersectionTraits::Attributes::SIGN_DISCRIMINANT>(*eit));
-				REQUIRE(abs(std::get<IntersectionTraits::Attributes::SQUARED_RATIO>(intersection) -
-				            std::get<IntersectionTraits::Attributes::SQUARED_RATIO>(*eit)) < MOVETK_EPS);
-				auto v = std::get<IntersectionTraits::Attributes::POINT>(intersection) -
-				         std::get<IntersectionTraits::Attributes::POINT>(*eit);
+				REQUIRE(std::get<ResultAttributes::ID>(intersection) == std::get<ResultAttributes::ID>(*eit));
+				REQUIRE(std::get<ResultAttributes::SIGN_DISCRIMINANT>(intersection) ==
+				        std::get<ResultAttributes::SIGN_DISCRIMINANT>(*eit));
+				REQUIRE(abs(std::get<ResultAttributes::SQUARED_RATIO>(intersection) -
+				            std::get<ResultAttributes::SQUARED_RATIO>(*eit)) < MOVETK_EPS);
+				auto v = std::get<ResultAttributes::POINT>(intersection) - std::get<ResultAttributes::POINT>(*eit);
 				REQUIRE(v * v < MOVETK_EPS);
 				eit++;
 			}
@@ -127,7 +138,13 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space c
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space diagram 1", "[free_space_diagram_1]") {
-	using edge_orientation = FreeSpaceCellTraits::edge_orientation;
+	using Fixture = FreeSpaceDiagramTests<TestType>;
+	using edge_orientation = typename Fixture::edge_orientation;
+	using vertex_orientation = typename Fixture::vertex_orientation;
+	using ExpectedFsd = typename Fixture::ExpectedFsd;
+	using ExpectedIntersections = typename Fixture::ExpectedIntersections;
+	auto make_point = Fixture::make_point;
+	auto make_segment = Fixture::make_segment;
 	ExpectedFsd expected{
 	    ExpectedIntersections{
 	        std::make_tuple(edge_orientation::Left, 1, 0.158384, make_point({18.266276, 8.142512})),
@@ -155,7 +172,6 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 	        std::make_tuple(edge_orientation::Bottom, 1, 0.0537631, make_point({19.347803, 8.000000})),
 	        std::make_tuple(edge_orientation::Bottom, -1, 0.951539, make_point({19.000000, 8.000000}))}};
 
-	using vertex_orientation = FreeSpaceCellTraits::vertex_orientation;
 	typedef std::vector<std::vector<std::size_t>> ExpectedVertices;
 	std::vector<std::size_t> vertices_cell_1{vertex_orientation::BottomLeft,
 	                                         vertex_orientation::TopRight,
@@ -169,18 +185,22 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 
 	ExpectedVertices expected_free_vertices{vertices_cell_1, vertices_cell_2, vertices_cell_4, vertices_cell_5};
 
-	std::vector<MovetkGeometryKernel::MovetkPoint> polyline_a{make_point({18.4423, 7.57566}), make_point({18, 9})};
+	std::vector<typename Fixture::MovetkPoint> polyline_a{make_point({18.4423, 7.57566}), make_point({18, 9})};
 
-	std::vector<MovetkGeometryKernel::MovetkPoint> polyline_b{make_point({17.5, 7.5}),
-	                                                          make_point({18.5, 8.5}),
-	                                                          make_point({20, 8.5}),
-	                                                          make_point({20, 10}),
-	                                                          make_point({19, 8}),
-	                                                          make_point({20.5, 8}),
-	                                                          make_point({21.5, 9})};
-	FreeSpaceDiagram fsd(std::begin(polyline_a), std::end(polyline_a), std::begin(polyline_b), std::end(polyline_b), 1);
+	std::vector<typename Fixture::MovetkPoint> polyline_b{make_point({17.5, 7.5}),
+	                                                      make_point({18.5, 8.5}),
+	                                                      make_point({20, 8.5}),
+	                                                      make_point({20, 10}),
+	                                                      make_point({19, 8}),
+	                                                      make_point({20.5, 8}),
+	                                                      make_point({21.5, 9})};
+	typename Fixture::FreeSpaceDiagram fsd(std::begin(polyline_a),
+	                                       std::end(polyline_a),
+	                                       std::begin(polyline_b),
+	                                       std::end(polyline_b),
+	                                       1);
 
-	using Attributes = typename IntersectionTraits::Attributes;
+	using Attributes = typename Fixture::ResultAttributes;
 
 	std::size_t cell_idx = 1;
 	auto eit = movetk::utils::movetk_grid_iterator<ExpectedFsd>(expected);
@@ -225,10 +245,13 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space diagram 2", "[free_space_diagram_2]") {
-	typedef typename MovetkGeometryKernel::NT NT;
+	using Fixture = FreeSpaceDiagramTests<TestType>;
+	typedef typename Fixture::NT NT;
+	using MovetkGeometryKernel = typename Fixture::MovetkGeometryKernel;
 	typedef typename MovetkGeometryKernel::MovetkPoint MovetkPoint;
-	typedef movetk::geom::IntersectionTraits<MovetkGeometryKernel, Norm, movetk::geom::sphere_segment_intersection_tag>
-	    IntersectionTraits;
+	typedef movetk::geom::
+	    IntersectionTraits<MovetkGeometryKernel, typename Fixture::Norm, movetk::geom::sphere_segment_intersection_tag>
+	        IntersectionTraits;
 	typedef movetk::ds::FreeSpaceCellTraits<IntersectionTraits> FreeSpaceCellTraits;
 	typedef movetk::ds::FreeSpaceCell<FreeSpaceCellTraits> FreeSpaceCell;
 	typedef movetk::ds::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;

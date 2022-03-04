@@ -24,6 +24,7 @@
 #include <array>
 #include <catch2/catch.hpp>
 
+#include "helpers/TestJsonReader.h"
 #include "movetk/algo/Simplification.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
@@ -33,118 +34,65 @@
 template <typename Backend>
 struct DouglasPeuckerTests {
 	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+	using NT = typename Backend::NT;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
 	using FindFarthest = movetk::algo::FindFarthest<MovetkGeometryKernel, Norm>;
 	using DouglasPeucker = movetk::algo::DouglasPeucker<MovetkGeometryKernel, FindFarthest>;
+
+	template <typename... ARGS>
+	auto create_douglas_peucker(ARGS&&... args) {
+		return DouglasPeucker(std::forward<ARGS>(args)...);
+	}
+	struct TestCase {
+		PolyLine input;
+		PolyLine expected;
+		NT epsilon;
+		void read(const rapidjson::Value& value) {
+			using namespace movetk::test;
+			io::load(value["input"], input, io::construct_point<MovetkGeometryKernel>);
+			io::load(value["expected"], expected, io::construct_point<MovetkGeometryKernel>);
+			long double epsilon_ld;
+			io::load(value, epsilon_ld);
+			epsilon = NT(epsilon_ld);
+		}
+	};
+	auto create_test_cases() {
+		std::map<std::string, TestCase> test_cases;
+		auto doc = movetk::test::io::get_json_doc("data/douglaspeucker_tests.json");
+
+		const auto& tests_root = doc["simplification_tests"];
+		assert(tests_root.IsObject());
+		for (auto it = tests_root.MemberBegin(); it != tests_root.MemberEnd(); ++it) {
+			TestCase test_case;
+			test_case.read(it->value);
+			std::string name = it->name.GetString();
+
+			test_cases[name] = test_case;
+		}
+		return test_cases;
+	}
 };
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
-                                      "Check Douglas-Peucker Simplification 1",
-                                      "[douglas_peucker_simplification_1]") {
-	PolyLine polyline({make_point({-6.19, -3.46}),
-	                   make_point({-4.99, 1.16}),
-	                   make_point({-2.79, -2.22}),
-	                   make_point({-1.87, 0.58}),
-	                   make_point({0.77, 0.22}),
-	                   make_point({-1.15, 3.06}),
-	                   make_point({5.33, -1.12})});
-	PolyLine ExpectedPolyline;
-	std::vector<PolyLine::iterator> result;
-	DouglasPeucker DouglasPeucker1(5.47722);
-	ExpectedPolyline = PolyLine({make_point({-6.19, -3.46}), make_point({5.33, -1.12})});
-	DouglasPeucker1(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
-	REQUIRE(result.size() == 2);
-	auto eit = std::begin(ExpectedPolyline);
-	for (auto reference : result) {
-		auto v = *reference - *eit;
-		REQUIRE((v * v) < MOVETK_EPS);
-		eit++;
-	}
-}
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
-                                      "Check Douglas-Peucker Simplification 2",
-                                      "[douglas_peucker_simplification_2]") {
-	PolyLine polyline({make_point({-6.19, -3.46}),
-	                   make_point({-4.99, 1.16}),
-	                   make_point({-2.79, -2.22}),
-	                   make_point({-1.87, 0.58}),
-	                   make_point({0.77, 0.22}),
-	                   make_point({-1.15, 3.06}),
-	                   make_point({5.33, -1.12})});
-	PolyLine ExpectedPolyline;
-
-	std::vector<PolyLine::iterator> result;
-	DouglasPeucker DouglasPeucker2(3.162277);
-	ExpectedPolyline = PolyLine({make_point({-6.19, -3.46}),
-	                             make_point({-4.99, 1.16}),
-	                             make_point({0.77, 0.22}),
-	                             make_point({-1.15, 3.06}),
-	                             make_point({5.33, -1.12})});
-	DouglasPeucker2(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
-	REQUIRE(result.size() == 5);
-	auto eit = std::begin(ExpectedPolyline);
-	for (auto reference : result) {
-		MovetkGeometryKernel::MovetkVector v = *reference - *eit;
-		REQUIRE((v * v) < MOVETK_EPS);
-		eit++;
-	}
-}
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
-                                      "Check Douglas-Peucker Simplification 3",
-                                      "[douglas_peucker_simplification_3]") {
-	PolyLine polyline({make_point({-6.19, -3.46}),
-	                   make_point({-4.99, 1.16}),
-	                   make_point({-2.79, -2.22}),
-	                   make_point({-1.87, 0.58}),
-	                   make_point({0.77, 0.22}),
-	                   make_point({-1.15, 3.06}),
-	                   make_point({5.33, -1.12})});
-	PolyLine ExpectedPolyline;
-
-	std::vector<PolyLine::iterator> result;
-	DouglasPeucker DouglasPeucker3(1);
-	ExpectedPolyline = PolyLine({make_point({-6.19, -3.46}),
-	                             make_point({-4.99, 1.16}),
-	                             make_point({-2.79, -2.22}),
-	                             make_point({-1.87, 0.58}),
-	                             make_point({0.77, 0.22}),
-	                             make_point({-1.15, 3.06}),
-	                             make_point({5.33, -1.12})});
-	DouglasPeucker3(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
-	REQUIRE(result.size() == 7);
-	auto eit = std::begin(ExpectedPolyline);
-	for (auto reference : result) {
-		auto v = *reference - *eit;
-		REQUIRE((v * v) < MOVETK_EPS);
-		eit++;
-	}
-}
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DouglasPeuckerTests,
-                                      "Check Douglas-Peucker Simplification 4",
-                                      "[douglas_peucker_simplification_4]") {
-	PolyLine polyline({make_point({-6.19, -3.46}),
-	                   make_point({-6.19, -3.46}),
-	                   make_point({-6.19, -3.46}),
-	                   make_point({-6.19, -3.46}),
-	                   make_point({-6.19, -3.46}),
-	                   make_point({-6.19, -3.46}),
-	                   make_point({-6.19, -3.46})});
-	PolyLine ExpectedPolyline;
-	std::vector<PolyLine::iterator> result;
-	DouglasPeucker DouglasPeucker4(3.162277);
-	ExpectedPolyline = PolyLine({make_point({-6.19, -3.46}), make_point({-6.19, -3.46})});
-	DouglasPeucker4(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
-	REQUIRE(result.size() == 2);
-	auto eit = std::begin(ExpectedPolyline);
-	for (auto reference : result) {
-		MovetkGeometryKernel::MovetkVector v = *reference - *eit;
-		REQUIRE((v * v) < MOVETK_EPS);
-		eit++;
+                                      "Check Douglas-Peucker Simplification are correct",
+                                      "[douglas_peucker_simplification]") {
+	using Fixture = DouglasPeuckerTests<TestType>;
+	auto test_cases = Fixture::create_test_cases();
+	for (const auto& [name, test_case] : test_cases) {
+		auto douglas_peucker = Fixture::create_douglas_peucker(test_case.epsilon);
+		std::vector<decltype(test_case.input.begin())> result;
+		douglas_peucker(std::begin(test_case.input),
+		                std::end(test_case.input),
+		                movetk::utils::movetk_back_insert_iterator(result));
+		REQUIRE(result.size() == test_case.expected.size());
+		auto eit = std::begin(test_case.expected);
+		for (auto reference : result) {
+			auto v = *reference - *eit;
+			REQUIRE((v * v) < MOVETK_EPS);
+			eit++;
+		}
 	}
 }
