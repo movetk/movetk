@@ -144,14 +144,15 @@ struct WeakFrechetTests {
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,
                                       "Check Weak frechet distance between polylines",
                                       "[weak_frechet]") {
-	WFR wfr{};
-	SqDistance sqDist;
+	using Fixture = WeakFrechetTests<TestType>;
+	typename Fixture::WFR wfr{};
+	typename Fixture::SqDistance sqDist;
 	for (const auto& [test_case_name, test_data] : test_cases) {
 		SECTION(test_case_name) {
-			PointList polyA, polyB, expectedDistLine;
-			parseIpePath(test_data.polyA, polyA);
-			parseIpePath(test_data.polyB, polyB);
-			parseIpePath(test_data.expectedDistLine, expectedDistLine);
+			typename Fixture::PointList polyA, polyB, expectedDistLine;
+			Fixture::parseIpePath(test_data.polyA, polyA);
+			Fixture::parseIpePath(test_data.polyB, polyB);
+			Fixture::parseIpePath(test_data.expectedDistLine, expectedDistLine);
 			auto dist = wfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
 			auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 			REQUIRE(abs(dist - expectedDist) < MOVETK_EPS);
@@ -161,20 +162,21 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,
                                       "Check Weak frechet matching between polylines",
                                       "[weak_frechet]") {
-	WFR wfr{};
-	SqDistance sqDist;
+	using Fixture = WeakFrechetTests<TestType>;
+	typename Fixture::WFR wfr{};
+	typename Fixture::SqDistance sqDist;
 
 	SECTION("Interweaved grid example") {
 		const auto& test_data = test_cases.at("Interweaved grid example");
-		PointList polyA, polyB, expectedDistLine;
-		parseIpePath(test_data.polyA, polyA);
-		parseIpePath(test_data.polyB, polyB);
-		parseIpePath(test_data.expectedDistLine, expectedDistLine);
+		typename Fixture::PointList polyA, polyB, expectedDistLine;
+		Fixture::parseIpePath(test_data.polyA, polyA);
+		Fixture::parseIpePath(test_data.polyB, polyB);
+		Fixture::parseIpePath(test_data.expectedDistLine, expectedDistLine);
 
 		auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
 
 		// Get the matching with the output
-		std::vector<std::pair<std::pair<int, int>, NT>> matching;
+		std::vector<std::pair<std::pair<int, int>, typename Fixture::NT>> matching;
 
 		auto dist = wfr(polyA.begin(),
 		                polyA.end(),
@@ -186,7 +188,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,
 		REQUIRE(!matching.empty());
 
 		// All distances should be correct
-		NT maxDist = std::numeric_limits<NT>::min();
+		auto maxDist = std::numeric_limits<typename Fixture::NT>::min();
 		for (const auto& el : matching) {
 			REQUIRE(el.second <= expectedDist + MOVETK_EPS);
 			maxDist = std::max(maxDist, el.second);

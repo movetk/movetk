@@ -65,30 +65,31 @@ TEST_CASE("trajectory length 3d 2pts 2", "[trajectory_length_3d_2pts_2]") {
 
 template <typename Backend>
 struct PolylineUtilTests : public test_helpers::BaseTestFixture<Backend> {
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
+	using MovetkGeometryKernel = PolylineUtilTests::MovetkGeometryKernel;
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(PolylineUtilTests,
                                       "trajectory length with movetk points",
                                       "[trajectory_length_movetk_pts]") {
-	PolyLine polyline(
-	    {make_point({0, 0}), make_point({1, 0}), make_point({1, 1}), make_point({0, 1}), make_point({0, 0})});
+	test_helpers::GeometryConstructors<TestType> c;
+	auto polyline = c.make_polyline(
+	    {c.make_point({0, 0}), c.make_point({1, 0}), c.make_point({1, 1}), c.make_point({0, 1}), c.make_point({0, 0})});
 	double length = movetk::algo::polyline_length_m(std::begin(polyline), std::end(polyline));
 	REQUIRE(length == Approx(4.0).epsilon(0.00001));
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(PolylineUtilTests, "trajectory monotonicity", "[trajectory_monotonicity]") {
-	PolyLine polyline({make_point({4, 2}),
-	                   make_point({14, 10}),
-	                   make_point({18.812, 4.0566}),
-	                   make_point({20, 12}),
-	                   make_point({28, 14}),
-	                   make_point({30, 25}),
-	                   make_point({31.9003, 8.43149})});
+	test_helpers::GeometryConstructors<TestType> c;
+	auto polyline = c.make_polyline({c.make_point({4, 2}),
+	                                 c.make_point({14, 10}),
+	                                 c.make_point({18.812, 4.0566}),
+	                                 c.make_point({20, 12}),
+	                                 c.make_point({28, 14}),
+	                                 c.make_point({30, 25}),
+	                                 c.make_point({31.9003, 8.43149})});
 	std::vector<bool> result, ExpectedResult({true, true, false, true, true, false});
-	movetk::algo::is_monotone<MovetkGeometryKernel> is_monotone;
-	is_monotone(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
+	movetk::algo::is_monotone<typename PolylineUtilTests<TestType>::MovetkGeometryKernel> is_monotone;
+	is_monotone(std::begin(polyline), std::end(polyline), std::back_inserter(result));
 
 	REQUIRE(std::accumulate(std::begin(result), std::end(result), 0) ==
 	        std::accumulate(std::begin(ExpectedResult), std::end(ExpectedResult), 0));

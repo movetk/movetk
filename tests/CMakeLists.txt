@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.11)
 
 find_package(Catch2 REQUIRED PATHS ../third_party/Catch2/lib64/cmake/Catch2)
 
+find_package(Boost REQUIRED COMPONENTS serialization)
+add_executable(ser_test ser_test.cpp)
+set_property(TARGET ser_test PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 add_executable(movetk_tests
         test_includes.h
+        helpers/CustomCatchTemplate.h
+        helpers/TestJsonReader.h
         tests_main.cpp
         test_csv.cpp
         test_categorical_field.cpp
@@ -42,6 +47,12 @@ add_executable(movetk_tests
         test_weak_frechet.cpp
         test_agarwal.cpp
         )
+file(GLOB test_data data/*.json)
+
+add_custom_command(TARGET movetk_tests PRE_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:movetk_tests>/data
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${test_data} $<TARGET_FILE_DIR:movetk_tests>/data
+)
 
 if(MSVC)
     target_precompile_headers(movetk_tests
@@ -54,6 +65,11 @@ target_link_libraries(movetk_tests
         PRIVATE
         c2d::movetk
         Catch2::Catch2
+        )
+  target_link_libraries(ser_test
+        PRIVATE
+        c2d::movetk
+        Boost::serialization
         )
 
 include(CTest)

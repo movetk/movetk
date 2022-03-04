@@ -28,6 +28,7 @@
 #define TEST_INCLUDES_H
 
 #include <tuple>
+#include <type_traits>
 
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
@@ -89,6 +90,26 @@ using AvailableBackends = typename remove_first_type<std::tuple<noop
 
 namespace test_helpers {
 template <typename Backend>
+using NTFromBackend = typename Backend::MovetkGeometryKernel::NT;
+
+template <typename Backend>
+using MovetkKernelFromBackend = typename Backend::MovetkGeometryKernel;
+
+// Helper struct for geometric constructors.
+template <typename Backend>
+struct GeometryConstructors {
+	movetk::geom::MakePoint<typename Backend::MovetkGeometryKernel> make_point;
+	movetk::geom::MakeLine<typename Backend::MovetkGeometryKernel> make_line;
+	movetk::geom::MakeSegment<typename Backend::MovetkGeometryKernel> make_segment;
+	movetk::geom::MakeSphere<typename Backend::MovetkGeometryKernel> make_sphere;
+
+	using PolyLine = std::vector<typename Backend::MovetkGeometryKernel::MovetkPoint>;
+	PolyLine make_polyline(std::initializer_list<typename Backend::MovetkGeometryKernel::MovetkPoint> points) {
+		return PolyLine(points);
+	}
+};
+
+template <typename Backend>
 struct BaseTestFixture {
 	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
 	using NT = typename Backend::NT;
@@ -97,6 +118,15 @@ struct BaseTestFixture {
 	using MovetkVector = typename MovetkGeometryKernel::MovetkVector;
 	// Most commonly used norm
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
+
+	template <typename T, typename... REST, typename = std::enable_if_t<std::conjunction_v<std::is_same<T, REST>...>>>
+	static auto create_array_of(T&& arg, REST&&... args) {
+		return std::array<T, sizeof...(REST) + 1>{std::forward<T>(arg), std::forward<REST>(args)...};
+	}
+	template <typename T, typename... REST, typename = std::enable_if_t<std::conjunction_v<std::is_same<T, REST>...>>>
+	static auto create_vector_of(T&& arg, REST&&... args) {
+		return std::vector<T>{std::forward<T>(arg), std::forward<REST>(args)...};
+	}
 };
 
 namespace detail {

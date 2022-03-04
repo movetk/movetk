@@ -62,10 +62,11 @@ struct ChanChinTests {
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ChanChinTests, "Check Chan Chin Shortcuts", "[is_valid_shortcut_1]") {
-	for (const auto& [test_case_name, test_data] : test_cases) {
+	using Fixture = ChanChinTests<TestType>;
+	for (const auto& [test_case_name, test_data] : Fixture::test_cases) {
 		SECTION(test_case_name) {
-			movetk::algo::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(1);
-			EdgeList edges;
+			movetk::algo::ChanChin<typename Fixture::MovetkGeometryKernel, typename Fixture::Wedge> ChanChin(1);
+			typename Fixture::EdgeList edges;
 			ChanChin(std::begin(test_data.polyline),
 			         std::end(test_data.polyline),
 			         movetk::utils::movetk_back_insert_iterator(edges));
@@ -110,7 +111,7 @@ TEST_CASE("Check Chan Chin Shortcuts 4", "[is_valid_shortcut_4]") {
         std::make_pair(1, 9), std::make_pair(7, 9),
         std::make_pair(8, 9)
     });
-    ChanChin(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(edges));
+    ChanChin(std::begin(polyline), std::end(polyline), std::back_inserter(edges));
     REQUIRE(edges.size() == ExpectedEdges.size());
     std::cout << "Valid Shortcuts: ";
     std::cout << "{";

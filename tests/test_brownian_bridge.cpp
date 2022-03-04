@@ -64,59 +64,62 @@ struct BrownianBridgeTests {
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests, "brownian bridge mle 1", "[test brownian bridge mle 1]") {
-	Norm norm;
-	using Ts = EmptyTrajectoryTs;
-	Ts::Trajectory t = {};
-	std::vector<Ts::Parameters> bridges;
-	Ts::Parameters p = {make_point({0, 1}), make_point({0, 0}), 0, t.begin(), t.begin()};
-	bridges.push_back(p);
-	auto v = std::get<Ts::ParameterColumns::POINT>(p) - std::get<Ts::ParameterColumns::MU>(p);
-	NT squared_length = norm(v);
-	auto initial_estimate = squared_length / 2;
-	auto upper_bound = squared_length;
-	Ts::MLE mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
+	using Fixture = BrownianBridgeTests<TestType>;
+	typename Fixture::Norm norm;
+	using Ts = typename Fixture::EmptyTrajectoryTs;
+	auto make_point = Fixture::make_point;
+
+	typename Ts::Trajectory t = {};
+	std::vector<typename Ts::Parameters> bridges{{make_point({0, 1}), make_point({0, 0}), 0, t.begin(), t.begin()}};
+	const auto v = std::get<Ts::ParameterColumns::POINT>(bridges[0]) - std::get<Ts::ParameterColumns::MU>(bridges[0]);
+	const auto squared_length = norm(v);
+	const auto initial_estimate = squared_length / 2;
+	const auto upper_bound = squared_length;
+	typename Ts::MLE mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
 	std::cout << "Maximum Likelihood Estimate: " << mle() << "\n";
 	REQUIRE(std::abs(mle() - 0.5) < MOVETK_EPS);
 }
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests, "brownian bridge mle 2", "[test brownian bridge mle 2]") {
-	Norm norm;
-	using Ts = EmptyTrajectoryTs;
-	Ts::Trajectory t = {};
-	std::vector<Ts::Parameters> bridges;
-	Ts::Parameters p = {make_point({10, 20}), make_point({20, 10}), 0, t.begin(), t.begin()};
-	bridges.push_back(p);
-	auto v = std::get<Ts::ParameterColumns::POINT>(p) - std::get<Ts::ParameterColumns::MU>(p);
-	NT squared_length = norm(v);
+	using Fixture = BrownianBridgeTests<TestType>;
+	typename Fixture::Norm norm;
+	using Ts = typename Fixture::EmptyTrajectoryTs;
+	auto make_point = Fixture::make_point;
+
+	typename Ts::Trajectory t = {};
+	std::vector<typename Ts::Parameters> bridges{{make_point({10, 20}), make_point({20, 10}), 0, t.begin(), t.begin()}};
+	auto v = std::get<Ts::ParameterColumns::POINT>(bridges[0]) - std::get<Ts::ParameterColumns::MU>(bridges[0]);
+	const auto squared_length = norm(v);
 	auto initial_estimate = squared_length / 2;
 	auto upper_bound = squared_length;
-	Ts::MLE mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
+	typename Ts::MLE mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
 	std::cout << "Maximum Likelihood Estimate: " << mle() << "\n";
 	REQUIRE(std::abs(mle() - 100) < MOVETK_EPS);
 }
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests, "brownian bridge mle 3", "[test brownian bridge mle 3]") {
-	Norm norm;
-	using Ts = EmptyTrajectoryTs;
-	Ts::Trajectory t = {};
-	std::vector<Ts::Parameters> bridges;
-	NT sigma = 1.0;
-	Ts::Parameters p = {make_point({0, 1}), make_point({0, 0}), sigma, t.begin(), t.begin()};
-	bridges.push_back(p);
-	auto v = std::get<Ts::ParameterColumns::POINT>(p) - std::get<Ts::ParameterColumns::MU>(p);
+	using Fixture = BrownianBridgeTests<TestType>;
+	typename Fixture::Norm norm;
+	using Ts = typename Fixture::EmptyTrajectoryTs;
+	auto make_point = Fixture::make_point;
+
+	typename Ts::Trajectory t = {};
+	typename Fixture::NT sigma = 1.0;
+	std::vector<typename Ts::Parameters> bridges{
+	    {make_point({0, 1}), make_point({0, 0}), sigma, t.begin(), t.begin()},
+	    {make_point({10, 20}), make_point({20, 10}), sigma, t.begin(), t.begin()}};
+	auto v = std::get<Ts::ParameterColumns::POINT>(bridges[0]) - std::get<Ts::ParameterColumns::MU>(bridges[0]);
 	auto squared_length = norm(v);
 	auto upper_bound = squared_length;
-	p = {make_point({10, 20}), make_point({20, 10}), sigma, t.begin(), t.begin()};
-	bridges.push_back(p);
-	v = std::get<Ts::ParameterColumns::POINT>(p) - std::get<Ts::ParameterColumns::MU>(p);
+	v = std::get<Ts::ParameterColumns::POINT>(bridges[1]) - std::get<Ts::ParameterColumns::MU>(bridges[1]);
 	auto l = norm(v);
 	squared_length += l;
 	if (l > upper_bound) {
 		upper_bound = l;
 	}
 	auto initial_estimate = squared_length / (2 * bridges.size());
-	Ts::MLE mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
+	typename Ts::MLE mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
 	std::cout << "Maximum Likelihood Estimate: " << mle() << "\n";
 	REQUIRE(std::abs(mle() - 50.25) < MOVETK_EPS);
 }
@@ -125,6 +128,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests, "brownian bridge mle 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
                                       "brownian bridge model 1",
                                       "[test brownian bridge model 1]") {
+	using NT = long double;
+	using Fixture = BrownianBridgeTests<TestType>;
 	struct ProbeTraits {
 		enum ProbeColumns { LAT, LON, SAMPLE_DATE };
 	};
@@ -137,12 +142,16 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	std::vector<ProbePoint> data = {p1, p2, p3};
 	movetk::ds::TabularTrajectory<long double, long double, std::size_t> t{data};
 
-	using Ts = TrajectoryTs<long double, long double, std::size_t>;
+	using Ts = typename Fixture::template TrajectoryTs<long double, long double, std::size_t>;
 
-	Norm norm;
-	std::vector<Ts::Parameters> bridges;
+	typename Fixture::Norm norm;
+	std::vector<typename Ts::Parameters> bridges;
 
-	typedef movetk::algo::brownian_bridge::Model<MovetkGeometryKernel, ProbeTraits, Ts::ParameterTraits, Norm, Projection>
+	typedef movetk::algo::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
+	                                             ProbeTraits,
+	                                             typename Ts::ParameterTraits,
+	                                             typename Fixture::Norm,
+	                                             typename Fixture::Projection>
 	    BBMM;
 
 	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
@@ -157,9 +166,12 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 			upper_bound = l;
 	}
 	auto initial_estimate = squared_length / (2 * bridges.size());
-	movetk::algo::brownian_bridge::
-	    MLE<MovetkGeometryKernel, Ts::ParameterTraits, Norm, Ts::BridgeIterator, MAX_ITERATIONS>
-	        mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
+	movetk::algo::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
+	                                   typename Ts::ParameterTraits,
+	                                   typename Fixture::Norm,
+	                                   typename Ts::BridgeIterator,
+	                                   Fixture::MAX_ITERATIONS>
+	    mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
 	REQUIRE(std::abs(mle() - 2.416917) < MOVETK_EPS);
 }
 
@@ -167,6 +179,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
                                       "brownian bridge model 2",
                                       "[test brownian bridge model 2]") {
+	using Fixture = BrownianBridgeTests<TestType>;
 	struct ProbeTraits {
 		enum ProbeColumns { LAT, LON, SAMPLE_DATE };
 	};
@@ -184,18 +197,21 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	std::vector<ProbePoint> data = {p1, p2, p3, p4, p5, p6};
 	movetk::ds::TabularTrajectory<long double, long double, std::size_t> t{data};
 
-	using Ts = TrajectoryTs<long double, long double, std::size_t>;
+	using Ts = typename Fixture::template TrajectoryTs<long double, long double, std::size_t>;
 
-	Norm norm;
-	std::vector<Ts::Parameters> bridges;
+	typename Fixture::Norm norm;
+	std::vector<typename Ts::Parameters> bridges;
 
-	using BBMM =
-	    movetk::algo::brownian_bridge::Model<MovetkGeometryKernel, ProbeTraits, Ts::ParameterTraits, Norm, Projection>;
+	using BBMM = movetk::algo::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
+	                                                  ProbeTraits,
+	                                                  typename Ts::ParameterTraits,
+	                                                  typename Fixture::Norm,
+	                                                  typename Fixture::Projection>;
 
 	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
 
-	NT upper_bound = 0;
-	NT squared_length = 0;
+	typename Fixture::NT upper_bound = 0;
+	typename Fixture::NT squared_length = 0;
 	for (auto bridge : bridges) {
 		auto v = std::get<Ts::ParameterColumns::POINT>(bridge) - std::get<Ts::ParameterColumns::MU>(bridge);
 		auto l = norm(v);
@@ -205,9 +221,12 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	}
 
 	auto initial_estimate = squared_length / (2 * bridges.size());
-	movetk::algo::brownian_bridge::
-	    MLE<MovetkGeometryKernel, Ts::ParameterTraits, Norm, Ts::BridgeIterator, MAX_ITERATIONS>
-	        mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
+	movetk::algo::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
+	                                   typename Ts::ParameterTraits,
+	                                   typename Fixture::Norm,
+	                                   typename Ts::BridgeIterator,
+	                                   Fixture::MAX_ITERATIONS>
+	    mle(std::cbegin(bridges), std::cend(bridges), initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
 	REQUIRE(std::abs(mle() - 32.2321283) < MOVETK_EPS);
 }
 
@@ -215,6 +234,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
                                       "brownian bridge parameter selection 1",
                                       "[test brownian bridge parameter selection 1]") {
+	using Fixture = BrownianBridgeTests<TestType>;
 	struct ProbeTraits {
 		enum ProbeColumns { LAT, LON, SAMPLE_DATE };
 	};
@@ -240,27 +260,34 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	                                ProbePoint(51.4443956476577, 5.4794815471467, 1550866869),
 	                                ProbePoint(51.4443957506309, 5.47948009708671, 1550866879)};
 	movetk::ds::TabularTrajectory<long double, long double, std::size_t> t{data};
-	using Ts = TrajectoryTs<long double, long double, std::size_t>;
-	Norm norm;
-	std::vector<Ts::Parameters> bridges;
+	using Ts = typename Fixture::template TrajectoryTs<long double, long double, std::size_t>;
+	typename Fixture::Norm norm;
+	std::vector<typename Ts::Parameters> bridges;
 
-	using BBMM =
-	    movetk::algo::brownian_bridge::Model<MovetkGeometryKernel, ProbeTraits, Ts::ParameterTraits, Norm, Projection>;
+	using BBMM = movetk::algo::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
+	                                                  ProbeTraits,
+	                                                  typename Ts::ParameterTraits,
+	                                                  typename Fixture::Norm,
+	                                                  typename Fixture::Projection>;
 
 	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
 
-	std::vector<NT> selected_coeffs;
+	std::vector<typename Fixture::NT> selected_coeffs;
 
 	auto bit = begin(bridges);
 	while (bit != end(bridges)) {
-		movetk::algo::brownian_bridge::
-		    MLE<MovetkGeometryKernel, Ts::ParameterTraits, Norm, Ts::BridgeIterator, MAX_ITERATIONS>
-		        mle(bit, bit + 1);
+		movetk::algo::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
+		                                   typename Ts::ParameterTraits,
+		                                   typename Fixture::Norm,
+		                                   typename Ts::BridgeIterator,
+		                                   Fixture::MAX_ITERATIONS>
+		    mle(bit, bit + 1);
 		std::get<Ts::ParameterColumns::SIGMA_SQUARED>(*bit) = mle();
 		bit++;
 	}
 
-	movetk::algo::brownian_bridge::ParameterSelector<MovetkGeometryKernel, Ts::ParameterTraits> selector(4);
+	movetk::algo::brownian_bridge::ParameterSelector<typename Fixture::MovetkGeometryKernel, typename Ts::ParameterTraits>
+	    selector(4);
 	selector(std::begin(bridges), std::end(bridges), movetk::utils::movetk_back_insert_iterator(selected_coeffs));
 
 	for (auto bridge : bridges) {

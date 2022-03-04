@@ -26,33 +26,36 @@
 
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/DistanceInterface.h"
+#include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "movetk/metric/Norm.h"
-
 #include "test_includes.h"
 
-template<typename Backend>
-struct DistanceTests : public test_helpers::BaseTestFixture<Backend> {
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
+template <typename Backend>
+struct DistanceTests {
+	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+	movetk::geom::MakePoint<typename Backend::MovetkGeometryKernel> make_point;
+	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 };
 
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DistanceTests,"Check Distance between point and segment", "[is_valid_dist_point_seg]")
-{
-    auto p1 = make_point({5.5, 3.1});
-    auto p2 = make_point({3.22, 1.3});
-    auto p3 = make_point({5, 5});
-    movetk::geom::MakeSegment<MovetkGeometryKernel> make_segment;
-    auto seg = make_segment(p1, p2);
-    movetk::metric::ComputeSquaredDistance<MovetkGeometryKernel, Norm> squared_dist;
-    auto result = squared_dist(p3, seg);
-    REQUIRE(abs(result - 3.86) < MOVETK_EPS);
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(DistanceTests,
+                                      "Check Distance between point and segment",
+                                      "[is_valid_dist_point_seg]") {
+	using Test = DistanceTests<TestType>;
+	auto p1 = Test::make_point({5.5, 3.1});
+	auto p2 = Test::make_point({3.22, 1.3});
+	auto p3 = Test::make_point({5, 5});
+	movetk::geom::MakeSegment<typename Test::MovetkGeometryKernel> make_segment;
+	auto seg = make_segment(p1, p2);
+	movetk::metric::ComputeSquaredDistance<typename Test::MovetkGeometryKernel, typename Test::Norm> squared_dist;
+	auto result = squared_dist(p3, seg);
+	REQUIRE(abs(result - 3.86) < MOVETK_EPS);
 
-    p3 = make_point({3.85, 4.12});
-    result = squared_dist(p3, seg);
-    REQUIRE(abs(result - 3.3233) < MOVETK_EPS);
+	p3 = Test::make_point({3.85, 4.12});
+	result = squared_dist(p3, seg);
+	REQUIRE(abs(result - 3.3233) < MOVETK_EPS);
 
-    p3 = make_point({1.53, 2.6});
-    result = squared_dist(p3, seg);
-    REQUIRE(abs(result - 4.5461) < MOVETK_EPS);
+	p3 = Test::make_point({1.53, 2.6});
+	result = squared_dist(p3, seg);
+	REQUIRE(abs(result - 4.5461) < MOVETK_EPS);
 }

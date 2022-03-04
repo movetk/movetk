@@ -33,25 +33,26 @@
 
 
 template <typename Backend>
-struct InterpolationTests : public test_helpers::BaseTestFixture<Backend> {
+struct InterpolationTests {
+	using MovetkGeometryKernel = test_helpers::MovetkKernelFromBackend<Backend>;
+	using NT = test_helpers::NTFromBackend<Backend>;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 
 	// Used for kinematic interpolators
 	struct ProbeTraits {
 		enum ProbeColumns { SAMPLE_DATE, LAT, LON, HEADING, SPEED };
-		using NT = typename MovetkGeometryKernel::NT;
 		using ProbePoint = std::tuple<NT, NT, NT, NT, NT>;
 	};
 
 	using Projection = movetk::geo::LocalCoordinateReference<NT>;
 	using InterpolationTraits = movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>;
 	using KinematicInterpolator = movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
-	                                           InterpolationTraits,
-	                                           ProbeTraits::ProbeColumns::LAT,
-	                                           ProbeTraits::ProbeColumns::LON,
-	                                           ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                           ProbeTraits::ProbeColumns::SPEED,
-	                                           ProbeTraits::ProbeColumns::HEADING>;
+	                                                         InterpolationTraits,
+	                                                         ProbeTraits::ProbeColumns::LAT,
+	                                                         ProbeTraits::ProbeColumns::LON,
+	                                                         ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	                                                         ProbeTraits::ProbeColumns::SPEED,
+	                                                         ProbeTraits::ProbeColumns::HEADING>;
 };
 
 
@@ -81,62 +82,35 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests, "trajectory interpolat
 	REQUIRE(std::get<2>(p) == std::get<2>(data[1]));
 }
 
-
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests,
-                                      "kinematic trajectory interpolation 1",
-                                      "[kinematic_trajectory_interpolation_1]") {
-	struct ProbeTraits {
-		enum ProbeColumns { SAMPLE_DATE, LAT, LON, HEADING, SPEED };
-		typedef MovetkGeometryKernel::NT NT;
-		typedef std::tuple<NT, NT, NT, NT, NT> ProbePoint;
-	};
+                                      "kinematic trajectory interpolations",
+                                      "[kinematic_trajectory_interpolation]") {
+	using FixtureType = InterpolationTests<TestType>;
+	using ProbeTraits = typename InterpolationTests<TestType>::ProbeTraits;
+	using NT = typename InterpolationTests<TestType>::NT;
+	using ProbePoint = typename ProbeTraits::ProbePoint;
+	std::vector<std::pair<ProbePoint, ProbePoint>> tests{
+	    std::make_pair(ProbePoint{1461862301, 40.84830093, -73.8443985, 20, 5.2778},
+	                   ProbePoint{1461862305, 40.84841919, -73.84434509, 20, 3.05556}),
+	    std::make_pair(ProbePoint{0, 40.84812546, -73.84451294, 0, 1}, ProbePoint{1, 40.8481636, -73.84448242, 0, 1})};
+	std::vector<std::vector<NT>> timestamps{{1461862301, 1461862302, 1461862303, 1461862304, 1461862305},
+	                                            {0, 0.25, 0.5, 0.75, 1}};
 
-	ProbeTraits::ProbePoint p1 = {0, 40.84812546, -73.84451294, 0, 1};
-	ProbeTraits::ProbePoint p2 = {1, 40.8481636, -73.84448242, 0, 1};
+	std::vector<std::pair<NT, NT>> interpolator_refs{std::make_pair<NT>(40.84812546, -73.84451294),
+	                                                 std::make_pair<NT>(40.84812546, -73.84451294)};
 
-	std::vector<typename ProbeTraits::ProbePoint> data = {p1, p2};
-	Norm norm;
+	typename FixtureType::Norm norm;
+	for (std::size_t i = 0; i < tests.size(); ++i) {
+		SECTION(std::string{"test"} + std::to_string(i)) {
+			typename FixtureType::KinematicInterpolator interpolator(interpolator_refs[i].first, interpolator_refs[i].second);
+			std::vector<typename ProbeTraits::ProbePoint> interpolated_pts;
 
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-
-	KinematicInterpolator interpolator(40.84812546, -73.84451294);
-	std::vector<typename MovetkGeometryKernel::NT> ts{0, 0.25, 0.5, 0.75, 1};
-	std::vector<typename ProbeTraits::ProbePoint> interpolated_pts;
-
-	movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
-	// result = p1;
-	interpolator(p1, p2, std::cbegin(ts), std::cend(ts), result);
-	// result = p2;
-
-	// TODO: checks?!
-}
-
-MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests,
-                                      "kinematic trajectory interpolation 2",
-                                      "[kinematic_trajectory_interpolation_2]") {
-	ProbeTraits::ProbePoint p1 = {1461862301, 40.84830093, -73.8443985, 20, 5.2778};
-	ProbeTraits::ProbePoint p2 = {1461862305, 40.84841919, -73.84434509, 20, 3.05556};
-
-	std::vector<typename ProbeTraits::ProbePoint> data = {p1, p2};
-	Norm norm;
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	KinematicInterpolator interpolator(40.84812546, -73.84451294);
-	std::vector<std::size_t> ts{1461862301, 1461862302, 1461862303, 1461862304, 1461862305};
-	std::vector<typename ProbeTraits::ProbePoint> interpolated_pts;
-
-	movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
-	// result = p1;
-	interpolator(p1, p2, std::cbegin(ts), std::cend(ts), result);
-	// result = p2;
-	auto pit = std::begin(interpolated_pts);
-	/*std::cout << "SAMPLE_DATE, LAT, LON, HEADING, SPEED\n";
-	while (pit != std::end(interpolated_pts)) {
-	    std::cout << std::get<ProbeTraits::ProbeColumns::SAMPLE_DATE>(*pit) << ",";
-	    std::cout << std::get<ProbeTraits::ProbeColumns::LAT>(*pit) << ",";
-	    std::cout << std::get<ProbeTraits::ProbeColumns::LON>(*pit) << ",";
-	    std::cout << std::get<ProbeTraits::ProbeColumns::HEADING>(*pit) << ",";
-	    std::cout << std::get<ProbeTraits::ProbeColumns::SPEED>(*pit) << "\n";
-	    pit++;
-	}*/
-	// TODO: checks ?!
+			interpolator(tests[i].first,
+			             tests[i].second,
+			             std::cbegin(timestamps[i]),
+			             std::cend(timestamps[i]),
+			             std::back_inserter(interpolated_pts));
+			auto pit = std::begin(interpolated_pts);
+		}
+	}
 }

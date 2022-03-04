@@ -33,6 +33,9 @@
 
 template <typename Backend>
 struct ImaiIriTests : public test_helpers::BaseTestFixture<Backend> {
+	using MovetkGeometryKernel = ImaiIriTests::MovetkGeometryKernel;
+	using MovetkPoint = ImaiIriTests::MovetkPoint;
+
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	using PolyLine = std::vector<MovetkPoint>;
@@ -43,25 +46,27 @@ struct ImaiIriTests : public test_helpers::BaseTestFixture<Backend> {
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ImaiIriTests, "Check Imai-Iri Simplification 1", "[imai_iri_1]") {
-	PolyLine polyline({make_point({1, -6}),
-	                   make_point({4, -4}),
-	                   make_point({5, -2}),
-	                   make_point({6, -5}),
-	                   make_point({7, -2}),
-	                   make_point({8, -5}),
-	                   make_point({9, -2}),
-	                   make_point({10, -5}),
-	                   make_point({11, -2}),
-	                   make_point({13, -4})});
-	ImaiIri simplification(2);
-	std::vector<PolyLine::iterator> result;
+	using Fixture = ImaiIriTests<TestType>;
+	auto make_point = Fixture::make_point;
+	typename Fixture::PolyLine polyline({make_point({1, -6}),
+	                                     make_point({4, -4}),
+	                                     make_point({5, -2}),
+	                                     make_point({6, -5}),
+	                                     make_point({7, -2}),
+	                                     make_point({8, -5}),
+	                                     make_point({9, -2}),
+	                                     make_point({10, -5}),
+	                                     make_point({11, -2}),
+	                                     make_point({13, -4})});
+	typename Fixture::ImaiIri simplification(2);
+	std::vector<decltype(polyline.begin())> result;
 	simplification(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 
-	PolyLine ExpectedPolyline({make_point({1, -6}), make_point({4, -4}), make_point({13, -4})});
+	typename Fixture::PolyLine ExpectedPolyline({make_point({1, -6}), make_point({4, -4}), make_point({13, -4})});
 	REQUIRE(result.size() == ExpectedPolyline.size());
 	auto eit = std::begin(ExpectedPolyline);
 	for (auto reference : result) {
-		MovetkGeometryKernel::MovetkVector v = *reference - *eit;
+		const auto v = *reference - *eit;
 		REQUIRE((v * v) < MOVETK_EPS);
 		eit++;
 	}

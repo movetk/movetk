@@ -19,30 +19,32 @@
 
 
 #include <array>
-#include <map>
 #include <catch2/catch.hpp>
+#include <map>
 
- // Defines the geometry kernel
-#include "test_includes.h" 
-
+// Defines the geometry kernel
+#include "movetk/algo/Simplification.h"
 #include "movetk/metric/Distances.h"
 #include "movetk/metric/Norm.h"
-#include "movetk/algo/Simplification.h"
+#include "test_includes.h"
 
 // Add a message to a Catch2 require
-#define REQUIRE_MESSAGE(cond, msg) do { INFO(msg); REQUIRE(cond); } while((void)0, 0)
+#define REQUIRE_MESSAGE(cond, msg) \
+	do {                             \
+		INFO(msg);                     \
+		REQUIRE(cond);                 \
+	} while ((void)0, 0)
 
 struct AgarwalTestcase {
-    std::string polyline_input;
-    // Ipe input for single edge that will define the epsilon for the testcase
-    std::string epsilon_line_input;
-    std::vector<std::size_t> expectedInds;
+	std::string polyline_input;
+	// Ipe input for single edge that will define the epsilon for the testcase
+	std::string epsilon_line_input;
+	std::vector<std::size_t> expectedInds;
 };
 
-std::map<std::string, AgarwalTestcase> test_cases{
-    {
-        "Spike example", {
-            R"IPE(
+std::map<std::string, AgarwalTestcase> test_cases{{"Spike example",
+                                                   {
+                                                       R"IPE(
             <ipeselection pos="224 480">
                 <path stroke="0">
                 96 448 m
@@ -57,7 +59,7 @@ std::map<std::string, AgarwalTestcase> test_cases{
                 </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+                                                       R"IPE(
             <ipeselection pos = "160 448">
                 <path stroke = "black">
                 160 448 m
@@ -65,12 +67,10 @@ std::map<std::string, AgarwalTestcase> test_cases{
                 </path>
             </ipeselection>
             )IPE",
-            {0,3,4,5,8}
-        }
-    },
-    {
-        "Spike example larger epsilon", {
-            R"IPE(
+                                                       {0, 3, 4, 5, 8}}},
+                                                  {"Spike example larger epsilon",
+                                                   {
+                                                       R"IPE(
             <ipeselection pos="224 480">
             <path stroke="0">
             96 448 m
@@ -85,7 +85,7 @@ std::map<std::string, AgarwalTestcase> test_cases{
             </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+                                                       R"IPE(
             <ipeselection pos = "160 448">
             <path stroke="black">
             192 448 m
@@ -93,12 +93,10 @@ std::map<std::string, AgarwalTestcase> test_cases{
             </path>
             </ipeselection>
             )IPE",
-            { 0, 4,5, 8 }
-        }
-    },
-    {
-        "Spike example largest epsilon", {
-            R"IPE(
+                                                       {0, 4, 5, 8}}},
+                                                  {"Spike example largest epsilon",
+                                                   {
+                                                       R"IPE(
             <ipeselection pos="224 480">
             <path stroke="0">
             96 448 m
@@ -113,7 +111,7 @@ std::map<std::string, AgarwalTestcase> test_cases{
             </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+                                                       R"IPE(
             <ipeselection pos="208 464">
             <path stroke="black">
             208 448 m
@@ -121,12 +119,10 @@ std::map<std::string, AgarwalTestcase> test_cases{
             </path>
             </ipeselection>
             )IPE",
-            { 0, 8 }
-        }
-    },
-    {
-        "Single segment", {
-            R"IPE(
+                                                       {0, 8}}},
+                                                  {"Single segment",
+                                                   {
+                                                       R"IPE(
             <ipeselection pos="224 480">
             <path stroke="0">
             96 448 m
@@ -134,7 +130,7 @@ std::map<std::string, AgarwalTestcase> test_cases{
             </path>
             </ipeselection>
             )IPE",
-            R"IPE(
+                                                       R"IPE(
             <ipeselection pos="208 464">
             <path stroke="black">
             0 0 m
@@ -142,68 +138,65 @@ std::map<std::string, AgarwalTestcase> test_cases{
             </path>
             </ipeselection>
             )IPE",
-           { 0, 1 }
-        }
-    }
-};
+                                                       {0, 1}}}};
 
-TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct", "[agarwal_simplification][simplification]", movetk::test::AvailableBackends)
-{
-    using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
-    // The norm to be used in weak Frechet distance computations.
-    using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
-    using NT = typename MovetkGeometryKernel::NT;
-    using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel, movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>>;
-    using SqDistance = movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>;
-    movetk::algo::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
-    simplifier.setTolerance(0.0001);
-    using PointList = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
-    const auto parseIpe = [](const std::string& string_data, PointList& output) {
-        test_helpers::parseIpePath<MovetkGeometryKernel>(string_data, output);
-    };
-    for (const auto& [test_case_name,test_case] : test_cases) {
-        SECTION(test_case_name) {
-            PointList points, epsilonPath;
+TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
+                        "[agarwal_simplification][simplification]",
+                        movetk::test::AvailableBackends) {
+	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
+	// The norm to be used in weak Frechet distance computations.
+	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
+	using NT = typename MovetkGeometryKernel::NT;
+	using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel,
+	                                          movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>>;
+	using SqDistance = movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>;
+	movetk::algo::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
+	simplifier.setTolerance(0.0001);
+	using PointList = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
+	const auto parseIpe = [](const std::string& string_data, PointList& output) {
+		test_helpers::parseIpePath<MovetkGeometryKernel>(string_data, output);
+	};
+	for (const auto& [test_case_name, test_case] : test_cases) {
+		SECTION(test_case_name) {
+			PointList points, epsilonPath;
 
-            parseIpe(test_case.polyline_input, points);
-            parseIpe(test_case.epsilon_line_input, epsilonPath);
+			parseIpe(test_case.polyline_input, points);
+			parseIpe(test_case.epsilon_line_input, epsilonPath);
 
-            // Requested epsilon
-            const auto epsilon = std::sqrt(SqDistance()(epsilonPath[0], epsilonPath[1]));
-            simplifier.setEpsilon(epsilon);
+			// Requested epsilon
+			const auto epsilon = std::sqrt(SqDistance()(epsilonPath[0], epsilonPath[1]));
+			simplifier.setEpsilon(epsilon);
 
-            std::vector<decltype(points.begin())> output;
+			std::vector<decltype(points.begin())> output;
 
-            simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
-            REQUIRE(output.size() == test_case.expectedInds.size());
-            // Compute indices of iterators
-            std::vector<std::size_t> inds;
-            for (const auto& el : output)
-            {
-                inds.push_back(std::distance(points.begin(), el));
-            }
-            REQUIRE(inds == test_case.expectedInds);
-        }
-    }
-    SECTION("Single point and empty polyline")
-    {
-        std::vector<typename MovetkGeometryKernel::MovetkPoint> points;
-        points.push_back(movetk::geom::MakePoint<MovetkGeometryKernel>()({ (NT)2.0, (NT)5000.}));
+			simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+			REQUIRE(output.size() == test_case.expectedInds.size());
+			// Compute indices of iterators
+			std::vector<std::size_t> inds;
+			for (const auto& el : output) {
+				inds.push_back(std::distance(points.begin(), el));
+			}
+			REQUIRE(inds == test_case.expectedInds);
+		}
+	}
+	SECTION("Single point and empty polyline") {
+		std::vector<typename MovetkGeometryKernel::MovetkPoint> points;
+		points.push_back(movetk::geom::MakePoint<MovetkGeometryKernel>()({(NT)2.0, (NT)5000.}));
 
-        simplifier.setEpsilon(1.0);
+		simplifier.setEpsilon(1.0);
 
-        std::vector<decltype(points.begin())> output;
+		std::vector<decltype(points.begin())> output;
 
-        simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+		simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
 
-        REQUIRE(output.size() == 1);
-        REQUIRE(output[0] == points.begin());
+		REQUIRE(output.size() == 1);
+		REQUIRE(output[0] == points.begin());
 
-        // Now with empty
-        output.clear();
-        points.clear();
+		// Now with empty
+		output.clear();
+		points.clear();
 
-        simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
-        REQUIRE(output.size() == 0);
-    }
+		simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+		REQUIRE(output.size() == 0);
+	}
 }
