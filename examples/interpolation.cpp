@@ -34,13 +34,13 @@
 #include "movetk/geo/geo.h"
 #include "movetk/io/HighFrequencyTrajectoryReader.h"
 #include "movetk/io/HighFrequencyTrajectoryTraits.h"
+#include "movetk/io/ParseDate.h"
 #include "movetk/io/ProbeTraits.h"
 #include "movetk/io/SortByField.h"
 #include "movetk/io/SplitByDifferenceThreshold.h"
 #include "movetk/io/SplitByDistanceThreshold.h"
 #include "movetk/io/SplitByField.h"
 #include "movetk/io/TrajectoryTraits.h"
-#include "movetk/io/ParseDate.h"
 #include "movetk/io/csv/csv.h"
 #include "movetk/logging.h"
 #include "movetk/utils/GeometryBackendTraits.h"
@@ -137,8 +137,8 @@ int main(int argc, char **argv) {
 	std::size_t hifreq_min_num_pts = 6;
 
 	movetk::io::HighFrequencyTrajectoryReader<dl::raw::HighFrequencyTrajectoryTraits, false> tr(hifreq_time_diff_thr_s,
-	                                                                                hifreq_dist_diff_thr_m,
-	                                                                                hifreq_min_num_pts);
+	                                                                                            hifreq_dist_diff_thr_m,
+	                                                                                            hifreq_min_num_pts);
 	tr.init(argv[1]);
 
 	// BOOST_LOG_TRIVIAL(trace) <<"Number of filtered trajectories: "<<std::distance(tr.begin(),tr.end());
