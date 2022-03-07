@@ -30,7 +30,7 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 1", "[longest_common_sense_1]") {
 	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;

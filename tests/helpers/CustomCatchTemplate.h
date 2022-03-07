@@ -1,6 +1,12 @@
 #ifndef MOVETK_CUSTOMCATCHTEMPLATE_H
 #define MOVETK_CUSTOMCATCHTEMPLATE_H
 #include <catch2/catch.hpp>
+#include "../test_includes.h"
+
+#define MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(test_class, test_name, test_tags) \
+	TEMPLATE_LIST_TEST_CASE_METHOD(test_class, test_name, test_tags, movetk::test::AvailableBackends)
+#define MOVETK_TEMPLATE_LIST_TEST_CASE(test_name, test_tags) \
+	TEMPLATE_LIST_TEST_CASE(test_name, test_tags, movetk::test::AvailableBackends)
 
 #define MOVETK_EXPAND(...) __VA_ARGS__
 #define MOVETK_CONCAT(A, B) A B

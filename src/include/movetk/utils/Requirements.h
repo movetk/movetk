@@ -209,16 +209,16 @@ using requires_tuple = typename std::enable_if<is_tuple<T>::value, T>::type;
 
 
 template <std::size_t I, class T>
-using requires_tuple_element_as_arithmetic = typename requires_arithmetic<std::tuple_element_t<I, T>>;
+using requires_tuple_element_as_arithmetic = requires_arithmetic<std::tuple_element_t<I, T>>;
 
 template <std::size_t I, class T>
-using requires_tuple_element_as_size_t = typename requires_size_t<std::tuple_element_t<I, T>>;
+using requires_tuple_element_as_size_t = requires_size_t<std::tuple_element_t<I, T>>;
 
 template <class Traits, std::size_t I, class T>
-using requires_tuple_element_as_movetk_point = typename requires_movetk_point<Traits, std::tuple_element_t<I, T>>;
+using requires_tuple_element_as_movetk_point = requires_movetk_point<Traits, std::tuple_element_t<I, T>>;
 
 template <class Traits, std::size_t I, class T>
-using requires_tuple_element_as_NT = typename requires_NT<Traits, std::tuple_element_t<I, T>>;
+using requires_tuple_element_as_NT = requires_NT<Traits, std::tuple_element_t<I, T>>;
 
 
 /*template<class T1, class T2 = void>

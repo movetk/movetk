@@ -4,7 +4,7 @@
 
 #include "catch2/catch.hpp"
 #include "movetk/io/GeoJSON.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 using namespace rapidjson;
 
 TEST_CASE("Test GeoJSON", "[test_geojson]") {

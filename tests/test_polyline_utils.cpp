@@ -26,7 +26,7 @@
 #include "movetk/algo/PolylineUtils.h"
 #include "movetk/io/TuplePrinter.h"
 #include "movetk/utils/Iterators.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 
 TEST_CASE("trajectory length", "[trajectory_length]") {
@@ -65,7 +65,7 @@ TEST_CASE("trajectory length 3d 2pts 2", "[trajectory_length_3d_2pts_2]") {
 
 template <typename Backend>
 struct PolylineUtilTests : public test_helpers::BaseTestFixture<Backend> {
-	using MovetkGeometryKernel = PolylineUtilTests::MovetkGeometryKernel;
+	using MovetkGeometryKernel = typename test_helpers::BaseTestFixture<Backend>::MovetkGeometryKernel;
 };
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(PolylineUtilTests,

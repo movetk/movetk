@@ -26,7 +26,7 @@
 #include "movetk/algo/Simplification.h"
 #include "movetk/metric/Distances.h"
 #include "movetk/metric/Norm.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 // Add a message to a Catch2 require
 #define REQUIRE_MESSAGE(cond, msg) \

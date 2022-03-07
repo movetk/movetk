@@ -53,7 +53,7 @@ double geopolyline_length_m(LatIterator lat_start, LatIterator lat_beyond, LonIt
 	using MovetkPoint = typename GeometryTraits::MovetkPoint;
 	movetk::geom::MakePoint<GeometryTraits> make_point;
 	std::vector<MovetkPoint> xyzs;
-	movetk::to_geocentered_polyline(make_point,
+	movetk::geom::to_geocentered_polyline(make_point,
 	                                lat_start,
 	                                lat_beyond,
 	                                lon_start,

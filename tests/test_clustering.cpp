@@ -31,7 +31,7 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check subtrajectory clustering 1", "[subtrajectory_clustering_1]") {

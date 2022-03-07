@@ -31,10 +31,10 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 // Helpers for testing
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 using namespace std;
 

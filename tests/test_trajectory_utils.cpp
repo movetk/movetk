@@ -28,7 +28,7 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 template <typename Backend>
 struct TrajectoryUtilsTests : public test_helpers::GeometryConstructors<Backend> {
