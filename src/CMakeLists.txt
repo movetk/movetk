@@ -111,6 +111,9 @@ MOVETK_LOG(TRACE "Using CGAL backend ${MOVETK_WITH_CGAL_BACKEND}")
 add_library(movetk ${SOURCES} )
 
 
+if(MOVETK_DEPENDENCIES_FROM_CONAN)
+        include(../cmake/MovetkConanDependencies.cmake)
+endif()
 #
 # Find dependencies of MoveTk
 #
@@ -123,19 +126,29 @@ MOVETK_LOG(TRACE "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
 #
 # Custom dependencies included in the repository
 #
-set(GsTL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/GsTL/include/")
-MOVETK_LOG(TRACE "GsTL_include ${GsTL_INCLUDE_DIR} ")
-set(RAPIDJSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/include/")
+# set(GsTL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/GsTL/")
+# MOVETK_LOG(TRACE "GsTL_include ${GsTL_INCLUDE_DIR} ")
+set(RAPIDJSON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/")
 MOVETK_LOG(TRACE "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
 
 #
 # Setup installation for thirdparty code
 #
-install(DIRECTORY  ${GsTL_INCLUDE_DIR}
+install(DIRECTORY  
+        # ${GsTL_INCLUDE_DIR}
         ${RAPIDJSON_INCLUDE_DIR}
         DESTINATION include
         )
-include_directories(${GsTL_INCLUDE_DIR}  ${RAPIDJSON_INCLUDE_DIR})
+# add_subdirectory(${GsTL_DIR} ${CMAKE_CURRENT_BINARY_DIR}/GsTL)
+if(FALSE)
+        set(RAPIDJSON_BUILD_CXX11 OFF)
+        set(RAPIDJSON_BUILD_EXAMPLES OFF)
+        set(RAPIDJSON_BUILD_TESTS OFF)
+        add_subdirectory(${RAPIDJSON_DIR} ${CMAKE_CURRENT_BINARY_DIR}/rapidjson)
+else()
+        find_package(rapidjson NAMES rapidJSON RapidJSON REQUIRED)
+endif()
+
 
 foreach(_BACKEND ${MOVETK_BACKENDS})
 	# Include the backend code. These should register necessary properties on the
@@ -159,18 +172,20 @@ target_include_directories(movetk
             PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:include>
-            PRIVATE
-            $<BUILD_INTERFACE:${GsTL_INCLUDE_DIR}> $<BUILD_INTERFACE:${RAPIDJSON_INCLUDE_DIR}>
 )
 
 #
 # Link MoveTk to dependencies
 #
+if(NOT TARGET RapidJSON::RapidJSON)
+        message(FATAL_ERROR "No rapidjson target defined")
+endif()
 target_link_libraries(movetk
             PUBLIC
             Threads::Threads
             Boost::headers Boost::log Boost::iostreams Boost::thread Boost::system Boost::log_setup Boost::graph
             GDAL
+            RapidJSON::RapidJSON
             GeographicLib
             GSL::gsl GSL::gslcblas #${GSL_LIBRARIES}
             )
