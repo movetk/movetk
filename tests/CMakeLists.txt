@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.11)
 find_package(Catch2 REQUIRED PATHS ../third_party/Catch2/lib64/cmake/Catch2)
 
 find_package(Boost REQUIRED COMPONENTS serialization)
-add_executable(ser_test ser_test.cpp)
-set_property(TARGET ser_test PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 add_executable(movetk_tests
         test_includes.h
         helpers/CustomCatchTemplate.h
@@ -66,12 +64,6 @@ target_link_libraries(movetk_tests
         c2d::movetk
         Catch2::Catch2
         )
-  target_link_libraries(ser_test
-        PRIVATE
-        c2d::movetk
-        Boost::serialization
-        )
-
 include(CTest)
 
 add_custom_command( TARGET movetk_tests POST_BUILD

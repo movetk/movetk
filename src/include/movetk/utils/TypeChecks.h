@@ -79,15 +79,20 @@ struct is_output_iterator {
 	static constexpr bool value = std::is_same_v<IteratorTag, std::output_iterator_tag>;
 };
 
+template <class IteratorTag>
+struct is_input_iterator {
+	static constexpr bool value = std::is_same_v<IteratorTag, std::input_iterator_tag>;
+};
+
 template <class OutputIterator, typename ValueType>
 struct is_output_iterator_assignable_with {
-	static constexpr bool value = is_output_iterator<typename std::iterator_traits<OutputIterator>::iterator_category> &&
+	static constexpr bool value = is_output_iterator<typename std::iterator_traits<OutputIterator>::iterator_category>::value &&
 	                              std::is_assignable_v<decltype(*std::declval<OutputIterator>()), ValueType>;
 };
 
 template <class InputIterator, typename ValueType>
 struct is_input_iterator_with_value {
-	static constexpr bool value = is_input_iterator<typename std::iterator_traits<InputIterator>::iterator_category> &&
+	static constexpr bool value = is_input_iterator<typename std::iterator_traits<InputIterator>::iterator_category>::value &&
 	                              std::is_same_v<typename InputIterator::value_type, ValueType>;
 };
 

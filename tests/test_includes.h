@@ -83,11 +83,6 @@ using AvailableBackends = typename remove_first_type<std::tuple<noop
                                                                 >>::type;
 }  // namespace movetk::test
 
-#define MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(test_class, test_name, test_tags) \
-	TEMPLATE_LIST_TEST_CASE_METHOD(test_class, test_name, test_tags, movetk::test::AvailableBackends)
-#define MOVETK_TEMPLATE_LIST_TEST_CASE(test_name, test_tags) \
-	TEMPLATE_LIST_TEST_CASE(test_name, test_tags, movetk::test::AvailableBackends)
-
 namespace test_helpers {
 template <typename Backend>
 using NTFromBackend = typename Backend::MovetkGeometryKernel::NT;
@@ -133,8 +128,8 @@ namespace detail {
 inline bool startsWith(const std::string& str, int offset, const std::string& toSearch, bool ignoreWs) {
 	if (offset + toSearch.size() >= str.size())
 		return false;
-	int j = 0;
-	for (int i = offset; i < str.size(); ++i) {
+	std::size_t j = 0;
+	for (std::size_t i = offset; i < str.size(); ++i) {
 		if (ignoreWs && std::isspace(str[i]) && j == 0)
 			continue;
 		if (str[i] != toSearch[j])
@@ -157,7 +152,7 @@ template <typename MovetkGeometryKernel>
 inline void parseIpePath(const std::string& pathData, std::vector<typename MovetkGeometryKernel::MovetkPoint>& points) {
 	using NT = typename MovetkGeometryKernel::NT;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	int i = 0;
+	std::size_t i = 0;
 	for (; i < pathData.size(); ++i) {
 		if (pathData[i] == '<') {
 			if (!detail::startsWith(pathData, i + 1, "path", true)) {
@@ -181,7 +176,7 @@ inline void parseIpePath(const std::string& pathData, std::vector<typename Movet
 		// Read <path> content
 		std::vector<NT> buff;
 
-		int prevStart = i;
+		auto prevStart = i;
 		for (; i < pathData.size(); ++i) {
 			if (std::isspace(pathData[i])) {
 				if ((i > 0 && std::isspace(pathData[i - 1])) || (i == prevStart)) {
@@ -215,7 +210,7 @@ std::vector<FieldsTuple> buildData(const std::vector<double>& xs,
 	assert(xs.size() == ys.size());
 	std::vector<FieldsTuple> out(xs.size(), defaultTuple);
 	std::time_t curr = std::get<TimeIdx>(defaultTuple);
-	for (int i = 0; i < xs.size(); ++i) {
+	for (std::size_t i = 0; i < xs.size(); ++i) {
 		if (i != 0) {
 			std::get<TimeIdx>(out[i]) = curr + timeIncrement;
 			curr += timeIncrement;
@@ -234,7 +229,7 @@ std::vector<FieldsTuple> buildData(const std::vector<double>& xs,
 	assert(xs.size() == ys.size());
 	assert(xs.size() == times.size());
 	std::vector<FieldsTuple> out(xs.size(), defaultTuple);
-	for (int i = 0; i < xs.size(); ++i) {
+	for (std::size_t i = 0; i < xs.size(); ++i) {
 		std::get<TimeIdx>(out[i]) = times[i];
 		std::get<XIdx>(out[i]) = xs[i];
 		std::get<YIdx>(out[i]) = ys[i];

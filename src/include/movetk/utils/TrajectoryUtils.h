@@ -34,6 +34,7 @@
 #include <iterator>
 #include <numeric>
 
+#include "movetk/geo/geo.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/utils/Requirements.h"
 

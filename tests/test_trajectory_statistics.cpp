@@ -33,7 +33,7 @@
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/TuplePrinter.h"
 #include "movetk/metric/Norm.h"
-#include "test_includes.h"
+#include "helpers/CustomCatchTemplate.h"
 
 struct TestTypes {
 	using Trajectory = movetk::ds::TabularTrajectory<std::string, double, double, std::time_t>;

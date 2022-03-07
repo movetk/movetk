@@ -26,11 +26,11 @@
 #include <array>
 #include <catch2/catch.hpp>
 
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "test_includes.h"
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check euclidean norm", "[is_valid_euclidean_norm]") {

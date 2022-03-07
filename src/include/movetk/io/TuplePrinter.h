@@ -59,7 +59,7 @@ template <class Arg, class... Args>
 inline void variadic_print(std::ostream& os, Arg&& first, Args&&... rest) {
 	os << "[";
 	os << std::forward<Arg>(first);
-	((os << ", " << setprecision(8) << std::forward<Args>(rest)), ...);
+	((os << ", " << std::setprecision(8) << std::forward<Args>(rest)), ...);
 	os << "]";
 }
 
