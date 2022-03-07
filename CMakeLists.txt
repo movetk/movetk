@@ -13,6 +13,7 @@ option(MOVETK_BUILD_DOC "Build documentation" OFF)
 option(MOVETK_BUILD_TESTS "Build MoveTk tests" OFF)
 option(MOVETK_BUILD_PY "Build MoveTk Python bindings" OFF)
 option(MOVETK_BUILD_EXAMPLES "Build MoveTk examples" OFF)
+option(MOVETK_DEPENDENCIES_FROM_CONAN "Get dependencies via Conan. Autodownload if missing" OFF)
 
 
 macro(MOVETK_LOG msg_type msg)
