@@ -51,6 +51,14 @@ set(SOURCES
         include/movetk/io/SplitByDistanceThreshold.h
         include/movetk/io/SplitByField.h
         include/movetk/io/Splitter.h
+        include/movetk/algo/simplification/Agarwal.h
+        include/movetk/algo/simplification/ChanChin.h
+        include/movetk/algo/simplification/DouglasPeucker.h
+        include/movetk/algo/simplification/ImaiIri.h
+        include/movetk/algo/similarity/LongestCommonSubSequence.h
+        include/movetk/algo/similarity/DynamicTimeWarping.h
+        include/movetk/algo/segmentation/MonotoneSegmentation.h
+        include/movetk/algo/segmentation/ModelBasedSegmentation.h
         include/movetk/io/TrajectoryReader.h
         include/movetk/io/TrajectoryTraits.h
         include/movetk/io/TupleIterPrinter.h
