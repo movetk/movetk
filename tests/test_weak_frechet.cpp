@@ -26,12 +26,12 @@
 #include <array>
 #include <catch2/catch.hpp>
 
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Distances.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 // Helpers for testing
 #include "helpers/CustomCatchTemplate.h"
@@ -45,6 +45,7 @@ struct WeakFrechetTestCase {
 	std::string polyA, polyB, expectedDistLine;
 };
 
+namespace {
 std::map<std::string, WeakFrechetTestCase> test_cases{{"Simple spike example",
                                                        WeakFrechetTestCase{
                                                            R"IPE(
@@ -125,7 +126,7 @@ std::map<std::string, WeakFrechetTestCase> test_cases{{"Simple spike example",
         </path>
         </ipeselection>
         )IPE"}}};
-
+}
 template <typename Backend>
 struct WeakFrechetTests {
 	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;

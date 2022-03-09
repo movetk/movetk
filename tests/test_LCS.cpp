@@ -24,19 +24,19 @@
 #include <array>
 #include <catch2/catch.hpp>
 
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/algo/Similarity.h"
 #include "movetk/algo/Simplification.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 1", "[longest_common_sense_1]") {
 	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
+	typedef std::vector<typename MovetkGeometryKernel::MovetkPoint> PolyLine;
 	PolyLine polyline1({make_point({-5, -4}),
 	                    make_point({-4.79, -1.62}),
 	                    make_point({-2, -1}),
@@ -52,11 +52,11 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 1", "[longest_c
 
 	});
 
-	std::vector<std::pair<MovetkGeometryKernel::MovetkPoint, MovetkGeometryKernel::MovetkPoint>> ExpectedLCSS{
-	    std::make_pair(make_point({-4.79, -1.62}), make_point({-4.37, -1.88})),
-	    std::make_pair(make_point({-2, -1}), make_point({-1.61, -1.02})),
-	    std::make_pair(make_point({2.03, -0.74}), make_point({2.57, -0.56}))};
-	std::vector<std::pair<PolyLine::const_iterator, PolyLine::const_iterator>> output;
+	std::vector<std::pair<typename MovetkGeometryKernel::MovetkPoint, typename MovetkGeometryKernel::MovetkPoint>>
+	    ExpectedLCSS{std::make_pair(make_point({-4.79, -1.62}), make_point({-4.37, -1.88})),
+	                 std::make_pair(make_point({-2, -1}), make_point({-1.61, -1.02})),
+	                 std::make_pair(make_point({2.03, -0.74}), make_point({2.57, -0.56}))};
+	std::vector<std::pair<typename PolyLine::const_iterator, typename PolyLine::const_iterator>> output;
 	movetk::algo::LongestCommonSubSequence<MovetkGeometryKernel, Norm> lcs(2, 7);
 	std::size_t lcs_length = lcs(std::cbegin(polyline1),
 	                             std::cend(polyline1),
@@ -80,7 +80,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 2", "[longest_c
 	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
+	typedef std::vector<typename MovetkGeometryKernel::MovetkPoint> PolyLine;
 	PolyLine polyline1(
 	    {make_point({7, 10.5}), make_point({11, 10.5}), make_point({11, 7}), make_point({7, 7}), make_point({7, 10})});
 	PolyLine polyline2({make_point({7.084, 10.182}),
@@ -93,13 +93,13 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 2", "[longest_c
 	                    make_point({7.498, 7.5})
 
 	});
-	std::vector<std::pair<MovetkGeometryKernel::MovetkPoint, MovetkGeometryKernel::MovetkPoint>> ExpectedLCSS{
+	std::vector<std::pair<typename MovetkGeometryKernel::MovetkPoint, typename MovetkGeometryKernel::MovetkPoint>> ExpectedLCSS{
 	    std::make_pair(make_point({7, 10.5}), make_point({7.084, 10.182})),
 	    std::make_pair(make_point({11, 10.5}), make_point({10.806, 10.189})),
 	    std::make_pair(make_point({11, 7}), make_point({10.799, 7.312})),
 	    std::make_pair(make_point({7, 7}), make_point({7.197, 7.312})),
 	    std::make_pair(make_point({7, 10}), make_point({7.203, 9.813}))};
-	std::vector<std::pair<PolyLine::const_iterator, PolyLine::const_iterator>> output;
+	std::vector<std::pair<typename PolyLine::const_iterator, typename PolyLine::const_iterator>> output;
 	movetk::algo::LongestCommonSubSequence<MovetkGeometryKernel, Norm> lcs(2, 3);
 	std::size_t lcs_length = lcs(std::cbegin(polyline1),
 	                             std::cend(polyline1),
@@ -123,7 +123,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 3", "[longest_c
 	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	typedef std::vector<MovetkGeometryKernel::MovetkPoint> PolyLine;
+	typedef std::vector<typename MovetkGeometryKernel::MovetkPoint> PolyLine;
 	PolyLine polyline1({make_point({-5, -4}),
 	                    make_point({-4.79, -1.62}),
 	                    make_point({-2, -1}),
@@ -138,7 +138,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 3", "[longest_c
 	                    make_point({-1, -5})
 
 	});
-	std::vector<std::pair<PolyLine::const_iterator, PolyLine::const_iterator>> output;
+	std::vector<std::pair<typename PolyLine::const_iterator, typename PolyLine::const_iterator>> output;
 	movetk::algo::LongestCommonSubSequence<MovetkGeometryKernel, Norm> lcs(2, 0);
 	std::size_t lcs_length = lcs(std::cbegin(polyline1),
 	                             std::cend(polyline1),
