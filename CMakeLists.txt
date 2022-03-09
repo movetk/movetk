@@ -61,6 +61,27 @@ if(UNIX)
   endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
 endif()
 
+# Get dependencies
+if(MOVETK_DEPENDENCIES_FROM_CONAN)
+        include(cmake/MovetkConanDependencies.cmake)
+endif()
+
+# Color compiler output for Gcc and Clang.
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options (-fdiagnostics-color=always)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    add_compile_options (-fcolor-diagnostics)
+endif ()
+
+#
+# Find dependencies of MoveTk
+#
+include(cmake/ResolveMovetkDependencies.cmake)
+MOVETK_LOG(TRACE "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
+MOVETK_LOG(TRACE "Boost_LIBRARIES ${Boost_LIBRARIES}")
+MOVETK_LOG(TRACE "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
+MOVETK_LOG(TRACE "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
+
 # Add project code
 add_subdirectory(src)
 

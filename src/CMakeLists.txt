@@ -111,18 +111,6 @@ MOVETK_LOG(TRACE "Using CGAL backend ${MOVETK_WITH_CGAL_BACKEND}")
 add_library(movetk ${SOURCES} )
 
 
-if(MOVETK_DEPENDENCIES_FROM_CONAN)
-        include(../cmake/MovetkConanDependencies.cmake)
-endif()
-#
-# Find dependencies of MoveTk
-#
-include(../cmake/ResolveMovetkDependencies.cmake)
-MOVETK_LOG(TRACE "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
-MOVETK_LOG(TRACE "Boost_LIBRARIES ${Boost_LIBRARIES}")
-MOVETK_LOG(TRACE "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
-MOVETK_LOG(TRACE "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
-
 #
 # Custom dependencies included in the repository
 #
@@ -184,7 +172,7 @@ target_link_libraries(movetk
             PUBLIC
             Threads::Threads
             Boost::headers Boost::log Boost::iostreams Boost::thread Boost::system Boost::log_setup Boost::graph
-            GDAL
+            GDAL::GDAL
             RapidJSON::RapidJSON
             GeographicLib
             GSL::gsl GSL::gslcblas #${GSL_LIBRARIES}

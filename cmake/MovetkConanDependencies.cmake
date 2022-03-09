@@ -19,6 +19,7 @@ gsl/2.7
 gmp/6.2.1
 mpfr/4.1.0
 boost/1.75
+catch2/2.13.1
 rapidjson/1.1.0 
 IMPORTS "bin, *.dll -> ./bin" # For windows, copy dependent dlls to the binary directory
 GENERATORS 

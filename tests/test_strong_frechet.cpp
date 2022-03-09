@@ -40,7 +40,7 @@ struct StrongFrechetTestCase {
 	// Only the length of segment of expectedLine will be used.
 	std::string polyA, polyB, expectedLine;
 };
-
+namespace {
 std::map<std::string, StrongFrechetTestCase> testCases{{"Simple spike example",
                                                         StrongFrechetTestCase{
                                                             R"IPE(<path>
@@ -222,6 +222,7 @@ std::map<std::string, StrongFrechetTestCase> testCases{{"Simple spike example",
             </path>
             </ipeselection>
             )IPE"}}};
+}
 
 template <typename Backend>
 struct StrongFrechetTests {

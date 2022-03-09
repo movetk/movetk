@@ -33,8 +33,8 @@
 
 template <typename Backend>
 struct ImaiIriTests : public test_helpers::BaseTestFixture<Backend> {
-	using MovetkGeometryKernel = ImaiIriTests::MovetkGeometryKernel;
-	using MovetkPoint = ImaiIriTests::MovetkPoint;
+	using MovetkGeometryKernel = typename test_helpers::BaseTestFixture<Backend>::MovetkGeometryKernel;
+	using MovetkPoint = typename test_helpers::BaseTestFixture<Backend>::MovetkPoint;
 
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;

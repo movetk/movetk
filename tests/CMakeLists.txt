@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.11)
 
-find_package(Catch2 REQUIRED PATHS ../third_party/Catch2/lib64/cmake/Catch2)
+message(STATUS "Prefix and module path at tests: ${CMAKE_MODULE_PATH} ${CMAKE_PREFIX_PATH}")
+find_package(Catch2 REQUIRED)#PATHS ../third_party/Catch2/lib64/cmake/Catch2)
 
-find_package(Boost REQUIRED COMPONENTS serialization)
 add_executable(movetk_tests
         test_includes.h
         helpers/CustomCatchTemplate.h

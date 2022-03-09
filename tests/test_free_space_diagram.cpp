@@ -257,9 +257,9 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 	typedef movetk::ds::FreeSpaceDiagramTraits<FreeSpaceCell> FreeSpaceDiagramTraits;
 	typedef movetk::ds::FreeSpaceDiagram<FreeSpaceDiagramTraits> FreeSpaceDiagram;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	typedef std::vector<IntersectionTraits::value_type> ExpectedIntersections;
+	typedef std::vector<typename IntersectionTraits::value_type> ExpectedIntersections;
 	typedef std::vector<ExpectedIntersections> ExpectedFsd;
-	using edge_orientation = FreeSpaceCellTraits::edge_orientation;
+	using edge_orientation = typename FreeSpaceCellTraits::edge_orientation;
 	ExpectedIntersections cell1{
 	    std::make_tuple(edge_orientation::Left, 1, 0.158384, make_point({18.266276, 8.142512})),
 	    std::make_tuple(edge_orientation::Left, -1, 0.0144317, make_point({18.442300, 7.575660})),
@@ -288,7 +288,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 
 	ExpectedFsd expected{cell1, cell2, cell4, cell5};
 
-	using vertex_orientation = FreeSpaceCellTraits::vertex_orientation;
+	using vertex_orientation = typename FreeSpaceCellTraits::vertex_orientation;
 	typedef std::vector<std::vector<std::size_t>> ExpectedVertices;
 	std::vector<std::size_t> vertices_cell_1{vertex_orientation::BottomLeft,
 	                                         vertex_orientation::TopRight,
@@ -353,13 +353,13 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(FreeSpaceDiagramTests, "Check free space d
 	                                        vertices_cell_23,
 	                                        vertices_cell_24};
 
-	std::vector<MovetkGeometryKernel::MovetkPoint> polyline_a{make_point({18.4423, 7.57566}),
+	std::vector<typename MovetkGeometryKernel::MovetkPoint> polyline_a{make_point({18.4423, 7.57566}),
 	                                                          make_point({18, 8.967887}),
 	                                                          make_point({20.3636, 8.969}),
 	                                                          make_point({20.35458, 8.4889}),
 	                                                          make_point({21.4, 9.4})};
 
-	std::vector<MovetkGeometryKernel::MovetkPoint> polyline_b{make_point({17.5, 7.5}),
+	std::vector<typename MovetkGeometryKernel::MovetkPoint> polyline_b{make_point({17.5, 7.5}),
 	                                                          make_point({18.5, 8.5}),
 	                                                          make_point({20, 8.5}),
 	                                                          make_point({20, 9.5}),

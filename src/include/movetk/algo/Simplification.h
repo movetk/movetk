@@ -17,9 +17,9 @@
  * License-Filename: LICENSE
  */
 
- //
- // Created by Mitra, Aniket on 2019-02-14.
- //
+//
+// Created by Mitra, Aniket on 2019-02-14.
+//
 
 #ifndef MOVETK_SIMPLIFICATION_H
 #define MOVETK_SIMPLIFICATION_H
