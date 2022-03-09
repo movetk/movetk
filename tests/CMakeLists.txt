@@ -66,13 +66,14 @@ target_link_libraries(movetk_tests
         )
 include(CTest)
 
+if(MSVC)
 add_custom_command( TARGET movetk_tests POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E echo "Copying dependencies:" $<JOIN:$<TARGET_RUNTIME_DLLS:movetk_tests>,",">
                     COMMAND ${CMAKE_COMMAND} -E copy
                         $<TARGET_RUNTIME_DLLS:movetk_tests>
                         $<TARGET_FILE_DIR:movetk_tests>
                     COMMAND_EXPAND_LISTS)
-
+endif()
 catch_discover_tests(movetk_tests)
 
 
