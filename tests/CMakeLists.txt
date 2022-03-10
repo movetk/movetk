@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.11)
 
 message(STATUS "Prefix and module path at tests: ${CMAKE_MODULE_PATH} ${CMAKE_PREFIX_PATH}")
-find_package(Catch2 REQUIRED)#PATHS ../third_party/Catch2/lib64/cmake/Catch2)
+find_package(Catch2 REQUIRED)
+find_package(Boost REQUIRED)
 
 add_executable(movetk_tests
         test_includes.h
@@ -49,7 +50,9 @@ file(GLOB test_data data/*.json)
 
 add_custom_command(TARGET movetk_tests PRE_BUILD 
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:movetk_tests>/data
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${test_data} $<TARGET_FILE_DIR:movetk_tests>/data
+    COMMAND ${CMAKE_COMMAND} -Dsrc_dir="${CMAKE_CURRENT_LIST_DIR}/data"
+        -Ddst_dir=$<TARGET_FILE_DIR:movetk_tests>/data
+        -P ${PROJECT_SOURCE_DIR}/cmake/update_directory.cmake
 )
 
 if(MSVC)
@@ -63,6 +66,7 @@ target_link_libraries(movetk_tests
         PRIVATE
         c2d::movetk
         Catch2::Catch2
+        Boost::headers
         )
 include(CTest)
 

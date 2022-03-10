@@ -9,6 +9,8 @@ endif()
 set(Boost_USE_MULTITHREADED 1)
 
 find_package(Threads REQUIRED)
+
+# Find GDAL and fix the target if it is not provided.
 if(NOT TARGET GDAL::GDAL)
     if(NOT DEFINED GDAL_INCLUDE_DIRS OR NOT DEFINED GDAL_LIBRARIES)
         message(STATUS "Searching for GDAL")
@@ -22,9 +24,11 @@ if(NOT TARGET GDAL::GDAL)
         endif()
     endif()
 endif()
+
 find_package(GeographicLib REQUIRED COMPONENTS SHARED)
 
 find_package(GSL 2.4 REQUIRED)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 find_package(MPFR REQUIRED)
 list(POP_BACK CMAKE_MODULE_PATH)

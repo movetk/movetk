@@ -17,82 +17,82 @@
  * License-Filename: LICENSE
  */
 
-#include <catch2/catch.hpp>
+#include <ogr_geometry.h>
 
+#include <catch2/catch.hpp>
 #include <iostream>
 #include <string>
 #include <tuple>
 #include <vector>
-#include <ogr_geometry.h>
+
 #include "cpl_string.h"
-
 #include "movetk/ds/TabularTrajectory.h"
-#include "movetk/io/TuplePrinter.h"
 #include "movetk/geom/trajectory_gdal.h"
+#include "movetk/io/TuplePrinter.h"
 
-TEST_CASE("Trajectory GDAL", "[trajectory-gdal]")
-{
-    using ProbePoint = std::tuple<std::string, int, float>;
-    ProbePoint p1 = {"abc", 1, 5.4};
-    ProbePoint p2 = {"def", 2, 4.5};
-    ProbePoint p3 = {"ghi", 3, 3.2};
-    std::vector<ProbePoint> data = {p1, p2, p3};
+TEST_CASE("Trajectory GDAL", "[trajectory-gdal]") {
+	using ProbePoint = std::tuple<std::string, int, float>;
+	ProbePoint p1 = {"abc", 1, 5.4};
+	ProbePoint p2 = {"def", 2, 4.5};
+	ProbePoint p3 = {"ghi", 3, 3.2};
+	std::vector<ProbePoint> data = {p1, p2, p3};
 
-    movetk::ds::TabularTrajectory<std::string, int, float> t{data};
+	movetk::ds::TabularTrajectory<std::string, int, float> t{data};
 
-    auto mp = movetk::geom::to_multipoint(t.begin<1>(), t.end<1>(), t.begin<2>());
-    char *wktStr;
-    mp->exportToWkt(&wktStr);
-    std::cout << wktStr << std::endl;
-    CPLFree(wktStr);
-    mp->empty();
+	auto mp = movetk::geom::to_multipoint(t.begin<1>(), t.end<1>(), t.begin<2>());
+	char *wktStr;
+	mp->exportToWkt(&wktStr);
+	std::cout << wktStr << std::endl;
+	CPLFree(wktStr);
+	mp->empty();
 
-    //TODO: expectations?
+	// TODO: expectations?
 }
 
-TEST_CASE("Intersection", "[intersection]")
-{
+TEST_CASE("Intersection", "[intersection]") {
+	SECTION("Has no intersection") {
+		const char *polyWkt1 =
+		    "POLYGON ((51.444949111891695 5.483971066474908, 51.444935738 5.484652348, 51.444348957 5.484840102, "
+		    "51.444248651 5.484089084, 51.444949111891695 5.483971066474908))";
+		const char *mpWkt1 =
+		    "MULTIPOINT (51.4450444 5.483836956, 51.445071148 5.484236605, 51.445027683 5.484309025, 51.445015981 "
+		    "5.484381444, 51.44502434 5.484561152, 51.444970844 5.484571881, 51.444943261 5.48457054)";
 
-    SECTION("Has no intersection")
-    {
-        const char *polyWkt1 = "POLYGON ((51.444949111891695 5.483971066474908, 51.444935738 5.484652348, 51.444348957 5.484840102, 51.444248651 5.484089084, 51.444949111891695 5.483971066474908))";
-        const char *mpWkt1 = "MULTIPOINT (51.4450444 5.483836956, 51.445071148 5.484236605, 51.445027683 5.484309025, 51.445015981 5.484381444, 51.44502434 5.484561152, 51.444970844 5.484571881, 51.444943261 5.48457054)";
+		OGRPolygon p1;
+		p1.importFromWkt(&polyWkt1);
 
-        OGRPolygon p1;
+		OGRMultiPoint mp1;
+		mp1.importFromWkt(&mpWkt1);
+		auto *data = p1.exportToJson();
+
+		std::cout << data << '\n';
+		auto *data2 = mp1.exportToJson();
+		std::cout << data2 << '\n';
+		const auto intersects = movetk::geom::intersects(&p1, &mp1);
+		REQUIRE(p1.Intersects(&mp1) == intersects);
+	}
+
+	SECTION("Has intersection") {
+		const char *polyWkt2 =
+		    "POLYGON ((51.444949111891695 5.483971066474908, 51.444935738 5.484652348, 51.444348957 5.484840102, "
+		    "51.444248651 5.484089084, 51.444949111891695 5.483971066474908))";
+		const char *mpWkt2 =
+		    "MULTIPOINT (51.4450444 5.483836956, 51.445071148 5.484236605, 51.445027683 5.484309025, 51.445015981 "
+		    "5.484381444, 51.44502434 5.484561152, 51.444970844 5.484571881, 51.44492988698722 5.484570540189736)";
+
+		OGRPolygon p2;
 #if unix
-        p1.importFromWkt((char **)&polyWkt1);
+		p2.importFromWkt((char **)&polyWkt2);
 #else
-        p1.importFromWkt((const char **)&polyWkt1);
+		p2.importFromWkt((const char **)&polyWkt2);
 #endif
 
-        OGRMultiPoint mp1;
+		OGRMultiPoint mp2;
 #if unix
-        mp1.importFromWkt((char **)&mpWkt1);
+		mp2.importFromWkt((char **)&mpWkt2);
 #else
-        mp1.importFromWkt((const char **)&mpWkt1);
+		mp2.importFromWkt((const char **)&mpWkt2);
 #endif
-
-        REQUIRE(!movetk::geom::intersects(&p1, &mp1));
-    }
-
-    SECTION("Has intersection")
-    {
-        const char *polyWkt2 = "POLYGON ((51.444949111891695 5.483971066474908, 51.444935738 5.484652348, 51.444348957 5.484840102, 51.444248651 5.484089084, 51.444949111891695 5.483971066474908))";
-        const char *mpWkt2 = "MULTIPOINT (51.4450444 5.483836956, 51.445071148 5.484236605, 51.445027683 5.484309025, 51.445015981 5.484381444, 51.44502434 5.484561152, 51.444970844 5.484571881, 51.44492988698722 5.484570540189736)";
-
-        OGRPolygon p2;
-#if unix
-        p2.importFromWkt((char **)&polyWkt2);
-#else
-        p2.importFromWkt((const char **)&polyWkt2);
-#endif
-
-        OGRMultiPoint mp2;
-#if unix
-        mp2.importFromWkt((char **)&mpWkt2);
-#else
-        mp2.importFromWkt((const char **)&mpWkt2);
-#endif
-        REQUIRE(movetk::geom::intersects(&p2, &mp2));
-    }
+		REQUIRE(movetk::geom::intersects(&p2, &mp2));
+	}
 }
