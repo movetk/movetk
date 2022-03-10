@@ -24,6 +24,8 @@
 
 
 #include <array>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 #include <catch2/catch.hpp>
 
 #include "helpers/CustomCatchTemplate.h"
@@ -39,94 +41,17 @@
 using namespace std;
 
 
+template <typename MovetkGeometryKernel>
 struct WeakFrechetTestCase {
 	// Two input lines, given as ipe paths, followed by the expected distance line.
 	// Only the length of segment of expectedLine will be used.
-	std::string polyA, polyB, expectedDistLine;
+	using MovetkPoint = typename MovetkGeometryKernel::MovetkPoint;
+	using PointList = std::vector<MovetkPoint>;
+	using NT = typename MovetkGeometryKernel::NT;
+	PointList polyline_a, polyline_b;
+	NT expected_distance;
 };
 
-namespace {
-std::map<std::string, WeakFrechetTestCase> test_cases{{"Simple spike example",
-                                                       WeakFrechetTestCase{
-                                                           R"IPE(
-        <path>
-        96 448 m
-        192 448 l
-        256 448 l
-        320 448 l
-        384 448 l
-        </path>
-        )IPE",
-                                                           R"IPE(
-        <path>
-        96 448 m
-        128 448 l
-        144 448 l
-        192 448 l
-        208 512 l
-        224 448 l
-        256 448 l
-        304 448 l
-        384 448 l
-        </path>
-        )IPE",
-                                                           R"IPE(
-        <path>
-        208 448 m
-        208 512 l
-        </path>
-        )IPE"}},
-                                                      {"Interweaved grid example",
-                                                       WeakFrechetTestCase{
-                                                           R"IPE(
-        <ipeselection pos="160 384">
-        <path stroke="darkred" pen="heavier" arrow="normal/normal">
-        128 384 m
-        320 384 l
-        320 352 l
-        128 352 l
-        128 320 l
-        320 320 l
-        320 288 l
-        128 288 l
-        128 256 l
-        320 256 l
-        320 224 l
-        128 224 l
-        128 192 l
-        320 192 l
-        </path>
-        </ipeselection>
-        )IPE",
-                                                           R"IPE(
-        <ipeselection>
-        <path>
-        128 384 m
-        128 192 l
-        160 192 l
-        160 384 l
-        192 384 l
-        192 192 l
-        224 192 l
-        224 384 l
-        256 384 l
-        256 192 l
-        288 192 l
-        288 384 l
-        320 384 l
-        320 192 l
-        </path>
-        </ipeselection>
-        )IPE",
-                                                           R"IPE(
-        <ipeselection>
-        <path>
-        352 384 m
-        352 192 l
-        </path>
-        </ipeselection>
-        )IPE"}}};
-}
 template <typename Backend>
 struct WeakFrechetTests {
 	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
@@ -138,7 +63,32 @@ struct WeakFrechetTests {
 	using NT = typename MovetkGeometryKernel::NT;
 	using PointList = std::vector<MovetkPoint>;
 	static void parseIpePath(const std::string& pathData, std::vector<MovetkPoint>& points) {
-		test_helpers::parseIpePath<MovetkGeometryKernel>(pathData, points);
+		test_helpers::parse_ipe_path_contents<MovetkGeometryKernel>(pathData, points);
+	}
+	static void parse_ipe_path_from_node_contents(const boost::property_tree::ptree& node,
+	                                              const std::string& path,
+	                                              std::vector<MovetkPoint>& points) {
+		const auto data = node.get<std::string>(path);
+		parseIpePath(data, points);
+	}
+
+	static constexpr const char* test_data_file = "data/weak_frechet_tests.xml";
+	static std::map<std::string, WeakFrechetTestCase<MovetkGeometryKernel>> load_test_cases() {
+		SqDistance sqDist;
+		std::map<std::string, WeakFrechetTestCase<MovetkGeometryKernel>> test_cases;
+		boost::property_tree::ptree tree;
+		boost::property_tree::read_xml(test_data_file, tree);
+		const auto& tests_tree = tree.get_child("tests");
+		for (const auto& node : tests_tree) {
+			const auto test_name = node.second.get<std::string>("name");
+			WeakFrechetTestCase<MovetkGeometryKernel> test_case;
+			parse_ipe_path_from_node_contents(node.second, "input_a.ipeselection.path", test_case.polyline_a);
+			parse_ipe_path_from_node_contents(node.second, "input_b.ipeselection.path", test_case.polyline_b);
+			std::vector<MovetkPoint> expected_dist_points;
+			parse_ipe_path_from_node_contents(node.second, "expected_line.ipeselection.path", expected_dist_points);
+			test_case.expected_distance = std::sqrt(sqDist(expected_dist_points[0], expected_dist_points[1]));
+		}
+		return test_cases;
 	}
 };
 
@@ -147,16 +97,14 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,
                                       "[weak_frechet]") {
 	using Fixture = WeakFrechetTests<TestType>;
 	typename Fixture::WFR wfr{};
-	typename Fixture::SqDistance sqDist;
+	const auto test_cases = Fixture::load_test_cases();
 	for (const auto& [test_case_name, test_data] : test_cases) {
 		SECTION(test_case_name) {
-			typename Fixture::PointList polyA, polyB, expectedDistLine;
-			Fixture::parseIpePath(test_data.polyA, polyA);
-			Fixture::parseIpePath(test_data.polyB, polyB);
-			Fixture::parseIpePath(test_data.expectedDistLine, expectedDistLine);
-			auto dist = wfr(polyA.begin(), polyA.end(), polyB.begin(), polyB.end());
-			auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
-			REQUIRE(abs(dist - expectedDist) < MOVETK_EPS);
+			auto dist = wfr(test_data.polyline_a.begin(),
+			                test_data.polyline_a.end(),
+			                test_data.polyline_b.begin(),
+			                test_data.polyline_b.end());
+			REQUIRE(abs(dist - test_data.expected_distance) < MOVETK_EPS);
 		}
 	}
 }
@@ -167,24 +115,19 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,
 	typename Fixture::WFR wfr{};
 	typename Fixture::SqDistance sqDist;
 
+	const auto test_cases = Fixture::load_test_cases();
+
 	SECTION("Interweaved grid example") {
 		const auto& test_data = test_cases.at("Interweaved grid example");
-		typename Fixture::PointList polyA, polyB, expectedDistLine;
-		Fixture::parseIpePath(test_data.polyA, polyA);
-		Fixture::parseIpePath(test_data.polyB, polyB);
-		Fixture::parseIpePath(test_data.expectedDistLine, expectedDistLine);
-
-		auto expectedDist = std::sqrt(sqDist(expectedDistLine[0], expectedDistLine[1]));
-
 		// Get the matching with the output
 		std::vector<std::pair<std::pair<int, int>, typename Fixture::NT>> matching;
 
-		auto dist = wfr(polyA.begin(),
-		                polyA.end(),
-		                polyB.begin(),
-		                polyB.end(),
-		                movetk::utils::movetk_back_insert_iterator(matching));
-
+		const auto dist = wfr(test_data.polyline_a.begin(),
+		                      test_data.polyline_a.end(),
+		                      test_data.polyline_b.begin(),
+		                      test_data.polyline_b.end(),
+		                      movetk::utils::movetk_back_insert_iterator(matching));
+		const auto expectedDist = test_data.expected_distance;
 		// Non-empty matching
 		REQUIRE(!matching.empty());
 
