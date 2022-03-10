@@ -80,8 +80,8 @@ TEST_CASE_METHOD(BaseTrajectoryTests, "TabularTrajectory field iterator", "[tabu
 	TabularTrajectory t{data};
 
 	auto expected = {"abc", "def"};
+	CHECK(expected.size() == t.size());
 	REQUIRE(std::equal(t.begin<0>(), t.end<0>(), std::begin(expected)));
-	REQUIRE(expected.size() == t.size());
 
 	auto first = t.begin<0>();
 	auto last = t.end<0>();

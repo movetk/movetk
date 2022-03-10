@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<tests>
+    <test>
+        <name>Simple spike example</name>
+        <input_a>
+            <ipeselection pos="224 480">
+                <path>
+        96 448 m
+        192 448 l
+        256 448 l
+        320 448 l
+        384 448 l
+                </path>
+            </ipeselection>
+        </input_a>
+        <input_b>
+            <ipeselection pos = "160 448">
+                <path>
+        96 448 m
+        128 448 l
+        144 448 l
+        192 448 l
+        208 512 l
+        224 448 l
+        256 448 l
+        304 448 l
+        384 448 l
+                </path>
+            </ipeselection>
+        </input_b>
+        <expected_line>
+            <ipeselection pos = "160 448">
+                <path>
+        208 448 m
+        208 512 l
+                </path>
+            </ipeselection>
+        </expected_line>
+    </test>
+    <test>
+        <name>Weaved grid example</name>
+        <input_a>
+            <ipeselection pos="160 384">
+                <path stroke="darkorange" pen="heavier" arrow="normal/normal">
+        128 384 m
+        320 384 l
+        320 352 l
+        128 352 l
+        128 320 l
+        320 320 l
+        320 288 l
+        128 288 l
+        128 256 l
+        320 256 l
+        320 224 l
+        128 224 l
+        128 192 l
+        320 192 l
+                </path>
+            </ipeselection>
+        </input_a>
+        <input_b>
+            <ipeselection pos="192 368">
+                <path stroke="darkred" pen="heavier" arrow="normal/normal">
+        128 384 m
+        128 192 l
+        160 192 l
+        160 384 l
+        192 384 l
+        192 192 l
+        224 192 l
+        224 384 l
+        256 384 l
+        256 192 l
+        288 192 l
+        288 384 l
+        320 384 l
+        320 192 l
+                </path>
+            </ipeselection>
+        </input_b>
+        <expected_line>
+            <ipeselection pos="144 384">
+                <path matrix="1 0 0 1 0 -32" stroke="black">
+        128 416 m
+        320 416 l
+                </path>
+            </ipeselection>
+        </expected_line>
+    </test>
+    <test>
+        <name>Single segment and spike example</name>
+        <input_a>
+            <ipeselection pos="-80 352">
+                <path stroke="black">
+            128 320 m
+            144 352 l
+            160 368 l
+            176 416 l
+            192 368 l
+            208 352 l
+            224 320 l
+                </path>
+            </ipeselection>
+        </input_a>
+        <input_b>
+            <ipeselection pos="-32 368">
+                <path stroke="black">
+            128 320 m
+            224 320 l
+                </path>
+            </ipeselection>
+        </input_b>
+        <expected_line>
+            <ipeselection pos="176 384">
+                <path matrix="1 0 0 1 32 32" stroke="black">
+            176 320 m
+            176 416 l
+                </path>
+            </ipeselection>
+        </expected_line>
+    </test>
+    <test>
+        <name>Two segments example</name>
+        <input_a>
+            <ipeselection pos="176 736">
+                <path stroke="black" arrow="normal/normal">
+            128 736 m
+            192 736 l
+                </path>
+            </ipeselection>
+        </input_a>
+        <input_b>
+            <ipeselection pos="0 768">
+                <path stroke="black" arrow="normal/normal">
+            98.5874 755.395 m
+            157.413 780.605 l
+                </path>
+            </ipeselection>
+        </input_b>
+        <expected_line>
+            <ipeselection pos="174.706 758.303">
+                <path stroke="black" arrow="normal/normal">
+            157.413 780.605 m
+            192 736 l
+                </path>
+            </ipeselection>
+        </expected_line>
+    </test>
+    <test>
+        <name>Segment-point example</name>
+        <input_a>
+            <ipeselection pos="176 736">
+                <path stroke="black" arrow="normal/normal">
+            128 736 m
+            192 736 l
+                </path>
+            </ipeselection>
+        </input_a>
+        <input_b>
+            <ipeselection pos="0 768">
+                <path stroke="black" arrow="normal/normal">
+            98.5874 755.395 m
+                </path>
+            </ipeselection>
+        </input_b>
+        <expected_line>
+            <ipeselection pos="139.422 746.917">
+                <path stroke="black">
+            98.5874 755.395 m
+            192 736 l
+                </path>
+            </ipeselection>
+        </expected_line>
+    </test>
+    <test>
+        <name>Point-point case</name>
+        <input_a>
+            <ipeselection pos="176 736">
+                <path stroke="black" arrow="normal/normal">
+            128 736 m
+                </path>
+            </ipeselection>
+        </input_a>
+        <input_b>
+            <ipeselection pos="0 768">
+                <path stroke="black" arrow="normal/normal">
+            98.5874 755.395 m
+                </path>
+            </ipeselection>
+        </input_b>
+        <expected_line>
+            <ipeselection pos="96 736">
+                <path stroke="black" arrow="normal/normal">
+            98.5874 755.395 m
+            128 736 l
+                </path>
+            </ipeselection>
+        </expected_line>
+    </test>
+</tests>

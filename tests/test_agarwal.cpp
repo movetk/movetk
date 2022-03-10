@@ -23,10 +23,13 @@
 #include <map>
 
 // Defines the geometry kernel
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/algo/Simplification.h"
 #include "movetk/metric/Distances.h"
 #include "movetk/metric/Norm.h"
-#include "helpers/CustomCatchTemplate.h"
 
 // Add a message to a Catch2 require
 #define REQUIRE_MESSAGE(cond, msg) \
@@ -40,105 +43,26 @@ struct AgarwalTestcase {
 	// Ipe input for single edge that will define the epsilon for the testcase
 	std::string epsilon_line_input;
 	std::vector<std::size_t> expectedInds;
-};
 
-std::map<std::string, AgarwalTestcase> test_cases{{"Spike example",
-                                                   {
-                                                       R"IPE(
-            <ipeselection pos="224 480">
-                <path stroke="0">
-                96 448 m
-                128 448 l
-                144 448 l
-                192 448 l
-                208 512 l
-                224 448 l
-                336 448 l
-                352 448 l
-                384 448 l
-                </path>
-            </ipeselection>
-            )IPE",
-                                                       R"IPE(
-            <ipeselection pos = "160 448">
-                <path stroke = "black">
-                160 448 m
-                160 464 l
-                </path>
-            </ipeselection>
-            )IPE",
-                                                       {0, 3, 4, 5, 8}}},
-                                                  {"Spike example larger epsilon",
-                                                   {
-                                                       R"IPE(
-            <ipeselection pos="224 480">
-            <path stroke="0">
-            96 448 m
-            128 448 l
-            144 448 l
-            192 448 l
-            208 512 l
-            224 448 l
-            336 448 l
-            352 448 l
-            384 448 l
-            </path>
-            </ipeselection>
-            )IPE",
-                                                       R"IPE(
-            <ipeselection pos = "160 448">
-            <path stroke="black">
-            192 448 m
-            168.371 489.355 l
-            </path>
-            </ipeselection>
-            )IPE",
-                                                       {0, 4, 5, 8}}},
-                                                  {"Spike example largest epsilon",
-                                                   {
-                                                       R"IPE(
-            <ipeselection pos="224 480">
-            <path stroke="0">
-            96 448 m
-            128 448 l
-            144 448 l
-            192 448 l
-            208 512 l
-            224 448 l
-            336 448 l
-            352 448 l
-            384 448 l
-            </path>
-            </ipeselection>
-            )IPE",
-                                                       R"IPE(
-            <ipeselection pos="208 464">
-            <path stroke="black">
-            208 448 m
-            208 512 l
-            </path>
-            </ipeselection>
-            )IPE",
-                                                       {0, 8}}},
-                                                  {"Single segment",
-                                                   {
-                                                       R"IPE(
-            <ipeselection pos="224 480">
-            <path stroke="0">
-            96 448 m
-            128 448 l
-            </path>
-            </ipeselection>
-            )IPE",
-                                                       R"IPE(
-            <ipeselection pos="208 464">
-            <path stroke="black">
-            0 0 m
-            0 5 l
-            </path>
-            </ipeselection>
-            )IPE",
-                                                       {0, 1}}}};
+	static constexpr const char* test_data_file = "data/agarwal_simplification_tests.xml";
+
+	static std::map<std::string, AgarwalTestcase> load_test_cases() {
+		std::map<std::string, AgarwalTestcase> test_cases;
+		boost::property_tree::ptree tree;
+		boost::property_tree::read_xml(test_data_file, tree);
+		const auto& tests_tree = tree.get_child("tests");
+		for (const auto& node : tests_tree) {
+			const auto test_name = node.second.get<std::string>("name");
+			AgarwalTestcase test_case;
+			test_case.polyline_input = node.second.get<std::string>("input.ipeselection.path");
+			test_case.epsilon_line_input = node.second.get<std::string>("expected_line.ipeselection.path");
+			const auto expected_indices_string = node.second.get<std::string>("expected_indices");
+			test_helpers::vector_from_string(expected_indices_string, test_case.expectedInds);
+			test_cases[test_name] = test_case;
+		}
+		return test_cases;
+	}
+};
 
 TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
                         "[agarwal_simplification][simplification]",
@@ -154,10 +78,12 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
 	simplifier.setTolerance(0.0001);
 	using PointList = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
 	const auto parseIpe = [](const std::string& string_data, PointList& output) {
-		test_helpers::parseIpePath<MovetkGeometryKernel>(string_data, output);
+		test_helpers::parse_ipe_path_contents<MovetkGeometryKernel>(string_data, output);
 	};
+	const auto test_cases = AgarwalTestcase::load_test_cases();
 	for (const auto& [test_case_name, test_case] : test_cases) {
 		SECTION(test_case_name) {
+			std::cout << test_case_name << '\n';
 			PointList points, epsilonPath;
 
 			parseIpe(test_case.polyline_input, points);

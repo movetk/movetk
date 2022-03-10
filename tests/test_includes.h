@@ -142,6 +142,57 @@ inline bool startsWith(const std::string& str, int offset, const std::string& to
 }
 }  // namespace detail
 
+template<typename T>
+inline void vector_from_string(const std::string& input, std::vector<T>& output, char delim=',') {
+	std::stringstream stream(input);
+	std::string part;
+	while(std::getline(stream,part,delim)){
+		std::stringstream part_stream(part);
+		T t;
+		part_stream >> t;
+		output.push_back(t);
+	}
+}
+
+/**
+ * \brief Reads the first <path> element in an ipe string. The path is assumed to only contain 'm' and 'l' operators,
+ * thus defining a polyline
+ * \param pathData IPE string
+ * \param points Output movetk points.
+ */
+template <typename MovetkGeometryKernel>
+inline void parse_ipe_path_contents(const std::string& path_tag_contents,
+                                    std::vector<typename MovetkGeometryKernel::MovetkPoint>& points) {
+	using NT = typename MovetkGeometryKernel::NT;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
+
+	// Read <path> content
+	std::vector<NT> buff;
+
+	size_t prevStart = 0;
+	for (size_t i = 0; i < path_tag_contents.size(); ++i) {
+		if (std::isspace(path_tag_contents[i])) {
+			if ((i > 0 && std::isspace(path_tag_contents[i - 1])) || (i == prevStart)) {
+				prevStart = i + 1;
+			} else {
+				// Parse previous number
+				std::stringstream ss(path_tag_contents.substr(prevStart, i - prevStart));
+				NT datum;
+				ss >> datum;
+				buff.push_back(datum);
+				prevStart = i + 1;
+			}
+		} else if (path_tag_contents[i] == 'm' || path_tag_contents[i] == 'l') {
+			if (buff.size() != 2) {
+				throw std::runtime_error("Malformed path data, expected 2 numbers before m/l operator");
+			}
+			points.push_back(make_point({buff[0], buff[1]}));
+			buff.clear();
+			prevStart = i + 1;
+		}
+	}
+}
+
 /**
  * \brief Reads the first <path> element in an ipe string. The path is assumed to only contain 'm' and 'l' operators,
  * thus defining a polyline

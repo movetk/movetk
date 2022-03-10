@@ -13,6 +13,7 @@ include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 # Configure the movetk dependencies.
 conan_cmake_configure(REQUIRES 
+# Dependencies
 cgal/5.3
 gdal/3.4.1
 gsl/2.7
@@ -26,8 +27,9 @@ GENERATORS
 cmake_find_package_multi # Use the config package generator to be able to do find_package(package CONFIG)
 cmake_paths # Generate conan_paths.cmake to be able to discover generated packages
 
-# find_package(Boost REQUIRED COMPONENTS iostreams log thread system log_setup graph)
-OPTIONS 
+OPTIONS #Specify options for some dependencies to avoid pulling in too much.
+#GDAL
+gdal:shared=True
 # Disable a lot of boost libraries
 #Required by "log": "atomic"
 #Required by "thread": "chrono"
@@ -62,11 +64,10 @@ boost:without_type_erasure=True
 boost:without_wave=True
 )
 
-# Auto detect settings for running
+# Auto detect compilation settings for running
 conan_cmake_autodetect(settings)
 
 conan_cmake_install(PATH_OR_REFERENCE . BUILD missing REMOTE conancenter SETTINGS ${settings})
 
 # Include the conan paths which will add paths to correctly find packages via find_package
-message(STATUS "Binary dir: ${CMAKE_BINARY_DIR}, current binary dir: ${CMAKE_CURRENT_BINARY_DIR}")
 include(${CMAKE_CURRENT_BINARY_DIR}/conan_paths.cmake)

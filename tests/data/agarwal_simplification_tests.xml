@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<tests>
+    <test>
+        <name>Spike example</name>
+        <input>
+            <ipeselection pos="224 480">
+                <path stroke="0">
+                96 448 m
+                128 448 l
+                144 448 l
+                192 448 l
+                208 512 l
+                224 448 l
+                336 448 l
+                352 448 l
+                384 448 l
+                </path>
+            </ipeselection>
+        </input>
+        <expected_line>
+            <ipeselection pos = "160 448">
+                <path stroke = "black">
+                160 448 m
+                160 464 l
+                </path>
+            </ipeselection>
+        </expected_line>
+        <expected_indices>
+            0, 3, 4, 5, 8
+        </expected_indices>
+    </test>
+    <test>
+        <name>Spike example larger epsilon</name>
+        <input>
+            <ipeselection pos="224 480">
+                <path stroke="0">
+            96 448 m
+            128 448 l
+            144 448 l
+            192 448 l
+            208 512 l
+            224 448 l
+            336 448 l
+            352 448 l
+            384 448 l
+                </path>
+            </ipeselection>
+        </input>
+        <expected_line>
+            <ipeselection pos = "160 448">
+                <path stroke="black">
+            192 448 m
+            168.371 489.355 l
+                </path>
+            </ipeselection>
+        </expected_line>
+        <expected_indices>
+            0, 4, 5, 8
+        </expected_indices>
+    </test>
+    <test>
+        <name>Spike example largest epsilon</name>
+        <input>
+            <ipeselection pos="224 480">
+            <path stroke="0">
+            96 448 m
+            128 448 l
+            144 448 l
+            192 448 l
+            208 512 l
+            224 448 l
+            336 448 l
+            352 448 l
+            384 448 l
+            </path>
+            </ipeselection>
+        </input>
+        <expected_line>
+            <ipeselection pos="208 464">
+            <path stroke="black">
+            208 448 m
+            208 512 l
+            </path>
+            </ipeselection>
+        </expected_line>
+        <expected_indices>
+            0, 8
+        </expected_indices>
+    </test>
+    <test>
+        <name>Single segment</name>
+        <input>
+            <ipeselection pos="224 480">
+            <path stroke="0">
+            96 448 m
+            128 448 l
+            </path>
+            </ipeselection>
+        </input>
+        <expected_line>
+            <ipeselection pos="208 464">
+            <path stroke="black">
+            0 0 m
+            0 5 l
+            </path>
+            </ipeselection>
+        </expected_line>
+        <expected_indices>
+            0, 1
+        </expected_indices>
+    </test>
+</tests>
