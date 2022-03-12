@@ -74,7 +74,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
 	using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel,
 	                                          movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>>;
 	using SqDistance = movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>;
-	movetk::algo::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
+	movetk::algo::simplification::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
 	simplifier.setTolerance(0.0001);
 	using PointList = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
 	const auto parseIpe = [](const std::string& string_data, PointList& output) {

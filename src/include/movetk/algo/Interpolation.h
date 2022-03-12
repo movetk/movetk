@@ -131,7 +131,6 @@ public:
 		const auto interval = static_cast<typename InterpolationTraits::NT>(delta_t);
 
 		using ProbePoint = typename InterpolationTraits::ProbePoint;
-		using NT = typename InterpolationTraits::NT;
 
 		std::vector<ProbePoint> interpolated_pts;
 
@@ -284,7 +283,6 @@ public:
 		*ip_it = probe_u;
 
 		auto tit = first;
-		auto idx = 2.0;
 		while (++tit != (beyond - 1)) {
 			t_u = std::get<TsIdx>(probe_u);
 			t_v = std::get<TsIdx>(probe_v);

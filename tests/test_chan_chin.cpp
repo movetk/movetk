@@ -65,7 +65,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ChanChinTests, "Check Chan Chin Shortcuts"
 	using Fixture = ChanChinTests<TestType>;
 	for (const auto& [test_case_name, test_data] : Fixture::test_cases) {
 		SECTION(test_case_name) {
-			movetk::algo::ChanChin<typename Fixture::MovetkGeometryKernel, typename Fixture::Wedge> ChanChin(1);
+			movetk::algo::simplification::ChanChin<typename Fixture::MovetkGeometryKernel, typename Fixture::Wedge> ChanChin(1);
 			typename Fixture::EdgeList edges;
 			ChanChin(std::begin(test_data.polyline),
 			         std::end(test_data.polyline),

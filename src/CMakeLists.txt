@@ -20,10 +20,18 @@ set(SOURCES
         include/movetk/algo/PolylineUtils.h
         include/movetk/algo/Search.h
         include/movetk/algo/Segmentation.h
+        include/movetk/algo/segmentation/ModelBasedSegmentation.h
+        include/movetk/algo/segmentation/MonotoneSegmentation.h
         include/movetk/algo/SegmentationPredicates.h
         include/movetk/algo/SegmentationTraits.h
         include/movetk/algo/Similarity.h
+        include/movetk/algo/similarity/DynamicTimeWarping.h
+        include/movetk/algo/similarity/LongestCommonSubSequence.h
         include/movetk/algo/Simplification.h
+        include/movetk/algo/simplification/Agarwal.h
+        include/movetk/algo/simplification/ChanChin.h
+        include/movetk/algo/simplification/DouglasPeucker.h
+        include/movetk/algo/simplification/ImaiIri.h
         include/movetk/algo/Statistics.h
         include/movetk/ds/ColumnarTrajectory.h
         include/movetk/ds/FreeSpaceDiagram.h
@@ -37,12 +45,16 @@ set(SOURCES
         include/movetk/io/CartesianProbeTraits.h
         include/movetk/io/CategoricalField.h
         include/movetk/io/csv/csv.h
-        include/movetk/io/ParseDate.h
         include/movetk/io/gdal_PolygonReader.h
+        include/movetk/metric/distances/DiscreteFrechet.h
+        include/movetk/metric/distances/DiscreteHausdorff.h
+        include/movetk/metric/distances/StrongFrechet.h
+        include/movetk/metric/distances/WeakFrechet.h
         include/movetk/io/GeoJSON.h
         include/movetk/io/HighFrequencyTrajectoryReader.h
         include/movetk/io/HighFrequencyTrajectorySplitter.h
         include/movetk/io/HighFrequencyTrajectoryTraits.h
+        include/movetk/io/ParseDate.h
         include/movetk/io/ProbeReader.h
         include/movetk/io/ProbeTraits.h
         include/movetk/io/SortByField.h
@@ -51,14 +63,6 @@ set(SOURCES
         include/movetk/io/SplitByDistanceThreshold.h
         include/movetk/io/SplitByField.h
         include/movetk/io/Splitter.h
-        include/movetk/algo/simplification/Agarwal.h
-        include/movetk/algo/simplification/ChanChin.h
-        include/movetk/algo/simplification/DouglasPeucker.h
-        include/movetk/algo/simplification/ImaiIri.h
-        include/movetk/algo/similarity/LongestCommonSubSequence.h
-        include/movetk/algo/similarity/DynamicTimeWarping.h
-        include/movetk/algo/segmentation/MonotoneSegmentation.h
-        include/movetk/algo/segmentation/ModelBasedSegmentation.h
         include/movetk/io/TrajectoryReader.h
         include/movetk/io/TrajectoryTraits.h
         include/movetk/io/TupleIterPrinter.h

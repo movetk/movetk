@@ -46,6 +46,28 @@ namespace movetk::algo {
     class TEST {
     };
 
+    template<typename GeometryTraits>
+    class MinimumEnclosingBallLess{
+    public:
+        using NT = typename GeometryTraits::NT;
+
+        MinimumEnclosingBallLess(NT threshold):m_threshold(threshold){}
+
+        template<class InputIterator,
+                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+                typename = movetk::utils::requires_movetk_point<GeometryTraits,
+                        typename InputIterator::value_type>>
+        bool operator()(InputIterator first, InputIterator beyond) const {
+            const auto radius = make_min_sphere(first, beyond);
+            return radius < m_threshold;
+        }
+
+    private:
+        
+        movetk::geom::MakeMinSphere<GeometryTraits> make_min_sphere;
+        NT m_threshold;
+    };
+
     /*!
      *
      * @tparam GeometryTraits

@@ -2,6 +2,7 @@
 #define MOVETK_ALGO_SIMPLIFICATION_AGARWAL_H
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/DistanceInterface.h"
+#include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
 namespace movetk::algo::simplification {

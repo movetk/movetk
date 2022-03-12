@@ -40,8 +40,8 @@ struct ImaiIriTests : public test_helpers::BaseTestFixture<Backend> {
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	using PolyLine = std::vector<MovetkPoint>;
 	using Wedge = movetk::geom::Wedge<MovetkGeometryKernel, Norm>;
-	using ChanChin = movetk::algo::ChanChin<MovetkGeometryKernel, Wedge>;
-	using ImaiIri = movetk::algo::ImaiIri<MovetkGeometryKernel, ChanChin>;
+	using ChanChin = movetk::algo::simplification::ChanChin<MovetkGeometryKernel, Wedge>;
+	using ImaiIri = movetk::algo::simplification::ImaiIri<MovetkGeometryKernel, ChanChin>;
 };
 
 

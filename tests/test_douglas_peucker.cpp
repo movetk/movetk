@@ -38,8 +38,8 @@ struct DouglasPeuckerTests {
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
-	using FindFarthest = movetk::algo::FindFarthest<MovetkGeometryKernel, Norm>;
-	using DouglasPeucker = movetk::algo::DouglasPeucker<MovetkGeometryKernel, FindFarthest>;
+	using FindFarthest = movetk::algo::simplification::FindFarthest<MovetkGeometryKernel, Norm>;
+	using DouglasPeucker = movetk::algo::simplification::DouglasPeucker<MovetkGeometryKernel, FindFarthest>;
 
 	template <typename... ARGS>
 	auto create_douglas_peucker(ARGS&&... args) {
