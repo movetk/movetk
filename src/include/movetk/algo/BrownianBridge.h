@@ -134,14 +134,14 @@ template <class GeometryTraits,
           typename = movetk::utils::requires_random_access_iterator<InputIterator>,
           typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
           typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-                                                                         ParameterTraits::ParameterColumns::POINT,
-                                                                         typename InputIterator::value_type>,
+                                                                           ParameterTraits::ParameterColumns::POINT,
+                                                                           typename InputIterator::value_type>,
           typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-                                                                         ParameterTraits::ParameterColumns::MU,
-                                                                         typename InputIterator::value_type>,
+                                                                           ParameterTraits::ParameterColumns::MU,
+                                                                           typename InputIterator::value_type>,
           typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-                                                               ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-                                                               typename InputIterator::value_type>>
+                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
+                                                                 typename InputIterator::value_type>>
 class MLE {
 private:
 	typedef typename GeometryTraits::NT NT;
@@ -306,25 +306,25 @@ public:
 	          typename = movetk::utils::requires_random_access_iterator<TrajectoryIterator>,
 	          typename = movetk::utils::requires_tuple<typename TrajectoryIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
-	                                                                       typename TrajectoryIterator::value_type>,
+	                                                                         typename TrajectoryIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON,
-	                                                                       typename TrajectoryIterator::value_type>,
+	                                                                         typename TrajectoryIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                                                   typename TrajectoryIterator::value_type>,
+	                                                                     typename TrajectoryIterator::value_type>,
 	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
 	          typename = movetk::utils::requires_tuple<typename OutputIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-	                                                                         ParameterTraits::ParameterColumns::POINT,
-	                                                                         typename OutputIterator::value_type>,
+	                                                                           ParameterTraits::ParameterColumns::POINT,
+	                                                                           typename OutputIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-	                                                                         ParameterTraits::ParameterColumns::MU,
-	                                                                         typename OutputIterator::value_type>,
+	                                                                           ParameterTraits::ParameterColumns::MU,
+	                                                                           typename OutputIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-	                                                               ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                               typename OutputIterator::value_type>>
+	                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
+	                                                                 typename OutputIterator::value_type>>
 	Model(TrajectoryIterator first, TrajectoryIterator beyond, OutputIterator result) {
-		auto reflat = std::get<ProbeTraits::ProbeColumns::LAT>(*first);
-		auto reflon = std::get<ProbeTraits::ProbeColumns::LON>(*first);
+		const auto reflat = std::get<ProbeTraits::ProbeColumns::LAT>(*first);
+		const auto reflon = std::get<ProbeTraits::ProbeColumns::LON>(*first);
 		GeoProjection ref(reflat, reflon);
 
 		TrajectoryIterator tit = first;
@@ -417,8 +417,8 @@ public:
 	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
 	          typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-	                                                               ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                               typename InputIterator::value_type>,
+	                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
+	                                                                 typename InputIterator::value_type>,
 	          typename = movetk::utils::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		assert(static_cast<std::size_t>(std::distance(first, beyond)) >= SIZE);
@@ -452,14 +452,13 @@ public:
 	          typename = movetk::utils::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
 	void operator()(const Parameters &params, InputIterator first, InputIterator beyond, OutputIterator result) {
 		Norm norm;
-		typename GeometryTraits::MovetkVector v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -
-		                                          std::get<ParameterTraits::ParameterColumns::MU>(params);
-		InputIterator pit = first;
-		NT squared_length = norm(v);
-		while (pit != beyond) {
-			NT operand1 = -LOG_TWO_PI - log(*pit);
-			NT operand2 = -squared_length / (2 * (*pit));
-			NT log_likelihood = operand1 + operand2;
+		const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -
+		               std::get<ParameterTraits::ParameterColumns::MU>(params);
+		const auto = squared_length = norm(v);
+		for (auot pit = first; pit != beyond; ++pit) {
+			const auto operand1 = -LOG_TWO_PI - log(*pit);
+			const auto operand2 = -squared_length / (2 * (*pit));
+			const auto log_likelihood = operand1 + operand2;
 			*result = log_likelihood;
 			pit++;
 		}
@@ -467,11 +466,11 @@ public:
 
 	NT operator()(const Parameters &params, NT sigma_squared) {
 		Norm norm;
-		typename GeometryTraits::MovetkVector v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -
-		                                          std::get<ParameterTraits::ParameterColumns::MU>(params);
-		NT squared_length = norm(v);
-		NT operand1 = -LOG_TWO_PI - log(sigma_squared);
-		NT operand2 = -squared_length / (2 * sigma_squared);
+		const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -
+		               std::get<ParameterTraits::ParameterColumns::MU>(params);
+		const auto squared_length = norm(v);
+		const auto operand1 = -LOG_TWO_PI - log(sigma_squared);
+		const auto operand2 = -squared_length / (2 * sigma_squared);
 		return (operand1 + operand2);
 	}
 };

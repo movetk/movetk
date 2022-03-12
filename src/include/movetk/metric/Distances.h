@@ -107,7 +107,7 @@ namespace movetk::metric
                   typename = movetk::utils::requires_random_access_iterator<InputIterator>,
                   typename = movetk::utils::requires_movetk_point<Kernel,
                                                                 typename InputIterator::value_type>>
-        typename Kernel::NT discrete_husdorff(InputIterator a_first, InputIterator a_beyond,
+        typename Kernel::NT singlesided_discrete_hausdorff(InputIterator a_first, InputIterator a_beyond,
                                               InputIterator b_first, InputIterator b_beyond)
         {
 
@@ -151,10 +151,10 @@ namespace movetk::metric
                                        InputIterator polyline_b_first, InputIterator polyline_b_beyond)
         {
 
-            typename Kernel::NT hd_pq = discrete_husdorff(polyline_a_first, polyline_a_beyond,
+            typename Kernel::NT hd_pq = singlesided_discrete_hausdorff(polyline_a_first, polyline_a_beyond,
                                                           polyline_b_first, polyline_b_beyond);
 
-            typename Kernel::NT hd_qp = discrete_husdorff(polyline_b_first, polyline_b_beyond,
+            typename Kernel::NT hd_qp = singlesided_discrete_hausdorff(polyline_b_first, polyline_b_beyond,
                                                           polyline_a_first, polyline_a_beyond);
 
             return std::max(hd_pq, hd_qp);
@@ -854,7 +854,7 @@ namespace movetk::metric
          * \param weightMap Output weightmap for the edges of the freespace graph.
          */
         template <typename InIt>
-        void setupFreeSpaceGraph(std::pair<InIt, InIt> polyA, std::pair<InIt, InIt> polyB, FreeSpaceGraph &freeSpaceGraph, FreeSpaceGraphWeightMap &weightMap)
+        void setup_freespace_graph(std::pair<InIt, InIt> polyA, std::pair<InIt, InIt> polyB, FreeSpaceGraph &freeSpaceGraph, FreeSpaceGraphWeightMap &weightMap)
         {
             const auto polyASegCount = std::distance(polyA.first, polyA.second) - 1;
             const auto polyBSegCount = std::distance(polyB.first, polyB.second) - 1;
@@ -940,7 +940,7 @@ namespace movetk::metric
             // Setup free space grid graph. The weights on the edges are the minimum distances for the cell border, represented by that edge, to open
             FreeSpaceGraph freeSpaceGraph;
             FreeSpaceGraphWeightMap weightMap;
-            setupFreeSpaceGraph(std::make_pair(polyline_a_first, polyline_a_beyond), std::make_pair(polyline_b_first, polyline_b_beyond),
+            setup_freespace_graph(std::make_pair(polyline_a_first, polyline_a_beyond), std::make_pair(polyline_b_first, polyline_b_beyond),
                                 freeSpaceGraph, weightMap);
 
             std::vector<NT> distances(boost::num_vertices(freeSpaceGraph));
@@ -995,7 +995,7 @@ namespace movetk::metric
             // Setup free space grid graph. The weights on the edges are the minimum distances for the cell border, represented by that edge, to open
             FreeSpaceGraph freeSpaceGraph;
             FreeSpaceGraphWeightMap weightMap;
-            setupFreeSpaceGraph(std::make_pair(polyline_a_first, polyline_a_beyond), std::make_pair(polyline_b_first, polyline_b_beyond),
+            setup_freespace_graph(std::make_pair(polyline_a_first, polyline_a_beyond), std::make_pair(polyline_b_first, polyline_b_beyond),
                                 freeSpaceGraph, weightMap);
 
             std::vector<NT> distances(boost::num_vertices(freeSpaceGraph));
