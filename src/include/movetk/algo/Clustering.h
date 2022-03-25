@@ -27,8 +27,6 @@
 #include "movetk/ds/FreeSpaceDiagram.h"
 #include "movetk/utils/Iterators.h"
 
-using namespace std;
-
 namespace movetk::algo {
 
 template <class ClusteringTraits>
