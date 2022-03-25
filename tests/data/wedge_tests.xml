@@ -1,0 +1,214 @@
+<?xml version='1.0' encoding='us-ascii'?>
+<tests>
+    <construction_tests>
+        <test1>
+            <input>
+                <point x="-4" y="3" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <expected>
+                <m1>0.206284249</m1>
+                <m2>-0.206284249</m2>
+                <c1>3.825136997</c1>
+                <c2>2.174863</c2>
+            </expected>
+        </test1>
+        <test2>
+            <input>
+                <point x="1" y="2" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <expected>
+                <m1>2.2247448</m1>
+                <m2>-0.2247448</m2>
+                <c1>-0.2247448</c1>
+                <c2>2.2247448</c2>
+            </expected>
+        </test2>
+        <test3>
+            <input>
+                <point x="-1" y="-2" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <expected>
+                <m1>2.05941149</m1>
+                <m2>-0.797731366</m2>
+                <c1>-0.05941149</c1>
+                <c2>-1.202268633</c2>
+            </expected>
+        </test3>
+        <test4>
+            <input>
+                <point x="3" y="-2" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <expected>
+                <m1>-3.39116499</m1>
+                <m2>3.39116499</m2>
+                <c1>8.173494</c1>
+                <c2>-12.173494</c2>
+            </expected>
+        </test4>
+        <test5>
+            <input>
+                <point x="5" y="3" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <expected>
+                <m1>-1</m1>
+                <m2>1</m2>
+                <c1>8</c1>
+                <c2>-2</c2>
+            </expected>
+        </test5>
+        <test6>
+            <input>
+                <point x="-2" y="7" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <expected>
+                <m1>-0.4855756145</m1>
+                <m2>-1.2535548202</m2>
+                <c1>6.0288487709</c1>
+                <c2>4.4928903594</c2>
+            </expected>
+        </test6>
+        <test7>
+            <input>
+                <point x="6" y="-2" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <expected>
+                <m1>-1</m1>
+                <m2>-3.28571428</m2>
+                <c1>4</c1>
+                <c2>17.71428571</c2>
+            </expected>
+        </test7>
+    </construction_tests>
+    <inclusion_tests>
+        <test1>
+            <input>
+                <point x="6" y="-2" />
+                <center x="-3" y="-3" />
+                <radius>1.41421356</radius>
+            </input>
+            <points>
+                <point x="-7" y="-5" />
+                <point x="-7" y="-6" />
+            </points>
+            <expected_inside>
+                <value value="True" />
+                <value value="False" />
+            </expected_inside>
+        </test1>
+        <test2>
+            <input>
+                <point x="-4" y="3" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </input>
+            <points>
+                <point x="-2" y="3" />
+                <point x="-3" y="5" />
+            </points>
+            <expected_inside>
+                <value value="True" />
+                <value value="False" />
+            </expected_inside>
+        </test2>
+        <test3>
+            <input>
+                <point x="-14" y="-10" />
+                <center x="-3" y="-3" />
+                <radius>1.41421356</radius>
+            </input>
+            <points>
+                <point x="-7" y="-5" />
+                <point x="-7" y="-6" />
+            </points>
+            <expected_inside>
+                <value value="True" />
+                <value value="True" />
+            </expected_inside>
+        </test3>
+        <test4>
+            <input>
+                <point x="-14" y="10" />
+                <center x="-3" y="-3" />
+                <radius>1.41421356</radius>
+            </input>
+            <points>
+                <point x="0" y="-6" />
+                <point x="-7" y="-6" />
+            </points>
+            <expected_inside>
+                <value value="True" />
+                <value value="False" />
+            </expected_inside>
+        </test4>
+    </inclusion_tests>
+    <intersection_tests>
+        <test1>
+            <wedge0_args>
+                <point x="-4" y="3" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </wedge0_args>
+            <wedge1_args>
+                <point x="-4" y="3" />
+                <center x="-2" y="3" />
+                <radius>1.41421356</radius>
+            </wedge1_args>
+            <expected_arguments>
+                <m1>0.206284249</m1>
+                <m2>-0.206284249</m2>
+                <c1>3.825136997</c1>
+                <c2>2.174863002</c2>
+            </expected_arguments>
+        </test1>
+        <test2>
+            <wedge0_args>
+                <point x="-4" y="3" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </wedge0_args>
+            <wedge1_args>
+                <point x="-4" y="3" />
+                <center x="-2" y="5" />
+                <radius>1.41421356</radius>
+            </wedge1_args>
+            <expected_arguments>
+                <m1>0</m1>
+                <m2>0</m2>
+                <c1>0</c1>
+                <c2>0</c2>
+            </expected_arguments>
+        </test2>
+        <test3>
+            <wedge0_args>
+                <point x="-4" y="3" />
+                <center x="3" y="3" />
+                <radius>1.41421356</radius>
+            </wedge0_args>
+            <wedge1_args>
+                <point x="-4" y="3" />
+                <center x="-0.5" y="1" />
+                <radius>1.41421356</radius>
+            </wedge1_args>
+            <expected_arguments>
+                <m1>-0.1620937</m1>
+                <m2>-0.2062842</m2>
+                <c1>2.351625</c1>
+                <c2>2.174863</c2>
+            </expected_arguments>
+        </test3>
+    </intersection_tests>
+</tests>
