@@ -454,8 +454,8 @@ public:
 		Norm norm;
 		const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -
 		               std::get<ParameterTraits::ParameterColumns::MU>(params);
-		const auto = squared_length = norm(v);
-		for (auot pit = first; pit != beyond; ++pit) {
+		const auto squared_length = norm(v);
+		for (auto pit = first; pit != beyond; ++pit) {
 			const auto operand1 = -LOG_TWO_PI - log(*pit);
 			const auto operand2 = -squared_length / (2 * (*pit));
 			const auto log_likelihood = operand1 + operand2;

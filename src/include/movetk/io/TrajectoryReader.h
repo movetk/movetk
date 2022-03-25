@@ -24,14 +24,11 @@
 #ifndef MOVETK_TRAJECTORYREADER_H
 #define MOVETK_TRAJECTORYREADER_H
 
-#include <iostream>
-using std::cout, std::endl;
-#include <tuple>
-#include <vector>
-using std::vector;
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <tuple>
+#include <vector>
 
 #include "SortByField.h"
 #include "SplitByField.h"
