@@ -45,6 +45,8 @@ set(SOURCES
         include/movetk/io/CartesianProbeTraits.h
         include/movetk/io/CategoricalField.h
         include/movetk/io/csv/csv.h
+        include/movetk/geom/ObjectCreation.h
+        include/movetk/geom/Intersections.h
         include/movetk/io/gdal_PolygonReader.h
         include/movetk/metric/distances/DiscreteFrechet.h
         include/movetk/metric/distances/DiscreteHausdorff.h
