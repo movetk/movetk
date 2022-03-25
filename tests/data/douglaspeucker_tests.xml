@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<simplification_tests>
+    <test1>
+        <epsilon>5.47722</epsilon>
+        <input>
+            <point x="-6.19" y="-3.46" />
+            <point x="-4.99" y="1.16" />
+            <point x="-2.79" y="-2.22" />
+            <point x="-1.87" y="0.58" />
+            <point x="0.77" y="0.22" />
+            <point x="-1.15" y="3.06" />
+            <point x="5.33" y="-1.12" />
+        </input>
+        <expected>
+            <point x="-6.19" y="-3.46" />
+            <point x="5.33" y="-1.12" />
+        </expected>
+    </test1>
+    <test2>
+        <epsilon>3.162277</epsilon>
+        <input>
+            <point x="-6.19" y="-3.46" />
+            <point x="-4.99" y="1.16" />
+            <point x="-2.79" y="-2.22" />
+            <point x="-1.87" y="0.58" />
+            <point x="0.77" y="0.22" />
+            <point x="-1.15" y="3.06" />
+            <point x="5.33" y="-1.12" />
+        </input>
+        <expected>
+            <point x="-6.19" y="-3.46" />
+            <point x="-4.99" y="1.16" />
+            <point x="0.77" y="0.22" />
+            <point x="-1.15" y="3.06" />
+            <point x="5.33" y="-1.12" />
+        </expected>
+    </test2>
+    <test3>
+        <epsilon>1</epsilon>
+        <input>
+            <point x="-6.19" y="-3.46" />
+            <point x="-4.99" y="1.16" />
+            <point x="-2.79" y="-2.22" />
+            <point x="-1.87" y="0.58" />
+            <point x="0.77" y="0.22" />
+            <point x="-1.15" y="3.06" />
+            <point x="5.33" y="-1.12" />
+        </input>
+        <expected>
+            <point x="-6.19" y="-3.46" />
+            <point x="-4.99" y="1.16" />
+            <point x="-2.79" y="-2.22" />
+            <point x="-1.87" y="0.58" />
+            <point x="0.77" y="0.22" />
+            <point x="-1.15" y="3.06" />
+            <point x="5.33" y="-1.12" />
+        </expected>
+    </test3>
+    <degenerate_input>
+        <epsilon>3.162277</epsilon>
+        <input>
+            <point x="-6.19" y="-3.46" />
+            <point x="-6.19" y="-3.46" />
+            <point x="-6.19" y="-3.46" />
+            <point x="-6.19" y="-3.46" />
+            <point x="-6.19" y="-3.46" />
+            <point x="-6.19" y="-3.46" />
+            <point x="-6.19" y="-3.46" />
+        </input>
+        <expected>
+            <point x="-6.19" y="-3.46" />
+            <point x="-6.19" y="-3.46" />
+        </expected>
+    </degenerate_input>
+</simplification_tests>

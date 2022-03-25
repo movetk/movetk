@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='us-ascii'?>
+<distance_tests>
+    <test1>
+        <expected_distance>1</expected_distance>
+        <input0>
+            <point x="0" y="0" />
+            <point x="1" y="1" />
+            <point x="1" y="2" />
+            <point x="2" y="1" />
+            <point x="2" y="2" />
+        </input0>
+        <input1>
+            <point x="1" y="0" />
+            <point x="0" y="1" />
+            <point x="1" y="1" />
+            <point x="2" y="1" />
+            <point x="3" y="1" />
+        </input1>
+    </test1>
+    <test2>
+        <expected_distance>0.794965</expected_distance>
+        <input0>
+            <point x="7" y="10.5" />
+            <point x="11" y="10.5" />
+            <point x="11" y="7" />
+            <point x="7" y="7" />
+            <point x="7" y="10" />
+        </input0>
+        <input1>
+            <point x="7.09" y="10.2" />
+            <point x="10.8" y="10.19" />
+            <point x="10.799" y="7.312" />
+            <point x="7.197" y="7.312" />
+            <point x="7.203" y="9.813" />
+            <point x="10.6" y="9.813" />
+            <point x="10.6" y="7.505" />
+            <point x="7.5" y="7.5" />
+            <point x="7.5" y="9.5" />
+        </input1>
+    </test2>
+    <test3>
+        <expected_distance>2.93282</expected_distance>
+        <input0>
+            <point x="27" y="15" />
+            <point x="26" y="16" />
+            <point x="26.986" y="15.596" />
+            <point x="25" y="18" />
+            <point x="27.22" y="16.389" />
+            <point x="24.483" y="20.207" />
+            <point x="28.1394" y="16.695" />
+            <point x="28.481" y="21.03" />
+            <point x="30" y="17" />
+            <point x="31.799" y="20.817" />
+            <point x="31.1023" y="17.454" />
+            <point x="33.488" y="19.073" />
+            <point x="31.13" y="16.324" />
+            <point x="32.483" y="16.449" />
+            <point x="30.934" y="15.4731" />
+        </input0>
+        <input1>
+            <point x="26.33" y="14.705" />
+            <point x="26.24" y="16.15" />
+            <point x="25.84" y="17.607" />
+            <point x="26.818" y="18.347" />
+            <point x="29.26" y="19.533" />
+            <point x="31.674" y="18.87" />
+            <point x="32.511" y="17.482" />
+            <point x="33.0417" y="16.184" />
+            <point x="26.98" y="15.33" />
+            <point x="26.344" y="17.287" />
+            <point x="27.223" y="17.789" />
+            <point x="29.107" y="18.57" />
+            <point x="31.004" y="18.375" />
+            <point x="31.9116" y="17.747" />
+            <point x="31.799" y="16.536" />
+            <point x="27.655" y="16.449" />
+            <point x="28.395" y="17.817" />
+            <point x="30.6" y="17.859" />
+        </input1>
+    </test3>
+</distance_tests>
