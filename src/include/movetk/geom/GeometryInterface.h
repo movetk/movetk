@@ -34,6 +34,7 @@
 #include <array>
 #include <iostream>
 
+#include "Intersections.h"
 #include "ObjectCreation.h"
 #include "movetk/utils/Asserts.h"
 #include "movetk/utils/Iterators.h"

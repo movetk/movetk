@@ -2,8 +2,9 @@
 
 # We download the conan cmake file if not present yet.
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-    set(MOVETK_CONAN_VERSION "0.16")
-    set(CONAN_SRC "https://github.com/conan-io/cmake-conan/raw/v${MOVETK_CONAN_VERSION}/conan.cmake")
+    #set(MOVETK_CONAN_VERSION "v0.17")
+    set(MOVETK_CONAN_VERSION "develop")
+    set(CONAN_SRC "https://github.com/conan-io/cmake-conan/raw/${MOVETK_CONAN_VERSION}/conan.cmake")
     message(STATUS "Auto-downloading conan.cmake from ${CONAN_SRC}")
     file(DOWNLOAD "${CONAN_SRC}" "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
@@ -19,13 +20,13 @@ gdal/3.4.1
 gsl/2.7
 gmp/6.2.1
 mpfr/4.1.0
-boost/1.75
+boost/1.77.0
 catch2/2.13.1
 rapidjson/1.1.0 
+geographiclib/1.52
 IMPORTS "bin, *.dll -> ./bin" # For windows, copy dependent dlls to the binary directory
 GENERATORS 
 cmake_find_package_multi # Use the config package generator to be able to do find_package(package CONFIG)
-cmake_paths # Generate conan_paths.cmake to be able to discover generated packages
 
 OPTIONS #Specify options for some dependencies to avoid pulling in too much.
 #GDAL
@@ -65,9 +66,19 @@ boost:without_wave=True
 )
 
 # Auto detect compilation settings for running
-conan_cmake_autodetect(settings)
+# TODO: fix for single build type
+set(_CONFIGURATION_TYPES Release Debug)
+foreach(TYPE ${_CONFIGURATION_TYPES})
+conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
+message(STATUS ${settings})
+conan_cmake_install(PATH_OR_REFERENCE . 
+    BUILD missing 
+    REMOTE conancenter 
+    SETTINGS ${settings})
+endforeach()
 
-conan_cmake_install(PATH_OR_REFERENCE . BUILD missing REMOTE conancenter SETTINGS ${settings})
+#conan_cmake_autodetect(settings BUILD_TYPE Release;Debug;RelWithDebInfo;MinSizeRel)
+#conan_cmake_install(PATH_OR_REFERENCE . BUILD missing REMOTE conancenter SETTINGS ${settings})
 
 # Include the conan paths which will add paths to correctly find packages via find_package
-include(${CMAKE_CURRENT_BINARY_DIR}/conan_paths.cmake)
+list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR})
