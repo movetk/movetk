@@ -22,7 +22,7 @@ struct MakePoint {
 	template <class CoordinateIterator, typename = utils::requires_random_access_iterator<CoordinateIterator>>
 	typename GeometryTraits::MovetkPoint operator()(CoordinateIterator first, CoordinateIterator beyond) const {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(CoordinateIterator);
-		ASSERT_NUMBER_TYPE(GeometryTraits, first);
+		//ASSERT_NUMBER_TYPE(GeometryTraits, first);
 		typename GeometryTraits::MovetkPoint p(first, beyond);
 		return p;
 	}

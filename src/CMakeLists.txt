@@ -9,85 +9,7 @@ elseif(MSVC)
         list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/msvc")
 endif()
 
-set(SOURCES
-        geo/geo.cpp
-        include/movetk/algo/AlgorithmTraits.h
-        include/movetk/algo/BrownianBridge.h
-        include/movetk/algo/Clustering.h
-        include/movetk/algo/Interpolation.h
-        include/movetk/algo/OutlierDetection.h
-        include/movetk/algo/OutlierDetectionPredicates.h
-        include/movetk/algo/PolylineUtils.h
-        include/movetk/algo/Search.h
-        include/movetk/algo/Segmentation.h
-        include/movetk/algo/segmentation/ModelBasedSegmentation.h
-        include/movetk/algo/segmentation/MonotoneSegmentation.h
-        include/movetk/algo/SegmentationPredicates.h
-        include/movetk/algo/SegmentationTraits.h
-        include/movetk/algo/Similarity.h
-        include/movetk/algo/similarity/DynamicTimeWarping.h
-        include/movetk/algo/similarity/LongestCommonSubSequence.h
-        include/movetk/algo/Simplification.h
-        include/movetk/algo/simplification/Agarwal.h
-        include/movetk/algo/simplification/ChanChin.h
-        include/movetk/algo/simplification/DouglasPeucker.h
-        include/movetk/algo/simplification/ImaiIri.h
-        include/movetk/algo/Statistics.h
-        include/movetk/ds/ColumnarTrajectory.h
-        include/movetk/ds/FreeSpaceDiagram.h
-        include/movetk/ds/StartStopMatrix.h
-        include/movetk/ds/TabularTrajectory.h
-        include/movetk/ds/Tree.h
-        include/movetk/geo/geo.h
-        include/movetk/geom/GeometryInterface.h
-        include/movetk/geom/trajectory_gdal.h
-        include/movetk/geom/trajectory_to_interface.h
-        include/movetk/io/CartesianProbeTraits.h
-        include/movetk/io/CategoricalField.h
-        include/movetk/io/csv/csv.h
-        include/movetk/geom/ObjectCreation.h
-        include/movetk/geom/Intersections.h
-        include/movetk/io/gdal_PolygonReader.h
-        include/movetk/metric/distances/DiscreteFrechet.h
-        include/movetk/metric/distances/DiscreteHausdorff.h
-        include/movetk/metric/distances/StrongFrechet.h
-        include/movetk/metric/distances/WeakFrechet.h
-        include/movetk/io/GeoJSON.h
-        include/movetk/io/HighFrequencyTrajectoryReader.h
-        include/movetk/io/HighFrequencyTrajectorySplitter.h
-        include/movetk/io/HighFrequencyTrajectoryTraits.h
-        include/movetk/io/ParseDate.h
-        include/movetk/io/ProbeReader.h
-        include/movetk/io/ProbeTraits.h
-        include/movetk/io/SortByField.h
-        include/movetk/io/SortedProbeReader.h
-        include/movetk/io/SplitByDifferenceThreshold.h
-        include/movetk/io/SplitByDistanceThreshold.h
-        include/movetk/io/SplitByField.h
-        include/movetk/io/Splitter.h
-        include/movetk/io/TrajectoryReader.h
-        include/movetk/io/TrajectoryTraits.h
-        include/movetk/io/TupleIterPrinter.h
-        include/movetk/io/TuplePrinter.h
-        include/movetk/logging.h
-        include/movetk/metric/DistanceInterface.h
-        include/movetk/metric/Distances.h
-        include/movetk/metric/DistanceTraits.h
-        include/movetk/metric/Norm.h
-        include/movetk/test_data.h
-        include/movetk/utils/Asserts.h
-        include/movetk/utils/GeometryBackendTraits.h
-        include/movetk/utils/Iterators.h
-        include/movetk/utils/Requirements.h
-        include/movetk/utils/StringUtils.h
-        include/movetk/utils/text.h
-        include/movetk/utils/TrajectoryUtils.h
-        include/movetk/utils/Transpose.h
-        include/movetk/utils/TypeChecks.h
-        include/movetk/utils/unituple.h
-        io/gdal_PolygonReader.cpp
-        logging.cpp
-)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false CONFIGURE_DEPENDS include/*.h include/*.cpp geo/*.cpp io/*.cpp *.cpp)
 
 #Potentially more options than Boost and CGAL
 if(FALSE)
@@ -189,7 +111,7 @@ target_link_libraries(movetk
             Boost::headers Boost::log Boost::iostreams Boost::thread Boost::system Boost::log_setup Boost::graph
             GDAL::GDAL
             RapidJSON::RapidJSON
-            GeographicLib
+            GeographicLib::GeographicLib
             GSL::gsl GSL::gslcblas #${GSL_LIBRARIES}
             )
 
@@ -213,7 +135,7 @@ install(TARGETS movetk EXPORT ${CMAKE_PROJECT_NAME}Targets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         )
-install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR} 
+install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR}
         ${RAPIDJSON_INCLUDE_DIR}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         COMPONENT Devel
@@ -222,8 +144,7 @@ install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR}
 set(_MOVETK_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR}/../cmake)
 install(FILES ${_MOVETK_CMAKE_DIR}/ResolveMovetkDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
 install(FILES ${_MOVETK_CMAKE_DIR}/PatchGdalInclude.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
-install(FILES ${_MOVETK_CMAKE_DIR}/FindMPFR.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
-install(FILES ${_MOVETK_CMAKE_DIR}/FindGMP.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
+install(FILES ${_MOVETK_CMAKE_DIR}/MovetkConanDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
 
 # Install backend data
 foreach(_BACKEND ${MOVETK_BACKENDS})
@@ -232,6 +153,8 @@ foreach(_BACKEND ${MOVETK_BACKENDS})
         if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/backends/${_BACKEND}/cmake)
                 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/backends/${_BACKEND}/cmake/ DESTINATION ${_CFG_CMAKE_DIR}/backends/${_BACKEND}/cmake)
         endif()
+        # Assume atleast an include directory exists
+        install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/backends/${_BACKEND}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endforeach()
 
 # Make sure we export the exportset containing movetk and the associated targets file.

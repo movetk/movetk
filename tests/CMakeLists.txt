@@ -54,6 +54,12 @@ add_custom_command(TARGET movetk_tests PRE_BUILD
         -Ddst_dir=$<TARGET_FILE_DIR:movetk_tests>/data
         -P ${PROJECT_SOURCE_DIR}/cmake/update_directory.cmake
 )
+add_custom_command(TARGET movetk_tests PRE_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:movetk_tests>/data
+    COMMAND ${CMAKE_COMMAND} -Dsrc_dir="${PROJECT_BINARY_DIR}/bin"
+        -Ddst_dir=$<TARGET_FILE_DIR:movetk_tests>
+        -P ${PROJECT_SOURCE_DIR}/cmake/update_directory.cmake
+)
 
 if(MSVC)
     target_precompile_headers(movetk_tests
@@ -71,12 +77,12 @@ target_link_libraries(movetk_tests
 include(CTest)
 
 if(MSVC)
-add_custom_command( TARGET movetk_tests POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E echo "Copying dependencies:" $<JOIN:$<TARGET_RUNTIME_DLLS:movetk_tests>,",">
-                    COMMAND ${CMAKE_COMMAND} -E copy
-                        $<TARGET_RUNTIME_DLLS:movetk_tests>
-                        $<TARGET_FILE_DIR:movetk_tests>
-                    COMMAND_EXPAND_LISTS)
+# add_custom_command( TARGET movetk_tests POST_BUILD
+#                     COMMAND ${CMAKE_COMMAND} -E echo "Copying dependencies:" $<JOIN:$<TARGET_RUNTIME_DLLS:movetk_tests>,",">
+#                     COMMAND ${CMAKE_COMMAND} -E copy
+#                         $<TARGET_RUNTIME_DLLS:movetk_tests>
+#                         $<TARGET_FILE_DIR:movetk_tests>
+#                     COMMAND_EXPAND_LISTS)
 endif()
 catch_discover_tests(movetk_tests)
 
