@@ -46,7 +46,6 @@ add_executable(movetk_tests
         test_weak_frechet.cpp
         test_agarwal.cpp
         )
-file(GLOB test_data data/*.json)
 
 add_custom_command(TARGET movetk_tests PRE_BUILD 
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:movetk_tests>/data
