@@ -460,7 +460,6 @@ public:
 			const auto operand2 = -squared_length / (2 * (*pit));
 			const auto log_likelihood = operand1 + operand2;
 			*result = log_likelihood;
-			pit++;
 		}
 	}
 
