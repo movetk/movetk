@@ -31,6 +31,7 @@
 #include <iostream>
 #include <tuple>
 #include <vector>
+#include <cassert>
 
 #include "movetk/io/TrajectoryTraits.h"
 #include "movetk/io/TupleIterPrinter.h"

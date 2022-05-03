@@ -45,10 +45,10 @@ struct TuplePrinter<Tuple, 1> {
 	}
 };
 
-template <class... Args>
-void print_tuple(std::ostream& os, const std::tuple<Args...>& t, int precision = 8) {
+template <typename Tuple>
+void print_tuple(std::ostream& os, const Tuple& t, int precision = 8) {
 	os.setf(std::ios::fixed);
-	TuplePrinter<decltype(t), sizeof...(Args)>::print_tuple(os, t, precision);
+	TuplePrinter<decltype(t), std::tuple_size_v<Tuple>>::print_tuple(os, t, precision);
 }
 // end helper function
 
