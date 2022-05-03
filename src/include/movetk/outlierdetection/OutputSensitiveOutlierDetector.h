@@ -32,7 +32,6 @@
 
 
 #include "OutlierDetection.h"
-#include "movetk/algo/AlgorithmTraits.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/utils/Requirements.h"

@@ -23,9 +23,9 @@
 
 #ifndef MOVETK_SIMPLIFICATION_H
 #define MOVETK_SIMPLIFICATION_H
-#include "movetk/algo/simplification/Agarwal.h"
-#include "movetk/algo/simplification/ChanChin.h"
-#include "movetk/algo/simplification/ImaiIri.h"
-#include "movetk/algo/simplification/DouglasPeucker.h"
+#include "movetk/simplification/Agarwal.h"
+#include "movetk/simplification/ChanChin.h"
+#include "movetk/simplification/ImaiIri.h"
+#include "movetk/simplification/DouglasPeucker.h"
 
 #endif //MOVETK_SIMPLIFICATION_H

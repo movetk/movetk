@@ -25,23 +25,23 @@
 #ifndef MOVETK_SEGMENTATIONTRAITS_H
 #define MOVETK_SEGMENTATIONTRAITS_H
 
+#include "MonotoneSegmentation.h"
 #include "SegmentationPredicates.h"
-#include "Segmentation.h"
 
-namespace movetk::algo {
-    template<class NT, class MovetkGeometryKernel, size_t dimensions>
-    struct SegmentationTraits {
-        // type definitions required for algorithm
+namespace movetk::segmentation {
+template <class NT, class MovetkGeometryKernel, size_t dimensions>
+struct SegmentationTraits {
+	// type definitions required for algorithm
 
-        typedef typename MovetkGeometryKernel::MovetkPoint Point;
-        typedef movetk::algo::TEST<TestCriteria::meb, MovetkGeometryKernel> MebCriteria;
-        typedef movetk::algo::MonotoneSegmentation<MovetkGeometryKernel, MebCriteria> LocationSegmentation;
-        typedef movetk::algo::TEST<TestCriteria::difference, MovetkGeometryKernel> DiffCriteria;
-        typedef movetk::algo::MonotoneSegmentation<MovetkGeometryKernel, DiffCriteria> SpeedSegmentation, TSSegmentation;
-        typedef movetk::algo::TEST<TestCriteria::range, MovetkGeometryKernel> RangeCriteria;
-        typedef movetk::algo::MonotoneSegmentation<MovetkGeometryKernel, RangeCriteria> HeadingSegmentation;
-    };
+	using Point = typename MovetkGeometryKernel::MovetkPoint;
+	using MebCriteria = TEST<TestCriteria::meb, MovetkGeometryKernel>;
+	using LocationSegmentation = MonotoneSegmentation<MovetkGeometryKernel, MebCriteria>;
+	using DiffCriteria = TEST<TestCriteria::difference, MovetkGeometryKernel>;
+	using TSSegmentation = MonotoneSegmentation<MovetkGeometryKernel, DiffCriteria>;// SpeedSegmentation, ;
+	using RangeCriteria = TEST<TestCriteria::range, MovetkGeometryKernel>;
+	using HeadingSegmentation = MonotoneSegmentation<MovetkGeometryKernel, RangeCriteria>;
+};
 
-}
+}  // namespace movetk::segmentation
 
-#endif //MOVETK_SEGMENTATIONTRAITS_H
+#endif  // MOVETK_SEGMENTATIONTRAITS_H

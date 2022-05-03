@@ -27,41 +27,40 @@
 // Modified by Aniket Mitra (aniket.mitra@here.com)
 //
 
-#ifndef MOVETK_OUTLIERDETECTION_ZHENGOUTLIERDETECTOR_H
-#define MOVETK_OUTLIERDETECTION_ZHENGOUTLIERDETECTOR_H
+#ifndef MOVETK_OUTLIERDETECTION_GREEDYOUTLIERDETECTOR_H
+#define MOVETK_OUTLIERDETECTION_H
 
 
-#include "movetk/algo/AlgorithmTraits.h"
+#include "OutlierDetection.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/utils/Requirements.h"
 
 namespace movetk::outlierdetection {
 
-struct zheng_outlier_detector_tag;
+struct greedy_outlier_detector_tag;
 
-// based on B. Custers & M. van de Kerkhof & W. Meulemans and B. Speckmann & F. Staals (2019) .
-// Maximum Physically Consistent Trajectories
-// published in SIGSPATIAL 2019
-// Physics-based outlier detection running in O(n) time
-template <class GeometryKernel, class Predicate>
-class OutlierDetection<GeometryKernel, Predicate, zheng_outlier_detector_tag> {
+/**
+ * @brief Greedy outlier detection running in O(n) time.
+ * Outputs the iterators pointing to the element that should be retained after outlier
+ * The first element of the range is always added. An arbitrary element is added if
+ * the previous element and the element statisfy the predicate.
+ * @tparam GeometryKernel Geometry kernel to use
+ * @tparam BinaryPredicate Binary predicate type that should accept two values, dictated by the
+ * input iterators provided to the operator call.
+ */
+template <class GeometryKernel, class BinaryPredicate>
+class OutlierDetection<GeometryKernel, BinaryPredicate, greedy_outlier_detector_tag> {
 public:
 	using NT = typename GeometryKernel::NT;
 	/*!
 	 *@param InThreshold
 	 */
-	OutlierDetection(NT threshold, size_t min_seg_size) {
-		m_threshold = threshold;
-		m_predicate = Predicate(threshold);
-		m_min_seg_size = min_seg_size;
-	};
+	OutlierDetection(NT threshold) : m_threshold(threshold), m_predicate(m_threshold) {}
 
 	/*!
-	 * Goes through the provided input range, and determines subranges such that
-	 * for elements at index i and i-1, the predicate holds. All subranges with a complexity
-	 * of at least the provided min_seg_size are retained.
-	 * @tparam InputIterator
+	 *
+	 * @tparam TrajectoryIterator
 	 * @tparam OutputIterator
 	 * @param first
 	 * @param beyond
@@ -74,28 +73,17 @@ public:
 	          typename = movetk::utils::requires_equality<typename InputIterator::value_type,
 	                                                      typename OutputIterator::value_type::value_type>>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
-		size_t segment_size = 1;
-		auto range_start = first;
-		for (auto prev = first, it = std::next(first); it != beyond; it++) {
-			if (m_predicate(*prev, *it))
-				segment_size++;
-			else {
-				if (segment_size > m_min_seg_size) {
-					for (auto it_to_copy = range_start; it_to_copy != it; ++it_to_copy) {
-						*result = it_to_copy;
-					}
-				}
-				range_start = it;
-				segment_size = 1;
+		*result = first;
+		for (auto it = std::next(first), prev_it = first; it != beyond; it++, ++prev_it) {
+			if (m_predicate(*prev_it, *it)) {
+				*result = it;
 			}
 		}
 	}  // operator()
 private:
-	Predicate m_predicate;
+	BinaryPredicate m_predicate;
 	NT m_threshold;
-	size_t m_min_seg_size;
 };
-
 }  // namespace movetk::outlierdetection
 
 

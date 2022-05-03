@@ -31,8 +31,8 @@
 #define MOVETK_OUTLIERDETECTION_H
 
 
-#include "movetk/algo/outlierdetection/GreedyOutlierDetector.h"
-#include "movetk/algo/outlierdetection/OutputSensitiveOutlierDetector.h"
-#include "movetk/algo/outlierdetection/SmartGreedyOutlierDetector.h"
-#include "movetk/algo/outlierdetection/ZhengOutlierDetector.h"
+#include "movetk/outlierdetection/GreedyOutlierDetector.h"
+#include "movetk/outlierdetection/OutputSensitiveOutlierDetector.h"
+#include "movetk/outlierdetection/SmartGreedyOutlierDetector.h"
+#include "movetk/outlierdetection/ZhengOutlierDetector.h"
 #endif //MOVETK_OUTLIERDETECTION_H

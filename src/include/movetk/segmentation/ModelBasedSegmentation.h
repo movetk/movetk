@@ -26,11 +26,11 @@
  */
 #ifndef MOVETK_ALGO_SEGMENTATION_MODELBASEDSEGMENTATION_H
 #define MOVETK_ALGO_SEGMENTATION_MODELBASEDSEGMENTATION_H
-#include "movetk/algo/Search.h"
+#include "movetk/Search.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
 
-namespace movetk::algo::segmentation {
+namespace movetk::segmentation{
 template <class GeometryTraits, class LogLikelihood>
 class ModelBasedSegmentation {
 	// based on https://doi.org/10.1007/s00453-017-0329-x

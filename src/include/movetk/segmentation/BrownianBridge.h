@@ -55,7 +55,7 @@
 /*!
  *  @brief a collection of algorithms in movetk
  */
-namespace movetk::algo {
+namespace movetk::segmentation {
 
 // based on
 // https://www.semanticscholar.org/paper/Computational-Movement-Analysis-Using-Brownian-Sijben/c6104979e609e12e1514b8b605a7d14fa6b5d81a
@@ -478,6 +478,6 @@ public:
 }  // namespace brownian_bridge
 
 
-}  // namespace movetk::algo
+}  // namespace movetk::segmentation
 
 #endif  // MOVETK_BROWNIANBRIDGE__H

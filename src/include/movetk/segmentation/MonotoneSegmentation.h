@@ -26,10 +26,10 @@
  */
 #ifndef MOVETK_ALGO_SEGMENTATION_MONOTONESEGMENTATION_H
 #define MOVETK_ALGO_SEGMENTATION_MONOTONESEGMENTATION_H
-#include "movetk/algo/Search.h"
+#include "movetk/Search.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
-namespace movetk::algo::segmentation {
+namespace movetk::segmentation {
 
 /*!
  *
