@@ -30,7 +30,6 @@
 #include <vector>
 
 #include "SortByField.h"
-#include "movetk/logging.h"
 
 namespace movetk::io {
 template <class ProbeInputIterator, int SortByFieldIdx>
@@ -49,7 +48,7 @@ public:
 		}
 		auto t_end = std::chrono::high_resolution_clock::now();
 		display("read probe", t_start, t_end);
-		BOOST_LOG_TRIVIAL(info) << "Buffered " << probe_count << " probe points.";
+		std::cout << "Buffered " << probe_count << " probe points.";
 
 		// Sort all probe points by SortByFieldIdx
 		SortByField<SortByFieldIdx, ProbePoint> sort_by_field_id_asc;

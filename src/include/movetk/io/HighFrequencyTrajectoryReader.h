@@ -105,7 +105,7 @@ public:
 	}
 
 	void init(std::string file_name) {
-		BOOST_LOG_TRIVIAL(trace) << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
+		std::cout << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
 		// Process trajectories from a (zipped) CSV file
 		probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
 		_init();
@@ -233,7 +233,7 @@ private:
 //
 //    void init(std::string file_name)
 //    {
-//        BOOST_LOG_TRIVIAL(trace) << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
+//        std::cout << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
 //        // Process trajectories from a (zipped) CSV file
 //        probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
 //        _init();
@@ -372,7 +372,7 @@ private:
 //
 //    void init(std::string file_name)
 //    {
-//        BOOST_LOG_TRIVIAL(trace) << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
+//        std::cout << "Num. attributes in CSV: " << ProbeTraits::ProbeCsv::num_columns();
 //        // Process trajectories from a (zipped) CSV file
 //        probe_reader = movetk::io::ProbeReaderFactory::create<ProbeTraits>(file_name.c_str());
 //        _init();
