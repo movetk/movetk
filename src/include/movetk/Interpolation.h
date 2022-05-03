@@ -29,10 +29,10 @@
 #include <numeric>
 #include <random>
 
-#include "movetk/algo/AlgorithmTraits.h"
-#include "movetk/algo/interpolation/KinematicInterpolator.h"
-#include "movetk/algo/interpolation/LinearInterpolator.h"
-#include "movetk/algo/interpolation/RandomInterpolator.h"
+#include "movetk/AlgorithmTraits.h"
+#include "movetk/interpolation/KinematicInterpolator.h"
+#include "movetk/interpolation/LinearInterpolator.h"
+#include "movetk/interpolation/RandomInterpolator.h"
 #include "movetk/geo/geo.h"
 #include "movetk/utils/TrajectoryUtils.h"
 

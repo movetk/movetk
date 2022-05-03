@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2018-2020
- * HERE Europe B.V.
- * Utrecht University (The Netherlands).
+ * Copyright (C) 2018-2020 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +17,13 @@
  * License-Filename: LICENSE
  */
 
+//
+// Created by Mitra, Aniket on 2019-06-03.
+//
 
-/*! @file Segmentation.h
- *  @brief  Trajectory Segmentation  Algorithms
- *  @authors Aniket Mitra (aniket.mitra@here.com), Wouter Jongeling (wouter.jongeling@gmail.com)
- */
-#ifndef SEGMENTATION_H
-#define SEGMENTATION_H
-#include "movetk/algo/segmentation/ModelBasedSegmentation.h"
-#include "movetk/algo/segmentation/MonotoneSegmentation.h"
-#endif /* SEGMENTATION_H */
+#ifndef MOVETK_SIMILARITY_H
+#define MOVETK_SIMILARITY_H
+
+#include "movetk/similarity/LongestCommonSubSequence.h"
+#include "movetk/similarity/DynamicTimeWarping.h"
+#endif  // MOVETK_SIMILARITY_H
