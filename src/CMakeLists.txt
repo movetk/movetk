@@ -9,7 +9,8 @@ elseif(MSVC)
         list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/msvc")
 endif()
 
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false CONFIGURE_DEPENDS include/*.h include/*.cpp geo/*.cpp io/*.cpp *.cpp)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false CONFIGURE_DEPENDS include/*.h src/*.cpp src/*.h)
+message(STATUS "Sources: ${SOURCES}")
 
 #Potentially more options than Boost and CGAL
 if(FALSE)
