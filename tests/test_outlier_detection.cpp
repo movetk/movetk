@@ -28,17 +28,17 @@
 #include <iostream>
 #include <stack>
 
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/algo/AlgorithmTraits.h"
 #include "movetk/algo/OutlierDetection.h"
-#include "movetk/algo/OutlierDetectionPredicates.h"
 #include "movetk/algo/Segmentation.h"
+#include "movetk/algo/outlierdetection/OutlierDetectionPredicates.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 template <typename Backend>
 struct OutlierDetectionTests : public test_helpers::BaseTestFixture<Backend> {
@@ -48,9 +48,16 @@ struct OutlierDetectionTests : public test_helpers::BaseTestFixture<Backend> {
 	using Trajectory = std::vector<Probe>;
 	using OutlierDetectionTraits = movetk::algo::
 	    OutlierDetectionTraits<CartesianProbeTraits, typename Base::MovetkGeometryKernel, typename Base::Norm>;
-	using LinearSpeedboundedTest = movetk::algo::outlier_detection::TEST<movetk::algo::linear_speed_bounded_test_tag,
-	                                                                     movetk::algo::cartesian_coordinates_tag,
-	                                                                     OutlierDetectionTraits>;
+	using LinearSpeedboundedTest = movetk::outlierdetection::TEST<movetk::outlierdetection::linear_speed_bounded_test_tag,
+	                                                              movetk::algo::cartesian_coordinates_tag,
+	                                                              OutlierDetectionTraits>;
+
+	struct OutlierDetectionFactory {
+		template <typename Tag>
+		using outlierdetector_for_tag =
+		    movetk::outlierdetection::OutlierDetection<typename Base::MovetkGeometryKernel, LinearSpeedboundedTest, Tag>;
+	};
+
 	using Trajectories = std::vector<Trajectory>;
 	using Sequence = std::vector<typename Trajectory::const_iterator>;
 	using Sequences = std::vector<Sequence>;
@@ -118,9 +125,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "greedy_outlier_detector 1",
                                       "[greedy_outlier_detector 1]") {
 	using Fixture = OutlierDetectionTests<TestType>;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::greedy_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::greedy_outlier_detector_tag>;
 	auto make_point = Fixture::make_point;
 	auto trajectory = Fixture::create_trajectory({{make_point({-5, 5}), 0},
 	                                              {make_point({-6, 3}), 1},
@@ -148,9 +154,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "[greedy_outlier_detector 2]") {
 	using Fixture = OutlierDetectionTests<TestType>;
 	auto make_point = Fixture::make_point;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::greedy_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::greedy_outlier_detector_tag>;
 	typename Fixture::Trajectory trajectory = {{make_point({-5, 5}), 0},
 	                                           {make_point({-6, 3}), 1},
 	                                           {make_point({-5, 3}), 2},
@@ -179,9 +184,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "[smart_greedy_outlier_detector 1]") {
 	using Fixture = OutlierDetectionTests<TestType>;
 	auto make_point = Fixture::make_point;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::smart_greedy_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::smart_greedy_outlier_detector_tag>;
 	auto trajectory = Fixture::create_trajectory({{make_point({-5, 5}), 0},
 	                                              {make_point({-6, 3}), 1},
 	                                              {make_point({-5, 3}), 2},
@@ -208,9 +212,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "[smart_greedy_outlier_detector 2]") {
 	using Fixture = OutlierDetectionTests<TestType>;
 	auto make_point = Fixture::make_point;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::smart_greedy_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::smart_greedy_outlier_detector_tag>;
 	typename Fixture::Trajectory trajectory = {{make_point({-5, 5}), 0},
 	                                           {make_point({-6, 3}), 1},
 	                                           {make_point({-5, 3}), 2},
@@ -239,9 +242,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "[zheng_greedy_outlier_detector 1]") {
 	using Fixture = OutlierDetectionTests<TestType>;
 	auto make_point = Fixture::make_point;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::zheng_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::zheng_outlier_detector_tag>;
 	typename Fixture::Trajectory trajectory{{make_point({-5, 5}), 0},
 	                                        {make_point({-6, 3}), 1},
 	                                        {make_point({-5, 3}), 2},
@@ -257,6 +259,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
 
 	const auto expected_trajectory = Fixture::create_expected_subtrajectory(trajectory, {8, 9, 10, 11});
 
+	typename Fixture::LinearSpeedboundedTest tester(0.05);
 	OutlierDetector outlier_detector(1.5, 3);
 
 	Fixture::verify_outlier_detector_output(outlier_detector, trajectory, expected_trajectory);
@@ -267,9 +270,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "[zheng_greedy_outlier_detector 2]") {
 	using Fixture = OutlierDetectionTests<TestType>;
 	auto make_point = Fixture::make_point;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::zheng_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::zheng_outlier_detector_tag>;
 
 
 	typename Fixture::Trajectory trajectory{{make_point({-5, 5}), 0},
@@ -296,9 +298,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "[output_sensitive_outlier_detector 1]") {
 	using Fixture = OutlierDetectionTests<TestType>;
 	auto make_point = Fixture::make_point;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::output_sensitive_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::output_sensitive_outlier_detector_tag>;
 	typename Fixture::Trajectory trajectory{{make_point({-5, 5}), 0},
 	                                        {make_point({-6, 3}), 1},
 	                                        {make_point({-5, 3}), 2},
@@ -324,9 +325,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(OutlierDetectionTests,
                                       "[output_sensitive_outlier_detector 2]") {
 	using Fixture = OutlierDetectionTests<TestType>;
 	auto make_point = Fixture::make_point;
-	using OutlierDetector = movetk::algo::OutlierDetection<movetk::algo::output_sensitive_outlier_detector_tag,
-	                                                       typename Fixture::LinearSpeedboundedTest,
-	                                                       typename Fixture::OutlierDetectionTraits>;
+	using OutlierDetector = typename Fixture::OutlierDetectionFactory::template outlierdetector_for_tag<
+	    movetk::outlierdetection::output_sensitive_outlier_detector_tag>;
 	const auto trajectory = Fixture::create_trajectory({{make_point({-5, 5}), 0},
 	                                                    {make_point({-6, 3}), 1},
 	                                                    {make_point({-5, 3}), 2},
