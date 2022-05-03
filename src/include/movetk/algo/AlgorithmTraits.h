@@ -49,38 +49,7 @@ namespace movetk::algo {
      * cartesian coordinates
      */
     struct cartesian_coordinates_tag;
-    /*!
-     * @struct linear_speed_bounded_test_tag
-     * @brief This tag is used to select the type of outlier detection predicate
-     */
-    struct linear_speed_bounded_test_tag;
-    /*!
-     *@struct greedy_outlier_detector_tag
-     * @brief This tag is used to select the type of outlier detection algorithm
-     */
-    struct greedy_outlier_detector_tag;
-    /*!
-     *@struct smart_greedy_outlier_detector_tag
-     * @brief This tag is used to select the type of outlier detection algorithm
-     */
-    struct smart_greedy_outlier_detector_tag;
-    /*!
-     *@struct output_sensitive_outlier_detector_tag
-     * @brief This tag is used to select the type of outlier detection algorithm
-     */
-    struct output_sensitive_outlier_detector_tag;
-    /*!
-     *@struct zheng_outlier_detector_tag
-     * @brief This tag is used to select the type of outlier detection algorithm
-     */
-    struct zheng_outlier_detector_tag;
-
-    struct linear_interpolator_tag;
-
-    struct kinematic_interpolator_tag;
-
-    struct random_trajectory_generator_tag;
-
+   
     /*!
      * @struct OutlierDetectionTraits
      * @brief This traits class serves as a collection of
