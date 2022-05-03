@@ -282,5 +282,69 @@ private:
 		}
 	}
 };
+
+
+/**
+ * @brief An output iterator that will accumulate the assigned values.
+ * @tparam ValueType The type of the value to accumulate
+ */
+template <typename ValueType>
+class movetk_accumulator_output_iterator : public std::iterator<std::output_iterator_tag, void, void, void, void> {
+protected:
+	ValueType m_data;
+	bool m_skip_first = false;
+	bool m_accept_first = false;
+
+public:
+	using value_type = ValueType;
+	using difference_type = void;
+	using reference = void;
+	using pointer = void;
+
+	/*!
+	 *
+	 * @param x
+	 */
+	explicit movetk_accumulator_output_iterator(ValueType initial) : m_data(initial) {}
+
+	/**
+	 * @brief Returns the accumulated value
+	 * @return The accumulated value
+	 */
+	ValueType value() const { return m_data; }
+	/*!
+	 *
+	 * @param value
+	 * @return
+	 */
+	movetk_accumulator_output_iterator &operator=(const value_type &value) {
+		m_data += value;
+		return *this;
+	}
+
+	movetk_accumulator_output_iterator &operator-=(const value_type &value) {
+		m_data -= value;
+		return *this;
+	}
+
+	/*!
+	 *
+	 * @return
+	 */
+	movetk_accumulator_output_iterator &operator*() { return *this; }
+
+	/*!
+	 *
+	 * @return
+	 */
+	movetk_accumulator_output_iterator &operator++() { return *this; }
+
+	/*!
+	 *
+	 * @return
+	 */
+	movetk_accumulator_output_iterator operator++(int) { return *this; }
+};
+
 }  // namespace movetk::utils
 #endif  // MOVETK_ITERATORS_H

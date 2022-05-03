@@ -33,7 +33,7 @@
 #include "movetk/utils/Requirements.h"
 
 
-namespace movetk::algo {
+namespace movetk::similarity {
 
 
 template <class GeometryTraits, class Norm>
@@ -150,6 +150,6 @@ public:
 		return dp_row.back();
 	}
 };
-}  // namespace movetk::algo
+}  // namespace movetk::similarity
 
 #endif  // MOVETK_SIMILARITY_H

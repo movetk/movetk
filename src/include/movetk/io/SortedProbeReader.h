@@ -40,19 +40,14 @@ public:
 
 	SortedProbeReader(ProbeInputIterator start, ProbeInputIterator beyond) {
 		// Store probe points in memory
-		auto t_start = std::chrono::high_resolution_clock::now();
 		std::size_t probe_count = 0;
 		for (auto pit = start; pit != beyond; ++pit) {
 			buffered_probe.push_back(*pit);
 			++probe_count;
 		}
-		auto t_end = std::chrono::high_resolution_clock::now();
-		display("read probe", t_start, t_end);
-		std::cout << "Buffered " << probe_count << " probe points.";
 
 		// Sort all probe points by SortByFieldIdx
 		SortByField<SortByFieldIdx, ProbePoint> sort_by_field_id_asc;
-		t_start = std::chrono::high_resolution_clock::now();
 #ifdef _GLIBCXX_PARALLEL
 		__gnu_parallel::sort(buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
 #else
@@ -60,8 +55,6 @@ public:
 		// with <execution> header, since C++17, but not yet available on any compiler/platform.
 		// std::sort(std::execution::par, buffered_probe.begin(), buffered_probe.end(), sort_by_field_id_asc);
 #endif
-		t_end = std::chrono::high_resolution_clock::now();
-		display("sort", t_start, t_end);
 	}
 
 	iterator begin() { return std::begin(buffered_probe); }

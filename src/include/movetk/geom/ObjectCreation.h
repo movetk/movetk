@@ -1,5 +1,7 @@
 #ifndef MOVETK_GEOM_OBJECTCREATION_H
 #define MOVETK_GEOM_OBJECTCREATION_H
+#include <numeric>
+
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/TypeChecks.h"
 namespace movetk::geom {
@@ -22,7 +24,7 @@ struct MakePoint {
 	template <class CoordinateIterator, typename = utils::requires_random_access_iterator<CoordinateIterator>>
 	typename GeometryTraits::MovetkPoint operator()(CoordinateIterator first, CoordinateIterator beyond) const {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(CoordinateIterator);
-		//ASSERT_NUMBER_TYPE(GeometryTraits, first);
+		// ASSERT_NUMBER_TYPE(GeometryTraits, first);
 		typename GeometryTraits::MovetkPoint p(first, beyond);
 		return p;
 	}
@@ -58,20 +60,40 @@ struct MakeLine {
  */
 template <class GeometryTraits>
 struct ComputeLength {
+	using NT = typename GeometryTraits::NT;
 	/*!
-	 * @details Constructs a segment which has an associated measure of length
-	 * i.e euclidean distance between two points
+	 * @details Computes the length of a segment between p1 and p2.
 	 * @param p1 - A movetk point
 	 * @param p2 - A movetk point
 	 * @return Length of a segment
 	 */
-	typename GeometryTraits::NT operator()(typename GeometryTraits::MovetkPoint p1,
-	                                       typename GeometryTraits::MovetkPoint p2) {
+	NT operator()(typename GeometryTraits::MovetkPoint p1, typename GeometryTraits::MovetkPoint p2) const {
 		typename GeometryTraits::MovetkSegment l(p1, p2);
 		return sqrt(l());
 	}
 
-	typename GeometryTraits::NT operator()(typename GeometryTraits::MovetkSegment l) { return sqrt(l()); }
+	NT operator()(typename GeometryTraits::MovetkSegment l) const { return sqrt(l()); }
+
+	/**
+	 * @brief Computes the length of a polyline, specified as an iterator range
+	 * @tparam PointIterator Input iterator that dereferences to MovetkPoint elements.
+	 * @tparam
+	 * @tparam
+	 * @param first Begin of the polyline points
+	 * @param beyond End of the polyline points
+	 * @return The length of the polyline
+	 */
+	template <class PointIterator,
+	          typename = movetk::utils::requires_random_access_iterator<PointIterator>,
+	          typename = movetk::utils::requires_movetk_point<GeometryTraits, typename PointIterator::value_type>>
+	NT operator()(PointIterator first, PointIterator beyond) const {
+		return std::inner_product(first,
+		                          std::prev(beyond),
+		                          std::next(first),
+		                          0.0,
+		                          std::plus<>(),
+		                          [this](const auto& pnt0, const auto& pnt1) { return operator()(pnt0, pnt1); });
+	}
 };
 
 template <class GeometryTraits>

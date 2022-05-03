@@ -38,11 +38,12 @@
 #endif
 
 #include "HereTrajectoryTraits.h"
-#include "movetk/algo/SegmentationTraits.h"
+#include "Timer.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortedProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
+#include "movetk/segmentation/SegmentationTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 #include "test_data.h"
@@ -50,7 +51,6 @@
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
 	std::cout.setf(std::ios::fixed);
-	init_logging(logging::trivial::trace);
 	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
 	std::cout << "Using parallel STL";
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 	    movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
 	                                                                             sorted_probe_reader.end());
 
-	auto t_start = std::chrono::high_resolution_clock::now();
+	Timer timer(true);
 
 	// Create an output csv file
 	std::ofstream ofcsv("output_trajectories_heading.csv");
@@ -95,9 +95,8 @@ int main(int argc, char **argv) {
 	ofcsv << ",RAW_TRAJID,HEADING_SEG_ID\n";
 
 	// Write time-sorted trajectories and segment them using  range criteria
-	typedef movetk::algo::
-	    SegmentationTraits<long double, typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
-	        SegmentationTraits;
+	using SegmentationTraits = movetk::segmentation::
+	    SegmentationTraits<long double, typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>;
 	typedef GeometryKernel::MovetkGeometryKernel::NT NT;
 	// typedef vector<SegmentationTraits::Point > PolyLine;
 	typedef std::vector<NT> Headings;
@@ -120,11 +119,8 @@ int main(int argc, char **argv) {
 		// PolyLine polyline = movetk::to_projected_polyline(make_point, lats, lons);
 
 		Headings headings_;
-
-		for (auto sit = std::cbegin(headings); sit != std::cend(headings); sit++) {
-			cout << *sit << endl;
-			headings_.push_back(*sit);
-		}
+		std::copy(headings.cbegin(), headings.cend(), std::ostream_iterator<double>(std::cout, "\n"));
+		std::copy(headings.cbegin(), headings.cend(), std::back_inserter(headings_));
 
 		SegmentStartReferences segIdx;
 		segment_by_heading(std::begin(headings_), std::end(headings_), movetk::utils::movetk_back_insert_iterator(segIdx));
@@ -153,8 +149,8 @@ int main(int argc, char **argv) {
 		++trajectory_count;
 	}
 
-	auto t_end = std::chrono::high_resolution_clock::now();
-	display("rest", t_start, t_end);
+	timer.stop();
+	std::cout << "Elapsed time: " << timer << '\n';
 	std::cout << "Wrote " << trajectory_count << " trajectories.";
 
 	return 0;

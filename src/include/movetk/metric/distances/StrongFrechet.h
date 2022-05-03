@@ -42,6 +42,7 @@ template <typename Kernel, typename SqDistance>
 class FreespaceDiagram {
 public:
 	using NT = typename Kernel::NT;
+	using Point = typename Kernel::MovetkPoint;
 	/**
 	 * \brief Polynomial for the freespace cell boundary.
 	 */

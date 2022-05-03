@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "movetk/AlgorithmTraits.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/utils/TrajectoryUtils.h"

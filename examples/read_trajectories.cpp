@@ -25,12 +25,12 @@
 #endif
 
 #include "HereTrajectoryTraits.h"
+#include "Timer.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/HighFrequencyTrajectorySplitter.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortedProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/logging.h"
 #include "test_data.h"
 
 /**
@@ -44,7 +44,6 @@
  */
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
-	init_logging(logging::trivial::trace);
 	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
 	std::cout << "Using parallel STL";
@@ -88,7 +87,7 @@ int main(int argc, char **argv) {
 	                                                                                900.0,
 	                                                                                2);
 
-	auto t_start = std::chrono::high_resolution_clock::now();
+	Timer timer(true);
 
 	// Create an output csv file
 	std::ofstream ofcsv("output_trajectories.csv");
@@ -119,8 +118,8 @@ int main(int argc, char **argv) {
 
 		++trajectory_count;
 	}
-	auto t_end = std::chrono::high_resolution_clock::now();
-	display("rest", t_start, t_end);
+	timer.stop();
+	std::cout << "Elapsed time: " << timer << '\n';
 	std::cout << "Wrote " << trajectory_count << " trajectories.";
 
 	return 0;

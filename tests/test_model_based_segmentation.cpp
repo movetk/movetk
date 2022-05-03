@@ -30,11 +30,11 @@
 #include <iostream>
 
 #include "helpers/CustomCatchTemplate.h"
-#include "movetk/algo/BrownianBridge.h"
-#include "movetk/algo/Segmentation.h"
+#include "movetk/Segmentation.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
+#include "movetk/segmentation/BrownianBridge.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 
@@ -169,19 +169,20 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 
 	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 	Norm norm;
-	using ParameterTraits = movetk::algo::brownian_bridge::ParameterTraits<MovetkGeometryKernel, decltype(t.begin())>;
+	using ParameterTraits =
+	    movetk::segmentation::brownian_bridge::ParameterTraits<MovetkGeometryKernel, decltype(t.begin())>;
 	using BridgeIterator = std::vector<typename ParameterTraits::Parameters>::const_iterator;
 	using Projection = movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT>;
 	std::vector<typename ParameterTraits::Parameters> bridges;
 
-	using BBMM =
-	    movetk::algo::brownian_bridge::Model<MovetkGeometryKernel, ProbeTraits, ParameterTraits, Norm, Projection>;
+	using BBMM = movetk::segmentation::brownian_bridge::
+	    Model<MovetkGeometryKernel, ProbeTraits, ParameterTraits, Norm, Projection>;
 
 	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
 
 	std::vector<typename MovetkGeometryKernel::NT> selected_coeffs;
 
-	movetk::algo::brownian_bridge::MLE<MovetkGeometryKernel, ParameterTraits, Norm, BridgeIterator, 1000> mle(
+	movetk::segmentation::brownian_bridge::MLE<MovetkGeometryKernel, ParameterTraits, Norm, BridgeIterator, 1000> mle(
 	    std::cbegin(bridges),
 	    std::cend(bridges));
 	std::cout << "MLE of the Trajectory: " << mle() << "\n";
@@ -191,8 +192,9 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 	std::cout << "POINT,MU,SIGMA_SQUARED\n";
 	auto bit = begin(bridges);
 	while (bit != end(bridges)) {
-		movetk::algo::brownian_bridge::MLE<MovetkGeometryKernel, ParameterTraits, Norm, BridgeIterator, 1000> mle(bit,
-		                                                                                                          bit + 1);
+		movetk::segmentation::brownian_bridge::MLE<MovetkGeometryKernel, ParameterTraits, Norm, BridgeIterator, 1000> mle(
+		    bit,
+		    bit + 1);
 		std::get<ParameterTraits::ParameterColumns::SIGMA_SQUARED>(*bit) = mle();
 		bit++;
 	}
@@ -207,16 +209,18 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 
 
 	std::cout << " Running coefficient selector to select 5 coefficients: \n";
-	movetk::algo::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(5);
+	movetk::segmentation::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(5);
 	selector(std::cbegin(bridges), std::cend(bridges), movetk::utils::movetk_back_insert_iterator(selected_coeffs));
 
 	for (auto coeff : selected_coeffs) {
 		std::cout << " Selected Coefficient: " << coeff << "\n";
 	}
 
-	using LogLikelihood = movetk::algo::brownian_bridge::LogLikelihood<MovetkGeometryKernel, ParameterTraits, Norm>;
+	using LogLikelihood =
+	    movetk::segmentation::brownian_bridge::LogLikelihood<MovetkGeometryKernel, ParameterTraits, Norm>;
 
-	using ModelBasedSegmentation = movetk::algo::segmentation::ModelBasedSegmentation<MovetkGeometryKernel, LogLikelihood>;
+	using ModelBasedSegmentation =
+	    movetk::segmentation::ModelBasedSegmentation<MovetkGeometryKernel, LogLikelihood>;
 
 	std::cout << "Segmentation with high penalty factor p = 1000 \n";
 	ModelBasedSegmentation segmentation(1000);

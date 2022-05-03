@@ -4,7 +4,7 @@
 #include "movetk/metric/DistanceInterface.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
-namespace movetk::algo::simplification {
+namespace movetk::simplification {
 
 template <class GeometryTraits, class Wedge, typename = movetk::utils::requires_planar_geometry<GeometryTraits>>
 class ChanChin {
@@ -86,5 +86,5 @@ public:
 	}
 };
 
-}  // namespace movetk::algo::simplification
+}  // namespace movetk::simplification
 #endif

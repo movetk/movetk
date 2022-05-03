@@ -51,60 +51,6 @@ namespace movetk::algo {
     struct cartesian_coordinates_tag;
    
     /*!
-     * @struct OutlierDetectionTraits
-     * @brief This traits class serves as a collection of
-     * types required by various outlier detection algorithms
-     * @tparam _ProbeTraits - This class is a collection of types
-     * required to define a Probe. For example @refitem _ProbeTraits
-     * @tparam _GeometryTraits - This class is a collection of movetk
-     * geometry types. For example @refitem movetk::geom::MovetkGeometryKernel
-     * @tparam _Norm - The type that models Euclidean distance
-     * For example @refitem movetk_support::FiniteNorm
-     * @tparam _ContainerTraits - This class models the data structure used
-     * by the outlier detection algorithnms
-     */
-    template<class _ProbeTraits,
-            class _GeometryTraits,
-            class _Norm,
-            class _ContainerTraits = void>
-    struct OutlierDetectionTraits {
-        typedef _Norm Norm;
-        typedef _ProbeTraits ProbeTraits;
-        typedef _GeometryTraits GeometryTraits;
-        typedef _ContainerTraits ContainerTraits;
-        typedef typename _GeometryTraits::NT NT;
-        typedef typename _GeometryTraits::MovetkPoint Point;
-        typedef typename _GeometryTraits::MovetkVector Vector;
-    };
-
-    /*!
-     * @struct ClusteringTraits
-     * @brief This traits class serves as a collection of types
-     * required for clustering with Discrete Frechet Distance
-     * @tparam _FreeSpaceDiagram - A model of the Free Space Diagram.
-     * For example @refitem movetk_support::FreeSpaceDiagram
-     */
-    template<class _FreeSpaceDiagram>
-    struct ClusteringTraits {
-        typedef _FreeSpaceDiagram FreeSpaceDiagram;
-        typedef typename FreeSpaceDiagram::FreeSpaceDiagramTraits FreeSpaceDiagramTraits;
-        typedef typename FreeSpaceDiagramTraits::FreeSpaceCellTraits FreeSpaceCellTraits;
-        typedef typename FreeSpaceCellTraits::IntersectionTraits IntersectionTraits;
-        typedef typename FreeSpaceDiagramTraits::GeometryTraits GeometryTraits;
-        typedef typename GeometryTraits::NT NT;
-        typedef typename FreeSpaceCellTraits::vertex_orientation vertex_orientation;
-        typedef typename boost::property<boost::vertex_index_t, std::size_t> VertexProperty;
-        typedef typename boost::property<boost::edge_name_t, std::size_t> EdgeProperty;
-        typedef boost::adjacency_list<boost::setS, boost::vecS, boost::directedS,
-                VertexProperty, EdgeProperty> Graph;
-        typedef typename boost::graph_traits<Graph>::vertex_iterator vertex_iterator;
-        typedef typename boost::graph_traits<Graph>::edge_iterator edge_iterator;
-        typedef typename boost::graph_traits<Graph>::out_edge_iterator out_edge_iterator;
-        typedef typename boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
-    };
-
-
-    /*!
          * @struct BBParameterTraits
          * @brief This traits class serves as a collection of types
          * for parameterization of BBMM

@@ -21,7 +21,7 @@
 
 // Created by Wouter Jongeling (wouter.jongeling@gmail.com)
 
-#include "movetk/test_data.h"
+#include "test_data.h"
 #include "GeolifeTrajectoryTraits.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/io/ProbeReader.h"
@@ -31,7 +31,6 @@
 int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
-    init_logging(logging::trivial::trace);
 
     // Specializations for the Geolife raw probe format
     using TrajectoryTraits = geolife::c2d::raw::TabularTrajectoryTraits;

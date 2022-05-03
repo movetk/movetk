@@ -37,20 +37,20 @@
 #include <parallel/algorithm>
 #endif
 
-#include "movetk/algo/SegmentationTraits.h"
+#include "HereTrajectoryTraits.h"
+#include "Timer.h"
 #include "movetk/ds/StartStopMatrix.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortedProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/test_data.h"
+#include "movetk/segmentation/SegmentationTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
-#include "HereTrajectoryTraits.h"
+#include "test_data.h"
 
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
 	std::cout.setf(std::ios::fixed);
-	init_logging(logging::trivial::trace);
 	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
 	std::cout << "Using parallel STL";
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 	    movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
 	                                                                             sorted_probe_reader.end());
 
-	auto t_start = std::chrono::high_resolution_clock::now();
+	Timer timer(true);
 
 	// Create an output csv file
 	std::ofstream ofcsv("output_trajectories_speed_and_heading.csv");
@@ -94,10 +94,9 @@ int main(int argc, char **argv) {
 	ofcsv << ",RAW_TRAJID,VELOCITY_SEG_ID\n";
 
 	// Write time-sorted trajectories and segment them using Conjunction of Range and Diff Criteria
-	typedef movetk::algo::
-	    SegmentationTraits<long double, typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
-	        SegmentationTraits;
-	typedef GeometryKernel::MovetkGeometryKernel::NT NT;
+	using SegmentationTraits = movetk::segmentation::
+	    SegmentationTraits<long double, typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>;
+	using NT = GeometryKernel::MovetkGeometryKernel::NT;
 	// typedef vector<SegmentationTraits::Point > PolyLine;
 	typedef std::vector<NT> Headings, Speeds;
 
@@ -106,9 +105,9 @@ int main(int argc, char **argv) {
 	SegmentationTraits::HeadingSegmentation segment_by_heading(90);
 	// TSL::MakePoint<SegmentationTraits::Geometry_Kernel > make_point;
 	// std::array<NT, 2> pt;
-	typedef movetk::ds::
-	    StartStopDiagram<movetk::ds::SsdType::compressed, typename GeometryKernel::MovetkGeometryKernel, std::vector<size_t>>
-	        SSD;
+	using SSD = movetk::ds::StartStopDiagram<movetk::ds::SsdType::compressed,
+	                                         typename GeometryKernel::MovetkGeometryKernel,
+	                                         std::vector<size_t>>;
 
 	std::size_t trajectory_count = 0;
 	for (auto trajectory : trajectory_reader) {
@@ -139,15 +138,15 @@ int main(int argc, char **argv) {
 
 		heading_ssd(std::begin(headings_), std::end(headings_), make_segment_heading);
 
-		cout << "heading ssd:" << endl;
-		cout << movetk::utils::join(heading_ssd.cbegin(), heading_ssd.cend());
-		cout << endl;
+		std::cout << "heading ssd:" << std::endl;
+		std::cout << movetk::utils::join(heading_ssd.cbegin(), heading_ssd.cend());
+		std::cout << std::endl;
 
 		Speeds speeds_;
 		segIdx.clear();
 
 		for (auto sit = std::cbegin(speeds); sit != std::cend(speeds); sit++) {
-			cout << *sit << endl;
+			std::cout << *sit << std::endl;
 			speeds_.push_back(*sit);
 		}
 
@@ -157,15 +156,15 @@ int main(int argc, char **argv) {
 		SSD speed_ssd;
 		speed_ssd(std::begin(speeds_), std::end(speeds_), make_segment_speed);
 
-		cout << "speed ssd: " << endl;
-		cout << movetk::utils::join(speed_ssd.cbegin(), speed_ssd.cend());
-		cout << endl;
+		std::cout << "speed ssd: " << std::endl;
+		std::cout << movetk::utils::join(speed_ssd.cbegin(), speed_ssd.cend());
+		std::cout << std::endl;
 
 		SSD conjunction_result = speed_ssd * heading_ssd;
 
-		cout << "Conjunction ssd: " << endl;
-		cout << movetk::utils::join(conjunction_result.cbegin(), conjunction_result.cend());
-		cout << endl;
+		std::cout << "Conjunction ssd: " << std::endl;
+		std::cout << movetk::utils::join(conjunction_result.cbegin(), conjunction_result.cend());
+		std::cout << std::endl;
 
 		std::vector<std::size_t> segment_id_col;
 
@@ -198,8 +197,8 @@ int main(int argc, char **argv) {
 		++trajectory_count;
 	}
 
-	auto t_end = std::chrono::high_resolution_clock::now();
-	display("rest", t_start, t_end);
+	timer.stop();
+	std::cout << " Time spent: " << timer << '\n';
 	std::cout << "Wrote " << trajectory_count << " trajectories.";
 
 	return 0;

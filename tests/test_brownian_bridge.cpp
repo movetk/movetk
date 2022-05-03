@@ -30,13 +30,13 @@
 #include <catch2/catch.hpp>
 #include <vector>
 
-#include "movetk/algo/BrownianBridge.h"
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
+#include "movetk/segmentation/BrownianBridge.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 template <typename Backend>
 struct BrownianBridgeTests {
@@ -48,13 +48,13 @@ struct BrownianBridgeTests {
 	struct TrajectoryTs {
 		using Trajectory = movetk::ds::TabularTrajectory<TrajectoryArgs...>;
 		using ParameterTraits =
-		    movetk::algo::brownian_bridge::ParameterTraits<MovetkGeometryKernel,
-		                                                   decltype(std::declval<Trajectory>().begin())>;
+		    movetk::segmentation::brownian_bridge::ParameterTraits<MovetkGeometryKernel,
+		                                                           decltype(std::declval<Trajectory>().begin())>;
 		using Parameters = typename ParameterTraits::Parameters;
 		using BridgeIterator = typename std::vector<Parameters>::const_iterator;
 		using ParameterColumns = typename ParameterTraits::ParameterColumns;
-		using MLE =
-		    movetk::algo::brownian_bridge::MLE<MovetkGeometryKernel, ParameterTraits, Norm, BridgeIterator, MAX_ITERATIONS>;
+		using MLE = movetk::segmentation::brownian_bridge::
+		    MLE<MovetkGeometryKernel, ParameterTraits, Norm, BridgeIterator, MAX_ITERATIONS>;
 	};
 	using EmptyTrajectoryTs = TrajectoryTs<>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
@@ -147,7 +147,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	typename Fixture::Norm norm;
 	std::vector<typename Ts::Parameters> bridges;
 
-	typedef movetk::algo::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
+	typedef movetk::segmentation::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
 	                                             ProbeTraits,
 	                                             typename Ts::ParameterTraits,
 	                                             typename Fixture::Norm,
@@ -166,7 +166,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 			upper_bound = l;
 	}
 	auto initial_estimate = squared_length / (2 * bridges.size());
-	movetk::algo::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
+	movetk::segmentation::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
 	                                   typename Ts::ParameterTraits,
 	                                   typename Fixture::Norm,
 	                                   typename Ts::BridgeIterator,
@@ -202,7 +202,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	typename Fixture::Norm norm;
 	std::vector<typename Ts::Parameters> bridges;
 
-	using BBMM = movetk::algo::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
+	using BBMM = movetk::segmentation::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
 	                                                  ProbeTraits,
 	                                                  typename Ts::ParameterTraits,
 	                                                  typename Fixture::Norm,
@@ -221,7 +221,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	}
 
 	auto initial_estimate = squared_length / (2 * bridges.size());
-	movetk::algo::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
+	movetk::segmentation::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
 	                                   typename Ts::ParameterTraits,
 	                                   typename Fixture::Norm,
 	                                   typename Ts::BridgeIterator,
@@ -264,7 +264,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	typename Fixture::Norm norm;
 	std::vector<typename Ts::Parameters> bridges;
 
-	using BBMM = movetk::algo::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
+	using BBMM = movetk::segmentation::brownian_bridge::Model<typename Fixture::MovetkGeometryKernel,
 	                                                  ProbeTraits,
 	                                                  typename Ts::ParameterTraits,
 	                                                  typename Fixture::Norm,
@@ -276,7 +276,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 
 	auto bit = begin(bridges);
 	while (bit != end(bridges)) {
-		movetk::algo::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
+		movetk::segmentation::brownian_bridge::MLE<typename Fixture::MovetkGeometryKernel,
 		                                   typename Ts::ParameterTraits,
 		                                   typename Fixture::Norm,
 		                                   typename Ts::BridgeIterator,
@@ -286,7 +286,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 		bit++;
 	}
 
-	movetk::algo::brownian_bridge::ParameterSelector<typename Fixture::MovetkGeometryKernel, typename Ts::ParameterTraits>
+	movetk::segmentation::brownian_bridge::ParameterSelector<typename Fixture::MovetkGeometryKernel, typename Ts::ParameterTraits>
 	    selector(4);
 	selector(std::begin(bridges), std::end(bridges), movetk::utils::movetk_back_insert_iterator(selected_coeffs));
 

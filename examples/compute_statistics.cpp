@@ -27,12 +27,12 @@
 #include <vector>
 
 #include "HereTrajectoryTraits.h"
-#include "movetk/algo/Statistics.h"
+#include "movetk/Statistics.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
+#include "test_data.h"
 
 /**
  * Example: Process a stream of probe points to create a trajectory. Then,
@@ -93,13 +93,13 @@ void run(int argc, char** argv) {
 		    std::array<std::pair<CoordIt, CoordIt>, 2>{std::make_pair(lons.begin(), lons.end()),
 		                                               std::make_pair(lats.begin(), lats.end())});
 
-		movetk::algo::TrajectoryLength<GeomKernel, Distance> lenCalc;
+		movetk::statistics::TrajectoryLength<GeomKernel, Distance> lenCalc;
 		std::cout << "Trajectory length:" << lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end()) << std::endl;
-		movetk::algo::TrajectoryDuration duration;
+		movetk::statistics::TrajectoryDuration duration;
 		std::cout << "Trajectory duration:" << duration(ts.begin(), ts.end()) << std::endl;
 
 		// Show speed statistics:
-		using SpeedStat = movetk::algo::TrajectorySpeedStatistic<GeomKernel, Distance>;
+		using SpeedStat = movetk::statistics::TrajectorySpeedStatistic<GeomKernel, Distance>;
 		SpeedStat speedStat;
 		auto compute_stat = [&pointIterators, &ts, &speedStat](auto stat_type) {
 			return speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), stat_type);
@@ -112,7 +112,7 @@ void run(int argc, char** argv) {
 		std::cout << "Trajectory variance of speed:" << compute_stat(Stat::Variance) << std::endl;
 
 		// Show time mode
-		movetk::algo::ComputeDominantDifference timeMode;
+		movetk::statistics::ComputeDominantDifference timeMode;
 		std::cout << "Most common time interval: " << timeMode(ts.begin(), ts.end(), 0);
 
 		count++;

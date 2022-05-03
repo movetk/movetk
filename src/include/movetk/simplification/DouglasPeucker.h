@@ -4,7 +4,7 @@
 #include "movetk/metric/DistanceInterface.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
-namespace movetk::algo::simplification {
+namespace movetk::simplification {
 
 template <class GeometryTraits, class Norm>
 struct FindFarthest {

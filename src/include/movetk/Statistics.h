@@ -36,7 +36,7 @@
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/TrajectoryTraits.h"
 
-namespace movetk::algo {
+namespace movetk::statistics {
 template <class GeometryKernel, typename PointDistanceFunc = movetk::geom::ComputeLength<GeometryKernel>>
 class TrajectoryLength {
 private:
@@ -286,6 +286,6 @@ public:
 		return maxVal;
 	}
 };
-}  // namespace movetk::algo
+}  // namespace movetk::statistics
 
 #endif  // MOVETK_SIMILARITY_H

@@ -28,12 +28,11 @@
 #include <string>
 #include <vector>
 
-#include "movetk/algo/AlgorithmTraits.h"
-#include "movetk/algo/OutlierDetection.h"
-#include "movetk/algo/outlierdetection/OutlierDetectionPredicates.h"
+#include "movetk/OutlierDetection.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/metric/Norm.h"
+#include "movetk/outlierdetection/OutlierDetectionPredicates.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
@@ -163,7 +162,8 @@ int main(int argc, char **argv) {
 	using Probe = CartesianProbeTraits::ProbePoint;
 	using Trajectory = std::vector<CartesianProbeTraits::ProbePoint>;
 	using Trajectories = std::vector<Trajectory>;
-	using OutlierDetectionTraits = movetk::algo::OutlierDetectionTraits<CartesianProbeTraits, MovetkGeometryKernel, Norm>;
+	using OutlierDetectionTraits =
+	    movetk::outlierdetection::OutlierDetectionTraits<CartesianProbeTraits, MovetkGeometryKernel, Norm>;
 	using Test =
 	    od::TEST<od::linear_speed_bounded_test_tag, movetk::algo::cartesian_coordinates_tag, OutlierDetectionTraits>;
 	static_assert(std::is_same_v<typename Test::NT, long double>);

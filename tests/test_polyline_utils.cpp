@@ -23,10 +23,10 @@
 #include <numeric>
 #include <vector>
 
-#include "movetk/algo/PolylineUtils.h"
+#include "helpers/CustomCatchTemplate.h"
+#include "movetk/PolylineUtils.h"
 #include "movetk/io/TuplePrinter.h"
 #include "movetk/utils/Iterators.h"
-#include "helpers/CustomCatchTemplate.h"
 
 
 TEST_CASE("trajectory length", "[trajectory_length]") {

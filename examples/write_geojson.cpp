@@ -25,13 +25,13 @@
 #include <sstream>
 #include <vector>
 
-#include "movetk/algo/Statistics.h"
+#include "HereTrajectoryTraits.h"
+#include "movetk/Statistics.h"
 #include "movetk/io/GeoJSON.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
-#include "HereTrajectoryTraits.h"
+#include "test_data.h"
 
 constexpr int LON_Idx = here::c2d::raw::ProbeColumns::LON;
 constexpr int LAT_Idx = here::c2d::raw::ProbeColumns::LAT;
@@ -79,19 +79,19 @@ public:
 		auto timeStamps = trajectory.template get<TS_Idx>();
 
 		// Compute length
-		movetk::algo::TrajectoryLength<MovetkGeometryKernel, Distance> lenCalc;
+		movetk::statistics::TrajectoryLength<MovetkGeometryKernel, Distance> lenCalc;
 		length = lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end());
 		trajectory_properties.push_back(std::make_pair("length", std::to_string(length)));
 
 		// Compute duration
-		movetk::algo::TrajectoryDuration duration;
+		movetk::statistics::TrajectoryDuration duration;
 		traj_duration = duration(timeStamps.begin(), timeStamps.end());
 		trajectory_properties.push_back(std::make_pair("duration", std::to_string(traj_duration)));
 
 		// Show speed statistics:
 		// using SpeedStat = movetk::algo::TrajectorySpeedStatistic<Trajectory_t, MovetkGeometryKernel, Distance, LON_Idx,
 		// LAT_Idx, TS_Idx>;
-		using SpeedStat = movetk::algo::TrajectorySpeedStatistic<MovetkGeometryKernel, Distance>;
+		using SpeedStat = movetk::statistics::TrajectorySpeedStatistic<MovetkGeometryKernel, Distance>;
 		SpeedStat speedStat;
 		using Stat = typename SpeedStat::Statistic;
 
@@ -104,7 +104,6 @@ public:
 		std::vector<Stat> statsToCompute = {Stat::Mean, Stat::Median, Stat::Min, Stat::Max, Stat::Variance};
 		std::vector<MovetkGeometryKernel::NT> stats =
 		    speedStat(lonLatPoints.first, lonLatPoints.second, timeStamps.begin(), timeStamps.end(), statsToCompute);
-
 		mean_speed = stats[0];
 		trajectory_properties.push_back(std::make_pair("mean_speed", std::to_string(mean_speed)));
 		median_speed = stats[1];
@@ -117,7 +116,7 @@ public:
 		trajectory_properties.push_back(std::make_pair("var_speed", std::to_string(var_speed)));
 
 		// Show time mode
-		movetk::algo::ComputeDominantDifference timeMode;
+		movetk::statistics::ComputeDominantDifference timeMode;
 
 		time_mode = timeMode(timeStamps.begin(), timeStamps.end(), 0);
 		trajectory_properties.push_back(std::make_pair("time_mode", std::to_string(time_mode)));
@@ -177,7 +176,6 @@ void write_geojson(Trajectory_t &trajectory, PropertyIterator first, PropertyIte
 
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
-	init_logging(logging::trivial::trace);
 
 	// Specializations for the Commit2Data raw probe format
 	using TrajectoryTraits = here::c2d::raw::ColumnarTrajectoryTraits;

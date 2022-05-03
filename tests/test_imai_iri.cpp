@@ -24,12 +24,13 @@
 #include <array>
 #include <catch2/catch.hpp>
 
-#include "movetk/algo/Simplification.h"
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
+#include "movetk/simplification/ChanChin.h"
+#include "movetk/simplification/ImaiIri.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 template <typename Backend>
 struct ImaiIriTests : public test_helpers::BaseTestFixture<Backend> {
@@ -40,8 +41,8 @@ struct ImaiIriTests : public test_helpers::BaseTestFixture<Backend> {
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	using PolyLine = std::vector<MovetkPoint>;
 	using Wedge = movetk::geom::Wedge<MovetkGeometryKernel, Norm>;
-	using ChanChin = movetk::algo::simplification::ChanChin<MovetkGeometryKernel, Wedge>;
-	using ImaiIri = movetk::algo::simplification::ImaiIri<MovetkGeometryKernel, ChanChin>;
+	using ChanChin = movetk::simplification::ChanChin<MovetkGeometryKernel, Wedge>;
+	using ImaiIri = movetk::simplification::ImaiIri<MovetkGeometryKernel, ChanChin>;
 };
 
 
