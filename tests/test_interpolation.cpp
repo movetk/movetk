@@ -22,6 +22,7 @@
 #include <iostream>
 #include <vector>
 
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/algo/Interpolation.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geom/GeometryInterface.h"
@@ -29,7 +30,6 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 
 template <typename Backend>
@@ -45,14 +45,15 @@ struct InterpolationTests {
 	};
 
 	using Projection = movetk::geo::LocalCoordinateReference<NT>;
-	using InterpolationTraits = movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>;
-	using KinematicInterpolator = movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
-	                                                         InterpolationTraits,
-	                                                         ProbeTraits::ProbeColumns::LAT,
-	                                                         ProbeTraits::ProbeColumns::LON,
-	                                                         ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                                         ProbeTraits::ProbeColumns::SPEED,
-	                                                         ProbeTraits::ProbeColumns::HEADING>;
+	using InterpolationTraits =
+	    movetk::interpolation::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>;
+	using KinematicInterpolator = movetk::interpolation::Interpolator<movetk::interpolation::kinematic_interpolator_tag,
+	                                                                  InterpolationTraits,
+	                                                                  ProbeTraits::ProbeColumns::LAT,
+	                                                                  ProbeTraits::ProbeColumns::LON,
+	                                                                  ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	                                                                  ProbeTraits::ProbeColumns::SPEED,
+	                                                                  ProbeTraits::ProbeColumns::HEADING>;
 };
 
 
@@ -74,7 +75,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests, "trajectory interpolat
 	}
 	std::get<2>(data[1]) = "2";  // other fields of interpolated are taken from end point
 
-	movetk::algo::DummyOffsetInterpolator_2<ProbePoint, 0, 1> interpolator;
+	movetk::interpolation::DummyOffsetInterpolator_2<ProbePoint, 0, 1> interpolator;
 	ProbePoint p = interpolator(data[0], data[2], 50);
 
 	REQUIRE(std::get<0>(p) == Approx(std::get<0>(data[1])).epsilon(0.0001));
@@ -94,7 +95,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(InterpolationTests,
 	                   ProbePoint{1461862305, 40.84841919, -73.84434509, 20, 3.05556}),
 	    std::make_pair(ProbePoint{0, 40.84812546, -73.84451294, 0, 1}, ProbePoint{1, 40.8481636, -73.84448242, 0, 1})};
 	std::vector<std::vector<NT>> timestamps{{1461862301, 1461862302, 1461862303, 1461862304, 1461862305},
-	                                            {0, 0.25, 0.5, 0.75, 1}};
+	                                        {0, 0.25, 0.5, 0.75, 1}};
 
 	std::vector<std::pair<NT, NT>> interpolator_refs{std::make_pair<NT>(40.84812546, -73.84451294),
 	                                                 std::make_pair<NT>(40.84812546, -73.84451294)};
