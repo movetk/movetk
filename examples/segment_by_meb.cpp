@@ -42,7 +42,6 @@
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortedProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/logging.h"
 #include "movetk/test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "HereTrajectoryTraits.h"
@@ -52,14 +51,14 @@ int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
 	std::cout.setf(std::ios::fixed);
 	init_logging(logging::trivial::trace);
-	BOOST_LOG_TRIVIAL(info) << "Started";
+	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
-	BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
+	std::cout << "Using parallel STL";
 #endif
 #if CGAL_BACKEND_ENABLED
-	BOOST_LOG_TRIVIAL(info) << "Using CGAL Backend for Geometry";
+	std::cout << "Using CGAL Backend for Geometry";
 #else
-	BOOST_LOG_TRIVIAL(info) << "Using Boost Backend for Geometry";
+	std::cout << "Using Boost Backend for Geometry";
 #endif
 
 	// Specializations for the Commit2Data raw probe format
@@ -105,7 +104,7 @@ int main(int argc, char **argv) {
 
 	std::size_t trajectory_count = 0;
 	for (auto trajectory : trajectory_reader) {
-		BOOST_LOG_TRIVIAL(trace) << "New trajectory: \n";
+		std::cout << "New trajectory: \n";
 
 		PolyLine polyline;
 		movetk::geom::MakePoint<typename GeometryKernel::MovetkGeometryKernel> make_point;
@@ -119,7 +118,7 @@ int main(int argc, char **argv) {
 
 		SegmentIdx segIdx;
 		segment_by_meb(std::cbegin(polyline), std::cend(polyline), movetk::utils::movetk_back_insert_iterator(segIdx));
-		BOOST_LOG_TRIVIAL(trace) << "Number of Segments: " << segIdx.size();
+		std::cout << "Number of Segments: " << segIdx.size();
 
 		movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
 
@@ -127,7 +126,7 @@ int main(int argc, char **argv) {
 		for (auto plit = std::begin(polyline); plit != std::end(polyline); ++plit) {
 			auto id = make_segment.getSegmentID(plit);
 			segment_id_col.push_back(id);
-			BOOST_LOG_TRIVIAL(trace) << "Segment Ids: " << id;
+			std::cout << "Segment Ids: " << id;
 		}
 
 		// Create the new trajectory id column
@@ -146,7 +145,7 @@ int main(int argc, char **argv) {
 
 	auto t_end = std::chrono::high_resolution_clock::now();
 	display("rest", t_start, t_end);
-	BOOST_LOG_TRIVIAL(info) << "Wrote " << trajectory_count << " trajectories.";
+	std::cout << "Wrote " << trajectory_count << " trajectories.";
 
 	return 0;
 }

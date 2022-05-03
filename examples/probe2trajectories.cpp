@@ -19,8 +19,7 @@
 
 #include <vector>
 
-#include "movetk/logging.h"
-#include "movetk/test_data.h"
+#include "test_data.h"
 #include "HereTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
@@ -36,7 +35,6 @@
 int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
-    init_logging(logging::trivial::trace);
 
     // Specializations for the Commit2Data raw probe format
     using TrajectoryTraits = here::c2d::raw::ColumnarTrajectoryTraits;
@@ -69,7 +67,7 @@ int main(int argc, char **argv)
     for (auto trajectory : trajectory_reader)
     {
         constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
-        BOOST_LOG_TRIVIAL(trace) << "New trajectory: " << trajectory.get<PROBE_ID>()[0];
+        std::cout << "New trajectory: " << trajectory.get<PROBE_ID>()[0];
 
         // Create the new column
         std::vector<std::size_t> trajectory_id_col;
@@ -87,11 +85,11 @@ int main(int argc, char **argv)
         // Accessing the new field
         for (const auto &trajectory_id : new_trajectory.get<TRAJ_ID>())
         {
-            BOOST_LOG_TRIVIAL(trace) << trajectory_id;
+            std::cout << trajectory_id;
         }
 
         count++;
     }
-    BOOST_LOG_TRIVIAL(info) << "Processed " << count << " trajectories" << std::endl;
+    std::cout << "Processed " << count << " trajectories" << std::endl;
     return 0;
 }

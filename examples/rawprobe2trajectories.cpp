@@ -24,6 +24,7 @@
 #include <parallel/algorithm>
 #endif
 
+#include "HereProbeTraits.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortByField.h"
@@ -31,9 +32,40 @@
 #include "movetk/io/SplitByDistanceThreshold.h"
 #include "movetk/io/SplitByField.h"
 #include "movetk/io/Splitter.h"
-#include "movetk/logging.h"
-#include "movetk/test_data.h"
-#include "HereProbeTraits.h"
+#include "test_data.h"
+
+
+class Timer {
+public:
+	using time_t = std::decay_t<decltype(std::chrono::high_resolution_clock::now())>;
+	Timer(bool auto_start = false) {
+		if (auto_start) {
+			start();
+		}
+	}
+	void start() {
+		if (m_is_running) {
+			throw std::runtime_error("Timer already running");
+		}
+		m_is_running = true;
+		m_start = std::chrono::high_resolution_clock::now();
+	}
+	void stop() {
+		m_is_running = false;
+		m_end = std::chrono::high_resolution_clock::now();
+	}
+	friend std::ostream &operator<<(std::ostream &stream, const Timer &timer) {
+		stream << timer.elapsed_ns() << " ns";
+		return stream;
+	}
+
+	long long elapsed_ns() const { return (m_end - m_start).count(); }
+
+private:
+	time_t m_start;
+	time_t m_end;
+	bool m_is_running = false;
+};
 
 /**
  * Example: Create trajectories from raw probe points by
@@ -45,10 +77,9 @@
  */
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
-	init_logging(logging::trivial::trace);
-	BOOST_LOG_TRIVIAL(info) << "Started";
+	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
-	BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
+	std::cout << "Using parallel STL";
 #endif
 
 	// Specializations for the Commit2Data raw probe format
@@ -65,21 +96,21 @@ int main(int argc, char **argv) {
 	}
 
 	// Store probe points in memory
-	auto start = std::chrono::high_resolution_clock::now();
+	Timer read_timer(true);
 	std::vector<ProbeTraits::ProbePoint> buffered_probe;
 	std::size_t probe_count = 0;
 	for (const auto &probe_point : *probe_reader) {
 		buffered_probe.push_back(probe_point);
 		++probe_count;
 	}
-	auto end = std::chrono::high_resolution_clock::now();
-	display("read probe", start, end);
-	BOOST_LOG_TRIVIAL(info) << "Buffered " << probe_count << " probe points.";
+	read_timer.stop();
+	std::cout << "read probe [time taken: " << read_timer << "]\n";
+	std::cout << "Buffered " << probe_count << " probe points.";
 
 	// Sort all probe points by PROBE_ID
 	constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
 	movetk::io::SortByField<PROBE_ID, typename ProbeTraits::ProbePoint> sort_by_probe_id_asc;
-	start = std::chrono::high_resolution_clock::now();
+	Timer sort_timer(true);
 #ifdef _GLIBCXX_PARALLEL
 	__gnu_parallel::sort(buffered_probe.begin(), buffered_probe.end(), sort_by_probe_id_asc);
 #else
@@ -87,8 +118,8 @@ int main(int argc, char **argv) {
 	// with <execution> header, since C++17, but not yet available on any compiler/platform.
 	// std::sort(std::execution::par, buffered_probe.begin(), buffered_probe.end(), sort_by_probe_id_asc);
 #endif
-	end = std::chrono::high_resolution_clock::now();
-	display("sort", start, end);
+	sort_timer.stop();
+	std::cout << "sort in " << sort_timer << '\n';
 
 	//    // Write sorted probe
 	//    for (const auto& point: buffered_probe) {
@@ -96,7 +127,7 @@ int main(int argc, char **argv) {
 	//        ofcsv << '\n';
 	//    }
 
-	start = std::chrono::high_resolution_clock::now();
+	Timer rest_timer(true);
 
 	// Split probe points into trajectories by PROBE_ID
 	using SplitByProbeId = movetk::io::SplitByField<PROBE_ID, typename ProbeTraits::ProbePoint>;
@@ -156,9 +187,9 @@ int main(int argc, char **argv) {
 
 		//        ++trajectory_count;
 	}
-	end = std::chrono::high_resolution_clock::now();
-	display("rest", start, end);
-	BOOST_LOG_TRIVIAL(info) << "Wrote " << trajectory_count << " trajectories.";
+	rest_timer.stop();
+	std::cout << "rest in " << rest_timer << '\n';
+	std::cout << "Wrote " << trajectory_count << " trajectories.";
 
 	return 0;
 }

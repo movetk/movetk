@@ -52,8 +52,8 @@ int main(int argc, char **argv) {
 	std::cout << "}\n";
 
 	std::vector<PolyLine::const_iterator> result;
-	using FindFarthest = movetk::algo::FindFarthest<MovetkGeometryKernel, GeometryKernel::Norm>;
-	movetk::algo::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
+	using FindFarthest = movetk::algo::simplification::FindFarthest<MovetkGeometryKernel, GeometryKernel::Norm>;
+	movetk::algo::simplification::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
 	DouglasPeucker(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
 	
 	

@@ -26,14 +26,13 @@
 
 #include <vector>
 
+#include "HereTrajectoryTraits.h"
 #include "movetk/algo/Statistics.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/logging.h"
-#include "movetk/test_data.h"
+#include "test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
-#include "HereTrajectoryTraits.h"
 
 /**
  * Example: Process a stream of probe points to create a trajectory. Then,
@@ -81,8 +80,8 @@ void run(int argc, char** argv) {
 	constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
 
 	for (auto trajectory : trajectory_reader) {
-		BOOST_LOG_TRIVIAL(trace) << "New trajectory: " << trajectory.template get<PROBE_ID>()[0];
-		BOOST_LOG_TRIVIAL(info) << "Size:" << trajectory.size() << std::endl;
+		std::cout << "New trajectory: " << trajectory.template get<PROBE_ID>()[0];
+		std::cout << "Size:" << trajectory.size() << std::endl;
 		using Trajectory_t = decltype(trajectory);
 
 		// Get iterators for data
@@ -95,48 +94,38 @@ void run(int argc, char** argv) {
 		                                               std::make_pair(lats.begin(), lats.end())});
 
 		movetk::algo::TrajectoryLength<GeomKernel, Distance> lenCalc;
-		BOOST_LOG_TRIVIAL(info) << "Trajectory length:" << lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end())
-		                        << std::endl;
+		std::cout << "Trajectory length:" << lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end()) << std::endl;
 		movetk::algo::TrajectoryDuration duration;
-		BOOST_LOG_TRIVIAL(info) << "Trajectory duration:" << duration(ts.begin(), ts.end()) << std::endl;
+		std::cout << "Trajectory duration:" << duration(ts.begin(), ts.end()) << std::endl;
 
 		// Show speed statistics:
 		using SpeedStat = movetk::algo::TrajectorySpeedStatistic<GeomKernel, Distance>;
 		SpeedStat speedStat;
+		auto compute_stat = [&pointIterators, &ts, &speedStat](auto stat_type) {
+			return speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), stat_type);
+		};
 		using Stat = typename SpeedStat::Statistic;
-		BOOST_LOG_TRIVIAL(info) << "Trajectory average speed:"
-		                        << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Mean)
-		                        << std::endl;
-		BOOST_LOG_TRIVIAL(info)
-		    << "Trajectory median speed:"
-		    << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Median) << std::endl;
-		BOOST_LOG_TRIVIAL(info) << "Trajectory min speed:"
-		                        << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Min)
-		                        << std::endl;
-		BOOST_LOG_TRIVIAL(info) << "Trajectory max speed:"
-		                        << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Max)
-		                        << std::endl;
-		BOOST_LOG_TRIVIAL(info)
-		    << "Trajectory variance of speed:"
-		    << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Variance) << std::endl;
+		std::cout << "Trajectory average speed:" << compute_stat(Stat::Mean) << std::endl;
+		std::cout << "Trajectory median speed:" << compute_stat(Stat::Median) << std::endl;
+		std::cout << "Trajectory min speed:" << compute_stat(Stat::Min) << std::endl;
+		std::cout << "Trajectory max speed:" << compute_stat(Stat::Max) << std::endl;
+		std::cout << "Trajectory variance of speed:" << compute_stat(Stat::Variance) << std::endl;
 
 		// Show time mode
 		movetk::algo::ComputeDominantDifference timeMode;
-		BOOST_LOG_TRIVIAL(info) << "Most common time interval: " << timeMode(ts.begin(), ts.end(), 0);
+		std::cout << "Most common time interval: " << timeMode(ts.begin(), ts.end(), 0);
 
 		count++;
 	}
-	BOOST_LOG_TRIVIAL(info) << "Processed " << count << " trajectories" << std::endl;
+	std::cout << "Processed " << count << " trajectories" << std::endl;
 }
 
 int main(int argc, char** argv) {
 	std::ios_base::sync_with_stdio(false);
-	init_logging(logging::trivial::trace);
-
 	// Run for columnar
-	BOOST_LOG_TRIVIAL(info) << "------------ Columnar";
+	std::cout << "------------ Columnar";
 	run<here::c2d::raw::ColumnarTrajectoryTraits>(argc, argv);
-	BOOST_LOG_TRIVIAL(info) << "------------ Tabular";
+	std::cout << "------------ Tabular";
 	run<here::c2d::raw::TabularTrajectoryTraits>(argc, argv);
 	return 0;
 }

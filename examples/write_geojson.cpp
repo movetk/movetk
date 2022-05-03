@@ -29,7 +29,6 @@
 #include "movetk/io/GeoJSON.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/logging.h"
 #include "movetk/test_data.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "HereTrajectoryTraits.h"

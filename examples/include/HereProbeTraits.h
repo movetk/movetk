@@ -44,19 +44,19 @@ public:
 
 class ProviderCategoricalField : public movetk::io::CategoricalField<std::string, ProviderCategoricalField> {};
 
-typedef csv<std::tuple<std::string, ProbeParseDate, double, double, double, double, ProviderCategoricalField>,
-            _PROBE_ID,
-            _SAMPLE_DATE,
-            _LAT,
-            _LON,
-            _HEADING,
-            _SPEED,
-            _PROBE_DATA_PROVIDER>
-    ProbeCsv;
+using ProbeCsv = movetk::io::csv::csv<
+    std::tuple<std::string, ProbeParseDate, double, double, double, double, ProviderCategoricalField>,
+    _PROBE_ID,
+    _SAMPLE_DATE,
+    _LAT,
+    _LON,
+    _HEADING,
+    _SPEED,
+    _PROBE_DATA_PROVIDER>;
 
-typedef typename ProbeCsv::value_type ProbePoint;
+using ProbePoint = typename ProbeCsv::value_type;
 
-typedef movetk::io::_ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
+using ProbeTraits = movetk::io::_ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint>;
 
 }  // namespace here::c2d::raw
 
