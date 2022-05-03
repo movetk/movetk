@@ -23,15 +23,13 @@
 
 #include <vector>
 
+#include "GeolifeTrajectoryTraits.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/logging.h"
-#include "movetk/test_data.h"
-#include "GeolifeTrajectoryTraits.h"
+#include "test_data.h"
 
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
-	init_logging(logging::trivial::trace);
 
 	// Specializations for the Geolife raw probe format
 	using TrajectoryTraits = geolife::c2d::raw::TabularTrajectoryTraits;
@@ -71,11 +69,11 @@ int main(int argc, char **argv) {
 		std::string str = "Trajectory " + TRAJ_ID + " has " + std::to_string(probe_count) + " probes";
 
 		// Log to console and csv
-		BOOST_LOG_TRIVIAL(trace) << str;
+		std::cout << str;
 		ofcsv << str;
 
 		count++;
 	}
-	BOOST_LOG_TRIVIAL(info) << "Processed " << count << " trajectories" << std::endl;
+	std::cout << "Processed " << count << " trajectories" << std::endl;
 	return 0;
 }

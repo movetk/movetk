@@ -21,7 +21,6 @@
 
 // Created by Wouter Jongeling (wouter.jongeling@gmail.com)
 
-#include "movetk/logging.h"
 #include "movetk/test_data.h"
 #include "GeolifeTrajectoryTraits.h"
 #include "movetk/geom/trajectory_to_interface.h"
@@ -77,7 +76,7 @@ int main(int argc, char **argv)
                 double curr_lon = get<LON>(probe);
                 double d = movetk::geo::distance_exact(prev_lat, prev_lon, curr_lat, curr_lon);
                 double b = movetk::geo::bearing_exact(prev_lat, prev_lon, curr_lat, curr_lon);
-                BOOST_LOG_TRIVIAL(trace) << d << " " << b;
+                std::cout << d << " " << b;
                 prev_lat = curr_lat;
                 prev_lon = curr_lon;
             }

@@ -24,14 +24,14 @@
 #include <parallel/algorithm>
 #endif
 
+#include "HereTrajectoryTraits.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/HighFrequencyTrajectorySplitter.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortedProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
 #include "movetk/logging.h"
-#include "movetk/test_data.h"
-#include "HereTrajectoryTraits.h"
+#include "test_data.h"
 
 /**
  * Example: Create trajectories from raw probe points by
@@ -45,9 +45,9 @@
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
 	init_logging(logging::trivial::trace);
-	BOOST_LOG_TRIVIAL(info) << "Started";
+	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
-	BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
+	std::cout << "Using parallel STL";
 #endif
 
 	// Specializations for the Commit2Data raw probe format
@@ -70,7 +70,8 @@ int main(int argc, char **argv) {
 	// auto trajectory_reader = movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(),
 	// probe_reader->end()); b) not grouped
 	constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
-	movetk::io::SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(), probe_reader->end());
+	movetk::io::SortedProbeReader<ProbeInputIterator, PROBE_ID> sorted_probe_reader(probe_reader->begin(),
+	                                                                                probe_reader->end());
 	using SortedProbeInputIterator = decltype(sorted_probe_reader.begin());
 	auto trajectory_reader =
 	    movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
@@ -120,7 +121,7 @@ int main(int argc, char **argv) {
 	}
 	auto t_end = std::chrono::high_resolution_clock::now();
 	display("rest", t_start, t_end);
-	BOOST_LOG_TRIVIAL(info) << "Wrote " << trajectory_count << " trajectories.";
+	std::cout << "Wrote " << trajectory_count << " trajectories.";
 
 	return 0;
 }

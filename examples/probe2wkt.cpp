@@ -21,8 +21,7 @@
 #include "movetk/geom/trajectory_gdal.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/logging.h"
-#include "movetk/test_data.h"
+#include "test_data.h"
 #include "HereTrajectoryTraits.h"
 
 /**
@@ -34,7 +33,6 @@
  */
 int main(int argc, char** argv) {
 	std::ios_base::sync_with_stdio(false);
-	init_logging(logging::trivial::trace);
 
 	// Specializations for the Commit2Data raw probe format
 	using TrajectoryTraits = here::c2d::raw::ColumnarTrajectoryTraits;
@@ -61,7 +59,7 @@ int main(int argc, char** argv) {
 	std::size_t count = 0;
 	for (auto trajectory : trajectory_reader) {
 		constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
-		BOOST_LOG_TRIVIAL(trace) << "New trajectory: " << trajectory.get<PROBE_ID>()[0];
+		std::cout << "New trajectory: " << trajectory.get<PROBE_ID>()[0];
 
 		auto lons = trajectory.get<ProbeTraits::ProbeColumns::LON>();
 		auto lats = trajectory.get<ProbeTraits::ProbeColumns::LAT>();
@@ -79,6 +77,6 @@ int main(int argc, char** argv) {
 
 		count++;
 	}
-	BOOST_LOG_TRIVIAL(info) << "Processed " << count << " trajectories" << std::endl;
+	std::cout << "Processed " << count << " trajectories" << std::endl;
 	return 0;
 }

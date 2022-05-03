@@ -122,9 +122,9 @@ int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
 	std::cout.setf(std::ios::fixed);
 	init_logging(logging::trivial::trace);
-	BOOST_LOG_TRIVIAL(info) << "Started";
+	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
-	BOOST_LOG_TRIVIAL(info) << "Using parallel STL";
+	std::cout << "Using parallel STL";
 #endif
 
 	if (argc < 2) {
@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 	                                                                                            hifreq_min_num_pts);
 	tr.init(argv[1]);
 
-	// BOOST_LOG_TRIVIAL(trace) <<"Number of filtered trajectories: "<<std::distance(tr.begin(),tr.end());
+	// std::cout <<"Number of filtered trajectories: "<<std::distance(tr.begin(),tr.end());
 
 	// Create an output csv file
 	std::ofstream ofcsv_traj("output_trajectories.csv");
