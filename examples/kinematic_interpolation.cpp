@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#include "movetk/algo/Interpolation.h"
+#include "movetk/Interpolation.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/ParseDate.h"
 #include "movetk/utils/GeometryBackendTraits.h"
@@ -158,16 +158,16 @@ int main(int argc, char **argv) {
 	std::cerr << "Threshold: " << threshold << "\n";
 
 	Norm norm;
-	typedef movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-	typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
-	typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
-	                                   InterpolationTraits,
-	                                   ProbeTraits::ProbeColumns::LAT,
-	                                   ProbeTraits::ProbeColumns::LON,
-	                                   ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                   ProbeTraits::ProbeColumns::SPEED,
-	                                   ProbeTraits::ProbeColumns::HEADING>
-	    Interpolator;
+	using Projection = movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT>;
+	using InterpolationTraits =
+	    movetk::interpolation::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>;
+	using Interpolator = movetk::interpolation::Interpolator<movetk::interpolation::kinematic_interpolator_tag,
+	                                                         InterpolationTraits,
+	                                                         ProbeTraits::ProbeColumns::LAT,
+	                                                         ProbeTraits::ProbeColumns::LON,
+	                                                         ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	                                                         ProbeTraits::ProbeColumns::SPEED,
+	                                                         ProbeTraits::ProbeColumns::HEADING>;
 	/* typedef movetk::algo::Interpolator<movetk::algo::random_trajectory_generator_tag,
 	        InterpolationTraits> Interpolator;*/
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;

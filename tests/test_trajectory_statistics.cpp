@@ -25,7 +25,8 @@
 
 #include <catch2/catch.hpp>
 
-#include "movetk/algo/Statistics.h"
+#include "helpers/CustomCatchTemplate.h"
+#include "movetk/Statistics.h"
 #include "movetk/ds/ColumnarTrajectory.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geom/BoostGeometryTraits.h"
@@ -33,7 +34,6 @@
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/TuplePrinter.h"
 #include "movetk/metric/Norm.h"
-#include "helpers/CustomCatchTemplate.h"
 
 struct TestTypes {
 	using Trajectory = movetk::ds::TabularTrajectory<std::string, double, double, std::time_t>;
@@ -47,7 +47,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory length statistic",
 	using ProbePoint = typename TestTypes::ProbePoint;
 	using MovetkGeometryKernel = typename TestType::MovetkGeometryKernel;
 	// Setup algorithm
-	movetk::algo::TrajectoryLength<MovetkGeometryKernel> lengthCalc;
+	movetk::statistics::TrajectoryLength<MovetkGeometryKernel> lengthCalc;
 
 	SECTION("Simple trajectory") {
 		// Construct data
@@ -103,7 +103,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory duration",
                         movetk::test::AvailableBackends) {
 	using Trajectory = typename TestTypes::Trajectory;
 	using ProbePoint = typename TestTypes::ProbePoint;
-	movetk::algo::TrajectoryDuration durationCalc;
+	movetk::statistics::TrajectoryDuration durationCalc;
 	SECTION("Simple trajectory") {
 		// Construct data
 		ProbePoint base{"test", 0, 0, 0};
@@ -146,7 +146,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory speed statistics",
 	// Construct data
 	ProbePoint base{"test", 0, 0, 0};
 
-	movetk::algo::TrajectorySpeedStatistic<MovetkGeometryKernel> speedStat;
+	movetk::statistics::TrajectorySpeedStatistic<MovetkGeometryKernel> speedStat;
 	using SpeedStat = decltype(speedStat);
 	using Stat = typename decltype(speedStat)::Statistic;
 	// Approx here since duration is implementation defined, may be double
@@ -269,7 +269,7 @@ TEMPLATE_LIST_TEST_CASE("Trajectory speed statistics",
 }
 
 TEST_CASE("Trajectory dominant time mode statistic", "[trajectory_time_mode_statistic][trajectory_statistics]") {
-	movetk::algo::ComputeDominantDifference timeIntervalModeCalc;
+	movetk::statistics::ComputeDominantDifference timeIntervalModeCalc;
 
 	SECTION("Integer times") {
 		// Construct data

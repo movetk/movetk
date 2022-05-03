@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#include "movetk/algo/Interpolation.h"
+#include "movetk/Interpolation.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/ParseDate.h"
 #include "movetk/utils/GeometryBackendTraits.h"
@@ -162,16 +162,16 @@ int main(int argc, char **argv) {
 
 
 	Norm norm;
-	typedef movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-	typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
-	typedef movetk::algo::Interpolator<movetk::algo::linear_interpolator_tag,
-	                                   InterpolationTraits,
-	                                   ProbeTraits::ProbeColumns::LAT,
-	                                   ProbeTraits::ProbeColumns::LON,
-	                                   ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                   ProbeTraits::ProbeColumns::SPEED,
-	                                   ProbeTraits::ProbeColumns::HEADING>
-	    Interpolator;
+	using Projection = movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT>;
+	using InterpolationTraits =
+	    movetk::interpolation::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>;
+	using Interpolator = movetk::interpolation::Interpolator<movetk::interpolation::linear_interpolator_tag,
+	                                                         InterpolationTraits,
+	                                                         ProbeTraits::ProbeColumns::LAT,
+	                                                         ProbeTraits::ProbeColumns::LON,
+	                                                         ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	                                                         ProbeTraits::ProbeColumns::SPEED,
+	                                                         ProbeTraits::ProbeColumns::HEADING>;
 	/* typedef movetk::algo::Interpolator<movetk::algo::random_trajectory_generator_tag,
 	         InterpolationTraits> Interpolator;*/
 	std::size_t line_count = 0;

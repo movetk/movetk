@@ -31,6 +31,7 @@
 
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
+#include "movetk/utils/TrajectoryUtils.h"
 
 namespace movetk::ds {
 enum SsdType { compressed };

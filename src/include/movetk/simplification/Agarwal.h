@@ -5,7 +5,7 @@
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
-namespace movetk::algo::simplification {
+namespace movetk::simplification {
 /**
  * \brief
  * Based on https://doi.org/10.1007/s00453-005-1165-y

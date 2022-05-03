@@ -28,8 +28,7 @@
 #include <parallel/algorithm>
 #endif
 
-#include "movetk/algo/Interpolation.h"
-#include "movetk/algo/SegmentationTraits.h"
+#include "movetk/Interpolation.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/HighFrequencyTrajectoryReader.h"
@@ -42,7 +41,7 @@
 #include "movetk/io/SplitByField.h"
 #include "movetk/io/TrajectoryTraits.h"
 #include "movetk/io/csv/csv.h"
-#include "movetk/logging.h"
+#include "movetk/segmentation/SegmentationTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
@@ -62,16 +61,23 @@ enum InputColumns {
 
 enum ProbeColumns { ORIGFILEROW, RAW_SOURCE, RAW_DEVICEID, RAW_GPSTIME, RAW_LAT, RAW_LON, RAW_HEADING, RAW_SPEED };
 
-typedef csv<std::tuple<long, string, string, std::time_t, float, float, float, float>,
-            _ORIGFILEROW,
-            _RAW_SOURCE,
-            _RAW_DEVICEID,
-            _RAW_GPSTIME,
-            _RAW_LAT,
-            _RAW_LON,
-            _RAW_HEADING,
-            _RAW_SPEED>
-    ProbeCsv;
+using data_tuple = std::tuple<long, std::string, std::string, std::time_t, float, float, float, float>;
+
+using ProbeCsv = movetk::io::csv::csv<data_tuple,
+                                      _ORIGFILEROW,
+                                      _RAW_SOURCE,
+                                      _RAW_DEVICEID,
+                                      _RAW_GPSTIME,
+                                      _RAW_LAT,
+                                      _RAW_LON,
+                                      _RAW_HEADING,
+                                      _RAW_SPEED>;
+template <typename T, template <typename...> typename Container>
+struct transfer_types {};
+template <template <typename...> typename SrcContainer, template <typename...> typename Container, typename... Args>
+struct transfer_types<SrcContainer<Args...>, Container> {
+	using type = Container<Args...>;
+};
 
 typedef typename ProbeCsv::value_type ProbePoint;
 typedef int Dummy;
@@ -79,7 +85,7 @@ using ProbeTraits = movetk::io::_ProbeTraits<ProbeColumns, Dummy, ProbeCsv, Prob
 
 constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::RAW_DEVICEID;
 constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::RAW_GPSTIME;
-using trajectory_type = movetk::ds::TabularTrajectory<long, string, string, std::time_t, float, float, float, float>;
+using trajectory_type = typename transfer_types<data_tuple, movetk::ds::TabularTrajectory>::type;
 
 using TrajectoryTraits = movetk::io::_TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, trajectory_type>;
 
@@ -102,16 +108,16 @@ struct ProbeTraits {
 	typedef std::tuple<std::time_t, NT, NT, NT, NT> ProbePoint;
 };
 using Norm = typename GeometryKernel::Norm;
-typedef movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
-typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
-                                   InterpolationTraits,
-                                   ProbeTraits::ProbeColumns::LAT,
-                                   ProbeTraits::ProbeColumns::LON,
-                                   ProbeTraits::ProbeColumns::SAMPLE_DATE,
-                                   ProbeTraits::ProbeColumns::SPEED,
-                                   ProbeTraits::ProbeColumns::HEADING>
-    Interpolator;
+using Projection = movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT>;
+using InterpolationTraits =
+    movetk::interpolation::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>;
+using Interpolator = movetk::interpolation::Interpolator<movetk::interpolation::kinematic_interpolator_tag,
+                                                         InterpolationTraits,
+                                                         ProbeTraits::ProbeColumns::LAT,
+                                                         ProbeTraits::ProbeColumns::LON,
+                                                         ProbeTraits::ProbeColumns::SAMPLE_DATE,
+                                                         ProbeTraits::ProbeColumns::SPEED,
+                                                         ProbeTraits::ProbeColumns::HEADING>;
 }  // namespace Interpolation
 
 int main(int argc, char **argv) {
@@ -121,7 +127,6 @@ int main(int argc, char **argv) {
 
 	std::ios_base::sync_with_stdio(false);
 	std::cout.setf(std::ios::fixed);
-	init_logging(logging::trivial::trace);
 	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
 	std::cout << "Using parallel STL";
@@ -152,9 +157,9 @@ int main(int argc, char **argv) {
 	              "INTERPOLATION_HEADING, INTERPOLATION_SPEED\n";
 
 	// Write time-sorted trajectories and segment them using Monotone Diff Criteria
-	typedef movetk::algo::SegmentationTraits<long double, MovetkGeometryKernel, GeometryKernel::dimensions>
-	    SegmentationTraits;
-	typedef MovetkGeometryKernel::NT NT;
+	using SegmentationTraits =
+	    movetk::segmentation::SegmentationTraits<long double, MovetkGeometryKernel, GeometryKernel::dimensions>;
+	using NT = MovetkGeometryKernel::NT;
 	SegmentationTraits::TSSegmentation segment_by_tdiff(6);
 
 	typename Interpolation::Norm norm;

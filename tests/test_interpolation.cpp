@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "helpers/CustomCatchTemplate.h"
-#include "movetk/algo/Interpolation.h"
+#include "movetk/Interpolation.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/TuplePrinter.h"

@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#include "movetk/algo/Interpolation.h"
+#include "movetk/Interpolation.h"
 #include "movetk/geo/geo.h"
 #include "movetk/io/ParseDate.h"
 #include "movetk/utils/GeometryBackendTraits.h"
@@ -163,10 +163,11 @@ int main(int argc, char **argv) {
 
 	Norm norm;
 	typedef movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-	typedef movetk::algo::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm> InterpolationTraits;
+	typedef movetk::interpolation::InterpolationTraits<MovetkGeometryKernel, Projection, ProbeTraits, Norm>
+	    InterpolationTraits;
 	/*typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
 	        InterpolationTraits> Interpolator;*/
-	typedef movetk::algo::Interpolator<movetk::algo::random_trajectory_generator_tag,
+	typedef movetk::interpolation::Interpolator<movetk::interpolation::random_trajectory_generator_tag,
 	                                   InterpolationTraits,
 	                                   ProbeTraits::ProbeColumns::LAT,
 	                                   ProbeTraits::ProbeColumns::LON,

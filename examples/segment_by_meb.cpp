@@ -37,20 +37,20 @@
 #include <parallel/algorithm>
 #endif
 
-#include "movetk/algo/SegmentationTraits.h"
+#include "HereTrajectoryTraits.h"
+#include "Timer.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/io/ProbeReader.h"
 #include "movetk/io/SortedProbeReader.h"
 #include "movetk/io/TrajectoryReader.h"
-#include "movetk/test_data.h"
+#include "movetk/segmentation/SegmentationTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
-#include "HereTrajectoryTraits.h"
 #include "movetk/utils/Iterators.h"
+#include "test_data.h"
 
 int main(int argc, char **argv) {
 	std::ios_base::sync_with_stdio(false);
 	std::cout.setf(std::ios::fixed);
-	init_logging(logging::trivial::trace);
 	std::cout << "Started";
 #ifdef _GLIBCXX_PARALLEL
 	std::cout << "Using parallel STL";
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 	    movetk::io::TrajectoryReader<TrajectoryTraits, SortedProbeInputIterator>(sorted_probe_reader.begin(),
 	                                                                             sorted_probe_reader.end());
 
-	auto t_start = std::chrono::high_resolution_clock::now();
+	Timer timer(true);
 
 	// Create an output csv file
 	std::ofstream ofcsv("output_trajectories_distance.csv");
@@ -94,12 +94,11 @@ int main(int argc, char **argv) {
 	ofcsv << ",RAW_TRAJID,MEB_SEG_ID\n";
 
 	// Write time-sorted trajectories and segment them using Monotone MEB Criteria
-	typedef movetk::algo::
-	    SegmentationTraits<long double, typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>
-	        SegmentationTraits;
-	typedef GeometryKernel::MovetkGeometryKernel::NT NT;
-	typedef vector<SegmentationTraits::Point> PolyLine;
-	typedef std::vector<PolyLine::const_iterator> SegmentIdx;
+	using SegmentationTraits = movetk::segmentation::
+	    SegmentationTraits<long double, typename GeometryKernel::MovetkGeometryKernel, GeometryKernel::dimensions>;
+	using NT = GeometryKernel::MovetkGeometryKernel::NT;
+	using PolyLine = std::vector<SegmentationTraits::Point>;
+	using SegmentIdx = std::vector<PolyLine::const_iterator>;
 	SegmentationTraits::LocationSegmentation segment_by_meb(10);
 
 	std::size_t trajectory_count = 0;
@@ -111,10 +110,10 @@ int main(int argc, char **argv) {
 		// Alternatively use movetk::to_geocentered_polyline() (requires dimension = 3)
 		// Project to local coordinates (requires dimension = 2)
 		movetk::geom::to_projected_polyline(make_point,
-		                              trajectory.begin<ProbeTraits::ProbeColumns::LAT>(),
-		                              trajectory.end<ProbeTraits::ProbeColumns::LAT>(),
-		                              trajectory.begin<ProbeTraits::ProbeColumns::LON>(),
-		                              movetk::utils::movetk_back_insert_iterator(polyline));
+		                                    trajectory.begin<ProbeTraits::ProbeColumns::LAT>(),
+		                                    trajectory.end<ProbeTraits::ProbeColumns::LAT>(),
+		                                    trajectory.begin<ProbeTraits::ProbeColumns::LON>(),
+		                                    movetk::utils::movetk_back_insert_iterator(polyline));
 
 		SegmentIdx segIdx;
 		segment_by_meb(std::cbegin(polyline), std::cend(polyline), movetk::utils::movetk_back_insert_iterator(segIdx));
@@ -143,8 +142,8 @@ int main(int argc, char **argv) {
 		++trajectory_count;
 	}
 
-	auto t_end = std::chrono::high_resolution_clock::now();
-	display("rest", t_start, t_end);
+	timer.stop();
+	std::cout << "Time spent: " << timer << '\n';
 	std::cout << "Wrote " << trajectory_count << " trajectories.";
 
 	return 0;

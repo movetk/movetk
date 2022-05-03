@@ -42,11 +42,11 @@ template <class _ProbeTraits,
           int _SortByFieldIdx,
           class _trajectory_type>
 struct _TrajectoryTraits {
-	typedef _ProbeTraits ProbeTraits;
+	using ProbeTraits = _ProbeTraits;
 	//    constexpr static bool SortedSessions = _SortedSessions;
-	constexpr static int SplitByFieldIdx = _SplitByFieldIdx;
-	constexpr static int SortByFieldIdx = _SortByFieldIdx;
-	typedef _trajectory_type trajectory_type;
+	static constexpr int SplitByFieldIdx = _SplitByFieldIdx;
+	static constexpr int SortByFieldIdx = _SortByFieldIdx;
+	using trajectory_type = _trajectory_type;
 };
 
 }  // namespace movetk::io

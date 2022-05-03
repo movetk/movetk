@@ -21,7 +21,7 @@
 // Created by Mitra, Aniket on 2019-02-21.
 //
 
-#include "movetk/algo/Simplification.h"
+#include "movetk/Simplification.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
@@ -52,11 +52,11 @@ int main(int argc, char **argv) {
 	std::cout << "}\n";
 
 	std::vector<PolyLine::const_iterator> result;
-	using FindFarthest = movetk::algo::simplification::FindFarthest<MovetkGeometryKernel, GeometryKernel::Norm>;
-	movetk::algo::simplification::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
+	using FindFarthest = movetk::simplification::FindFarthest<MovetkGeometryKernel, GeometryKernel::Norm>;
+	movetk::simplification::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
 	DouglasPeucker(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
-	
-	
+
+
 	std::cout << "Simplified polyline has: " << result.size() << " vertices\n";
 	std::cout << "Simplified Polyline: ";
 	std::cout << "{";

@@ -25,12 +25,12 @@
 #include <catch2/catch.hpp>
 #include <map>
 
-#include "movetk/algo/Simplification.h"
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
+#include "movetk/simplification/ChanChin.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 template <typename Backend>
 struct ChanChinTests {
@@ -65,7 +65,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ChanChinTests, "Check Chan Chin Shortcuts"
 	using Fixture = ChanChinTests<TestType>;
 	for (const auto& [test_case_name, test_data] : Fixture::test_cases) {
 		SECTION(test_case_name) {
-			movetk::algo::simplification::ChanChin<typename Fixture::MovetkGeometryKernel, typename Fixture::Wedge> ChanChin(1);
+			movetk::simplification::ChanChin<typename Fixture::MovetkGeometryKernel, typename Fixture::Wedge> ChanChin(
+			    1);
 			typename Fixture::EdgeList edges;
 			ChanChin(std::begin(test_data.polyline),
 			         std::end(test_data.polyline),
@@ -100,7 +101,7 @@ TEST_CASE("Check Chan Chin Shortcuts 4", "[is_valid_shortcut_4]") {
     }
     std::cout << "}\n";
     typedef movetk::utils::Wedge<MovetkGeometryKernel, Norm> Wedge;
-    movetk::algo::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(2);
+    movetk::ChanChin<MovetkGeometryKernel, Wedge> ChanChin(2);
     std::vector<std::pair<std::size_t, std::size_t> > edges;
     std::vector<std::pair<std::size_t, std::size_t> > ExpectedEdges({
         std::make_pair(0, 1), std::make_pair(1, 2),

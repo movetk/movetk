@@ -37,7 +37,8 @@ struct SegmentationTraits {
 	using MebCriteria = TEST<TestCriteria::meb, MovetkGeometryKernel>;
 	using LocationSegmentation = MonotoneSegmentation<MovetkGeometryKernel, MebCriteria>;
 	using DiffCriteria = TEST<TestCriteria::difference, MovetkGeometryKernel>;
-	using TSSegmentation = MonotoneSegmentation<MovetkGeometryKernel, DiffCriteria>;// SpeedSegmentation, ;
+	using TSSegmentation = MonotoneSegmentation<MovetkGeometryKernel, DiffCriteria>;
+	using SpeedSegmentation = MonotoneSegmentation<MovetkGeometryKernel, DiffCriteria>;
 	using RangeCriteria = TEST<TestCriteria::range, MovetkGeometryKernel>;
 	using HeadingSegmentation = MonotoneSegmentation<MovetkGeometryKernel, RangeCriteria>;
 };

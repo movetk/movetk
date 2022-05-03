@@ -29,14 +29,13 @@
 #include <stack>
 
 #include "helpers/CustomCatchTemplate.h"
-#include "movetk/algo/AlgorithmTraits.h"
-#include "movetk/algo/OutlierDetection.h"
-#include "movetk/algo/Segmentation.h"
-#include "movetk/algo/outlierdetection/OutlierDetectionPredicates.h"
+#include "movetk/AlgorithmTraits.h"
+#include "movetk/OutlierDetection.h"
 #include "movetk/ds/TabularTrajectory.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/metric/Norm.h"
+#include "movetk/outlierdetection/OutlierDetectionPredicates.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
 
@@ -46,7 +45,7 @@ struct OutlierDetectionTests : public test_helpers::BaseTestFixture<Backend> {
 	using CartesianProbeTraits = movetk::io::ProbeTraits<typename Base::MovetkGeometryKernel>;
 	using Probe = typename CartesianProbeTraits::ProbePoint;
 	using Trajectory = std::vector<Probe>;
-	using OutlierDetectionTraits = movetk::algo::
+	using OutlierDetectionTraits = movetk::outlierdetection::
 	    OutlierDetectionTraits<CartesianProbeTraits, typename Base::MovetkGeometryKernel, typename Base::Norm>;
 	using LinearSpeedboundedTest = movetk::outlierdetection::TEST<movetk::outlierdetection::linear_speed_bounded_test_tag,
 	                                                              movetk::algo::cartesian_coordinates_tag,

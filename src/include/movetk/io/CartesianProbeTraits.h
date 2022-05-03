@@ -24,36 +24,27 @@
 #ifndef MOVETK_CARTESIANPROBETRAITS_H
 #define MOVETK_CARTESIANPROBETRAITS_H
 
-#include "movetk/io/ParseDate.h"
-#include "movetk/io/CategoricalField.h"
 #include "ProbeTraits.h"
+#include "movetk/io/CategoricalField.h"
+#include "movetk/io/ParseDate.h"
 
 namespace movetk::io {
+enum ProbeColumns { PROJECTED_COORDS, SAMPLE_DATE };
 
-/*    struct geo_coordinates_tag {
-    };
+template <class GeometryTraits>
+using ProbePoint = typename std::tuple<typename GeometryTraits::MovetkPoint, std::size_t>;
 
-    struct cartesian_coordinates_tag {
-    };*/
+class ProbeParseDate : public ParseDate {
+public:
+	explicit ProbeParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d %H:%M:%S")
+	    : ParseDate(ts, std::move(date_format)) {}
+};
 
-    enum ProbeColumns {
-        PROJECTED_COORDS, SAMPLE_DATE
-    };
+template <class GeometryTraits>
+using ProbeCsv = std::vector<ProbePoint<GeometryTraits>>;
 
-    template <class GeometryTraits>
-    using ProbePoint = typename std::tuple<typename GeometryTraits::MovetkPoint, std::size_t>;
+template <class GeometryTraits>
+using ProbeTraits = _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv<GeometryTraits>, ProbePoint<GeometryTraits>>;
 
-    class ProbeParseDate: public ParseDate {
-    public:
-        explicit ProbeParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d %H:%M:%S")
-                :ParseDate(ts, std::move(date_format)) { }
-    };
-
-    template <class GeometryTraits>
-    using ProbeCsv = std::vector<ProbePoint<GeometryTraits>>;
-
-    template <class GeometryTraits>
-    using ProbeTraits = _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv<GeometryTraits>, ProbePoint<GeometryTraits>> ;
-
-}
-#endif //MOVETK_CARTESIANPROBETRAITS_H
+}  // namespace movetk::io
+#endif  // MOVETK_CARTESIANPROBETRAITS_H

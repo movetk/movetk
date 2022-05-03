@@ -27,7 +27,7 @@
 #include "movetk/ds/FreeSpaceDiagram.h"
 #include "movetk/utils/Iterators.h"
 
-namespace movetk::algo {
+namespace movetk::clustering {
 
 template <class ClusteringTraits>
 class SubTrajectoryClustering {
@@ -227,6 +227,33 @@ public:
 	typename boost::property_map<typename ClusteringTraits::Graph, boost::edge_name_t>::type label =
 	    boost::get(boost::edge_name_t(), graph);
 };
-}  // namespace movetk::algo
+
+
+/*!
+ * @struct ClusteringTraits
+ * @brief This traits class serves as a collection of types
+ * required for clustering with Discrete Frechet Distance
+ * @tparam _FreeSpaceDiagram - A model of the Free Space Diagram.
+ * For example @refitem movetk_support::FreeSpaceDiagram
+ */
+template <class _FreeSpaceDiagram>
+struct ClusteringTraits {
+	typedef _FreeSpaceDiagram FreeSpaceDiagram;
+	typedef typename FreeSpaceDiagram::FreeSpaceDiagramTraits FreeSpaceDiagramTraits;
+	typedef typename FreeSpaceDiagramTraits::FreeSpaceCellTraits FreeSpaceCellTraits;
+	typedef typename FreeSpaceCellTraits::IntersectionTraits IntersectionTraits;
+	typedef typename FreeSpaceDiagramTraits::GeometryTraits GeometryTraits;
+	typedef typename GeometryTraits::NT NT;
+	typedef typename FreeSpaceCellTraits::vertex_orientation vertex_orientation;
+	typedef typename boost::property<boost::vertex_index_t, std::size_t> VertexProperty;
+	typedef typename boost::property<boost::edge_name_t, std::size_t> EdgeProperty;
+	typedef boost::adjacency_list<boost::setS, boost::vecS, boost::directedS, VertexProperty, EdgeProperty> Graph;
+	typedef typename boost::graph_traits<Graph>::vertex_iterator vertex_iterator;
+	typedef typename boost::graph_traits<Graph>::edge_iterator edge_iterator;
+	typedef typename boost::graph_traits<Graph>::out_edge_iterator out_edge_iterator;
+	typedef typename boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
+};
+
+}  // namespace movetk::clustering
 
 #endif  // MOVETK_CLUSTERING_H

@@ -27,7 +27,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include "helpers/CustomCatchTemplate.h"
-#include "movetk/algo/Simplification.h"
+#include "movetk/Simplification.h"
 #include "movetk/metric/Distances.h"
 #include "movetk/metric/Norm.h"
 
@@ -74,7 +74,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
 	using SFR = movetk::metric::StrongFrechet<MovetkGeometryKernel,
 	                                          movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>>;
 	using SqDistance = movetk::metric::squared_distance_d<MovetkGeometryKernel, Norm>;
-	movetk::algo::simplification::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
+	movetk::simplification::Agarwal<MovetkGeometryKernel, SqDistance> simplifier;
 	simplifier.setTolerance(0.0001);
 	using PointList = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
 	const auto parseIpe = [](const std::string& string_data, PointList& output) {

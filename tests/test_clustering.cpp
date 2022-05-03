@@ -24,14 +24,13 @@
 #include <array>
 #include <catch2/catch.hpp>
 
-#include "movetk/algo/AlgorithmTraits.h"
-#include "movetk/algo/Clustering.h"
+#include "helpers/CustomCatchTemplate.h"
+#include "movetk/Clustering.h"
 #include "movetk/ds/FreeSpaceDiagram.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-#include "helpers/CustomCatchTemplate.h"
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE("Check subtrajectory clustering 1", "[subtrajectory_clustering_1]") {
@@ -45,8 +44,8 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check subtrajectory clustering 1", "[subtrajecto
 	using FreeSpaceCell = movetk::ds::FreeSpaceCell<FreeSpaceCellTraits>;
 	using FreeSpaceDiagramTraits = movetk::ds::FreeSpaceDiagramTraits<FreeSpaceCell>;
 	using FreeSpaceDiagram = movetk::ds::FreeSpaceDiagram<FreeSpaceDiagramTraits>;
-	using ClusteringTraits = movetk::algo::ClusteringTraits<FreeSpaceDiagram>;
-	using SubTrajectoryClustering = movetk::algo::SubTrajectoryClustering<ClusteringTraits>;
+	using ClusteringTraits = movetk::clustering::ClusteringTraits<FreeSpaceDiagram>;
+	using SubTrajectoryClustering = movetk::clustering::SubTrajectoryClustering<ClusteringTraits>;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	std::vector<MovetkPoint> polyline_a{make_point({69.5, 10.5}),
 	                                    make_point({70, 11}),

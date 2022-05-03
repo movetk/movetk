@@ -37,8 +37,8 @@
 #include <utility>
 #include <vector>
 
-#include "movetk/algo/Interpolation.h"
-#include "movetk/algo/PolylineUtils.h"
+#include "movetk/Interpolation.h"
+#include "movetk/PolylineUtils.h"
 #include "movetk/io/TrajectoryTraits.h"
 #include "movetk/io/TuplePrinter.h"
 
