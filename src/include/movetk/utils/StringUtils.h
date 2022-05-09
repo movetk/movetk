@@ -25,8 +25,9 @@
 #ifndef MOVETK_STRINGUTILS_H
 #define MOVETK_STRINGUTILS_H
 
-#include <iterator>
 #include <algorithm>
+#include <iterator>
+
 #include "Asserts.h"
 #include "Requirements.h"
 
@@ -38,79 +39,75 @@
 namespace movetk::utils {
 
 
-    /*!
-     * @brief joins a set of input values
-     * @tparam IteratorType - Iterator over a set of values
-     * @param first - Iterator to the first value
-     * @param beyond - Iterator to the last value
-     * @param delim
-     * @return the concatenated string
-     */
-    template<class IteratorType,
-            typename = movetk::utils::requires_random_access_iterator<IteratorType> >
-    std::string join(IteratorType first, IteratorType beyond, const char &delim = ',') {
-        //ASSERT_RANDOM_ACCESS_ITERATOR(IteratorType);
-        std::string mergedTokens = std::to_string(*first);
-        IteratorType it = first;
-        it++;
-        while (it != beyond) {
-            mergedTokens += delim;
-            mergedTokens += std::to_string(*it);
-            it++;
-        }
-        //mergedTokens += "\n";
-        return mergedTokens;
-    }
+/*!
+ * @brief joins a set of input values
+ * @tparam IteratorType - Iterator over a set of values
+ * @param first - Iterator to the first value
+ * @param beyond - Iterator to the last value
+ * @param delim
+ * @return the concatenated string
+ */
+template <class IteratorType, typename = movetk::utils::requires_random_access_iterator<IteratorType>>
+std::string join(IteratorType first, IteratorType beyond, const char &delim = ',') {
+	// ASSERT_RANDOM_ACCESS_ITERATOR(IteratorType);
+	std::string mergedTokens = std::to_string(*first);
+	IteratorType it = first;
+	it++;
+	while (it != beyond) {
+		mergedTokens += delim;
+		mergedTokens += std::to_string(*it);
+		it++;
+	}
+	// mergedTokens += "\n";
+	return mergedTokens;
+}
 
-    /*!
-     * @brief splits a string into tokens
-     * @tparam OutputIterator - an insert iterator
-     * @param in - input string
-     * @param iter - Iterator to where the value is to be inserted
-     * @param delim
-     */
-    template<class OutputIterator,
-            typename = movetk::utils::requires_output_iterator<OutputIterator>,
-            typename = movetk::utils::requires_string<
-                    typename OutputIterator::value_type> >
-    void split(std::string &in, OutputIterator iter, const char &delim = ',') {
-        //ASSERT_OUTPUT_ITERATOR(OutputIterator);
-        //ASSERT_IS_STRING(OutputIterator);
-        unsigned long int prevIdx = 0;
-        std::string::size_type currIdx;
-        currIdx = in.find(delim, prevIdx);
-        if (currIdx == std::string::npos) {
-            *iter = in;
-            return;
-        }
-        while (currIdx != std::string::npos) {
-            *iter = in.substr(prevIdx, (currIdx - prevIdx));
-            prevIdx = currIdx + 1;
-            currIdx = in.find(delim, prevIdx);
-        }
-        *iter = in.substr(prevIdx);
-    }
+/*!
+ * @brief splits a string into tokens
+ * @tparam OutputIterator - an insert iterator
+ * @param in - input string
+ * @param iter - Iterator to where the value is to be inserted
+ * @param delim
+ */
+template <class OutputIterator,
+          typename = movetk::utils::requires_output_iterator<OutputIterator>,
+          typename = movetk::utils::requires_string<typename OutputIterator::value_type>>
+void split(std::string &in, OutputIterator iter, const char &delim = ',') {
+	// ASSERT_OUTPUT_ITERATOR(OutputIterator);
+	// ASSERT_IS_STRING(OutputIterator);
+	unsigned long int prevIdx = 0;
+	std::string::size_type currIdx;
+	currIdx = in.find(delim, prevIdx);
+	if (currIdx == std::string::npos) {
+		*iter = in;
+		return;
+	}
+	while (currIdx != std::string::npos) {
+		*iter = in.substr(prevIdx, (currIdx - prevIdx));
+		prevIdx = currIdx + 1;
+		currIdx = in.find(delim, prevIdx);
+	}
+	*iter = in.substr(prevIdx);
+}
 
-    /*!
-     *
-     * @tparam NT
-     */
-    template<class NT>
-    struct cast{
-            //NT operator()(std::string &str){}
-        };
-
-    /*!
-     *
-     */
-     template<>
-     struct cast<long double>{
-         long double operator()(std::string &str){
-             return std::stold(str);
-         }
-     };
-
-
+/*!
+ *
+ * @tparam NT
+ */
+template <class NT>
+struct cast {
+	// NT operator()(std::string &str){}
 };
 
-#endif //MOVETK_STRINGUTILS_H
+/*!
+ *
+ */
+template <>
+struct cast<long double> {
+	long double operator()(std::string &str) { return std::stold(str); }
+};
+
+
+}  // namespace movetk::utils
+
+#endif  // MOVETK_STRINGUTILS_H

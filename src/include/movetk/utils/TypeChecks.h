@@ -246,5 +246,5 @@ struct is_date {
 	static const bool value = std::is_same_v<decayed_t, std::size_t> || std::is_same_v<decayed_t, io::ParseDate> ||
 	                          std::is_same_v<decayed_t,std::time_t>;
 };
-};      // namespace movetk::utils
+}      // namespace movetk::utils
 #endif  // MOVETK_TYPECHECKS_H

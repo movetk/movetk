@@ -56,7 +56,8 @@ public:
 		// 'i' : parallel projection of the point lies on the segment
 		// 'a' : parallel projection of the point lies above the segment (relative to the segment direction)
 		// 'b' : parallel projection of the point lies below the segment (relative to the segment direction)
-		char type;
+		enum class Type { On, Above, Below };
+		Type type = Type::On;
 
 		// Non-normalized reachable range
 		std::pair<NT, NT> range(NT epsilon) const {
@@ -64,8 +65,8 @@ public:
 			if (epsilon < minimumEpsilon)
 				return std::make_pair<NT, NT>(std::numeric_limits<NT>::max(), std::numeric_limits<NT>::lowest());
 			return std::make_pair(
-			    type == 'b' ? 0.0 : parallelDistance - std::sqrt(sq(epsilon) - sq(perpendicularDistance)),
-			    type == 'a' ? parallelDistance : parallelDistance + std::sqrt(sq(epsilon) - sq(perpendicularDistance)));
+			    type == Type::Below ? 0.0 : parallelDistance - std::sqrt(sq(epsilon) - sq(perpendicularDistance)),
+			    type == parallelDistance + (Type::Above ? 0 : std::sqrt(sq(epsilon) - sq(perpendicularDistance))));
 		}
 
 		void compute(const Point &point, const Point &seg0, const Point &seg1) {
@@ -79,16 +80,19 @@ public:
 			perpendicularDistance = std::sqrt(pntLen * pntLen - parallelDistance * parallelDistance);
 			auto seg = movetk::geom::MakeSegment<Kernel>()(seg0, seg1);
 			minimumEpsilon = std::sqrt(SqDistance()(point, seg));
-			type = 'i';
-			if (parallelDistance > segLen)
-				type = 'a';
-			else if (parallelDistance < 0)
-				type = 'b';
+			type = Type::On;
+			if (parallelDistance > segLen) {
+				type = Type::Above;
+			} else if (parallelDistance < 0) {
+				type = Type::Below;
+			}
 		}
 	};
 
 	struct CellPolynomials {
 		// Cell boundary polynomials for left (0) and bottom (1) boundaries.
+		static constexpr size_t LEFT = 0;
+		static constexpr size_t BOTTOM = 1;
 		Polynomial polys[2];
 	};
 	std::vector<std::vector<CellPolynomials>> parameterized_freespace;
@@ -107,7 +111,7 @@ public:
 		const auto polyASize = std::distance(polyA.first, polyA.second);
 		const auto polyBSize = std::distance(polyB.first, polyB.second);
 		parameterized_freespace.resize(polyASize - 1, {});
-		for (auto &el : polynomials) {
+		for (auto &el : parameterized_freespace) {
 			el.resize(polyBSize - 1, CellPolynomials{});
 		}
 		std::size_t i = 0;
@@ -115,9 +119,9 @@ public:
 			std::size_t j = 0;
 			for (auto pointB = polyB.first; pointB != std::prev(polyB.second); ++pointB, ++j) {
 				// Compute bottom boundary polynomial
-				parameterized_freespace[i][j].polys[0].compute(*pointA, *pointB, *(std::next(pointB)));
+				parameterized_freespace[i][j].polys[CellPolynomials::BOTTOM].compute(*pointA, *pointB, *(std::next(pointB)));
 				// Compute left boundary polynomial
-				parameterized_freespace[i][j].polys[1].compute(*pointB, *pointA, *std::next(pointA));
+				parameterized_freespace[i][j].polys[CellPolynomials::LEFT].compute(*pointB, *pointA, *std::next(pointA));
 			}
 		}
 	}
@@ -150,7 +154,7 @@ public:
 	                       InputIteratorA poly_a_beyond,
 	                       InputIteratorB poly_b,
 	                       InputIteratorB poly_b_beyond) {
-	precompute(poly_a, poly_a_beyond, poly_b,poly_b_beyond);
+		precompute(poly_a, poly_a_beyond, poly_b, poly_b_beyond);
 	}
 
 
@@ -161,17 +165,18 @@ public:
 	 * \return Whether or not the polylines are within Frechet distance epsilon
 	 */
 	bool operator()(NT epsilon) const {
-		// Polyline sizes (number of points)
-		if(m_precomputed_distance_sq.has_value()){
+		// Compare with precomputed distance (no freespace needed)
+		if (m_precomputed_distance_sq.has_value()) {
 			return *m_precomputed_distance_sq <= epsilon * epsilon + m_precision;
-		}
-		else{
-			if(m_parameterized_freespace.size() == 0){return false;}
+		} else {
+			if (m_parameterized_freespace.size() == 0) {
+				return false;
+			}
 			return decide(epsilon);
 		}
 
 		// If the endpoint epsilon is the smallest, within some fraction, we are ok with selecting that
-		return decide(polynomials, epsilon);
+		return decide(m_parameterized_freespace, epsilon);
 	}
 	void set_precision(NT precision) { m_precision = precision; }
 	NT get_precision() const { return m_precision; }
@@ -184,16 +189,16 @@ private:
 	          typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
 	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
 	void precompute(InputIteratorA poly_a,
-	                       InputIteratorA poly_a_beyond,
-	                       InputIteratorB poly_b,
-	                       InputIteratorB poly_b_beyond) {
+	                InputIteratorA poly_a_beyond,
+	                InputIteratorB poly_b,
+	                InputIteratorB poly_b_beyond) {
 		// Polyline sizes (number of points)
 		const auto polyASize = std::distance(poly_a, poly_a_beyond);
 		const auto polyBSize = std::distance(poly_b, poly_b_beyond);
 
 		// Or error
-		if (polyASize == 0 || polyBSize == 0){
-				return;
+		if (polyASize == 0 || polyBSize == 0) {
+			return;
 		}
 		if (polyASize == 1 || polyBSize == 1) {
 			auto single_point_poly = polyASize == 1 ? poly_a : poly_b;
@@ -208,18 +213,19 @@ private:
 				               return sqDist(*single_point_poly, range_poly_element);
 			               });
 			// Prestore distance
-			m_precomputed_distance_sq =*std::max_element(std::begin(distances), std::end(distances));
-		}
-		else if (polyASize == 2 && polyBSize == 2) {
+			m_precomputed_distance_sq = *std::max_element(std::begin(distances), std::end(distances));
+		} else if (polyASize == 2 && polyBSize == 2) {
 			// Minimum required epsilon to make start and end match for polylines.
-			m_precomputed_distance_sq = std::max(m_sqDistance(*poly_a, *poly_b), m_sqDistance(*std::prev(poly_a_beyond), *std::prev(poly_b_beyond)));
-		}else{
-			m_parameterized_freespace.compute_freespace(std::make_pair(poly_a, poly_a_beyond), std::make_pair(poly_b, poly_b_beyond));
+			m_precomputed_distance_sq =
+			    std::max(m_sqDistance(*poly_a, *poly_b), m_sqDistance(*std::prev(poly_a_beyond), *std::prev(poly_b_beyond)));
+		} else {
+			m_parameterized_freespace.compute_freespace(std::make_pair(poly_a, poly_a_beyond),
+			                                            std::make_pair(poly_b, poly_b_beyond));
 		}
 	}
 
 	bool decide(NT epsilon) const {
-		const auto epsilon_sq = epsilon*epsilon;
+		const auto epsilon_sq = epsilon * epsilon;
 		const auto &polynomials = m_parameterized_freespace;
 		const auto maxI = polynomials.size();
 		const auto maxJ = polynomials[0].size();

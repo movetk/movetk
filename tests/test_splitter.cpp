@@ -66,7 +66,7 @@ TEST_CASE("Splitter", "[splitter]") {
 		using ProbeInputIterator = decltype(probe_points.begin());
 		movetk::io::Splitter<SplitByField0, ProbeInputIterator> splitter(probe_points.begin(), probe_points.end());
 
-		int i = 0;
+		size_t i = 0;
 		for (const auto& rows : splitter) {
 			REQUIRE(i < expected_split_count);
 			REQUIRE(std::get<0>(rows[0]) == expected_field_values[i]);
@@ -127,7 +127,7 @@ TEST_CASE("Splitter", "[splitter]") {
 		                                                               split_by_dist);
 
 		int i = 0;
-		for (const auto& rows : splitter) {
+		for ([[maybe_unused]] const auto& rows : splitter) {
 			//            REQUIRE( std::get<0>(rows[0]) == expected_field_values[i] );
 			//            REQUIRE( rows.size() == expected_split_size[i] );
 			i++;

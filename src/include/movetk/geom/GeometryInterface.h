@@ -471,6 +471,6 @@ public:
 	typedef typename WrapperGeometryKernel::Wrapper_Minimum_Bounding_Rectangle MovetkMinimumBoundingRectangle;
 };
 
-};  // namespace movetk::geom
+}  // namespace movetk::geom
 
 #endif  // MOVETK_INTERFACE_H

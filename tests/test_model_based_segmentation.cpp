@@ -28,6 +28,7 @@
 
 #include <array>
 #include <iostream>
+#include <vector>
 
 #include "helpers/CustomCatchTemplate.h"
 #include "movetk/Segmentation.h"
@@ -171,7 +172,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 	Norm norm;
 	using ParameterTraits =
 	    movetk::segmentation::brownian_bridge::ParameterTraits<MovetkGeometryKernel, decltype(t.begin())>;
-	using BridgeIterator = std::vector<typename ParameterTraits::Parameters>::const_iterator;
+	using BridgeIterator = typename std::vector<typename ParameterTraits::Parameters>::const_iterator;
 	using Projection = movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT>;
 	std::vector<typename ParameterTraits::Parameters> bridges;
 
@@ -219,8 +220,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 	using LogLikelihood =
 	    movetk::segmentation::brownian_bridge::LogLikelihood<MovetkGeometryKernel, ParameterTraits, Norm>;
 
-	using ModelBasedSegmentation =
-	    movetk::segmentation::ModelBasedSegmentation<MovetkGeometryKernel, LogLikelihood>;
+	using ModelBasedSegmentation = movetk::segmentation::ModelBasedSegmentation<MovetkGeometryKernel, LogLikelihood>;
 
 	std::cout << "Segmentation with high penalty factor p = 1000 \n";
 	ModelBasedSegmentation segmentation(1000);
@@ -242,7 +242,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 		std::cout << std::get<ParameterTraits::ParameterColumns::POINT>(*seg) << "\n";
 	}
 
-	movetk::utils::SegmentIdGenerator make_segment(std::begin(segments), std::end(segments));
+	auto make_segment = movetk::utils::make_segment_id_generator(std::begin(segments), std::end(segments));
 	std::cout << "Segments: \n";
 	bit = std::begin(bridges);
 	std::size_t id = 0;
@@ -277,7 +277,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 		std::cout << std::get<ParameterTraits::ParameterColumns::POINT>(*seg) << "\n";
 	}
 
-	movetk::utils::SegmentIdGenerator make_segment1(std::begin(segments), std::end(segments));
+	auto make_segment1 = movetk::utils::make_segment_id_generator(std::begin(segments), std::end(segments));
 	std::cout << "Segments: \n";
 	bit = std::begin(bridges);
 	id = 0;

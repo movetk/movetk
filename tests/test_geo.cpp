@@ -86,7 +86,6 @@ TEST_CASE("projection_errors_by_bbox_size", "[projection_errors_by_bbox_size]") 
 
 		movetk::geo::LocalCoordinateReference<double> ref(lat0, lon0);
 		auto latlon = ref.inverse(length, length);
-		auto dist_error = movetk::geo::distance_exact(latlon[0], latlon[1], lat1, lon1);
 		REQUIRE(latlon[0] == Approx(lat1).epsilon(0.0001));
 		REQUIRE(latlon[1] == Approx(lon1).epsilon(0.0001));
 	}
