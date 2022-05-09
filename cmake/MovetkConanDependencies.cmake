@@ -24,6 +24,7 @@ boost/1.77.0
 catch2/2.13.1
 rapidjson/1.1.0 
 geographiclib/1.52
+zlib/1.2.12 # To fix conflict between boost and gdal requirement...
 IMPORTS "bin, *.dll -> ./bin" # For windows, copy dependent dlls to the binary directory
 GENERATORS 
 cmake_find_package_multi # Use the config package generator to be able to do find_package(package CONFIG)

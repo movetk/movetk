@@ -10,6 +10,14 @@ if(NOT Boost_FOUND)
 endif()
 set(Boost_USE_MULTITHREADED 1)
 
+if(NOT TARGET Boost::Boost)
+    if(TARGET Boost::boost)
+        add_library(Boost::Boost ALIAS Boost::boost)
+    else()
+        message(FATAL_ERROR "Cannot find Boost::Boost target" )
+    endif()
+endif()
+
 find_package(Threads REQUIRED)
 
 # Find GDAL and fix the target if it is not provided.

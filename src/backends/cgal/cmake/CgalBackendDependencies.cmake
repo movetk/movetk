@@ -1,6 +1,6 @@
 
 # Find CGAL dependencies
-find_package(CGAL REQUIRED)
+find_package(CGAL CONFIG REQUIRED)
 
 #Use different multiple precision frameworks between Unix and Windows
 find_package(GMP)

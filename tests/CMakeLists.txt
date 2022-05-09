@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.11)
 
-message(STATUS "Prefix and module path at tests: ${CMAKE_MODULE_PATH} ${CMAKE_PREFIX_PATH}")
-find_package(Catch2 REQUIRED)
-find_package(Boost REQUIRED)
+find_package(Catch2 CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED)
+
+if(NOT TARGET Catch2::Catch2)
+    message(FATAL_ERROR "No Catch2 target")
+endif()
 
 add_executable(movetk_tests
         test_includes.h
@@ -47,12 +50,15 @@ add_executable(movetk_tests
         test_agarwal.cpp
         )
 
+# Copy test data
 add_custom_command(TARGET movetk_tests PRE_BUILD 
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:movetk_tests>/data
     COMMAND ${CMAKE_COMMAND} -Dsrc_dir="${CMAKE_CURRENT_LIST_DIR}/data"
         -Ddst_dir=$<TARGET_FILE_DIR:movetk_tests>/data
         -P ${PROJECT_SOURCE_DIR}/cmake/update_directory.cmake
 )
+
+# Copy binary dependencies gotten from Conan
 add_custom_command(TARGET movetk_tests PRE_BUILD 
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:movetk_tests>/data
     COMMAND ${CMAKE_COMMAND} -Dsrc_dir="${PROJECT_BINARY_DIR}/bin"
@@ -65,24 +71,20 @@ if(MSVC)
       PRIVATE test_includes.h
     )
 endif()
+if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
+    set_target_properties(movetk_tests PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:movetk_tests>)
+endif()
 
+include(CTest)
 include(Catch)
+
 target_link_libraries(movetk_tests
-        PRIVATE
+        PUBLIC
         c2d::movetk
         Catch2::Catch2
         Boost::headers
         )
-include(CTest)
-
-if(MSVC)
-# add_custom_command( TARGET movetk_tests POST_BUILD
-#                     COMMAND ${CMAKE_COMMAND} -E echo "Copying dependencies:" $<JOIN:$<TARGET_RUNTIME_DLLS:movetk_tests>,",">
-#                     COMMAND ${CMAKE_COMMAND} -E copy
-#                         $<TARGET_RUNTIME_DLLS:movetk_tests>
-#                         $<TARGET_FILE_DIR:movetk_tests>
-#                     COMMAND_EXPAND_LISTS)
-endif()
+        
 catch_discover_tests(movetk_tests)
 
 
