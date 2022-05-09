@@ -56,7 +56,7 @@ TEST_CASE("Create and search in a Trie", "[test_trie") {
 	{
 		int value = 1;
 		const std::string str = "aabc";
-		using str_it = std::remove_reference_t<std::remove_cv_t<decltype(begin(str))>>;
+		//using str_it = std::remove_reference_t<std::remove_cv_t<decltype(begin(str))>>;
 		// static_assert(std::same_as<str_it, typename std::string::const_iterator>);
 		// static_assert(std::random_access_iterator<str_it>);
 		// static_assert(std::same_as<typename std::iterator_traits<str_it>::value_type,char>);

@@ -47,7 +47,7 @@ auto subset_tuple(Tuple t) -> std::tuple<typename std::tuple_element<idx, Tuple>
 template <class Tuple, int... idx>
 auto subset_tuple(Tuple &&t, std::integer_sequence<int, idx...>)
     -> std::tuple<typename std::tuple_element<idx, Tuple>::type...> {
-	return std::make_tuple(std::get<idx>(std::forward<TUPLE>(t))...);
+	return std::make_tuple(std::get<idx>(std::forward<Tuple>(t))...);
 }
 
 template <class Array, int... idx>

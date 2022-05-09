@@ -528,6 +528,10 @@ public:
 	SegmentIdGenerator() = default;
 };
 
+template <typename PolyLineIdxIterator>
+auto make_segment_id_generator(PolyLineIdxIterator begin, PolyLineIdxIterator end) {
+	return SegmentIdGenerator<PolyLineIdxIterator>(begin, end);
+}
 
 /// \brief Merges intervals
 ///
@@ -594,7 +598,7 @@ void compute_curve_squared_length(InputIterator first, InputIterator beyond, Out
 		it++;
 	}
 }
-};  // namespace movetk::utils
+}  // namespace movetk::utils
 
 
 #endif  // MOVETK_TRAJECTORYUTILS_H

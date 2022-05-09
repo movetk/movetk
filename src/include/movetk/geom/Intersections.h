@@ -1,5 +1,6 @@
 #ifndef MOVETK_GEOM_INTERSECTIONS_H
 #define MOVETK_GEOM_INTERSECTIONS_H
+#include "ObjectCreation.h"
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/TypeChecks.h"
 namespace movetk::geom {

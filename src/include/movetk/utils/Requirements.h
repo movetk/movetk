@@ -155,9 +155,10 @@ using requires_equality = typename std::enable_if<is_equal_to<T1, T2>::value, T2
  *@details defines \c requires_valid_type as \c void if requirement is not met
  */
 template <class Traits, class T = void>
-using requires_valid_type = typename std::enable_if<is_NT<Traits, T>::value || is_size_t<T>::value ||
-                                                        is_date<io::ParseDate>::value || is_MovetkPoint<Traits, T>::value,
-                                                    T>::type;
+using requires_valid_type =
+    typename std::enable_if<is_NT<Traits, T>::value || is_size_t<T>::value || is_date<io::ParseDate>::value ||
+                                is_MovetkPoint<Traits, T>::value,
+                            T>::type;
 
 /*!
  *@brief Requirement for template \c T to be a \c std::string
@@ -224,5 +225,5 @@ using requires_tuple_element_as_NT = requires_NT<Traits, std::tuple_element_t<I,
 /*template<class T1, class T2 = void>
 using requires_stack  = typename std::enable_if<movetk::utils::is_stack<T1, T2>::value, T2>::type;*/
 
-};      // namespace movetk::utils
+}  // namespace movetk::utils
 #endif  // MOVETK_REQUIREMENTS_H
