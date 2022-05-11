@@ -84,6 +84,16 @@
 				"MOVETK_DEPENDENCIES_FROM_CONAN":true,
 				"CMAKE_BUILD_TYPE":"Release"
 			}
+		},
+		{
+			"name":"gcc-make",
+			"displayName": "GCC compile",
+			"generator": "Make",
+			"inherits":"full-build",
+			"cacheVariables":{
+				"MOVETK_DEPENDENCIES_FROM_CONAN":true,
+				"CMAKE_BUILD_TYPE":"Release"
+			}
 		}
 	]
 }
