@@ -1,0 +1,89 @@
+{
+	"version":3,
+	"cmakeMinimumRequired":{
+		"major":3,
+		"minor":21,
+		"patch":0
+	},
+	"configurePresets": [
+		{
+			"name":"examples-build",
+			"hidden": true,
+			"displayName":"Examples build",
+			"cacheVariables": {
+				"MOVETK_BUILD_EXAMPLES":true
+			}
+		},
+		{
+			"name":"tests-build",
+			"hidden": true,
+			"displayName":"Tests build",
+			"cacheVariables": {
+				"MOVETK_BUILD_TESTS":true
+			}
+		},
+		{
+			"name":"python-build",
+			"hidden": true,
+			"displayName":"Python build",
+			"cacheVariables": {
+				"MOVETK_BUILD_PY":true
+			}
+		},
+		{
+			"name":"full-build",
+			"displayName":"MoveTK full build cache variables",
+			"inherits":["tests-build","examples-build","python-build"]
+		},
+		{
+			"name":"clang",
+			"displayName": "Clang compile",
+			"generator": "Ninja",
+			"environment": {
+				"CC":"/usr/bin/clang",
+				"CXX":"/usr/bin/clang++"
+			},
+			"inherits":"full-build",
+			"cacheVariables":{
+				"MOVETK_DEPENDENCIES_FROM_CONAN":true,
+				"CMAKE_BUILD_TYPE":"Release"
+			}
+		},
+		{
+			"name":"vs19",
+			"displayName": "Visual Studio 2019 build",
+			"generator": "Visual Studio 16 2019",
+			"inherits":"full-build",
+			"cacheVariables":{
+				"MOVETK_DEPENDENCIES_FROM_CONAN":true
+				}
+		},{
+			"name":"vs22",
+			"displayName": "Visual Studio 2022 build",
+			"generator": "Visual Studio 17 2022",
+			"inherits":"full-build",
+			"cacheVariables":{
+				"MOVETK_DEPENDENCIES_FROM_CONAN":true
+			}
+		},
+		{
+			"name":"ninja-msvc",
+			"displayName": "Ninja MSVC compile",
+			"generator": "Ninja",
+			"inherits":["tests-build","python-build"],
+			"cacheVariables":{
+				"MOVETK_DEPENDENCIES_FROM_CONAN":true
+			}
+		},
+		{
+			"name":"gcc",
+			"displayName": "GCC compile",
+			"generator": "Ninja",
+			"inherits":"full-build",
+			"cacheVariables":{
+				"MOVETK_DEPENDENCIES_FROM_CONAN":true,
+				"CMAKE_BUILD_TYPE":"Release"
+			}
+		}
+	]
+}
