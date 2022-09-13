@@ -6,7 +6,6 @@ gdal
 gsl
 cgal
 geographiclib
-cgal
 pybind11
 --triplet
 x64-windows
