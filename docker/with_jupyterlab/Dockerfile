@@ -2,6 +2,7 @@ FROM continuumio/miniconda3
 
 ARG WITH_CGAL_BACKEND=OFF
 
+RUN apt-get update
 # Configure as a web server 
 RUN apt-get update \
    && apt-get install -q -y  \
