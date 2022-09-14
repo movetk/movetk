@@ -1,0 +1,67 @@
+{
+    "name": "movetk",
+    "version-string": "0.1",
+    "homepage": "https://github.com/movetk/movetk",
+    "description": "MoveTK is a library for computational movement analysis written in C++.",
+    "dependencies": [
+        {
+            "name": "gdal",
+            "version>=": "3.4.1"
+        },
+        {
+            "name": "boost-graph",
+            "version>=": "1.77.0"
+        },
+        {
+            "name": "gsl",
+            "version>=": "2.7"
+        },
+        {
+            "name": "boost-iostreams",
+            "version>=": "1.77.0"
+        },
+        {
+            "name": "boost-log"
+        },
+        {
+            "name": "geographiclib"
+        },
+        {
+            "name": "pybind11"
+        },
+        {
+            "name": "catch2"
+        }
+    ],
+    "default-features": [
+        "boost-backend",
+        "cgal-backend"
+    ],
+    "features": {
+        "boost-backend": {
+            "description": "Boost backend",
+            "dependencies": [
+                {
+                    "name": "boost-geometry",
+                    "version>=": "1.77.0"
+                }
+            ]
+        },
+        "cgal-backend": {
+            "description": "CGAL backend",
+            "dependencies": [
+                {
+                    "name": "cgal",
+                    "version>=": "5.3"
+                },
+                {
+                    "name": "gmp"
+                },
+                {
+                    "name": "mpfr"
+                }
+            ]
+        }
+    },
+    "builtin-baseline": "acc3bcf76b84ae5041c86ab55fe138ae7b8255c7"
+}

@@ -1,0 +1,6 @@
+[requires]
+cgal/5.3
+gmp/6.2.1
+mpfr/4.1.0
+[generators]
+cmake_find_package_multi
