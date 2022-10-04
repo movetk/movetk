@@ -13,8 +13,6 @@ option(MOVETK_BUILD_DOC "Build documentation" OFF)
 option(MOVETK_BUILD_TESTS "Build MoveTk tests" OFF)
 option(MOVETK_BUILD_PY "Build MoveTk Python bindings" OFF)
 option(MOVETK_BUILD_EXAMPLES "Build MoveTk examples" OFF)
-option(MOVETK_DEPENDENCIES_FROM_CONAN "Get dependencies via Conan. Autodownload if missing" OFF)
-
 
 macro(MOVETK_LOG msg_type msg)
     message(${msg_type} "[MoveTk CMake] ${msg}")
@@ -61,11 +59,6 @@ if(UNIX)
   endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
 endif()
 
-# Get dependencies
-if(MOVETK_DEPENDENCIES_FROM_CONAN)
-        include(cmake/MovetkConanDependencies.cmake)
-endif()
-
 # Color compiler output for Gcc and Clang.
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     add_compile_options (-fdiagnostics-color=always)
@@ -79,8 +72,8 @@ endif ()
 include(cmake/ResolveMovetkDependencies.cmake)
 MOVETK_LOG(TRACE "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
 MOVETK_LOG(TRACE "Boost_LIBRARIES ${Boost_LIBRARIES}")
-MOVETK_LOG(TRACE "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
-MOVETK_LOG(TRACE "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
+MOVETK_LOG(STATUS "GeographicLib_INCLUDE_DIRS ${GeographicLib_INCLUDE_DIRS}")
+MOVETK_LOG(STATUS "GeographicLib_LIBRARIES ${GeographicLib_LIBRARIES}")
 
 # Add project code
 add_subdirectory(src)

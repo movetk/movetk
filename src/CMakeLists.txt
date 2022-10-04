@@ -145,7 +145,6 @@ install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR}
 set(_MOVETK_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR}/../cmake)
 install(FILES ${_MOVETK_CMAKE_DIR}/ResolveMovetkDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
 install(FILES ${_MOVETK_CMAKE_DIR}/PatchGdalInclude.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
-install(FILES ${_MOVETK_CMAKE_DIR}/MovetkConanDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
 
 # Install backend data
 foreach(_BACKEND ${MOVETK_BACKENDS})

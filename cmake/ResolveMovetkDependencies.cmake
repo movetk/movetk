@@ -39,9 +39,9 @@ endif()
 
 find_package(GeographicLib REQUIRED COMPONENTS SHARED)
 
-find_package(GSL 2.7 CONFIG REQUIRED NAMES gsl GSL)
+find_package(GSL 2.7 REQUIRED NAMES gsl GSL)
 
-find_package(MPFR CONFIG REQUIRED NAMES mpfr MPFR)
+find_package(MPFR REQUIRED NAMES mpfr MPFR)
 if(NOT TARGET MPFR::MPFR AND TARGET mpfr::mpfr)
     add_library(MPFR::MPFR ALIAS mpfr::mpfr)
 endif()
