@@ -6,6 +6,8 @@ macro(CreateImportTarget NAME)
             add_library(${NAME}::${NAME} ALIAS ${_LOWER_NAME}::${_LOWER_NAME})
         elseif(TARGET ${NAME}::${_LOWER_NAME})
             add_library(${NAME}::${NAME} ALIAS ${NAME}::${_LOWER_NAME})
+        elseif(TARGET ${_LOWER_NAME}::${NAME})
+            add_library(${NAME}::${NAME} ALIAS ${_LOWER_NAME}::${NAME})
         else()
             message(STATUS "Creating new target ${NAME}::${NAME}")
             # Try recreating the target from old style package variables
