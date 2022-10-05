@@ -33,6 +33,13 @@
 #include "movetk/utils/HereTrajectoryTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/*
+* Example to read in raw gps data, construct trajectories,
+* compute statistics for each trajectory: 
+* for example length, duration, meanspeed, median speed, time mode
+* and finally write the trajectories and the statistics in GeoJSON format
+*/
+
 constexpr int LON_Idx = here::c2d::raw::ProbeColumns::LON;
 constexpr int LAT_Idx = here::c2d::raw::ProbeColumns::LAT;
 constexpr int TS_Idx = here::c2d::raw::ProbeColumns::SAMPLE_DATE;
@@ -43,8 +50,8 @@ typedef GeometryKernel::MovetkGeometryKernel MovetkGeometryKernel;
 
 struct Distance
 {
-    MovetkGeometryKernel::NT operator()(const MovetkGeometryKernel::MovetkPoint& p0, 
-        const MovetkGeometryKernel::MovetkPoint& p1) const
+    MovetkGeometryKernel::NT operator()(const MovetkGeometryKernel::MovetkPoint &p0,
+                                        const MovetkGeometryKernel::MovetkPoint &p1) const
     {
         std::vector<MovetkGeometryKernel::NT> ll0;
         std::copy(p0.begin(), p0.end(), std::back_inserter(ll0));
@@ -85,17 +92,16 @@ public:
         auto timeStamps = trajectory.template get<TS_Idx>();
 
         //Compute length
-        movetk_algorithms::TrajectoryLength<MovetkGeometryKernel,Distance> lenCalc;
+        movetk_algorithms::TrajectoryLength<MovetkGeometryKernel, Distance> lenCalc;
         length = lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end());
         trajectory_properties.push_back(std::make_pair("length", std::to_string(length)));
 
-        // Compute duration 
+        // Compute duration
         movetk_algorithms::TrajectoryDuration duration;
         traj_duration = duration(timeStamps.begin(), timeStamps.end());
         trajectory_properties.push_back(std::make_pair("duration", std::to_string(traj_duration)));
 
         // Show speed statistics:
-        //using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<Trajectory_t, MovetkGeometryKernel, Distance, LON_Idx, LAT_Idx, TS_Idx>;
         using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<MovetkGeometryKernel, Distance>;
         SpeedStat speedStat;
         using Stat = typename SpeedStat::Statistic;
@@ -103,13 +109,12 @@ public:
         using CoordItPair = std::pair<decltype(lons.begin()), decltype(lons.begin())>;
 
         auto lonLatPoints = movetk_core::point_iterators_from_coordinates<MovetkGeometryKernel>(
-            std::array<CoordItPair, 2>{std::make_pair(lons.begin(), lons.end()), std::make_pair(lats.begin(), lats.end())}
-        );
+            std::array<CoordItPair, 2>{std::make_pair(lons.begin(), lons.end()), std::make_pair(lats.begin(), lats.end())});
 
         // Compute statistics
-        std::vector<Stat> statsToCompute = { Stat::Mean, Stat::Median, Stat::Min, Stat::Max,Stat::Variance };
-        std::vector<MovetkGeometryKernel::NT> stats = speedStat(lonLatPoints.first, lonLatPoints.second, timeStamps.begin(), timeStamps.end(), 
-            statsToCompute);
+        std::vector<Stat> statsToCompute = {Stat::Mean, Stat::Median, Stat::Min, Stat::Max, Stat::Variance};
+        std::vector<MovetkGeometryKernel::NT> stats = speedStat(lonLatPoints.first, lonLatPoints.second, timeStamps.begin(), timeStamps.end(),
+                                                                statsToCompute);
 
         mean_speed = stats[0];
         trajectory_properties.push_back(std::make_pair("mean_speed", std::to_string(mean_speed)));
@@ -262,7 +267,7 @@ int main(int argc, char **argv)
             ++tit;
             continue;
         }
-        
+
         ComputeStatistics statistics(trajectory, count);
         auto property_iterator_first = statistics.begin();
         auto property_iterator_beyond = statistics.end();

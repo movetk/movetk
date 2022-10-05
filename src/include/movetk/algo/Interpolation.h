@@ -348,7 +348,6 @@ namespace movetk_algorithms
                 typename InterpolationTraits::MovetkVector fwdV = velocity_u + v1 + v2;
 
                 fwdV *= (1 - fraction);
-                //fwdV *= 0.5;
 
                 t_u = std::get<TsIdx>(probe);
                 t_v = std::get<TsIdx>(probe_v);
@@ -363,11 +362,8 @@ namespace movetk_algorithms
                 typename InterpolationTraits::MovetkVector bwdV = velocity_v - v1 - v2;
 
                 bwdV *= fraction;
-                //bwdV *= 0.5;
 
                 typename InterpolationTraits::MovetkVector V = fwdV + bwdV;
-
-                //std::cout<<eps<<","<<fwdV<<","<<bwdV<<"\n";
 
                 velocities.push_back(V);
             }
@@ -389,16 +385,8 @@ namespace movetk_algorithms
                 while (++ip_it != (ip_beyond - 1))
                 {
                     typename InterpolationTraits::NT heading_v = std::get<HeadingIdx>(*ip_it);
-                    //std::cout<<std::get<0>(probe_u)<<",";
-                    //std::cout<<*vit<<",";
-                    //std::cout<<cos( movetk_core::deg2radians(heading_v) )<<",";
-                    //typename InterpolationTraits::NT speed_v = abs( movetk_core::get_x<typename InterpolationTraits::GeometryTraits>(*vit) / cos( movetk_core::deg2radians(heading_v) ));
-                    //std::cout<<speed_v<<",";
                     typename InterpolationTraits::NT squared_length = norm(*vit);
                     typename InterpolationTraits::NT speed_v = norm ^ 1;
-                    //std::cout<<length<<",";
-                    //std::cout<<abs(length - speed_v)<<"\n";
-                    //std::get<SpeedIdx>(*ip_it) = speed_v;
                     std::get<SpeedIdx>(*ip_it) = speed_v;
                     vit++;
                 }
@@ -532,10 +520,6 @@ namespace movetk_algorithms
                 typename InterpolationTraits::NT radius_v = delta_backward * max_speed;
                 typename InterpolationTraits::NT squared_radius_u = radius_u * radius_u;
                 typename InterpolationTraits::NT squared_radius_v = radius_v * radius_v;
-                /*std::cerr<<"source: "<<*source<<"\n";
-                std::cerr<<"destination: "<<*destination<<"\n";
-                std::cerr<<"radius_u: "<<radius_u<<"\n";
-                std::cerr<<"radius_v: "<<radius_v<<"\n";*/
                 typename InterpolationTraits::MovetkVector v = *source - *destination;
                 typename InterpolationTraits::NT squared_length = norm(v);
                 if (squared_length < MOVETK_EPS)
@@ -554,10 +538,6 @@ namespace movetk_algorithms
                 typename InterpolationTraits::NT y_max = std::max(
                     movetk_core::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
                     movetk_core::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
-                /*    std::cerr<<"x_min: "<<x_min<<"\n";
-                    std::cerr<<"x_max: "<<x_max<<"\n";
-                    std::cerr<<"y_min: "<<y_min<<"\n";
-                    std::cerr<<"y_max: "<<y_max<<"\n";*/
 
                 if ((x_min == 0) && (x_max == 0))
                 {
@@ -583,8 +563,7 @@ namespace movetk_algorithms
                     if ((squared_length_pu <= squared_radius_u + eps) &&
                         (squared_length_pv <= squared_radius_v + eps))
                     {
-                        /*std::cerr<<"x: "<<x<<"\n";
-                        std::cerr<<"y: "<<y<<"\n";*/
+
                         if ((abs(x) > 0) && (abs(y) > 0))
                             break;
                     }

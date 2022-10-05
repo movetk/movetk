@@ -48,6 +48,17 @@
 #include "movetk/ds/StartStopMatrix.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/**
+ * Example: Create trajectories from raw probe points by
+ *          - buffering probe points in memory
+ *          - sorting them by PROBE_ID
+ *          - splitting by PROBE_ID
+ *          - sorting each trajectoy points by SAMPLE_DATE
+ *          - segment the trajectories by velocity 
+ *              - please see https://doi.org/10.1145/1869790.1869821 for a description of the algorihtm
+ *          - writing trajectories to a CSV file.
+ */
+
 int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
@@ -107,8 +118,6 @@ int main(int argc, char **argv)
     typedef std::vector<Speeds::iterator> SegmentStartReferences;
     SegmentationTraits::SpeedSegmentation segment_by_speed(10);
     SegmentationTraits::HeadingSegmentation segment_by_heading(90);
-    //TSL::MakePoint<SegmentationTraits::Geometry_Kernel > make_point;
-    //std::array<NT, 2> pt;
     typedef movetk_support::StartStopDiagram<SsdType::compressed,
                                              typename GeometryKernel::MovetkGeometryKernel,
                                              std::vector<size_t>>
@@ -119,16 +128,9 @@ int main(int argc, char **argv)
     {
         BOOST_LOG_TRIVIAL(trace) << "New trajectory: \n";
 
-        //auto lons = trajectory.get<ProbeTraits::ProbeColumns::LON>();
-        //auto lats = trajectory.get<ProbeTraits::ProbeColumns::LAT>();
-
         auto headings = trajectory.get<ProbeTraits::ProbeColumns::HEADING>();
 
         auto speeds = trajectory.get<ProbeTraits::ProbeColumns::SPEED>();
-
-        //std::vector<Point> polyline = movetk::to_geocentered_polyline(make_point, lats, lons);
-        // Alternatively, use projection to local coordinates (requires also changing dimensions from 3 to 2):
-        //PolyLine polyline = movetk::to_projected_polyline(make_point, lats, lons);
 
         Headings headings_;
 
@@ -199,10 +201,6 @@ int main(int argc, char **argv)
         trajectory_id_col.assign(trajectory.size(), trajectory_count);
         // Add new fields to the trajectory
         auto segmented_trajectory = concat_field(trajectory, trajectory_id_col, segment_id_col);
-
-        // Declare an alias for the new field idx if used later
-        // constexpr static std::size_t TRAJ_ID = segmented_trajectory.num_fields() - 2;
-        // constexpr static std::size_t MEB_SEG_ID = segmented_trajectory.num_fields() - 1;
 
         ofcsv << segmented_trajectory;
         ++trajectory_count;

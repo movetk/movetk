@@ -29,6 +29,11 @@
 #include "movetk/TrajectoryReader.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/*
+* Example for reading in Geolife GPS Trajectories dataset
+* and counting the heading and distance between points in
+* a trajectory
+*/
 int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);
@@ -50,41 +55,56 @@ int main(int argc, char **argv)
         // Example: Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
         probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
+
+    // iterator over the probe_reader
     using ProbeInputIterator = decltype(probe_reader->begin());
+
+    /* iterator over the trajectory reader, 
+    *  the constructor over the TrajectoryReader class takes iterator
+    *  over the probe reader as input 
+    */
     auto trajectory_reader = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
 
+    // iterate over the trajectories
     for (auto trajectory : trajectory_reader)
     {
         double prev_lat, prev_lon;
         bool first = true;
 
+        // alias for the LAT and LON index in the input
         constexpr int LAT = ProbeTraits::ProbeColumns::LAT;
         constexpr int LON = ProbeTraits::ProbeColumns::LON;
-        //auto lons = trajectory.get<ProbeTraits::ProbeColumns::LON>();
-        //auto lats = trajectory.get<ProbeTraits::ProbeColumns::LAT>();
 
+        // iterate over each row of the trajectory
         for (auto probe : trajectory)
         {
+            // if first row of the trajectory
             if (first)
             {
+                // get LAT value from probe and
+                // set it as previous LAT
                 prev_lat = get<LAT>(probe);
+                // get LON value from probe and
+                // set it as previous LON
                 prev_lon = get<LON>(probe);
                 first = false;
             }
             else
             {
+                // get LAT value from probe and set it as current lat
                 double curr_lat = get<LAT>(probe);
+                // get LON value from probe and set it as current lon
                 double curr_lon = get<LON>(probe);
+                // calcuclate distance between the two consecutive points in the trajectory
                 double d = distance_exact(prev_lat, prev_lon, curr_lat, curr_lon);
+                // calculate heading between two consecutive points in the trajectory
                 double b = bearing_exact(prev_lat, prev_lon, curr_lat, curr_lon);
+                //Log  output to console
                 BOOST_LOG_TRIVIAL(trace) << d << " " << b;
+                // reset the current row to the previous row
                 prev_lat = curr_lat;
                 prev_lon = curr_lon;
             }
-            //movetk::to_projected_polyline()
         }
     }
-
-    // Create an output csv file
-    std::ofstream ofcsv("output_distance_heading.csv");
 }

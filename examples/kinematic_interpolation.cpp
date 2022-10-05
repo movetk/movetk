@@ -31,6 +31,14 @@
 #include "movetk/algo/Interpolation.h"
 #include "movetk/io/csv/ParseDate.h"
 
+/*
+* Example for reading in a trajectory from an input stream
+* and kinematic interpolation of the trajectory when the 
+* gap between two consecutive points in the trajectory is greater than 1 second.
+* For details on the kinematic interpolation algorithm please see
+* https://doi.org/10.1080/13658816.2015.1081909
+*/
+
 using MovetkGeometryKernel = typename GeometryKernel::MovetkGeometryKernel;
 using Norm = typename GeometryKernel::Norm;
 using namespace std;
@@ -203,8 +211,7 @@ int main(int argc, char **argv)
                                             ProbeTraits::ProbeColumns::LON, ProbeTraits::ProbeColumns::SAMPLE_DATE,
                                             ProbeTraits::ProbeColumns::SPEED, ProbeTraits::ProbeColumns::HEADING>
         Interpolator;
-    /* typedef movetk_algorithms::Interpolator<movetk_algorithms::random_trajectory_generator_tag,
-            InterpolationTraits> Interpolator;*/
+
     movetk_core::MakePoint<MovetkGeometryKernel> make_point;
     std::size_t line_count = 0;
     std::vector<std::string> input;
@@ -291,12 +298,8 @@ int main(int argc, char **argv)
         }
         ts.push_back(ts_v);
         movetk_core::movetk_back_insert_iterator result(interpolated_pts);
-        //result = p_u;
         interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
-        //interpolator(p_u, p_v, std::begin(ts), std::end(ts), threshold, result);
-        /*   if ( pit == std::cend(trajectory) - 1 ){
-            result = p_v;
-        }*/
+
         auto it = std::begin(interpolated_pts);
         while (it != std::end(interpolated_pts))
         {

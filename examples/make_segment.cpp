@@ -22,13 +22,16 @@
 //
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/*
+* Example to create a segment
+*/
 
-
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
 
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
@@ -38,6 +41,6 @@ int main(int argc, char **argv){
     GeometryKernel::MovetkGeometryKernel::MovetkSegment seg = make_segment(pt1, pt2);
 
     movetk_core::ComputeLength<GeometryKernel::MovetkGeometryKernel> compute_length;
-    std::cout<<"Length of the Segment: "<<compute_length(seg)<<std::endl;
+    std::cout << "Length of the Segment: " << compute_length(seg) << std::endl;
     return 0;
 }

@@ -28,6 +28,11 @@
 #include "movetk/algo/Simplification.h"
 #include "movetk/utils/Iterators.h"
 
+/*
+* Example to read in a time sorted input stream (ID,TimeStamp,Lon,Lat,X,Y)
+* that represents a polyline and then run the Dougklas-Peucker simplification
+* on the polyline  
+*/
 class ParseInput
 {
 
@@ -100,23 +105,10 @@ private:
 
     typedef std::tuple<std::string, std::string, bool> earg;
     std::vector<earg> eargs{
-        std::make_tuple("-eps", "--epsilon", true) /*,
-            std::make_tuple("-p", "--polygon", true),
-            std::make_tuple("-c", "--centroids", true),
-            std::make_tuple("-r", "--resolutions", true),
-            std::make_tuple("-t", "--thresholds", true),
-            std::make_tuple("-f", "--outfile", true)*/
-    };
+        std::make_tuple("-eps", "--epsilon", true)};
 
     std::map<std::string, std::string> params{
-        {"-eps", ""}
-        /*{"-tr", ""},
-            {"-p",  ""},
-            {"-c",  ""},
-            {"-r",  ""},
-            {"-t",  ""},
-            {"-f",  ""}*/
-    };
+        {"-eps", ""}};
 };
 
 int main(int argc, char **argv)

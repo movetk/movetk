@@ -23,7 +23,6 @@
 // Created by Custers, Bram on 2020-02-08.
 //
 
-
 #include <vector>
 
 #include "movetk/logging.h"
@@ -35,26 +34,32 @@
 #include "movetk/geo/geo.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 
- /**
+/**
   * Example: Process a stream of probe points to create a trajectory. Then,
   * display statistics of the trajectory.
   */
-template<typename TrajectoryTraits>
-void run(int argc, char** argv)
+template <typename TrajectoryTraits>
+void run(int argc, char **argv)
 {
+    // the traits for the input probe type
     using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
 
     // Create trajectory reader
     std::unique_ptr<ProbeReader<ProbeTraits>> probe_reader;
-    if (argc < 2) {
+    if (argc < 2)
+    {
         // Use built-in test data if a file is not specified
         probe_reader = ProbeReaderFactory::create_from_string<ProbeTraits>(testdata::c2d_format_geolife_csv);
     }
-    else {
+    else
+    {
         // Example: Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
         probe_reader = ProbeReaderFactory::create<ProbeTraits>(argv[1]);
     }
+
+    // iterate over probes
     using ProbeInputIterator = decltype(probe_reader->begin());
+    // instantiate the trajectory reader
     auto trajectory_reader = TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
 
     /**
@@ -80,27 +85,48 @@ void run(int argc, char** argv)
     constexpr int TS_Idx = ProbeTraits::ProbeColumns::SAMPLE_DATE;
     constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
 
-    for (auto trajectory : trajectory_reader) {
-        
+    // iterate over each trajectory
+    for (auto trajectory : trajectory_reader)
+    {
+
         BOOST_LOG_TRIVIAL(trace) << "New trajectory: " << trajectory.template get<PROBE_ID>()[0];
         BOOST_LOG_TRIVIAL(info) << "Size:" << trajectory.size() << std::endl;
+
+        // the trajectory type
         using Trajectory_t = decltype(trajectory);
+        // the geometry type that encapsulates all geometric objects and predicates
         using GeomKernel = GeometryKernel::MovetkGeometryKernel;
 
+        // functor to calculate distances
         Distance distanceFunc;
 
         // Get iterators for data
         auto lons = trajectory.template get<LON_Idx>();
+        // iterator over the longitudes
         using CoordIt = decltype(lons.begin());
-        auto lats = trajectory.template get<LAT_Idx>();
-        auto ts = trajectory.template get<TS_Idx>();
-        auto pointIterators = movetk_core::point_iterators_from_coordinates<GeomKernel>(std::array<std::pair<CoordIt, CoordIt>,2>{
-            std::make_pair(lons.begin(), lons.end()),
-            std::make_pair(lats.begin(), lats.end())
-        });
 
+        /* get all latitudes as a vector from the trajectory
+        *  the LAT_Idx is the index / position of the 
+        *  Latitude column
+        */
+        auto lats = trajectory.template get<LAT_Idx>();
+
+        /* get all timestamps as a vector from the trajectory
+        *  the TS_Idx is the index / position of the 
+        *  Timestamp column
+        */
+        auto ts = trajectory.template get<TS_Idx>();
+
+        // get iterator over lat, lon pairs
+        auto pointIterators = movetk_core::point_iterators_from_coordinates<GeomKernel>(std::array<std::pair<CoordIt, CoordIt>, 2>{
+            std::make_pair(lons.begin(), lons.end()),
+            std::make_pair(lats.begin(), lats.end())});
+
+        // functor to calculate length of the trajectory
         movetk_algorithms::TrajectoryLength<GeomKernel, Distance> lenCalc;
         BOOST_LOG_TRIVIAL(info) << "Trajectory length:" << lenCalc(lons.begin(), lons.end(), lats.begin(), lats.end()) << std::endl;
+
+        // functor to calculate duration of the trajectory
         movetk_algorithms::TrajectoryDuration duration;
         BOOST_LOG_TRIVIAL(info) << "Trajectory duration:" << duration(ts.begin(), ts.end()) << std::endl;
 
@@ -108,7 +134,7 @@ void run(int argc, char** argv)
         using SpeedStat = movetk_algorithms::TrajectorySpeedStatistic<GeomKernel, Distance>;
         SpeedStat speedStat;
         using Stat = typename SpeedStat::Statistic;
-        BOOST_LOG_TRIVIAL(info) << "Trajectory average speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(),Stat::Mean) << std::endl;
+        BOOST_LOG_TRIVIAL(info) << "Trajectory average speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Mean) << std::endl;
         BOOST_LOG_TRIVIAL(info) << "Trajectory median speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Median) << std::endl;
         BOOST_LOG_TRIVIAL(info) << "Trajectory min speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Min) << std::endl;
         BOOST_LOG_TRIVIAL(info) << "Trajectory max speed:" << speedStat(pointIterators.first, pointIterators.second, ts.begin(), ts.end(), Stat::Max) << std::endl;
@@ -123,7 +149,8 @@ void run(int argc, char** argv)
     BOOST_LOG_TRIVIAL(info) << "Processed " << count << " trajectories" << std::endl;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     std::ios_base::sync_with_stdio(false);
     init_logging(logging::trivial::trace);
 

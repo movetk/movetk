@@ -22,25 +22,28 @@
 //
 #include "movetk/utils/GeometryBackendTraits.h"
 
+/*
+* Example to create a line 
+*/
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 #if CGAL_BACKEND_ENABLED
-    std::cerr<<"Using CGAL Backend for Geometry\n";
+    std::cerr << "Using CGAL Backend for Geometry\n";
 #else
-    std::cerr<<"Using Boost Backend for Geometry\n";
+    std::cerr << "Using Boost Backend for Geometry\n";
 #endif
-
 
     //===================================
     // Make a Movetk Line
     movetk_core::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
     GeometryKernel::MovetkGeometryKernel::MovetkPoint P1 = make_point({1, 1});
-    std::cout<<"Point 1:"<<std::endl;
+    std::cout << "Point 1:" << std::endl;
     std::cout << P1;
     std::cout << std::endl;
 
     GeometryKernel::MovetkGeometryKernel::MovetkPoint P2 = make_point({2, 2});
-    std::cout<<"Point 2:"<<std::endl;
+    std::cout << "Point 2:" << std::endl;
     std::cout << P2;
     std::cout << std::endl;
 

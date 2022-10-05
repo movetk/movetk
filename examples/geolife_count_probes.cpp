@@ -29,6 +29,10 @@
 #include "movetk/io/ProbeReader.h"
 #include "movetk/TrajectoryReader.h"
 
+/*
+* Example for reading in Geolife GPS Trajectories dataset
+* and counting the number of points in each trajectory
+*/
 int main(int argc, char **argv)
 {
     std::ios_base::sync_with_stdio(false);

@@ -91,13 +91,6 @@ target_link_libraries(TrajectorySegmentationVelocity
         c2d::movetk
         )
 
-add_executable(MonotoneSegmentation monotone_segmentation.cpp)
-target_compile_definitions(MonotoneSegmentation PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
-target_link_libraries(MonotoneSegmentation
-        PRIVATE
-        c2d::movetk
-        )
-
 add_executable(make_point make_point.cpp)
 target_compile_definitions(make_point PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
 target_link_libraries(make_point
@@ -253,7 +246,7 @@ endif()
 
 if (WITH_CGAL_BACKEND)
     # installation info
-    install(TARGETS MonotoneSegmentation TrajectoriesPolygonIntersection model_based_segmentation outlier_detection  interpolation EXPORT ${CMAKE_PROJECT_NAME}Targets
+    install(TARGETS TrajectoriesPolygonIntersection model_based_segmentation outlier_detection  interpolation EXPORT ${CMAKE_PROJECT_NAME}Targets
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib
             RUNTIME DESTINATION bin
@@ -261,7 +254,7 @@ if (WITH_CGAL_BACKEND)
             )
     else()
         # installation info
-        install(TARGETS MonotoneSegmentation model_based_segmentation outlier_detection interpolation EXPORT ${CMAKE_PROJECT_NAME}Targets
+        install(TARGETS model_based_segmentation outlier_detection interpolation EXPORT ${CMAKE_PROJECT_NAME}Targets
                 LIBRARY DESTINATION lib
                 ARCHIVE DESTINATION lib
                 RUNTIME DESTINATION bin
