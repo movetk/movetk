@@ -28,23 +28,22 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ------------------------------------------------------------------------------------------
 
-if(CGAL_INCLUDE_DIR AND CGAL_LIBRARY)
+if(CGAL_INCLUDE_DIR)# AND CGAL_LIBRARY)
     # Already in cache, be silent
     set(CGAL_FIND_QUIETLY TRUE)
 endif()
 
 find_path(CGAL_INCLUDE_DIR NAMES CGAL)
-find_library(CGAL_LIBRARY NAMES CGAL)
+#find_library(CGAL_LIBRARY NAMES CGAL)
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(CGAL DEFAULT_MSG CGAL_INCLUDE_DIR CGAL_LIBRARY)
+find_package_handle_standard_args(CGAL DEFAULT_MSG CGAL_INCLUDE_DIR)# CGAL_LIBRARY)
 
-mark_as_advanced(CGAL_INCLUDE_DIR CGAL_LIBRARY)
+mark_as_advanced(CGAL_INCLUDE_DIR)# CGAL_LIBRARY)
 
-# NOTE: this has been adapted from CMake's FindPNG.cmake.
 if(CGAL_FOUND AND NOT TARGET CGAL::CGAL)
     add_library(CGAL::CGAL UNKNOWN IMPORTED)
-    set_target_properties(CGAL::CGAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CGAL_INCLUDE_DIR}"
-            IMPORTED_LINK_INTERFACE_LANGUAGES "C" IMPORTED_LOCATION "${CGAL_LIBRARY}")
+    set_target_properties(CGAL::CGAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CGAL_INCLUDE_DIR}")
+            #IMPORTED_LINK_INTERFACE_LANGUAGES "C" IMPORTED_LOCATION "${CGAL_LIBRARY}")
 endif()

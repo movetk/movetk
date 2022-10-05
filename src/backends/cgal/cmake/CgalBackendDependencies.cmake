@@ -1,6 +1,13 @@
 
 # Find CGAL dependencies
-find_package(CGAL CONFIG REQUIRED)
+if(UNIX)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/unix)
+endif()
+find_package(CGAL REQUIRED)
+if(UNIX)
+    list(POP_BACK CMAKE_MODULE_PATH)
+endif()
+CreateImportTarget(CGAL)
 
 #Use different multiple precision frameworks between Unix and Windows
 find_package(GMP)
