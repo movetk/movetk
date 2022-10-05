@@ -1,22 +1,25 @@
 
 # Find CGAL dependencies
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/common)
 if(UNIX)
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/unix)
+elseif(MSVC)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/msvc)
 endif()
 find_package(CGAL REQUIRED)
-if(UNIX)
-    list(POP_BACK CMAKE_MODULE_PATH)
-endif()
 CreateImportTarget(CGAL)
 
 #Use different multiple precision frameworks between Unix and Windows
-find_package(GMP)
-if(MSVC AND NOT TARGET GMP::GMP AND NOT TARGET gmp::GMP)
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/msvc)
-    find_package(MPIR REQUIRED)  # exports GMP_INCLUDE_DIR and GMP::GMP
-    list(POP_BACK CMAKE_MODULE_PATH)
+if(MSVC)
+    find_package(GMP)
+    if(NOT TARGET GMP::GMP AND NOT TARGET gmp::GMP)
+        find_package(MPIR REQUIRED)  # exports GMP_INCLUDE_DIR and GMP::GMP
+    endif()
+else()
+    find_package(GMP REQUIRED)
 endif()
 CreateImportTarget(GMP)
+
 find_package(MPFR)
 if(NOT MPFR_FOUND)
     # Try in config mode with extra names
@@ -24,3 +27,9 @@ if(NOT MPFR_FOUND)
     find_package(MPFR REQUIRED NAMES mpfr MPFR)
 endif()
 CreateImportTarget(MPFR)
+
+# Restore module path
+if(UNIX OR MSVC)
+    list(POP_BACK CMAKE_MODULE_PATH)
+endif()
+list(POP_BACK CMAKE_MODULE_PATH)
