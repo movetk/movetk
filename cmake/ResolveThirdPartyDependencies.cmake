@@ -1,8 +1,9 @@
 include(${CMAKE_CURRENT_LIST_DIR}/CreateImportTarget.cmake)
+include(FetchContent)
+
 if(MOVETK_DOWNLOAD_THIRDPARTY)
     find_package(RapidJSON QUIET)
     if(NOT RapidJSON_FOUND)
-        include(FetchContent)
         message(STATUS "Adding external RapidJSON")
         # Add rapidjson 
         FetchContent_Declare(
@@ -11,20 +12,26 @@ if(MOVETK_DOWNLOAD_THIRDPARTY)
             GIT_TAG 06d58b9e848c650114556a23294d0b6440078c61
         )
         
-        set(RAPIDJSON_BUILD_TESTS OFF)
-        set(RAPIDJSON_BUILD_DOC OFF)
-        set(RAPIDJSON_BUILD_EXAMPLES OFF)
-        FetchContent_MakeAvailable(RapidJSON)
+        # Check if population has already been performed
+        FetchContent_GetProperties(RapidJSON)
+        if(NOT rapidjson_POPULATED)
+            # Fetch the content using previously declared details
+            FetchContent_Populate(RapidJSON)
 
-        list(APPEND CMAKE_PREFIX_PATH ${RapidJSON_BINARY_DIR})
+            set(RAPIDJSON_BUILD_TESTS OFF)
+            set(RAPIDJSON_BUILD_DOC OFF)
+            set(RAPIDJSON_BUILD_EXAMPLES OFF)
+            add_subdirectory(${rapidjson_SOURCE_DIR} ${rapidjson_BINARY_DIR} EXCLUDE_FROM_ALL)
+        endif()
+
+        list(APPEND CMAKE_PREFIX_PATH ${rapidjson_BINARY_DIR})
         #TODO: remove when not necessary anymore
-        set(RapidJSON_INCLUDE_DIR ${RapidJSON_SOURCE_DIR}/include)
+        set(RapidJSON_INCLUDE_DIR ${rapidjson_SOURCE_DIR}/include)
         CreateImportTarget(RapidJSON)
     endif()
 
     find_package(Catch2 QUIET)
     if(NOT Catch2_FOUND)
-        include(FetchContent)
         message(STATUS "Adding external Catch2")
         # Add catch
         set(CATCH_INSTALL_DOCS OFF)
