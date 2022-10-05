@@ -10,7 +10,6 @@ elseif(MSVC)
 endif()
 
 file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false CONFIGURE_DEPENDS include/*.h src/*.cpp src/*.h)
-message(STATUS "Sources: ${SOURCES}")
 
 #Potentially more options than Boost and CGAL
 if(FALSE)
@@ -39,43 +38,6 @@ endif()
 MOVETK_LOG(TRACE "Using CGAL backend ${MOVETK_WITH_CGAL_BACKEND}")
 add_library(movetk ${SOURCES} )
 
-
-#
-# Custom dependencies included in the repository
-#
-# set(GsTL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/GsTL/")
-# MOVETK_LOG(TRACE "GsTL_include ${GsTL_INCLUDE_DIR} ")
-set(RAPIDJSON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../third_party/rapidjson/")
-MOVETK_LOG(TRACE "RAPIDJSON_INCLUDE_DIR ${RAPIDJSON_INCLUDE_DIR}")
-
-#
-# Setup installation for thirdparty code
-#
-install(DIRECTORY  
-        # ${GsTL_INCLUDE_DIR}
-        ${RAPIDJSON_INCLUDE_DIR}
-        DESTINATION include
-        )
-# add_subdirectory(${GsTL_DIR} ${CMAKE_CURRENT_BINARY_DIR}/GsTL)
-if(FALSE)
-        set(RAPIDJSON_BUILD_CXX11 OFF)
-        set(RAPIDJSON_BUILD_EXAMPLES OFF)
-        set(RAPIDJSON_BUILD_TESTS OFF)
-        add_subdirectory(${RAPIDJSON_DIR} ${CMAKE_CURRENT_BINARY_DIR}/rapidjson)
-else()
-        find_package(rapidjson NAMES rapidJSON RapidJSON REQUIRED)
-        if(NOT TARGET RapidJSON::RapidJSON)
-                if(NOT RAPIDJSON_INCLUDE_DIRS)
-                        message(FATAL_ERROR "No rapidjson target defined")
-                else()
-                        add_library(RapidJSON IMPORTED UNKNOWN)
-                        target_include_directories(RapidJSON INTERFACE ${RAPIDJSON_INCLUDE_DIRS})
-                        add_library(RapidJSON::RapidJSON ALIAS RapidJSON)
-                endif()
-        endif()
-endif()
-
-
 foreach(_BACKEND ${MOVETK_BACKENDS})
 	# Include the backend code. These should register necessary properties on the
 	# movetk target.
@@ -103,9 +65,6 @@ target_include_directories(movetk
 #
 # Link MoveTk to dependencies
 #
-if(NOT TARGET RapidJSON::RapidJSON)
-        message(FATAL_ERROR "No rapidjson target defined")
-endif()
 target_link_libraries(movetk
             PUBLIC
             Threads::Threads

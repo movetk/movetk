@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 
-find_package(Catch2 CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED)
+find_package(Catch2 REQUIRED)
+find_package(Boost REQUIRED)
 
 if(NOT TARGET Catch2::Catch2)
     message(FATAL_ERROR "No Catch2 target")
@@ -76,7 +76,6 @@ if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
 endif()
 
 include(CTest)
-include(Catch)
 
 target_link_libraries(movetk_tests
         PUBLIC
@@ -84,7 +83,6 @@ target_link_libraries(movetk_tests
         Catch2::Catch2
         Boost::headers
         )
-        
+# Include CMake helpers of catch2
+include(Catch)
 catch_discover_tests(movetk_tests)
-
-

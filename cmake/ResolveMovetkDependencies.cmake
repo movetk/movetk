@@ -3,8 +3,6 @@
 #
 include(${CMAKE_CURRENT_LIST_DIR}/CreateImportTarget.cmake)
 
-# Prefer config first, then try old module style.
-# TODO: CMake should do this by itself, check version of CMake required for this.
 set(Boost_USE_MULTITHREADED 1)
 find_package(Boost COMPONENTS iostreams log thread system log_setup graph)
 CreateImportTarget(Boost)
