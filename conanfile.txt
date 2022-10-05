@@ -9,11 +9,15 @@ catch2/2.13.1
 rapidjson/1.1.0 
 geographiclib/1.52
 zlib/1.2.12 # To fix conflict between boost and gdal requirement...
+
 [generators]
-cmake_find_package_multi
+CMakeToolchain
+CMakeDeps
+
 [options]
 #GDAL
 gdal:shared=True
+
 # Disable a lot of boost libraries
 #Required by "log": "atomic"
 #Required by "thread": "chrono"

@@ -13,6 +13,7 @@ option(MOVETK_BUILD_DOC "Build documentation" OFF)
 option(MOVETK_BUILD_TESTS "Build MoveTk tests" OFF)
 option(MOVETK_BUILD_PY "Build MoveTk Python bindings" OFF)
 option(MOVETK_BUILD_EXAMPLES "Build MoveTk examples" OFF)
+option(MOVETK_DOWNLOAD_THIRDPARTY "Download third party libraries, if possible, when they are not found" ON)
 
 macro(MOVETK_LOG msg_type msg)
     message(${msg_type} "[MoveTk CMake] ${msg}")
@@ -69,6 +70,7 @@ endif ()
 #
 # Find dependencies of MoveTk
 #
+include(cmake/ResolveThirdPartyDependencies.cmake)
 include(cmake/ResolveMovetkDependencies.cmake)
 MOVETK_LOG(TRACE "Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")	
 MOVETK_LOG(TRACE "Boost_LIBRARIES ${Boost_LIBRARIES}")
