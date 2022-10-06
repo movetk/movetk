@@ -57,8 +57,9 @@ RUN mkdir /usr/src/movetk/Release/
 WORKDIR /usr/src/movetk/Release/
 
 RUN /opt/conda/bin/cmake  -DCMAKE_BUILD_TYPE=Release  \
-    -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_DOC=ON  -DWITH_CGAL_BACKEND=OFF \
+    -DCMAKE_INSTALL_PREFIX=/usr/local\
     -DBoost_NO_BOOST_CMAKE=ON  \
+    -DMOVETK_BUILD_DOC=ON \
     -DCMAKE_CXX_COMPILER=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-g++ \
     -DCMAKE_C_COMPILER=/opt/conda/bin/x86_64-conda_cos6-linux-gnu-gcc \
     -DCMAKE_CXX_STANDARD=17 ..
@@ -78,6 +79,8 @@ RUN cp /usr/src/movetk/docs/movetk.tag /opt/conda/share/xeus-cling/tagfiles/
 WORKDIR /usr/src/movetk/tutorials
 RUN wget https://download.microsoft.com/download/F/4/8/F4894AA5-FDBC-481E-9285-D5F8C4C4F039/Geolife%20Trajectories%201.3.zip
 RUN unzip Geolife\ Trajectories\ 1.3.zip
+
+# Copy documentation
 WORKDIR /usr/src
 RUN mkdir /var/www/html/movetk.reference
 RUN cp -R movetk/docs/html/* /var/www/html/movetk.reference/
