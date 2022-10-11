@@ -13,12 +13,17 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      # We need a deeper checkout for now
+      # https://github.com/microsoft/vcpkg/issues/25349
       - name: Checking out Vcpkg
         uses: actions/checkout@v2
         with:
             repository: microsoft/vcpkg
             path: vcpkg
             ref: '${{env.vcpkgCommitId}}'
+            submodules: recursive
+            fetch-depth: 0
+
      
       # Checkout repository
       - name: Checking out MoveTk
@@ -41,11 +46,15 @@ jobs:
 
       # Build movetk
       - uses: seanmiddleditch/gha-setup-vsdevenv@master
-      - name: Run CMake with Ninja
+      - name: Configure CMake with Ninja
         id: runcmake
-        run: |
-          cmake -S ${{github.workspace}}/movetk -B ${{github.workspace}}/build -GNinja `
-          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake`
+        run: >
+          cmake -S ${{github.workspace}}/movetk -B ${{github.workspace}}/build -GNinja
+          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DMOVETK_WITH_CGAL_BACKEND=OFF
+      - name: Build MoveTk
+        run: cmake --build .
+        working-directory: ${{github.workspace}}/build
       - name: Run tests
-        run: ctest 
+        run: ctest . 
+        working-directory: ${{github.workspace}}/build
