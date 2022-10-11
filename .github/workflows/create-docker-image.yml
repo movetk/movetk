@@ -8,7 +8,8 @@ on:
 
 jobs:
   build-docker:
-
+    # Temporarily disable
+    if: false
     runs-on: ubuntu-latest
 
     steps:

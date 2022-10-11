@@ -18,7 +18,7 @@ jobs:
         with:
             repository: microsoft/vcpkg
             path: vcpkg
-            ref: '$env:vcpkgCommitId'
+            ref: '${{env.vcpkgCommitId}}'
      
       # Checkout repository
       - name: Checking out MoveTk
@@ -35,7 +35,7 @@ jobs:
         uses: lukka/run-vcpkg@v10
         with:
           vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-          vcpkgGitCommitId: '$env:vcpkgCommitId'
+          vcpkgGitCommitId: '${{env.vcpkgCommitId}}'
           vcpkgJsonGlob: 'movetk/vcpkg.json'
           runVcpkgInstall: true
 
