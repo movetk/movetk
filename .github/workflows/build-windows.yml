@@ -13,14 +13,16 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checking out Vcpkg
+        uses: actions/checkout@v2
         with:
             repository: microsoft/vcpkg
-            path: vcpkg-202007
-            ref: '2020.07'
+            path: vcpkg
+            ref: '$env:vcpkgCommitId'
      
       # Checkout repository
-      - uses: actions/checkout@v2
+      - name: Checking out MoveTk
+        uses: actions/checkout@v2
         with:
             repository: movetk/movetk
             submodules: recursive
