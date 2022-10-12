@@ -39,10 +39,10 @@ jobs:
       - name: Restore artifacts, or setup vcpkg (do not install any package)
         uses: lukka/run-vcpkg@v10
         with:
+          prependedCacheKey: 'movetk-vcpkg'
           vcpkgDirectory: '${{ github.workspace }}/vcpkg'
           vcpkgGitCommitId: '${{env.vcpkgCommitId}}'
           vcpkgJsonGlob: 'movetk/vcpkg.json'
-          runVcpkgInstall: true
 
       # Build movetk
       - uses: seanmiddleditch/gha-setup-vsdevenv@master
