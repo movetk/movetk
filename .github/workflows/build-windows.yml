@@ -52,6 +52,7 @@ jobs:
           cmake -S ${{github.workspace}}/movetk -B ${{github.workspace}}/build -GNinja
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DMOVETK_WITH_CGAL_BACKEND=OFF
+          -DVCPKG_INSTALL_OPTIONS=--clean-after-build
       - name: Build MoveTk
         run: cmake --build .
         working-directory: ${{github.workspace}}/build
