@@ -17,14 +17,17 @@ if(MOVETK_DOWNLOAD_THIRDPARTY)
         if(NOT rapidjson_POPULATED)
             # Fetch the content using previously declared details
             FetchContent_Populate(RapidJSON)
-
-            set(RAPIDJSON_BUILD_TESTS OFF)
-            set(RAPIDJSON_BUILD_DOC OFF)
-            set(RAPIDJSON_BUILD_EXAMPLES OFF)
-            add_subdirectory(${rapidjson_SOURCE_DIR} ${rapidjson_BINARY_DIR} EXCLUDE_FROM_ALL)
+            
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -S ${rapidjson_SOURCE_DIR} -B ${rapidjson_BINARY_DIR} -G${CMAKE_GENERATOR} 
+                    -DRAPIDJSON_BUILD_TESTS=OFF
+                    -DRAPIDJSON_BUILD_DOC=OFF
+                    -DRAPIDJSON_BUILD_EXAMPLES=OFF
+                    -DCMAKE_INSTALL_PREFIX=${rapidjson_BINARY_DIR}/installed
+                COMMAND ${CMAKE_COMMAND} --build ${rapidjson_BINARY_DIR} --target install
+            )
         endif()
-
-        list(APPEND CMAKE_PREFIX_PATH ${rapidjson_BINARY_DIR})
+        list(APPEND CMAKE_PREFIX_PATH ${rapidjson_BINARY_DIR}/installed)
         #TODO: remove when not necessary anymore
         set(RapidJSON_INCLUDE_DIR ${rapidjson_SOURCE_DIR}/include)
         CreateImportTarget(RapidJSON)
@@ -34,20 +37,25 @@ if(MOVETK_DOWNLOAD_THIRDPARTY)
     if(NOT Catch2_FOUND)
         message(STATUS "Adding external Catch2")
         # Add catch
-        set(CATCH_INSTALL_DOCS OFF)
-        set(CATCH_BUILD_TESTING OFF)
         FetchContent_Declare(
             Catch2
             GIT_REPOSITORY "https://github.com/catchorg/Catch2.git"
             GIT_TAG v2.13.1
-            CMAKE_ARGS
-                -DCATCH_INSTALL_DOCS=OFF
-                -DCATCH_BUILD_TESTING=OFF
-            OVERRIDE_FIND_PACKAGE
         )
-        FetchContent_MakeAvailable(Catch2)
-        # Add folder with helper cmake files of catch2 to the module path
-        list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/contrib)
-        CreateImportTarget(Catch2)
+        # Check if population has already been performed
+        FetchContent_GetProperties(Catch2)
+        if(NOT catch2_POPULATED)
+            # Fetch the content using previously declared details
+            FetchContent_Populate(Catch2)
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -S ${catch2_SOURCE_DIR} -B ${catch2_BINARY_DIR} -G${CMAKE_GENERATOR} -DCATCH_INSTALL_DOCS=OFF -DCATCH_BUILD_TESTING=OFF
+                    -DCMAKE_INSTALL_PREFIX=${catch2_BINARY_DIR}/installed
+                COMMAND ${CMAKE_COMMAND} --build ${catch2_BINARY_DIR} --target install
+            )
+            list(PREPEND CMAKE_PREFIX_PATH ${catch2_BINARY_DIR}/installed)
+            list(PREPEND CMAKE_MODULE_PATH ${catch2_BINARY_DIR}/installed)
+            list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/contrib)
+            CreateImportTarget(Catch2)
+        endif()
     endif()
 endif()
