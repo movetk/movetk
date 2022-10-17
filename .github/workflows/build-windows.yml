@@ -36,7 +36,7 @@ jobs:
       # Get the ninja generator
       - uses: seanmiddleditch/gha-setup-ninja@v3
 
-      - name: Restore artifacts, or setup vcpkg (do not install any package)
+      - name: Restore artifacts and/or setup vcpkg
         uses: lukka/run-vcpkg@v10
         with:
           prependedCacheKey: 'movetk-vcpkg'
@@ -52,6 +52,8 @@ jobs:
           cmake -S ${{github.workspace}}/movetk -B ${{github.workspace}}/build -GNinja
           -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DMOVETK_WITH_CGAL_BACKEND=OFF
+          -DMOVETK_BUILD_TESTS=ON
+          -DMOVETK_BUILD_EXAMPLES=ON
           -DVCPKG_INSTALL_OPTIONS=--clean-after-build
       - name: Build MoveTk
         run: cmake --build .

@@ -28,9 +28,6 @@
         },
         {
             "name": "pybind11"
-        },
-        {
-            "name": "catch2"
         }
     ],
     "default-features": [
