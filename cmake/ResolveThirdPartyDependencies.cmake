@@ -24,6 +24,8 @@ if(MOVETK_DOWNLOAD_THIRDPARTY)
                     -DRAPIDJSON_BUILD_DOC=OFF
                     -DRAPIDJSON_BUILD_EXAMPLES=OFF
                     -DCMAKE_INSTALL_PREFIX=${rapidjson_BINARY_DIR}/installed
+            )
+            execute_process(
                 COMMAND ${CMAKE_COMMAND} --build ${rapidjson_BINARY_DIR} --target install
             )
         endif()
@@ -50,6 +52,8 @@ if(MOVETK_DOWNLOAD_THIRDPARTY)
             execute_process(
                 COMMAND ${CMAKE_COMMAND} -S ${catch2_SOURCE_DIR} -B ${catch2_BINARY_DIR} -G${CMAKE_GENERATOR} -DCATCH_INSTALL_DOCS=OFF -DCATCH_BUILD_TESTING=OFF
                     -DCMAKE_INSTALL_PREFIX=${catch2_BINARY_DIR}/installed
+            )
+            execute_process(
                 COMMAND ${CMAKE_COMMAND} --build ${catch2_BINARY_DIR} --target install
             )
             list(PREPEND CMAKE_PREFIX_PATH ${catch2_BINARY_DIR}/installed)
