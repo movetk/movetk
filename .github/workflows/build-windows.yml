@@ -39,7 +39,7 @@ jobs:
       - name: Restore artifacts and/or setup vcpkg
         uses: lukka/run-vcpkg@v10
         with:
-          prependedCacheKey: 'movetk-vcpkg'
+          prependedCacheKey: 'movetk-vcpkg-v2'
           vcpkgDirectory: '${{ github.workspace }}/vcpkg'
           vcpkgGitCommitId: '${{env.vcpkgCommitId}}'
           vcpkgJsonGlob: 'movetk/vcpkg.json'
