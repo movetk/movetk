@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 	std::vector<PolyLine::const_iterator> result;
 	using FindFarthest = movetk::simplification::FindFarthest<MovetkGeometryKernel, GeometryKernel::Norm>;
 	movetk::simplification::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
-	DouglasPeucker(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
+	DouglasPeucker(std::begin(polyline), std::end(polyline), std::back_inserter(result));
 
 
 	std::cout << "Simplified polyline has: " << result.size() << " vertices\n";

@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     movetk::geom::MakeMinSphere<GeometryKernel::MovetkGeometryKernel> min_sphere;
 
     GeometryKernel::MovetkGeometryKernel::NT radius = min_sphere(std::cbegin(points), std::cend(points),
-                                                                 movetk::utils::movetk_back_insert_iterator(
+                                                                 std::back_inserter(
                                                                          CenterMinSphere));
 
     std::cout<<"Radius: "<<std::endl;

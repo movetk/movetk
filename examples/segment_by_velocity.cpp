@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
 		}
 
 		SegmentStartReferences segIdx;
-		segment_by_heading(std::begin(headings_), std::end(headings_), movetk::utils::movetk_back_insert_iterator(segIdx));
+		segment_by_heading(std::begin(headings_), std::end(headings_), std::back_inserter(segIdx));
 
 		movetk::utils::SegmentIdGenerator make_segment_heading(std::begin(segIdx), std::end(segIdx));
 		SSD heading_ssd;
@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
 			speeds_.push_back(*sit);
 		}
 
-		segment_by_speed(std::begin(speeds_), std::end(speeds_), movetk::utils::movetk_back_insert_iterator(segIdx));
+		segment_by_speed(std::begin(speeds_), std::end(speeds_), std::back_inserter(segIdx));
 		movetk::utils::SegmentIdGenerator make_segment_speed(std::begin(segIdx), std::end(segIdx));
 
 		SSD speed_ssd;

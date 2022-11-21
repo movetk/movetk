@@ -138,7 +138,7 @@ class TestAgarwal(unittest.TestCase):
 
 #         std::vector<decltype(points.begin())> output;
 
-#         simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+#         simplifier(points.begin(), points.end(), std::back_inserter(output));
 #         REQUIRE(output.size() == 2);
 #         // Compute indices of iteratorss
 #         std::vector<std::size_t> inds;
@@ -158,7 +158,7 @@ class TestAgarwal(unittest.TestCase):
 
 #         std::vector<decltype(points.begin())> output;
 
-#         simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+#         simplifier(points.begin(), points.end(), std::back_inserter(output));
 
 #         REQUIRE(output.size() == 1);
 #         REQUIRE(output[0] == points.begin());
@@ -167,7 +167,7 @@ class TestAgarwal(unittest.TestCase):
 #         output.clear();
 #         points.clear();
 
-#         simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+#         simplifier(points.begin(), points.end(), std::back_inserter(output));
 #         REQUIRE(output.size() == 0);
 #     }
 # }

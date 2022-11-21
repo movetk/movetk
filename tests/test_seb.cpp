@@ -127,7 +127,7 @@ TEST_CASE("miniball3", "[miniball3]") {
 	movetk::geom::MakeMinSphere<MovetkGeometryKernel> min_sphere;
 	MovetkGeometryKernel::NT radius = min_sphere(std::cbegin(movetk_points),
 	                                             std::cend(movetk_points),
-	                                             movetk::utils::movetk_back_insert_iterator(CenterMinSphere));
+	                                             std::back_inserter(CenterMinSphere));
 
 	auto cit = std::cbegin(CenterMinSphere);
 	REQUIRE(radius == Approx(0.707).epsilon(0.001));

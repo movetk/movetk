@@ -17,9 +17,9 @@
  * License-Filename: LICENSE
  */
 
-//
-// Created by Mitra, Aniket on 2019-04-04.
-//
+ //
+ // Created by Mitra, Aniket on 2019-04-04.
+ //
 
 #include <array>
 #include <catch2/catch.hpp>
@@ -34,51 +34,51 @@
 
 template <typename Backend>
 struct ChanChinTests {
-	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
-	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
+    using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+    using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
 
-	// Point creator
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
-	using Wedge = movetk::geom::Wedge<MovetkGeometryKernel, Norm>;
+    // Point creator
+    movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
+    using PolyLine = std::vector<typename MovetkGeometryKernel::MovetkPoint>;
+    using Wedge = movetk::geom::Wedge<MovetkGeometryKernel, Norm>;
 
-	using Edge = std::pair<std::size_t, std::size_t>;
-	using EdgeList = std::vector<Edge>;
+    using Edge = std::pair<std::size_t, std::size_t>;
+    using EdgeList = std::vector<Edge>;
 
-	struct ShortcutTestcase {
-		PolyLine polyline;
-		EdgeList expectedEdges;
-	};
-	std::map<std::string, ShortcutTestcase> test_cases{
-	    {"Case 1",
-	     {{make_point({-8, 4}), make_point({-2, 4}), make_point({4, 4})},
-	      {std::make_pair(0, 1), std::make_pair(0, 2), std::make_pair(1, 2)}}},
-	    {"Case 2",
-	     {{make_point({-9, 8}), make_point({-2, 4}), make_point({4, 4})}, {std::make_pair(0, 1), std::make_pair(1, 2)}}},
-	    {"Case 3",
-	     {{make_point({-9, 8}), make_point({-2, 4}), make_point({3.503, 3.456})},
-	      {std::make_pair(0, 1), std::make_pair(1, 2)}}}};
+    struct ShortcutTestcase {
+        PolyLine polyline;
+        EdgeList expectedEdges;
+    };
+    std::map<std::string, ShortcutTestcase> test_cases{
+        {"Case 1",
+         {{make_point({-8, 4}), make_point({-2, 4}), make_point({4, 4})},
+          {std::make_pair(0, 1), std::make_pair(0, 2), std::make_pair(1, 2)}}},
+        {"Case 2",
+         {{make_point({-9, 8}), make_point({-2, 4}), make_point({4, 4})}, {std::make_pair(0, 1), std::make_pair(1, 2)}}},
+        {"Case 3",
+         {{make_point({-9, 8}), make_point({-2, 4}), make_point({3.503, 3.456})},
+          {std::make_pair(0, 1), std::make_pair(1, 2)}}} };
 };
 
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(ChanChinTests, "Check Chan Chin Shortcuts", "[is_valid_shortcut_1]") {
-	using Fixture = ChanChinTests<TestType>;
-	for (const auto& [test_case_name, test_data] : Fixture::test_cases) {
-		SECTION(test_case_name) {
-			movetk::simplification::ChanChin<typename Fixture::MovetkGeometryKernel, typename Fixture::Wedge> ChanChin(
-			    1);
-			typename Fixture::EdgeList edges;
-			ChanChin(std::begin(test_data.polyline),
-			         std::end(test_data.polyline),
-			         movetk::utils::movetk_back_insert_iterator(edges));
-			REQUIRE(edges.size() == test_data.expectedEdges.size());
-			auto eit = std::begin(test_data.expectedEdges);
-			for (auto& edge : edges) {
-				REQUIRE(edge == *eit);
-				eit++;
-			}
-		}
-	}
+    using Fixture = ChanChinTests<TestType>;
+    for (const auto& [test_case_name, test_data] : Fixture::test_cases) {
+        SECTION(test_case_name) {
+            movetk::simplification::ChanChin<typename Fixture::MovetkGeometryKernel, typename Fixture::Wedge> ChanChin(
+                1);
+            typename Fixture::EdgeList edges;
+            ChanChin(std::begin(test_data.polyline),
+                std::end(test_data.polyline),
+                std::back_inserter(edges));
+            REQUIRE(edges.size() == test_data.expectedEdges.size());
+            auto eit = std::begin(test_data.expectedEdges);
+            for (auto& edge : edges) {
+                REQUIRE(edge == *eit);
+                eit++;
+            }
+        }
+    }
 }
 
 

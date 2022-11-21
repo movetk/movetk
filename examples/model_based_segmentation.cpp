@@ -164,7 +164,7 @@ int main(int argc, char** argv) {
 	std::string key = "-idx";
 	string line;
 	line = parse.get_parameter(key);
-	movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+	movetk::utils::split(line, std::back_inserter(tokens));
 	assert(tokens.size() == 3);
 
 	std::vector<std::size_t> col_idx;
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
 					continue;
 				}
 			}
-			movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+			movetk::utils::split(line, std::back_inserter(tokens));
 			lon = std::stold(tokens[col_idx[0]]);
 			lat = std::stold(tokens[col_idx[1]]);
 			ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
 					continue;
 				}
 			}
-			movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+			movetk::utils::split(line, std::back_inserter(tokens));
 			lon = std::stold(tokens[col_idx[0]]);
 			lat = std::stold(tokens[col_idx[1]]);
 			ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -238,7 +238,7 @@ int main(int argc, char** argv) {
 	    Model<MovetkGeometryKernel, ProbeTraits, ParameterTraits, GeometryKernel::Norm, Projection>
 	        BBMM;
 
-	BBMM bb(trajectory.begin(), trajectory.end(), movetk::utils::movetk_back_insert_iterator(bridges));
+	BBMM bb(trajectory.begin(), trajectory.end(), std::back_inserter(bridges));
 
 	std::vector<typename MovetkGeometryKernel::NT> selected_coeffs;
 
@@ -259,7 +259,7 @@ int main(int argc, char** argv) {
 	movetk::segmentation::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(
 	    num_coefficients);
 
-	selector(std::cbegin(bridges), std::cend(bridges), movetk::utils::movetk_back_insert_iterator(selected_coeffs));
+	selector(std::cbegin(bridges), std::cend(bridges), std::back_inserter(selected_coeffs));
 
 
 	typedef movetk::segmentation::brownian_bridge::
@@ -276,7 +276,7 @@ int main(int argc, char** argv) {
 	             std::cend(bridges),
 	             std::cbegin(selected_coeffs),
 	             std::cend(selected_coeffs),
-	             movetk::utils::movetk_back_insert_iterator(segments));
+	             std::back_inserter(segments));
 
 
 	std::reverse(std::begin(segments), std::end(segments));

@@ -186,7 +186,7 @@ int main(int argc, char **argv) {
 		std::vector<std::size_t> ts;
 		std::copy(timestamps.begin(), timestamps.end(), std::back_insert_iterator(ts));
 		std::vector<decltype(ts)::const_iterator> segIdx;
-		segment_by_tdiff(std::cbegin(ts), std::cend(ts), movetk::utils::movetk_back_insert_iterator(segIdx));
+		segment_by_tdiff(std::cbegin(ts), std::cend(ts), std::back_inserter(segIdx));
 		movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
 
 		std::vector<std::size_t> segment_id_col;
@@ -235,7 +235,7 @@ int main(int argc, char **argv) {
 				it++;
 			}
 			ts.push_back(std::get<IN_SAMPLE_DATE>(*last));
-			movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
+			std::back_inserter result(interpolated_pts);
 			// result = p_u;
 			interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
 			// result = p_v;

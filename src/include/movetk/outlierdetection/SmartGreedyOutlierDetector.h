@@ -72,20 +72,20 @@ public:
 	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
 	          typename = movetk::utils::requires_equality<InputIterator, typename Container::value_type::value_type>>
 	typename Container::const_iterator operator()(InputIterator first, InputIterator beyond, Container& sequences) {
-		movetk::utils::movetk_back_insert_iterator bit(sequences);
+		std::back_inserter bit(sequences);
 		for (auto it = first; it != beyond; it++) {
 			bool extend_subsequence = false;
 			for (auto sit = std::begin(sequences); sit != std::end(sequences); sit++) {
 				InputIterator prev = *(sit->cend() - 1);
 				if (m_predicate(*prev, *it)) {
-					movetk::utils::movetk_back_insert_iterator node_bit(*sit);
+					std::back_inserter node_bit(*sit);
 					node_bit = it;
 					extend_subsequence = true;
 				}
 			}
 			if (!extend_subsequence) {
 				typename Container::value_type node;
-				movetk::utils::movetk_back_insert_iterator node_bit(node);
+				std::back_inserter node_bit(node);
 				node_bit = it;
 				bit = node;
 			}

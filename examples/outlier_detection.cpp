@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
 	std::string key = "-idx";
 	string line;
 	line = parse.get_parameter(key);
-	movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+	movetk::utils::split(line, std::back_inserter(tokens));
 	assert(tokens.size() == 3);
 
 	std::vector<std::size_t> col_idx;
@@ -190,7 +190,7 @@ int main(int argc, char **argv) {
 				}
 			}
 			input.push_back(line);
-			movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+			movetk::utils::split(line, std::back_inserter(tokens));
 			x = std::stold(tokens[col_idx[0]]);
 			y = std::stold(tokens[col_idx[1]]);
 			ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
 				}
 			}
 			input.push_back(line);
-			movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+			movetk::utils::split(line, std::back_inserter(tokens));
 			x = std::stold(tokens[col_idx[0]]);
 			y = std::stold(tokens[col_idx[1]]);
 			ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
@@ -224,7 +224,7 @@ int main(int argc, char **argv) {
 
 	std::vector<Trajectory::const_iterator> result;
 	OutlierDetector outlier_detector(threshold);
-	outlier_detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
+	outlier_detector(std::cbegin(trajectory), std::cend(trajectory), std::back_inserter(result));
 	std::reverse(std::begin(result), std::end(result));
 	std::size_t num_outliers = trajectory.size() - result.size();
 	std::cerr << "Number of Outliers Detected: " << num_outliers;

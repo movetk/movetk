@@ -62,7 +62,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 1", "[longest_c
 	                             std::cend(polyline1),
 	                             std::cbegin(polyline2),
 	                             std::cend(polyline2),
-	                             movetk::utils::movetk_back_insert_iterator(output));
+	                             std::back_inserter(output));
 	REQUIRE(lcs_length == ExpectedLCSS.size());
 
 	auto eit = std::cbegin(ExpectedLCSS);
@@ -105,7 +105,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 2", "[longest_c
 	                             std::cend(polyline1),
 	                             std::cbegin(polyline2),
 	                             std::cend(polyline2),
-	                             movetk::utils::movetk_back_insert_iterator(output));
+	                             std::back_inserter(output));
 	REQUIRE(lcs_length == ExpectedLCSS.size());
 
 	auto eit = std::cbegin(ExpectedLCSS);
@@ -144,7 +144,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("Check Longest Common Subsequence 3", "[longest_c
 	                             std::cend(polyline1),
 	                             std::cbegin(polyline2),
 	                             std::cend(polyline2),
-	                             movetk::utils::movetk_back_insert_iterator(output));
+	                             std::back_inserter(output));
 	/*static_assert(movetk::utils::InputIteratorWithType<decltype(std::cbegin(polyline1)),
 	                                                   typename MovetkGeometryKernel::MovetkPoint>);*/
 	REQUIRE(lcs_length == 0);

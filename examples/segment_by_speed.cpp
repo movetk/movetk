@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
 		}
 
 		SegmentStartReferences segIdx;
-		segment_by_speed(std::begin(speeds_), std::end(speeds_), movetk::utils::movetk_back_insert_iterator(segIdx));
+		segment_by_speed(std::begin(speeds_), std::end(speeds_), std::back_inserter(segIdx));
 		std::cout << "Number of Segments: " << segIdx.size();
 
 		movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));
