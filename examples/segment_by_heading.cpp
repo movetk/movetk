@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
 		std::copy(headings.cbegin(), headings.cend(), std::back_inserter(headings_));
 
 		SegmentStartReferences segIdx;
-		segment_by_heading(std::begin(headings_), std::end(headings_), movetk::utils::movetk_back_insert_iterator(segIdx));
+		segment_by_heading(std::begin(headings_), std::end(headings_), std::back_inserter(segIdx));
 		std::cout << "Number of Segments: " << segIdx.size();
 
 		movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));

@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 
 	while (getline(std::cin, line)) {
 		input.push_back(line);
-		movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+		movetk::utils::split(line, std::back_inserter(tokens));
 		X = stold(tokens[XIdx]);
 		Y = stold(tokens[YIdx]);
 		polyline.push_back(make_point({X, Y}));
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 	std::vector<PolyLine::const_iterator> result;
 	using FindFarthest = movetk::simplification::FindFarthest<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm>;
 	movetk::simplification::DouglasPeucker<GeometryKernel::MovetkGeometryKernel, FindFarthest> DouglasPeucker(epsilon);
-	DouglasPeucker(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
+	DouglasPeucker(std::begin(polyline), std::end(polyline), std::back_inserter(result));
 	std::cerr << "Simplified polyline has: " << result.size() << " vertices\n";
 	std::cout << "Id,TS,Lon,Lat,X,Y\n";
 	auto cit = std::cbegin(input);

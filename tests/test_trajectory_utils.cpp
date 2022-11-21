@@ -59,7 +59,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests,
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate tdiff", "[test_get_time_diffs]") {
 	std::vector<size_t> ts{1460029938, 1460029945, 1460029954};
 	std::vector<size_t> result;
-	movetk::utils::get_time_diffs(cbegin(ts), cend(ts), movetk::utils::movetk_back_insert_iterator(result));
+	movetk::utils::get_time_diffs(cbegin(ts), cend(ts), std::back_inserter(result));
 	REQUIRE(result[0] == 0);
 	REQUIRE(result[1] == 7);
 	REQUIRE(result[2] == 9);
@@ -76,7 +76,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests,
 	movetk::utils::get_distances<typename FixtureType::MovetkGeometryKernel>(
 	    cbegin(points),
 	    cend(points),
-	    movetk::utils::movetk_back_insert_iterator(result));
+	    std::back_inserter(result));
 	REQUIRE(result[0] == 0);
 	REQUIRE(result[1] == 5);
 	REQUIRE(result[2] == 1);
@@ -91,7 +91,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate Speed", "
 	    cbegin(tdiff),
 	    cend(tdiff),
 	    cbegin(distance),
-	    movetk::utils::movetk_back_insert_iterator(result));
+	    std::back_inserter(result));
 	REQUIRE(result[0] == 0);
 	REQUIRE(abs(result[1] - 0.714286) < MOVETK_EPS);
 	REQUIRE(abs(result[2] - 0.111111) < MOVETK_EPS);
@@ -112,7 +112,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate Heading",
 	    cbegin(GeoCoords),
 	    cend(GeoCoords),
 	    cbegin(projections),
-	    movetk::utils::movetk_back_insert_iterator(result));
+	    std::back_inserter(result));
 	REQUIRE(result[0] == 0);
 	REQUIRE(abs(result[1] - 90) < MOVETK_EPS);
 	REQUIRE(result[2] == 0);
@@ -131,7 +131,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(TrajectoryUtilsTests, "Calculate Velocity"
 	    cbegin(speed),
 	    cend(speed),
 	    cbegin(heading),
-	    movetk::utils::movetk_back_insert_iterator(actual_velocties));
+	    std::back_inserter(actual_velocties));
 	const auto vector = actual_velocties[0] - expected_velocities[0];
 	REQUIRE((vector * vector) < MOVETK_EPS);
 }

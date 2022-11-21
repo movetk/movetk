@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 	std::string key = "-idx";
 	string line;
 	line = parse.get_parameter(key);
-	movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+	movetk::utils::split(line, std::back_inserter(tokens));
 	assert(tokens.size() == 5);
 
 	std::size_t ts_idx = stold(tokens[0]);
@@ -189,7 +189,7 @@ int main(int argc, char **argv) {
 				}
 			}
 			input.push_back(line);
-			movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+			movetk::utils::split(line, std::back_inserter(tokens));
 			MovetkGeometryKernel::NT lat = std::stold(tokens[lat_idx]);
 			MovetkGeometryKernel::NT lon = std::stold(tokens[lon_idx]);
 			movetk::io::ParseDate dt(0, date_format);
@@ -215,7 +215,7 @@ int main(int argc, char **argv) {
 				}
 			}
 			input.push_back(line);
-			movetk::utils::split(line, movetk::utils::movetk_back_insert_iterator(tokens));
+			movetk::utils::split(line, std::back_inserter(tokens));
 			MovetkGeometryKernel::NT lat = std::stold(tokens[lat_idx]);
 			MovetkGeometryKernel::NT lon = std::stold(tokens[lon_idx]);
 			movetk::io::ParseDate dt(0, date_format);
@@ -248,7 +248,7 @@ int main(int argc, char **argv) {
 			idx++;
 		}
 		ts.push_back(ts_v);
-		movetk::utils::movetk_back_insert_iterator result(interpolated_pts);
+		std::back_inserter result(interpolated_pts);
 		// result = p_u;
 		// interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
 		interpolator(p_u, p_v, std::begin(ts), std::end(ts), threshold, result);

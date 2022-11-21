@@ -148,13 +148,13 @@ namespace movetk::metric
                                                         typename GeometryTraits::MovetkDiscreteFrechetDistance>
                 algorithm;
             typename algorithm::discrete_frechet_distance distance;
-            movetk::utils::movetk_back_insert_iterator bit(upper_triag_mat);
+            std::back_inserter bit(upper_triag_mat);
             auto it = first;
             while (it != beyond)
             {
                 auto nit = it + 1;
                 typename DistanceMatrix::value_type node;
-                movetk::utils::movetk_back_insert_iterator node_bit(node);
+                std::back_inserter node_bit(node);
                 while (nit != beyond)
                 {
                     node_bit = distance(std::cbegin(*it), std::cend(*it), std::cbegin(*nit), std::cend(*nit));

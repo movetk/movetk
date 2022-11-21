@@ -42,7 +42,7 @@ namespace movetk_support {
         typedef typename container_type::iterator iterator;
         typedef typename container_type::const_iterator const_iterator;
         typedef typename container_type::value_type value_type;
-        typedef movetk::utils::movetk_back_insert_iterator<container_type> back_inserter;
+        typedef std::back_inserter<container_type> back_inserter;
     };
 
     template<class K, class V,

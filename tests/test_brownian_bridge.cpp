@@ -154,7 +154,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	                                             typename Fixture::Projection>
 	    BBMM;
 
-	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
+	BBMM bb(t.begin(), t.end(), std::back_inserter(bridges));
 
 	NT upper_bound = 0;
 	NT squared_length = 0;
@@ -208,7 +208,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	                                                  typename Fixture::Norm,
 	                                                  typename Fixture::Projection>;
 
-	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
+	BBMM bb(t.begin(), t.end(), std::back_inserter(bridges));
 
 	typename Fixture::NT upper_bound = 0;
 	typename Fixture::NT squared_length = 0;
@@ -270,7 +270,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 	                                                  typename Fixture::Norm,
 	                                                  typename Fixture::Projection>;
 
-	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
+	BBMM bb(t.begin(), t.end(), std::back_inserter(bridges));
 
 	std::vector<typename Fixture::NT> selected_coeffs;
 
@@ -288,7 +288,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(BrownianBridgeTests,
 
 	movetk::segmentation::brownian_bridge::ParameterSelector<typename Fixture::MovetkGeometryKernel, typename Ts::ParameterTraits>
 	    selector(4);
-	selector(std::begin(bridges), std::end(bridges), movetk::utils::movetk_back_insert_iterator(selected_coeffs));
+	selector(std::begin(bridges), std::end(bridges), std::back_inserter(selected_coeffs));
 
 	for (auto bridge : bridges) {
 		std::cout << std::get<Ts::ParameterColumns::SIGMA_SQUARED>(bridge);

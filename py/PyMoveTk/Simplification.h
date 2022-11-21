@@ -25,7 +25,7 @@ private:
 	template <typename ALGORITHM>
 	static Polyline apply_simplification(ALGORITHM&& algorithm, const Polyline& polyline) {
 		std::vector<std::decay_t<decltype(polyline.cbegin())>> result;
-		algorithm(std::begin(polyline), std::end(polyline), movetk::utils::movetk_back_insert_iterator(result));
+		algorithm(std::begin(polyline), std::end(polyline), std::back_inserter(result));
 		// Reconstruct output and return
 		Polyline output;
 		reconstruct_from_iterators(result, output);

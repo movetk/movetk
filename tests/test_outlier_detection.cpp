@@ -81,7 +81,7 @@ struct OutlierDetectionTests : public test_helpers::BaseTestFixture<Backend> {
 	                                           const Trajectory& trajectory,
 	                                           const Sequence& expected_filtered_trajectory) {
 		std::vector<typename Trajectory::const_iterator> result;
-		detector(std::cbegin(trajectory), std::cend(trajectory), movetk::utils::movetk_back_insert_iterator(result));
+		detector(std::cbegin(trajectory), std::cend(trajectory), std::back_inserter(result));
 
 		REQUIRE(result.size() == expected_filtered_trajectory.size());
 		// Check individual elements

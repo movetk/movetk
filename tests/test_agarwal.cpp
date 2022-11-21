@@ -95,7 +95,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
 
 			std::vector<decltype(points.begin())> output;
 
-			simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+			simplifier(points.begin(), points.end(), std::back_inserter(output));
 			REQUIRE(output.size() == test_case.expectedInds.size());
 			// Compute indices of iterators
 			std::vector<std::size_t> inds;
@@ -113,7 +113,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
 
 		std::vector<decltype(points.begin())> output;
 
-		simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+		simplifier(points.begin(), points.end(), std::back_inserter(output));
 
 		REQUIRE(output.size() == 1);
 		REQUIRE(output[0] == points.begin());
@@ -122,7 +122,7 @@ TEMPLATE_LIST_TEST_CASE("Check that the simplifications are correct",
 		output.clear();
 		points.clear();
 
-		simplifier(points.begin(), points.end(), movetk::utils::movetk_back_insert_iterator(output));
+		simplifier(points.begin(), points.end(), std::back_inserter(output));
 		REQUIRE(output.size() == 0);
 	}
 }

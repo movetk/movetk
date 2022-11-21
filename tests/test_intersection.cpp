@@ -75,7 +75,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(IntersectionTests,
 			using intersection_t = typename IntersectionTraits::value_type;
 			std::vector<intersection_t> intersections;
 			movetk::geom::ComputeIntersections<IntersectionTraits> compute_intersections;
-			compute_intersections(spheres[i], segments[i], movetk::utils::movetk_back_insert_iterator(intersections));
+			compute_intersections(spheres[i], segments[i], std::back_inserter(intersections));
 			REQUIRE(intersections.size() == expected_intersections[i]);
 			if (discriminant_signs[i].has_value()) {
 				REQUIRE(std::get<IntersectionTraits::Attributes::SIGN_DISCRIMINANT>(intersections[0]) ==

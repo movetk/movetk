@@ -62,7 +62,7 @@ public:
 		    std::array<decltype(firstCoordPair), 2>{firstCoordPair, secondCoordPair});
 
 		std::vector<NT> distances;
-		movetk::utils::movetk_back_insert_iterator<decltype(distances)> backInserter(distances);
+		std::back_inserter<decltype(distances)> backInserter(distances);
 		movetk::utils::get_distances<GeometryKernel, decltype(beginEndPair.first), decltype(backInserter)>(
 		    beginEndPair.first,
 		    beginEndPair.second,
@@ -140,19 +140,19 @@ public:
 		// Compute speeds
 		{
 			std::vector<Dist_t> distances;
-			movetk::utils::movetk_back_insert_iterator backInsert(distances);
+			std::back_inserter backInsert(distances);
 			movetk::utils::get_distances<GeometryKernel, decltype(pointsBegin), decltype(backInsert), PointDistanceFunc>(
 			    pointsBegin,
 			    pointsEnd,
 			    backInsert,
 			    true);
 			std::vector<Duration> timeDiffs;
-			movetk::utils::get_time_diffs(timeBegin, timeEnd, movetk::utils::movetk_back_insert_iterator(timeDiffs), true);
+			movetk::utils::get_time_diffs(timeBegin, timeEnd, std::back_inserter(timeDiffs), true);
 
 			movetk::utils::get_speeds<GeometryKernel>(timeDiffs.begin(),
 			                                          timeDiffs.end(),
 			                                          distances.begin(),
-			                                          movetk::utils::movetk_back_insert_iterator(speeds));
+			                                          std::back_inserter(speeds));
 		}
 
 		// Calculate the statistics

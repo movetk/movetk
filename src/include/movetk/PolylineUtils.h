@@ -57,7 +57,7 @@ double geopolyline_length_m(LatIterator lat_start, LatIterator lat_beyond, LonIt
 	                                lat_start,
 	                                lat_beyond,
 	                                lon_start,
-	                                movetk::utils::movetk_back_insert_iterator(xyzs));
+	                                std::back_inserter(xyzs));
 	return polyline_length_m(std::begin(xyzs), std::end(xyzs));
 }
 
@@ -88,7 +88,7 @@ std::vector<double> geopolyline_offsets_m(LatIterator lat_start, LatIterator lat
 	                                lat_start,
 	                                lat_beyond,
 	                                lon_start,
-	                                movetk::utils::movetk_back_insert_iterator(xyzs));
+	                                std::back_inserter(xyzs));
 
 	auto lengths = polyline_lengths_m(std::begin(xyzs), std::end(xyzs));
 	std::vector<double> offsets;

@@ -113,10 +113,10 @@ int main(int argc, char **argv) {
 		                                    trajectory.begin<ProbeTraits::ProbeColumns::LAT>(),
 		                                    trajectory.end<ProbeTraits::ProbeColumns::LAT>(),
 		                                    trajectory.begin<ProbeTraits::ProbeColumns::LON>(),
-		                                    movetk::utils::movetk_back_insert_iterator(polyline));
+		                                    std::back_inserter(polyline));
 
 		SegmentIdx segIdx;
-		segment_by_meb(std::cbegin(polyline), std::cend(polyline), movetk::utils::movetk_back_insert_iterator(segIdx));
+		segment_by_meb(std::cbegin(polyline), std::cend(polyline), std::back_inserter(segIdx));
 		std::cout << "Number of Segments: " << segIdx.size();
 
 		movetk::utils::SegmentIdGenerator make_segment(std::begin(segIdx), std::end(segIdx));

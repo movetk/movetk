@@ -70,7 +70,7 @@ public:
 		Table dp_table(num_rows);
 
 		// Fill up Dynamic Programming Table
-		ll(*rfirst, cfirst, cbeyond, movetk::utils::movetk_back_insert_iterator(dp_row));
+		ll(*rfirst, cfirst, cbeyond, std::back_inserter(dp_row));
 
 		std::transform(std::begin(dp_row), std::end(dp_row), std::begin(dp_row), ic);
 		auto min_ic = std::min_element(std::cbegin(dp_row), std::cend(dp_row));

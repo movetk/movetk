@@ -126,7 +126,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(WeakFrechetTests,
 		                      test_data.polyline_a.end(),
 		                      test_data.polyline_b.begin(),
 		                      test_data.polyline_b.end(),
-		                      movetk::utils::movetk_back_insert_iterator(matching));
+		                      std::back_inserter(matching));
 		const auto expectedDist = test_data.expected_distance;
 		// Non-empty matching
 		REQUIRE(!matching.empty());

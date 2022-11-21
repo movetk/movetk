@@ -179,7 +179,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 	using BBMM = movetk::segmentation::brownian_bridge::
 	    Model<MovetkGeometryKernel, ProbeTraits, ParameterTraits, Norm, Projection>;
 
-	BBMM bb(t.begin(), t.end(), movetk::utils::movetk_back_insert_iterator(bridges));
+	BBMM bb(t.begin(), t.end(), std::back_inserter(bridges));
 
 	std::vector<typename MovetkGeometryKernel::NT> selected_coeffs;
 
@@ -211,7 +211,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 
 	std::cout << " Running coefficient selector to select 5 coefficients: \n";
 	movetk::segmentation::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(5);
-	selector(std::cbegin(bridges), std::cend(bridges), movetk::utils::movetk_back_insert_iterator(selected_coeffs));
+	selector(std::cbegin(bridges), std::cend(bridges), std::back_inserter(selected_coeffs));
 
 	for (auto coeff : selected_coeffs) {
 		std::cout << " Selected Coefficient: " << coeff << "\n";
@@ -231,7 +231,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 	             std::cend(bridges),
 	             std::cbegin(selected_coeffs),
 	             std::cend(selected_coeffs),
-	             movetk::utils::movetk_back_insert_iterator(segments));
+	             std::back_inserter(segments));
 
 
 	REQUIRE(segments.size() == 1);
@@ -267,7 +267,7 @@ MOVETK_TEMPLATE_LIST_TEST_CASE("brownian bridge model segmentation 1", "[test br
 	              std::cend(bridges),
 	              std::cbegin(selected_coeffs),
 	              std::cend(selected_coeffs),
-	              movetk::utils::movetk_back_insert_iterator(segments));
+	              std::back_inserter(segments));
 
 	REQUIRE(segments.size() == 24);
 	std::reverse(std::begin(segments), std::end(segments));

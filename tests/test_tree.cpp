@@ -87,7 +87,7 @@ TEST_CASE("Create and search in a Trie", "[test_trie") {
 	REQUIRE(*it == 1);
 
 	// counts number of leaves in each branch of the tree
-	tree.find(movetk::utils::movetk_back_insert_iterator(leaves));
+	tree.find(std::back_inserter(leaves));
 
 	REQUIRE(leaves.size() == 2);
 

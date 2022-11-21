@@ -63,7 +63,7 @@ public:
 		std::size_t start_idx = 0;
 		predecessors[start_idx] = 0;
 
-		create_edges(first, beyond, movetk::utils::movetk_back_insert_iterator(edges));
+		create_edges(first, beyond, std::back_inserter(edges));
 
 		Graph graph{edges.begin(), edges.end(), NumElems};
 

@@ -305,7 +305,7 @@ struct GeometryModule {
 		    .def("min_sphere",
 		         [](Sphere &s, Polyline &p) -> Sphere {
 			         std::vector<NT> vec;
-			         using back_insert_iterator = movetk::utils::movetk_back_insert_iterator<decltype(vec)>;
+			         using back_insert_iterator = std::back_inserter<decltype(vec)>;
 			         movetk::geom::MakeMinSphere<MovetkGeometryKernel> min_sphere;
 			         NT radius = min_sphere(p.cbegin(), p.cend(), back_insert_iterator(vec));
 			         Point center(std::begin(vec), std::end(vec));
@@ -322,7 +322,7 @@ struct GeometryModule {
 			         compute_sphere_segment_intersections(
 			             sp,
 			             seg,
-			             movetk::utils::movetk_back_insert_iterator(sphere_segment_intersections));
+			             std::back_inserter(sphere_segment_intersections));
 			         return sphere_segment_intersections;
 		         })
 		    .def("intersection", [](Sphere &sp1, Sphere &sp2) -> Sphere {
