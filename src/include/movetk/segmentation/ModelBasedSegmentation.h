@@ -48,14 +48,14 @@ class ModelBasedSegmentation {
 public:
 	ModelBasedSegmentation(NT p) { ic.penalty_factor = p; }
 
-	template <class RowIterator,
-	          class ColumnIterator,
-	          class OutputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<RowIterator>,
+	template <std::random_access_iterator RowIterator,
+	          std::random_access_iterator ColumnIterator,
+	          class OutputIterator>
+	          /*typename = movetk::utils::requires_random_access_iterator<RowIterator>,
 	          typename = movetk::utils::requires_random_access_iterator<ColumnIterator>,
 	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
 	          typename = movetk::utils::requires_equality<typename RowIterator::value_type,
-	                                                      typename OutputIterator::value_type::value_type>>
+	                                                      typename OutputIterator::value_type::value_type>>*/
 	void operator()(RowIterator rfirst,
 	                RowIterator rbeyond,
 	                ColumnIterator cfirst,

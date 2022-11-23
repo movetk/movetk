@@ -18,9 +18,9 @@
  */
 
 
-//
-// Created by Mitra, Aniket on 2019-09-08.
-//
+ //
+ // Created by Mitra, Aniket on 2019-09-08.
+ //
 
 #ifndef MOVETK_FREESPACEDIAGRAM_H
 #define MOVETK_FREESPACEDIAGRAM_H
@@ -38,265 +38,271 @@
 #include "movetk/utils/Requirements.h"
 
 namespace movetk::ds {
-// based on https://doi.org/10.1142/S0218195995000064
+    // based on https://doi.org/10.1142/S0218195995000064
 
-template <class _IntersectionTraits>
-struct FreeSpaceCellTraits {
-	enum edge_orientation { Left, Top, Right, Bottom };
-	enum vertex_orientation { BottomLeft, TopLeft, TopRight, BottomRight };
-	typedef _IntersectionTraits IntersectionTraits;
-	typedef typename IntersectionTraits::GeometryTraits GeometryTraits;
-	typedef typename IntersectionTraits::Norm Norm;
-	typedef std::vector<typename IntersectionTraits::value_type> Intersections;
-	typedef movetk::utils::movetk_back_insert_iterator<Intersections> OutputIterator;
-	typedef std::set<std::size_t> Vertices;
-	typedef typename Vertices::const_iterator vertex_iterator;
-	typedef typename Intersections::const_iterator const_iterator;
-};
+    template <class _IntersectionTraits>
+    struct FreeSpaceCellTraits {
+        enum edge_orientation { Left, Top, Right, Bottom };
+        enum vertex_orientation { BottomLeft, TopLeft, TopRight, BottomRight };
+        using IntersectionTraits = _IntersectionTraits;
+        using GeometryTraits = typename IntersectionTraits::GeometryTraits;
+        using Norm = typename IntersectionTraits::Norm;
+        using Intersections = std::vector<typename IntersectionTraits::value_type>;
+        using OutputIterator = std::back_insert_iterator<Intersections>;
+        using Vertices = std::set<std::size_t>;
+        using vertex_iterator = typename Vertices::const_iterator;
+        using const_iterator = typename Intersections::const_iterator;
+    };
 
-/*!
- *
- * @tparam CellTraits
- *
- */
-template <class CellTraits>
-class FreeSpaceCell {
-private:
-	geom::MakeSphere<typename CellTraits::GeometryTraits> make_sphere;
-	geom::ComputeIntersections<typename CellTraits::IntersectionTraits> compute_intersections;
-	typename CellTraits::Intersections intersections;
-	typename CellTraits::Vertices vertices;
-	typedef typename CellTraits::GeometryTraits::NT NT;
-	using Attributes = typename CellTraits::IntersectionTraits::Attributes;
+    /*!
+     *
+     * @tparam CellTraits
+     *
+     */
+    template <class CellTraits>
+    class FreeSpaceCell {
+    public:
+        using FreeSpaceCellTraits = CellTraits;
+        using GeometryTraits = typename CellTraits::GeometryTraits;
 
-	template <class InputIterator>
-	void update_edge_id(InputIterator first, InputIterator beyond, std::size_t edge_id) {
-		auto it = first;
-		while (it != beyond) {
-			std::get<Attributes::ID>(*it) = edge_id;
-			it++;
-		}
-	}
+        /*!
+         *
+         * @param P
+         * @param Q
+         * @param radius
+         */
+        FreeSpaceCell(typename GeometryTraits::MovetkSegment P,
+            typename GeometryTraits::MovetkSegment Q,
+            typename GeometryTraits::NT radius) {
+            auto sphere = make_sphere(Q[0], radius);
+            auto init_length = std::distance(std::begin(intersections), std::end(intersections));
+            compute_intersections(sphere, P, typename CellTraits::OutputIterator(intersections));
+            auto new_length = std::distance(std::begin(intersections), std::end(intersections));
+            update_edge_id(std::begin(intersections) + init_length,
+                std::end(intersections),
+                CellTraits::edge_orientation::Left);
+            identify_free_vertices(std::begin(intersections) + init_length,
+                std::end(intersections),
+                P,
+                CellTraits::edge_orientation::Left);
+            init_length = new_length;
 
-	template <class InputIterator>
-	void identify_free_vertices(InputIterator first,
-	                            InputIterator beyond,
-	                            typename CellTraits::GeometryTraits::MovetkSegment S,
-	                            std::size_t edge_id) {
-		if ((edge_id != CellTraits::edge_orientation::Left) && (edge_id != CellTraits::edge_orientation::Right))
-			return;
+            sphere = make_sphere(P[1], radius);
+            compute_intersections(sphere, Q, typename CellTraits::OutputIterator(intersections));
+            new_length = std::distance(std::begin(intersections), std::end(intersections));
+            update_edge_id(std::begin(intersections) + init_length, std::end(intersections), CellTraits::edge_orientation::Top);
+            init_length = new_length;
 
-		std::size_t num_intersections = std::distance(first, beyond);
+            sphere = make_sphere(Q[1], radius);
+            compute_intersections(sphere, P, typename CellTraits::OutputIterator(intersections));
+            new_length = std::distance(std::begin(intersections), std::end(intersections));
+            update_edge_id(std::begin(intersections) + init_length,
+                std::end(intersections),
+                CellTraits::edge_orientation::Right);
+            identify_free_vertices(std::begin(intersections) + init_length,
+                std::end(intersections),
+                P,
+                CellTraits::edge_orientation::Right);
+            ;
+            init_length = new_length;
 
-		if (num_intersections == 1) {
-			auto value = std::get<Attributes::SQUARED_RATIO>(*first);
-			if ((value > 0) && (value < 1))
-				return;
-			if (value == 1) {
-				if (edge_id == CellTraits::edge_orientation::Left)
-					vertices.insert(CellTraits::vertex_orientation::TopLeft);
-				if (edge_id == CellTraits::edge_orientation::Right)
-					vertices.insert(CellTraits::vertex_orientation::TopRight);
-			}
-			if (value == 0) {
-				if (edge_id == CellTraits::edge_orientation::Left)
-					vertices.insert(CellTraits::vertex_orientation::BottomLeft);
-				if (edge_id == CellTraits::edge_orientation::Right)
-					vertices.insert(CellTraits::vertex_orientation::BottomRight);
-			}
-		}
+            sphere = make_sphere(P[0], radius);
+            compute_intersections(sphere, Q, typename CellTraits::OutputIterator(intersections));
+            new_length = std::distance(std::begin(intersections), std::end(intersections));
+            update_edge_id(std::begin(intersections) + init_length,
+                std::end(intersections),
+                CellTraits::edge_orientation::Bottom);
+            init_length = new_length;
+        }
 
-		if (num_intersections == 2) {
-			auto sign_ip_1 = std::get<Attributes::SIGN_DISCRIMINANT>(*first);
-			auto sign_ip_2 = std::get<Attributes::SIGN_DISCRIMINANT>(*(first + 1));
+        /*!
+         *
+         * @return
+         */
+        typename CellTraits::vertex_iterator vertices_begin() { return std::begin(vertices); }
 
-			if ((sign_ip_1 == 1) && (sign_ip_2 == 1))
-				return;
+        /*!
+         *
+         * @return
+         */
+        typename CellTraits::vertex_iterator vertices_end() { return std::end(vertices); }
 
-			typename CellTraits::GeometryTraits::MovetkPoint ip_1 = std::get<Attributes::POINT>(*first);
-			typename CellTraits::GeometryTraits::MovetkPoint ip_2 = std::get<Attributes::POINT>(*(first + 1));
-			std::size_t orientation_ip_1 = CellTraits::vertex_orientation::BottomLeft;
-			std::size_t orientation_ip_2 = CellTraits::vertex_orientation::BottomRight;
-			if (sign_ip_1 == -1) {
-				typename CellTraits::GeometryTraits::MovetkVector v1 = S[0] - ip_1;
-				typename CellTraits::GeometryTraits::MovetkVector v2 = S[1] - ip_1;
-				if ((v1 * v1) < MOVETK_EPS) {
-					if (edge_id == CellTraits::edge_orientation::Left)
-						orientation_ip_1 = CellTraits::vertex_orientation::BottomLeft;
-					if (edge_id == CellTraits::edge_orientation::Right)
-						orientation_ip_1 = CellTraits::vertex_orientation::BottomRight;
-				} else if ((v2 * v2) < MOVETK_EPS) {
-					if (edge_id == CellTraits::edge_orientation::Left)
-						orientation_ip_1 = CellTraits::vertex_orientation::TopLeft;
-					if (edge_id == CellTraits::edge_orientation::Right)
-						orientation_ip_1 = CellTraits::vertex_orientation::TopRight;
-				}
-			}
-			if (sign_ip_2 == -1) {
-				typename CellTraits::GeometryTraits::MovetkVector v1 = S[0] - ip_2;
-				typename CellTraits::GeometryTraits::MovetkVector v2 = S[1] - ip_2;
-				if ((v1 * v1) < MOVETK_EPS) {
-					if (edge_id == CellTraits::edge_orientation::Left)
-						orientation_ip_2 = CellTraits::vertex_orientation::BottomLeft;
-					if (edge_id == CellTraits::edge_orientation::Right)
-						orientation_ip_2 = CellTraits::vertex_orientation::BottomRight;
-				} else if ((v2 * v2) < MOVETK_EPS) {
-					if (edge_id == CellTraits::edge_orientation::Left)
-						orientation_ip_2 = CellTraits::vertex_orientation::TopLeft;
-					if (edge_id == CellTraits::edge_orientation::Right)
-						orientation_ip_2 = CellTraits::vertex_orientation::TopRight;
-				}
-			}
+        /*!
+         *
+         * @return
+         */
+        typename CellTraits::const_iterator begin() { return std::begin(intersections); }
 
-			if ((sign_ip_1 == -1) && (sign_ip_2 == -1)) {
-				if (orientation_ip_1 == orientation_ip_2) {
-					return;
-				} else {
-					vertices.insert(orientation_ip_1);
-					vertices.insert(orientation_ip_2);
-				}
-			} else if ((sign_ip_1 == -1) && (sign_ip_2 != -1)) {
-				vertices.insert(orientation_ip_1);
-			} else if ((sign_ip_1 != -1) && (sign_ip_2 == -1)) {
-				vertices.insert(orientation_ip_2);
-			}
-		}
-	}
+        /*!
+         *
+         * @return
+         */
+        typename CellTraits::const_iterator end() { return std::end(intersections); }
 
-public:
-	typedef CellTraits FreeSpaceCellTraits;
+    private:
+        geom::MakeSphere<typename CellTraits::GeometryTraits> make_sphere;
+        geom::ComputeIntersections<typename CellTraits::IntersectionTraits> compute_intersections;
+        typename CellTraits::Intersections intersections;
+        typename CellTraits::Vertices vertices;
+        using NT = typename CellTraits::GeometryTraits::NT;
+        using Attributes = typename CellTraits::IntersectionTraits::Attributes;
+        using InputIterator = std::remove_cvref_t<decltype(intersections.begin())>;
 
-	/*!
-	 *
-	 * @param P
-	 * @param Q
-	 * @param radius
-	 */
-	FreeSpaceCell(typename CellTraits::GeometryTraits::MovetkSegment P,
-	              typename CellTraits::GeometryTraits::MovetkSegment Q,
-	              typename CellTraits::GeometryTraits::NT radius) {
-		typename CellTraits::GeometryTraits::MovetkSphere sphere = make_sphere(Q[0], radius);
-		std::size_t init_length = std::distance(std::begin(intersections), std::end(intersections));
-		compute_intersections(sphere, P, typename CellTraits::OutputIterator(intersections));
-		std::size_t new_length = std::distance(std::begin(intersections), std::end(intersections));
-		update_edge_id(std::begin(intersections) + init_length,
-		               std::end(intersections),
-		               CellTraits::edge_orientation::Left);
-		identify_free_vertices(std::begin(intersections) + init_length,
-		                       std::end(intersections),
-		                       P,
-		                       CellTraits::edge_orientation::Left);
-		init_length = new_length;
+        void update_edge_id(InputIterator first, InputIterator beyond, std::size_t edge_id) {
+            auto it = first;
+            std::for_each(first, beyond, [edge_id](auto& val) {
+                std::get<Attributes::ID>(val) = edge_id;
+            });
+        }
 
-		sphere = make_sphere(P[1], radius);
-		compute_intersections(sphere, Q, typename CellTraits::OutputIterator(intersections));
-		new_length = std::distance(std::begin(intersections), std::end(intersections));
-		update_edge_id(std::begin(intersections) + init_length, std::end(intersections), CellTraits::edge_orientation::Top);
-		init_length = new_length;
+        void identify_free_vertices(InputIterator first,
+            InputIterator beyond,
+            typename GeometryTraits::MovetkSegment S,
+            std::size_t edge_id) {
+            if ((edge_id != CellTraits::edge_orientation::Left) && (edge_id != CellTraits::edge_orientation::Right))
+                return;
 
-		sphere = make_sphere(Q[1], radius);
-		compute_intersections(sphere, P, typename CellTraits::OutputIterator(intersections));
-		new_length = std::distance(std::begin(intersections), std::end(intersections));
-		update_edge_id(std::begin(intersections) + init_length,
-		               std::end(intersections),
-		               CellTraits::edge_orientation::Right);
-		identify_free_vertices(std::begin(intersections) + init_length,
-		                       std::end(intersections),
-		                       P,
-		                       CellTraits::edge_orientation::Right);
-		;
-		init_length = new_length;
+            std::size_t num_intersections = std::distance(first, beyond);
 
-		sphere = make_sphere(P[0], radius);
-		compute_intersections(sphere, Q, typename CellTraits::OutputIterator(intersections));
-		new_length = std::distance(std::begin(intersections), std::end(intersections));
-		update_edge_id(std::begin(intersections) + init_length,
-		               std::end(intersections),
-		               CellTraits::edge_orientation::Bottom);
-		init_length = new_length;
-	}
+            if (num_intersections == 1) {
+                auto value = std::get<Attributes::SQUARED_RATIO>(*first);
+                if ((value > 0) && (value < 1))
+                    return;
+                if (value == 1) {
+                    if (edge_id == CellTraits::edge_orientation::Left)
+                        vertices.insert(CellTraits::vertex_orientation::TopLeft);
+                    if (edge_id == CellTraits::edge_orientation::Right)
+                        vertices.insert(CellTraits::vertex_orientation::TopRight);
+                }
+                if (value == 0) {
+                    if (edge_id == CellTraits::edge_orientation::Left)
+                        vertices.insert(CellTraits::vertex_orientation::BottomLeft);
+                    if (edge_id == CellTraits::edge_orientation::Right)
+                        vertices.insert(CellTraits::vertex_orientation::BottomRight);
+                }
+            }
 
-	/*!
-	 *
-	 * @return
-	 */
-	typename CellTraits::vertex_iterator vertices_begin() { return std::begin(vertices); }
+            if (num_intersections == 2) {
+                auto sign_ip_1 = std::get<Attributes::SIGN_DISCRIMINANT>(*first);
+                auto sign_ip_2 = std::get<Attributes::SIGN_DISCRIMINANT>(*(first + 1));
 
-	/*!
-	 *
-	 * @return
-	 */
-	typename CellTraits::vertex_iterator vertices_end() { return std::end(vertices); }
+                if ((sign_ip_1 == 1) && (sign_ip_2 == 1))
+                    return;
 
-	/*!
-	 *
-	 * @return
-	 */
-	typename CellTraits::const_iterator begin() { return std::begin(intersections); }
+                typename CellTraits::GeometryTraits::MovetkPoint ip_1 = std::get<Attributes::POINT>(*first);
+                typename CellTraits::GeometryTraits::MovetkPoint ip_2 = std::get<Attributes::POINT>(*(first + 1));
+                std::size_t orientation_ip_1 = CellTraits::vertex_orientation::BottomLeft;
+                std::size_t orientation_ip_2 = CellTraits::vertex_orientation::BottomRight;
+                if (sign_ip_1 == -1) {
+                    typename CellTraits::GeometryTraits::MovetkVector v1 = S[0] - ip_1;
+                    typename CellTraits::GeometryTraits::MovetkVector v2 = S[1] - ip_1;
+                    if ((v1 * v1) < MOVETK_EPS) {
+                        if (edge_id == CellTraits::edge_orientation::Left)
+                            orientation_ip_1 = CellTraits::vertex_orientation::BottomLeft;
+                        if (edge_id == CellTraits::edge_orientation::Right)
+                            orientation_ip_1 = CellTraits::vertex_orientation::BottomRight;
+                    }
+                    else if ((v2 * v2) < MOVETK_EPS) {
+                        if (edge_id == CellTraits::edge_orientation::Left)
+                            orientation_ip_1 = CellTraits::vertex_orientation::TopLeft;
+                        if (edge_id == CellTraits::edge_orientation::Right)
+                            orientation_ip_1 = CellTraits::vertex_orientation::TopRight;
+                    }
+                }
+                if (sign_ip_2 == -1) {
+                    typename CellTraits::GeometryTraits::MovetkVector v1 = S[0] - ip_2;
+                    typename CellTraits::GeometryTraits::MovetkVector v2 = S[1] - ip_2;
+                    if ((v1 * v1) < MOVETK_EPS) {
+                        if (edge_id == CellTraits::edge_orientation::Left)
+                            orientation_ip_2 = CellTraits::vertex_orientation::BottomLeft;
+                        if (edge_id == CellTraits::edge_orientation::Right)
+                            orientation_ip_2 = CellTraits::vertex_orientation::BottomRight;
+                    }
+                    else if ((v2 * v2) < MOVETK_EPS) {
+                        if (edge_id == CellTraits::edge_orientation::Left)
+                            orientation_ip_2 = CellTraits::vertex_orientation::TopLeft;
+                        if (edge_id == CellTraits::edge_orientation::Right)
+                            orientation_ip_2 = CellTraits::vertex_orientation::TopRight;
+                    }
+                }
 
-	/*!
-	 *
-	 * @return
-	 */
-	typename CellTraits::const_iterator end() { return std::end(intersections); }
-};
+                if ((sign_ip_1 == -1) && (sign_ip_2 == -1)) {
+                    if (orientation_ip_1 == orientation_ip_2) {
+                        return;
+                    }
+                    else {
+                        vertices.insert(orientation_ip_1);
+                        vertices.insert(orientation_ip_2);
+                    }
+                }
+                else if ((sign_ip_1 == -1) && (sign_ip_2 != -1)) {
+                    vertices.insert(orientation_ip_1);
+                }
+                else if ((sign_ip_1 != -1) && (sign_ip_2 == -1)) {
+                    vertices.insert(orientation_ip_2);
+                }
+            }
+        }
+
+    };
 
 
-template <class FreeSpaceCell>
-struct FreeSpaceDiagramTraits {
-	typedef typename FreeSpaceCell::FreeSpaceCellTraits FreeSpaceCellTraits;
-	typedef typename FreeSpaceCellTraits::GeometryTraits GeometryTraits;
-	typedef FreeSpaceCell Cell;
-	typedef std::vector<Cell> Cells;
-	typedef std::vector<Cells> Rows;
-	typedef movetk::utils::movetk_back_insert_iterator<typename Rows::value_type> CellsOutputIterator;
-	typedef movetk::utils::movetk_back_insert_iterator<Rows> RowsOutputIterator;
-	typedef movetk::utils::movetk_grid_iterator<Rows> iterator;
-};
+    template <class FreeSpaceCell>
+    struct FreeSpaceDiagramTraits {
+        typedef typename FreeSpaceCell::FreeSpaceCellTraits FreeSpaceCellTraits;
+        typedef typename FreeSpaceCellTraits::GeometryTraits GeometryTraits;
+        typedef FreeSpaceCell Cell;
+        typedef std::vector<Cell> Cells;
+        typedef std::vector<Cells> Rows;
+        typedef std::back_insert_iterator<typename Rows::value_type> CellsOutputIterator;
+        typedef std::back_insert_iterator<Rows> RowsOutputIterator;
+        typedef movetk::utils::movetk_grid_iterator<Rows> iterator;
+    };
 
-template <class _FreeSpaceDiagramTraits>
-class FreeSpaceDiagram {
-private:
-	geom::MakeSegment<typename _FreeSpaceDiagramTraits::GeometryTraits> make_segment;
-	typename _FreeSpaceDiagramTraits::Rows rows;
+    template <class _FreeSpaceDiagramTraits>
+    class FreeSpaceDiagram {
+    private:
+        geom::MakeSegment<typename _FreeSpaceDiagramTraits::GeometryTraits> make_segment;
+        typename _FreeSpaceDiagramTraits::Rows rows;
 
-public:
-	typedef _FreeSpaceDiagramTraits FreeSpaceDiagramTraits;
-	template <class InputIterator>
-	FreeSpaceDiagram(InputIterator polyline_p_first,
-	                 InputIterator polyline_p_beyond,
-	                 InputIterator polyline_q_first,
-	                 InputIterator polyline_q_beyond,
-	                 typename FreeSpaceDiagramTraits::GeometryTraits::NT radius) {
-		auto rit = typename FreeSpaceDiagramTraits::RowsOutputIterator(rows);
-		auto pit = polyline_p_first;
-		std::size_t num_cols = std::distance(polyline_q_first, polyline_q_beyond);
-		std::size_t num_rows = std::distance(polyline_p_first, polyline_p_beyond);
-		std::size_t row_idx = 0;
-		while (pit != (polyline_p_beyond - 1)) {
-			auto qit = polyline_q_first;
-			typename FreeSpaceDiagramTraits::Rows::value_type cells;
-			auto cit = typename FreeSpaceDiagramTraits::CellsOutputIterator(cells);
-			std::size_t col_idx = 0;
-			while (qit != (polyline_q_beyond - 1)) {
-				typename FreeSpaceDiagramTraits::GeometryTraits::MovetkSegment P = make_segment(*pit, *(pit + 1));
-				typename FreeSpaceDiagramTraits::GeometryTraits::MovetkSegment Q = make_segment(*qit, *(qit + 1));
-				typename FreeSpaceDiagramTraits::Cell fsc(P, Q, radius);
-				cit = fsc;
-				qit++;
-				col_idx++;
-			}
-			rit = cells;
-			row_idx++;
-			pit++;
-		}
-	}
-	typename FreeSpaceDiagramTraits::iterator begin() { return typename FreeSpaceDiagramTraits::iterator(rows); }
+    public:
+        typedef _FreeSpaceDiagramTraits FreeSpaceDiagramTraits;
+        template <class InputIterator>
+        FreeSpaceDiagram(InputIterator polyline_p_first,
+            InputIterator polyline_p_beyond,
+            InputIterator polyline_q_first,
+            InputIterator polyline_q_beyond,
+            typename FreeSpaceDiagramTraits::GeometryTraits::NT radius) {
+            auto rit = typename FreeSpaceDiagramTraits::RowsOutputIterator(rows);
+            auto pit = polyline_p_first;
+            auto num_cols = std::distance(polyline_q_first, polyline_q_beyond);
+            auto num_rows = std::distance(polyline_p_first, polyline_p_beyond);
+            std::size_t row_idx = 0;
+            while (pit != (polyline_p_beyond - 1)) {
+                auto qit = polyline_q_first;
+                typename FreeSpaceDiagramTraits::Rows::value_type cells;
+                auto cit = typename FreeSpaceDiagramTraits::CellsOutputIterator(cells);
+                std::size_t col_idx = 0;
+                while (qit != (polyline_q_beyond - 1)) {
+                    typename FreeSpaceDiagramTraits::GeometryTraits::MovetkSegment P = make_segment(*pit, *(pit + 1));
+                    typename FreeSpaceDiagramTraits::GeometryTraits::MovetkSegment Q = make_segment(*qit, *(qit + 1));
+                    typename FreeSpaceDiagramTraits::Cell fsc(P, Q, radius);
+                    cit = fsc;
+                    qit++;
+                    col_idx++;
+                }
+                rit = cells;
+                row_idx++;
+                pit++;
+            }
+        }
+        typename FreeSpaceDiagramTraits::iterator begin() { return typename FreeSpaceDiagramTraits::iterator(rows); }
 
-	typename FreeSpaceDiagramTraits::iterator end() { return typename FreeSpaceDiagramTraits::iterator(rows, true); }
-};
+        typename FreeSpaceDiagramTraits::iterator end() { return typename FreeSpaceDiagramTraits::iterator(rows, true); }
+    };
 
 
 }  // namespace movetk::ds
 
 #endif  // MOVETK_FREESPACEDIAGRAM_H
+

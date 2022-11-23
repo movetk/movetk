@@ -176,22 +176,18 @@ struct is_pair<std::pair<T1, T2>> {
 	static const bool value = true;
 };
 
-/*!@struct is_equal_to
- * @brief tests equality of two input types
- * @tparam T1
- * @tparam T2
- */
-template <class T1, class T2>
-struct is_equal_to {
-	static const bool value = std::is_same_v<T1, T2>;
+template<typename T>
+concept Pair = requires() {
+	typename T::first_type;
+	typename T::second_type;
+	requires std::same_as<T, std::pair<typename T::first_type, typename T::second_type>>;
 };
 
-/*!@struct is_size_t
- *@brief checks whether \c T is \c std::size_t
- * @tparam Type
- */
-template <class Type>
-struct is_size_t : public is_equal_to<std::decay_t<Type>, std::size_t> {};
+template<typename T>
+concept L2Norm = requires() {
+	{T::P}->std::convertible_to<size_t>;
+	requires T::P == 2;
+};
 
 template <std::size_t p>
 struct is_L2_norm {
@@ -248,3 +244,4 @@ struct is_date {
 };
 }      // namespace movetk::utils
 #endif  // MOVETK_TYPECHECKS_H
+

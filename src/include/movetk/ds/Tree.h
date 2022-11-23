@@ -439,6 +439,7 @@ private:
 	size_t matched_branch_length_ = 0;
 	std::string identifier = "";
 
+	using node_id_t = std::remove_cvref_t<decltype(root->v_id())>;
 	/*!
 	 *
 	 * @tparam InputIterator
@@ -448,13 +449,12 @@ private:
 	 * @param beyond
 	 * @param val
 	 */
-	template <class InputIterator,
-	          class ValueType,
-	          typename = utils::requires_random_access_iterator<InputIterator>,
-	          typename = utils::requires_arithmetic<typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator,
+	          class ValueType>
+	          /*typename = utils::requires_random_access_iterator<InputIterator>,
+	          typename = utils::requires_arithmetic<typename InputIterator::value_type>>*/
 	void insert(reference node, InputIterator current, InputIterator beyond, ValueType& val) {
 		// TODO Add Requirements for ValueType
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		if (current == beyond) {
 			node->insert_value(identifier, val);
 			return;
@@ -477,9 +477,8 @@ private:
 	 * @param beyond
 	 * @return
 	 */
-	template <class InputIterator,
-	          typename = utils::requires_random_access_iterator<InputIterator>,
-	          typename = utils::requires_arithmetic<typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
+	          //typename = utils::requires_arithmetic<typename InputIterator::value_type>>
 	reference find(reference node, InputIterator current, InputIterator beyond) {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		if (current == beyond)
@@ -500,12 +499,8 @@ private:
 	 * @param node
 	 * @param iter
 	 */
-	template <class OutputIterator,
-	          typename = utils::requires_output_iterator<OutputIterator>,
-	          typename = utils::requires_pair<typename OutputIterator::value_type>>
+	template <utils::OutputIterator<std::pair<node_id_t,size_t>> OutputIterator>
 	void find(reference node, OutputIterator iter) {
-		// ASSERT_OUTPUT_ITERATOR(OutputIterator);
-		// ASSERT_IS_PAIR(OutputIterator);
 		if (node->begin() == node->end()) {
 			size_t size = std::distance(node->v_begin(), node->v_end());
 			*iter = std::make_pair(node->v_id(), size);
@@ -546,10 +541,8 @@ public:
 	 * @param beyond
 	 * @param val
 	 */
-	template <class InputIterator,
-	          class ValueType,
-	          typename = utils::requires_random_access_iterator<InputIterator>,
-	          typename = utils::requires_arithmetic<typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator,
+	          class ValueType>
 	void insert(InputIterator first, InputIterator beyond, ValueType& val) {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		identifier = "";
@@ -563,11 +556,8 @@ public:
 	 * @param beyond
 	 * @return
 	 */
-	template <class InputIterator,
-	          typename = utils::requires_random_access_iterator<InputIterator>,
-	          typename = utils::requires_arithmetic<typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
 	reference find(InputIterator first, InputIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		matched_branch_length_ = 0;
 		return this->find(root, first, beyond);
 	}
@@ -577,12 +567,8 @@ public:
 	 * @tparam OutputIterator
 	 * @param iter
 	 */
-	template <class OutputIterator,
-	          typename = utils::requires_output_iterator<OutputIterator>,
-	          typename = utils::requires_pair<typename OutputIterator::value_type>>
+	template <utils::OutputIterator<std::pair<node_id_t, size_t>> OutputIterator>
 	void find(OutputIterator iter) {
-		// ASSERT_OUTPUT_ITERATOR(OutputIterator);
-		// ASSERT_IS_PAIR(OutputIterator);
 		this->find(root, iter);
 	}
 
