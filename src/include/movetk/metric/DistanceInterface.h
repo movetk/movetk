@@ -17,9 +17,9 @@
  * License-Filename: LICENSE
  */
 
-//
-// Created by Mitra, Aniket on 2020-10-13.
-//
+ //
+ // Created by Mitra, Aniket on 2020-10-13.
+ //
 
 #ifndef DISTANCEINTERFACE_H
 #define DISTANCEINTERFACE_H
@@ -29,38 +29,37 @@ namespace movetk::metric
 {
     /**
      * @brief Interface for the squared distance algorithm
-     * 
-     * @tparam GeometryTraits 
-     * @tparam Norm 
+     *
+     * @tparam GeometryTraits
+     * @tparam Norm
      */
     template <class GeometryTraits, class Norm>
     struct ComputeSquaredDistance
     {
         /**
-         * @brief Overloads the function operator to calculate the squared distance  
+         * @brief Overloads the function operator to calculate the squared distance
          * between two geometric objects
          * @tparam T1  A geometric object
          * @tparam T2  A geometric object
-         * @param object1 
-         * @param object2 
-         * @return GeometryTraits::NT 
+         * @param object1
+         * @param object2
+         * @return GeometryTraits::NT
          */
         template <class T1, class T2>
-        typename GeometryTraits::NT operator()(T1 &object1, T2 &object2)
+        typename GeometryTraits::NT operator()(T1& object1, T2& object2)
         {
-            typedef squared_distance_algorithm<GeometryTraits, Norm,
-                                               typename GeometryTraits::MovetkSquaredDistance>
-                algorithm;
+            using algorithm = squared_distance_algorithm<GeometryTraits, Norm,
+                typename GeometryTraits::MovetkSquaredDistance>;
             typename algorithm::square_distance distance;
             return distance(object1, object2);
         }
     };
 
     /**
-     * @brief Interface for the Discrete Hausdorff distance algorithm 
-     * 
-     * @tparam GeometryTraits 
-     * @tparam Norm 
+     * @brief Interface for the Discrete Hausdorff distance algorithm
+     *
+     * @tparam GeometryTraits
+     * @tparam Norm
      */
     template <class GeometryTraits, class Norm>
     struct ComputeDiscreteHausdorffDistance
@@ -68,22 +67,19 @@ namespace movetk::metric
         /**
          * @brief Overloads the function operator to accept iterators over two
          * point sets and returns the Discrete Hausdorff distance between them
-         * @tparam InputIterator 
-         * @param polyline_a_first 
-         * @param polyline_a_beyond 
-         * @param polyline_b_first 
-         * @param polyline_b_beyond 
-         * @return GeometryTraits::NT 
+         * @tparam InputIterator
+         * @param polyline_a_first
+         * @param polyline_a_beyond
+         * @param polyline_b_first
+         * @param polyline_b_beyond
+         * @return GeometryTraits::NT
          */
-        template <class InputIterator,
-                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-                  typename = movetk::utils::requires_movetk_point<GeometryTraits,
-                                                                typename InputIterator::value_type>>
-        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
-                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond)
+        template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator>
+            typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                InputIterator polyline_b_first, InputIterator polyline_b_beyond)
         {
             typedef discrete_hausdorff_distance_algorithm<GeometryTraits, Norm,
-                                                          typename GeometryTraits::MovetkDiscreteHausdorffDistance>
+                typename GeometryTraits::MovetkDiscreteHausdorffDistance>
                 algorithm;
             typename algorithm::discrete_hausdorff_distance distance;
             return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
@@ -91,32 +87,31 @@ namespace movetk::metric
     };
 
     /**
-     * @brief Interface for the Discrete Frechet distance algorithm 
-     * 
-     * @tparam GeometryTraits 
-     * @tparam Norm 
+     * @brief Interface for the Discrete Frechet distance algorithm
+     *
+     * @tparam GeometryTraits
+     * @tparam Norm
      */
     template <class GeometryTraits, class Norm>
-    struct ComputeDiscreteFrechetDistance
+    class ComputeDiscreteFrechetDistance
     {
+    public:
         /**
          * @brief Overloads the function operator to accept iterators over two
          * point sets and returns the Discrete Frechet distance between them
-         * @tparam InputIterator 
-         * @param polyline_a_first 
-         * @param polyline_a_beyond 
-         * @param polyline_b_first 
-         * @param polyline_b_beyond 
-         * @return GeometryTraits::NT 
+         * @tparam InputIterator
+         * @param polyline_a_first
+         * @param polyline_a_beyond
+         * @param polyline_b_first
+         * @param polyline_b_beyond
+         * @return GeometryTraits::NT
          */
-        template <class InputIterator, typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-                  typename = movetk::utils::requires_movetk_point<GeometryTraits,
-                                                                typename InputIterator::value_type>>
-        typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
-                                               InputIterator polyline_b_first, InputIterator polyline_b_beyond)
+        template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator>
+            typename GeometryTraits::NT operator()(InputIterator polyline_a_first, InputIterator polyline_a_beyond,
+                InputIterator polyline_b_first, InputIterator polyline_b_beyond)
         {
             typedef discrete_frechet_distance_algorithm<GeometryTraits, Norm,
-                                                        typename GeometryTraits::MovetkDiscreteFrechetDistance>
+                typename GeometryTraits::MovetkDiscreteFrechetDistance>
                 algorithm;
             typename algorithm::discrete_frechet_distance distance;
             return distance(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
@@ -124,44 +119,43 @@ namespace movetk::metric
 
         /**
          * @brief Overloads the function operator to accept iterator over
-         * a collection of point sets and an upper traingular matrix to 
+         * a collection of point sets and an upper traingular matrix to
          * store the result of the pairwise Frechet Distance computation
-         * @tparam DistanceMatrix 
-         * @tparam InputIterator 
+         * @tparam DistanceMatrix
          * @tparam InputIterator
-         * @param first 
-         * @param beyond 
-         * @param upper_triag_mat 
-         * @return GeometryTraits::NT 
+         * @tparam InputIterator
+         * @param first
+         * @param beyond
+         * @param upper_triag_mat
+         * @return GeometryTraits::NT
          */
         template <class DistanceMatrix, class InputIterator,
-                  typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-                  typename = movetk::utils::requires_random_access_iterator<typename InputIterator::value_type::iterator>,
-                  typename = movetk::utils::requires_movetk_point<GeometryTraits, typename InputIterator::value_type::value_type>,
-                  typename = movetk::utils::requires_random_access_iterator<typename DistanceMatrix::iterator>,
-                  typename = movetk::utils::requires_random_access_iterator<typename DistanceMatrix::value_type::iterator>,
-                  typename = movetk::utils::requires_NT<GeometryTraits, typename DistanceMatrix::value_type::value_type>>
-        typename GeometryTraits::NT
-        operator()(InputIterator first, InputIterator beyond, DistanceMatrix &upper_triag_mat)
+            typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+            typename = movetk::utils::requires_random_access_iterator<typename InputIterator::value_type::iterator>,
+            typename = movetk::utils::requires_movetk_point<GeometryTraits, typename InputIterator::value_type::value_type>,
+            typename = movetk::utils::requires_random_access_iterator<typename DistanceMatrix::iterator>,
+            typename = movetk::utils::requires_random_access_iterator<typename DistanceMatrix::value_type::iterator>,
+            typename = movetk::utils::requires_NT<GeometryTraits, typename DistanceMatrix::value_type::value_type>>
+            typename GeometryTraits::NT
+            operator()(InputIterator first, InputIterator beyond, DistanceMatrix& upper_triag_mat)
         {
             typedef discrete_frechet_distance_algorithm<GeometryTraits, Norm,
-                                                        typename GeometryTraits::MovetkDiscreteFrechetDistance>
+                typename GeometryTraits::MovetkDiscreteFrechetDistance>
                 algorithm;
             typename algorithm::discrete_frechet_distance distance;
-            std::back_inserter bit(upper_triag_mat);
+            auto bit= std::back_inserter(upper_triag_mat);
             auto it = first;
-            while (it != beyond)
+            for(;it != beyond;++it)
             {
                 auto nit = it + 1;
                 typename DistanceMatrix::value_type node;
-                std::back_inserter node_bit(node);
+                auto node_bit= std::back_inserter(node);
                 while (nit != beyond)
                 {
                     node_bit = distance(std::cbegin(*it), std::cend(*it), std::cbegin(*nit), std::cend(*nit));
                     nit++;
                 }
                 bit = node;
-                it++;
             }
             auto rit = std::begin(upper_triag_mat);
             typename GeometryTraits::NT min_sum = 1 / MOVETK_EPS;

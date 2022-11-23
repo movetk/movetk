@@ -212,12 +212,8 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <class InputIterator,
-	          class OutputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
-	          typename = movetk::utils::requires_equality<typename InputIterator::value_type,
-	                                                      typename OutputIterator::value_type::value_type>>
+	template <std::random_access_iterator InputIterator,
+	          utils::OutputIterator<InputIterator> OutputIterator>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		InputIterator it = first;
 		ConsistencyLinkedList<InputIterator> list(it);

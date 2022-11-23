@@ -17,9 +17,9 @@
  * License-Filename: LICENSE
  */
 
-//
-// Created by onur on 10/11/18.
-//
+ //
+ // Created by onur on 10/11/18.
+ //
 
 #ifndef MOVETK_TRAJECTORY_TO_INTERFACE_H
 #define MOVETK_TRAJECTORY_TO_INTERFACE_H
@@ -38,66 +38,67 @@
  */
 namespace movetk::geom {
 
-// Requires GeometryTraits::MovetkPoint has dimension 2
-template <class GeometryTraits,
-          class LatIterator,
-          class LonIterator,
-          class OutputIterator,
-          class LocalCoordRef,
-          typename = utils::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
-OutputIterator to_projected_polyline(geom::MakePoint<GeometryTraits> &make_point,
-                                     LatIterator lat_start,
-                                     LatIterator lat_beyond,
-                                     LonIterator lon_start,
-                                     OutputIterator polyline_first,
-                                     LocalCoordRef &ref) {
-	while (lat_start != lat_beyond) {
-		auto projected_point = ref.project(*lat_start++, *lon_start++);
-		*polyline_first++ = make_point(std::cbegin(projected_point), std::cend(projected_point));
-	}
-	return polyline_first;
-}
+    // Requires GeometryTraits::MovetkPoint has dimension 2
+    template <class GeometryTraits,
+        utils::InputIterator<typename GeometryTraits::NT> LatIterator,
+        utils::InputIterator<typename GeometryTraits::NT> LonIterator,
+        utils::OutputIterator<typename GeometryTraits::MovetkPoint> OutputIterator,
+        class LocalCoordRef>
+        OutputIterator to_projected_polyline(geom::MakePoint<GeometryTraits>& make_point,
+            LatIterator lat_start,
+            LatIterator lat_beyond,
+            LonIterator lon_start,
+            OutputIterator polyline_first,
+            LocalCoordRef& ref) {
+        while (lat_start != lat_beyond) {
+            auto projected_point = ref.project(*lat_start++, *lon_start++);
+            *polyline_first++ = make_point(std::cbegin(projected_point), std::cend(projected_point));
+        }
+        return polyline_first;
+    }
 
-template <class GeometryTraits, class LatIterator, class LonIterator, class OutputIterator>
-OutputIterator to_projected_polyline(geom::MakePoint<GeometryTraits> &make_point,
-                                     LatIterator lat_start,
-                                     LatIterator lat_beyond,
-                                     LonIterator lon_start,
-                                     OutputIterator polyline_first) {
-	movetk::geo::LocalCoordinateReference<typename GeometryTraits::NT> ref(*lat_start, *lon_start);
-	return to_projected_polyline(make_point, lat_start, lat_beyond, lon_start, polyline_first, ref);
-}
+    template <class GeometryTraits,
+        utils::InputIterator<typename GeometryTraits::NT> LatIterator,
+        utils::InputIterator<typename GeometryTraits::NT> LonIterator,
+        utils::OutputIterator<typename GeometryTraits::MovetkPoint> OutputIterator>
+        OutputIterator to_projected_polyline(geom::MakePoint<GeometryTraits>& make_point,
+            LatIterator lat_start,
+            LatIterator lat_beyond,
+            LonIterator lon_start,
+            OutputIterator polyline_first) {
+        movetk::geo::LocalCoordinateReference<typename GeometryTraits::NT> ref(*lat_start, *lon_start);
+        return to_projected_polyline(make_point, lat_start, lat_beyond, lon_start, polyline_first, ref);
+    }
 
-/**
- * Creates a vector of points from the given ranges of latitude and longitude also by converting them to
- * geocentric coordinates.
- * @tparam GeometryTraits
- * @tparam LatIterator
- * @tparam LonIterator
- * @tparam OutputIterator
- * @param make_point
- * @param lat_start
- * @param lat_beyond
- * @param lon_start
- * @param polyline_first
- * @return
- */
-template <class GeometryTraits,
-          class LatIterator,
-          class LonIterator,
-          class OutputIterator,
-          typename = utils::requires_movetk_point<GeometryTraits, typename OutputIterator::value_type>>
-OutputIterator to_geocentered_polyline(geom::MakePoint<GeometryTraits> &make_point,
-                                       LatIterator lat_start,
-                                       LatIterator lat_beyond,
-                                       LonIterator lon_start,
-                                       OutputIterator polyline_first) {
-	const GeographicLib::Geocentric &earth = GeographicLib::Geocentric::WGS84();
-	while (lat_start != lat_beyond) {
-		*polyline_first++ = movetk::geo::to_geocentric_coordinates(make_point, earth, *lat_start++, *lon_start++);
-	}
-	return polyline_first;
-}
+    /**
+     * Creates a vector of points from the given ranges of latitude and longitude also by converting them to
+     * geocentric coordinates.
+     * @tparam GeometryTraits
+     * @tparam LatIterator
+     * @tparam LonIterator
+     * @tparam OutputIterator
+     * @param make_point
+     * @param lat_start
+     * @param lat_beyond
+     * @param lon_start
+     * @param polyline_first
+     * @return
+     */
+    template <class GeometryTraits,
+        utils::InputIterator<typename GeometryTraits::NT> LatIterator,
+        utils::InputIterator<typename GeometryTraits::NT> LonIterator,
+        utils::OutputIterator<typename GeometryTraits::MovetkPoint> OutputIterator>
+        OutputIterator to_geocentered_polyline(geom::MakePoint<GeometryTraits>& make_point,
+            LatIterator lat_start,
+            LatIterator lat_beyond,
+            LonIterator lon_start,
+            OutputIterator polyline_first) {
+        const GeographicLib::Geocentric& earth = GeographicLib::Geocentric::WGS84();
+        while (lat_start != lat_beyond) {
+            *polyline_first++ = movetk::geo::to_geocentric_coordinates(make_point, earth, *lat_start++, *lon_start++);
+        }
+        return polyline_first;
+    }
 
 
 }  // namespace movetk::geom

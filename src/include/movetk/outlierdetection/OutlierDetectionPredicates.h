@@ -50,11 +50,11 @@ template <class TestTag, class CoordinateTag, class Traits>
 class TEST {};
 
 
-template <class T>
-class TEST<linear_speed_bounded_test_tag, movetk::algo::geo_coordinates_tag, T> {
+template <class Kernel>
+class TEST<linear_speed_bounded_test_tag, movetk::algo::geo_coordinates_tag, Kernel> {
 public:
-	using NT = typename T::NT;
-	using ProbeTraits = typename T::ProbeTraits;
+	using NT = typename Kernel::NT;
+	using ProbeTraits = typename Kernel::ProbeTraits;
 	using Cols = typename ProbeTraits::ProbeColumns;
 	TEST() = default;
 
@@ -85,7 +85,7 @@ private:
 	}
 	NT m_threshold;
 
-};  // class DistanceOverTimeCheck
+};  
 
 
 template <class T>
@@ -114,13 +114,14 @@ public:
 	 */
 
 	template <
-	    class T1,
-	    typename = movetk::utils::requires_tuple<typename std::add_const<T1>::type>,
+	    utils::TupleType T1
+		/*,
 	    typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
 	                                                                     ProbeTraits::ProbeColumns::PROJECTED_COORDS,
 	                                                                     typename std::add_const<T1>::type>,
 	    typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                                               typename std::add_const<T1>::type>>
+	                                                               typename std::add_const<T1>::type>*/
+	>
 	bool operator()(const T1 &p1, const T1 &p2) {
 		Norm norm;
 		auto point1 = std::get<ProbeTraits::ProbeColumns::PROJECTED_COORDS>(p1);

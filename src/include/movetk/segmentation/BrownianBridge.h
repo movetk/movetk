@@ -301,11 +301,11 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <class TrajectoryIterator,
-	          class OutputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<TrajectoryIterator>,
+	template <std::random_access_iterator TrajectoryIterator,
+	          class OutputIterator>
+	          /*typename = movetk::utils::requires_random_access_iterator<TrajectoryIterator>,
 	          typename = movetk::utils::requires_tuple<typename TrajectoryIterator::value_type>,
-	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
+	          typename = movetk::utils::requiresct_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
 	                                                                         typename TrajectoryIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON,
 	                                                                         typename TrajectoryIterator::value_type>,
@@ -321,7 +321,7 @@ public:
 	                                                                           typename OutputIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
 	                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                                 typename OutputIterator::value_type>>
+	                                                                 typename OutputIterator::value_type>>*/
 	Model(TrajectoryIterator first, TrajectoryIterator beyond, OutputIterator result) {
 		const auto reflat = std::get<ProbeTraits::ProbeColumns::LAT>(*first);
 		const auto reflon = std::get<ProbeTraits::ProbeColumns::LON>(*first);
@@ -411,15 +411,13 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <class InputIterator,
-	          class OutputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
+	template <std::random_access_iterator InputIterator,
+	          utils::OutputIterator<typename GeometryTraits::NT> OutputIterator>
+	          /*typename = movetk::utils::requires_random_access_iterator<InputIterator>,
 	          typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
 	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
 	                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                                 typename InputIterator::value_type>,
-	          typename = movetk::utils::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
+	                                                                 typename InputIterator::value_type>>*/
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		assert(static_cast<std::size_t>(std::distance(first, beyond)) >= SIZE);
 		std::vector<typename ParameterTraits::NT> coeffs;
@@ -438,18 +436,14 @@ public:
 
 template <class GeometryTraits, class ParameterTraits, class Norm>
 class LogLikelihood {
-	typedef typename GeometryTraits::NT NT;
-	typedef typename ParameterTraits::Parameters Parameters;
+	using NT = typename GeometryTraits::NT ;
+	using Parameters = typename ParameterTraits::Parameters ;
 
 public:
 	LogLikelihood() = default;
 
-	template <class InputIterator,
-	          class OutputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
-	          typename = movetk::utils::requires_NT<GeometryTraits, typename InputIterator::value_type>,
-	          typename = movetk::utils::requires_NT<GeometryTraits, typename OutputIterator::value_type>>
+	template <utils::RandomAccessIterator<NT> InputIterator,
+		utils::OutputIterator<NT> OutputIterator>
 	void operator()(const Parameters &params, InputIterator first, InputIterator beyond, OutputIterator result) {
 		Norm norm;
 		const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -

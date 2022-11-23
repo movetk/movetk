@@ -67,25 +67,26 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <class InputIterator,
-	          class Container,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_equality<InputIterator, typename Container::value_type::value_type>>
+	template <std::random_access_iterator InputIterator,
+	          class Container
+				//,typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	          //typename = movetk::utils::requires_equality<InputIterator, typename Container::value_type::value_type>
+	>
 	typename Container::const_iterator operator()(InputIterator first, InputIterator beyond, Container& sequences) {
-		std::back_inserter bit(sequences);
+		auto bit = std::back_inserter(sequences);
 		for (auto it = first; it != beyond; it++) {
 			bool extend_subsequence = false;
 			for (auto sit = std::begin(sequences); sit != std::end(sequences); sit++) {
 				InputIterator prev = *(sit->cend() - 1);
 				if (m_predicate(*prev, *it)) {
-					std::back_inserter node_bit(*sit);
+					auto node_bit = std::back_inserter(*sit);
 					node_bit = it;
 					extend_subsequence = true;
 				}
 			}
 			if (!extend_subsequence) {
 				typename Container::value_type node;
-				std::back_inserter node_bit(node);
+				auto node_bit = std::back_inserter(node);
 				node_bit = it;
 				bit = node;
 			}

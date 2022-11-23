@@ -62,11 +62,10 @@ public:
 		    std::array<decltype(firstCoordPair), 2>{firstCoordPair, secondCoordPair});
 
 		std::vector<NT> distances;
-		std::back_inserter<decltype(distances)> backInserter(distances);
-		movetk::utils::get_distances<GeometryKernel, decltype(beginEndPair.first), decltype(backInserter)>(
+		movetk::utils::get_distances<GeometryKernel>(
 		    beginEndPair.first,
 		    beginEndPair.second,
-		    backInserter);
+		    std::back_inserter(distances));
 		// Defaults to summing everything
 		return std::accumulate(distances.begin(), distances.end(), (NT)0.0);
 	}
@@ -140,7 +139,7 @@ public:
 		// Compute speeds
 		{
 			std::vector<Dist_t> distances;
-			std::back_inserter backInsert(distances);
+			auto backInsert = std::back_inserter(distances);
 			movetk::utils::get_distances<GeometryKernel, decltype(pointsBegin), decltype(backInsert), PointDistanceFunc>(
 			    pointsBegin,
 			    pointsEnd,
