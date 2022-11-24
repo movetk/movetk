@@ -64,11 +64,9 @@ public:
 	explicit TEST(NT threshold) : m_threshold(threshold){};
 
 
-	template <class T1,
-	          typename = movetk::utils::requires_tuple<T1>,
-	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT, T1>,
-	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON, T1>,
-	          typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE, T1>>
+	template <utils::TupleWithTypes<utils::TypeAt<Cols::LAT, NT>,
+	                                utils::TypeAt<Cols::LON, NT>,
+	                                utils::TypeAt<Cols::SAMPLE_DATE, size_t>> T1>
 	bool operator()(const T1 &p1, const T1 &p2) const {
 		auto [lat0, lon0, t1] = get_lat_lon_time(p1);
 		auto [lat1, lon1, t2] = get_lat_lon_time(p2);
@@ -84,8 +82,7 @@ private:
 		return std::make_tuple(get<Cols::LAT>(tuple), get<Cols::LON>(tuple), get<Cols::SAMPLE_DATE>(tuple));
 	}
 	NT m_threshold;
-
-};  
+};
 
 
 template <class T>
@@ -96,6 +93,7 @@ public:
 	using Norm = typename T::Norm;
 	using GeometryTraits = typename T::GeometryTraits;
 	using ProbeTraits = typename T::ProbeTraits;
+	using Cols = typename ProbeTraits::ProbeColumns;
 	TEST() = default;
 	TEST(const TEST &) = default;
 
@@ -113,15 +111,8 @@ public:
 	 * @return
 	 */
 
-	template <
-	    utils::TupleType T1
-		/*,
-	    typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-	                                                                     ProbeTraits::ProbeColumns::PROJECTED_COORDS,
-	                                                                     typename std::add_const<T1>::type>,
-	    typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                                               typename std::add_const<T1>::type>*/
-	>
+	template <utils::TupleWithTypes<utils::TypeAt<Cols::PROJECTED_COORDS, typename GeometryTraits::MovetkPoint>,
+	                                utils::TypeAt<Cols::SAMPLE_DATE, size_t>> T1>
 	bool operator()(const T1 &p1, const T1 &p2) {
 		Norm norm;
 		auto point1 = std::get<ProbeTraits::ProbeColumns::PROJECTED_COORDS>(p1);
