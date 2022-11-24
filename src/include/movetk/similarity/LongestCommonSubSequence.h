@@ -17,9 +17,9 @@
  * License-Filename: LICENSE
  */
 
- //
- // Created by Mitra, Aniket on 2019-06-03.
- //
+//
+// Created by Mitra, Aniket on 2019-06-03.
+//
 
 #ifndef MOVETK_ALGO_SIMILARITY_LONGESTCOMMONSUBSEQUENCE_H
 #define MOVETK_ALGO_SIMILARITY_LONGESTCOMMONSUBSEQUENCE_H
@@ -29,109 +29,107 @@
 #include <iterator>
 
 #include "movetk/geom/GeometryInterface.h"
+#include "movetk/utils/AlgorithmUtils.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
-#include "movetk/utils/AlgorithmUtils.h"
 
 
 namespace movetk::similarity {
-    template <class GeometryTraits, class Norm>
-    class LongestCommonSubSequence {
-        // based on doi=10.1.1.78.240
-        // http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.78.240&rep=rep1&type=pdf
-    private:
-        typedef typename GeometryTraits::NT NT;
-        NT eps;
-        std::size_t del;
-        template <class T>
-        static T unsigned_abs(const T& a, const T& b) {
-            return a > b ? a - b : b - a;
-        }
+template <class GeometryTraits, class Norm>
+class LongestCommonSubSequence {
+	// based on doi=10.1.1.78.240
+	// http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.78.240&rep=rep1&type=pdf
+private:
+	typedef typename GeometryTraits::NT NT;
+	NT eps;
+	std::size_t del;
+	template <class T>
+	static T unsigned_abs(const T& a, const T& b) {
+		return a > b ? a - b : b - a;
+	}
 
-    public:
-        LongestCommonSubSequence(NT epsilon, std::size_t delta) {
-            eps = epsilon;
-            del = delta;
-        }
+public:
+	LongestCommonSubSequence(NT epsilon, std::size_t delta) {
+		eps = epsilon;
+		del = delta;
+	}
 
-        template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator,
-            utils::OutputIterator<std::pair<InputIterator, InputIterator>> OutputIterator>
-            std::size_t operator()(InputIterator polyline_a_first,
-                InputIterator polyline_a_beyond,
-                InputIterator polyline_b_first,
-                InputIterator polyline_b_beyond,
-                OutputIterator result) {
-            utils::Output<OutputIterator> outputter(result);
-            return compute_lcss(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond, outputter);
-        }
-        template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator>
-        std::size_t operator()(InputIterator polyline_a_first,
-            InputIterator polyline_a_beyond,
-            InputIterator polyline_b_first,
-            InputIterator polyline_b_beyond) {
-            utils::Output<void> stub;
-            return compute_lcss(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond, stub);
-        }
+	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator,
+	          utils::OutputIterator<std::pair<InputIterator, InputIterator>> OutputIterator>
+	std::size_t operator()(InputIterator polyline_a_first,
+	                       InputIterator polyline_a_beyond,
+	                       InputIterator polyline_b_first,
+	                       InputIterator polyline_b_beyond,
+	                       OutputIterator result) {
+		utils::Output<OutputIterator> outputter(result);
+		return compute_lcss(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond, outputter);
+	}
+	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator>
+	std::size_t operator()(InputIterator polyline_a_first,
+	                       InputIterator polyline_a_beyond,
+	                       InputIterator polyline_b_first,
+	                       InputIterator polyline_b_beyond) {
+		utils::Output<void> stub;
+		return compute_lcss(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond, stub);
+	}
 
-    private:
-        template<typename VALUE_TYPE>
-        bool lcss_predicate(size_t i, const VALUE_TYPE& i_value, size_t j, const VALUE_TYPE& j_value) {
-            auto v = i_value - j_value;
-            Norm norm;
-            NT distance = norm(v);
-            return distance < eps&& unsigned_abs(i, j) < del;
-        }
+private:
+	template <typename VALUE_TYPE>
+	bool lcss_predicate(size_t i, const VALUE_TYPE& i_value, size_t j, const VALUE_TYPE& j_value) {
+		auto v = i_value - j_value;
+		Norm norm;
+		NT distance = norm(v);
+		return distance < eps && unsigned_abs(i, j) < del;
+	}
 
-        template<utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator, typename OutputType>
-        size_t compute_lcss(InputIterator polyline_a_first,
-            InputIterator polyline_a_beyond,
-            InputIterator polyline_b_first,
-            InputIterator polyline_b_beyond, utils::Output<OutputType>& output) {
-            std::size_t size_polyline_b = std::distance(polyline_b_first, polyline_b_beyond);
-            std::vector<std::size_t> dp_row(size_polyline_b + 1);
-            std::fill(std::begin(dp_row), std::begin(dp_row) + size_polyline_b + 1, 0);
-            InputIterator it_a = polyline_a_first;
-            std::size_t i = 1, prev_value = 0, prev_cell = 0;
-            
-            [[maybe_unused]] std::vector<std::pair< InputIterator, InputIterator>> stored_output;
-            for (; it_a != polyline_a_beyond; ++it_a, ++i) {
-                std::size_t j = 1, previous = 0, current = 0;
-                for (auto it_b = polyline_b_first; it_b != polyline_b_beyond; ++it_b, ++j) {
-                    if (lcss_predicate(i, *it_a, j, *it_b)) {
-                        current = dp_row[j - 1] + 1;
-                        if (current != prev_value) {
-                            prev_value = current;
-                            prev_cell = j;
-                            if constexpr (output.requires_output()) {
-                                stored_output.push_back(std::make_pair(it_a, it_b));
-                            }
-                        }
-                        else {
-                            if (j < prev_cell) {
-                                prev_cell = j;
-                                if constexpr (output.requires_output()) {
-                                    assert(!stored_output.empty());
-                                    stored_output.back() = std::make_pair(it_a, it_b);
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        current = std::max(dp_row[j], previous);
-                    }
+	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator, typename OutputType>
+	size_t compute_lcss(InputIterator polyline_a_first,
+	                    InputIterator polyline_a_beyond,
+	                    InputIterator polyline_b_first,
+	                    InputIterator polyline_b_beyond,
+	                    utils::Output<OutputType>& output) {
+		std::size_t size_polyline_b = std::distance(polyline_b_first, polyline_b_beyond);
+		std::vector<std::size_t> dp_row(size_polyline_b + 1);
+		std::fill(std::begin(dp_row), std::begin(dp_row) + size_polyline_b + 1, 0);
+		InputIterator it_a = polyline_a_first;
+		std::size_t i = 1, prev_value = 0, prev_cell = 0;
 
-                    dp_row[j - 1] = previous;
-                    previous = current;
-                }
-                dp_row[j - 1] = previous;
-            }
-            if constexpr (output.requires_output()) {
-                std::copy(stored_output.begin(), stored_output.end(), output.target);
-            }
-            return dp_row.back();
-        }
-    };
+		[[maybe_unused]] std::vector<std::pair<InputIterator, InputIterator>> stored_output;
+		for (; it_a != polyline_a_beyond; ++it_a, ++i) {
+			std::size_t j = 1, previous = 0, current = 0;
+			for (auto it_b = polyline_b_first; it_b != polyline_b_beyond; ++it_b, ++j) {
+				if (lcss_predicate(i, *it_a, j, *it_b)) {
+					current = dp_row[j - 1] + 1;
+					if (current != prev_value) {
+						prev_value = current;
+						prev_cell = j;
+						if constexpr (output.requires_output()) {
+							stored_output.push_back(std::make_pair(it_a, it_b));
+						}
+					} else {
+						if (j < prev_cell) {
+							prev_cell = j;
+							if constexpr (output.requires_output()) {
+								assert(!stored_output.empty());
+								stored_output.back() = std::make_pair(it_a, it_b);
+							}
+						}
+					}
+				} else {
+					current = std::max(dp_row[j], previous);
+				}
+
+				dp_row[j - 1] = previous;
+				previous = current;
+			}
+			dp_row[j - 1] = previous;
+		}
+		if constexpr (output.requires_output()) {
+			std::copy(stored_output.begin(), stored_output.end(), output.target);
+		}
+		return dp_row.back();
+	}
+};
 }  // namespace movetk::similarity
 
 #endif  // MOVETK_SIMILARITY_H
-

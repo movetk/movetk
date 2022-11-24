@@ -30,15 +30,15 @@
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
 
-namespace movetk::segmentation{
+namespace movetk::segmentation {
 template <class GeometryTraits, class LogLikelihood>
 class ModelBasedSegmentation {
 	// based on https://doi.org/10.1007/s00453-017-0329-x
 
-	typedef typename GeometryTraits::NT NT;
-	typedef std::vector<typename GeometryTraits::NT> Row;
-	typedef std::vector<Row> Table;
-	typedef typename Table::const_iterator TableIterator;
+	using NT = typename GeometryTraits::NT;
+	using Row = std::vector<typename GeometryTraits::NT>;
+	using Table = std::vector<Row>;
+	using TableIterator = typename Table::const_iterator;
 
 	struct InformationCriteria {
 		NT penalty_factor;
@@ -50,12 +50,7 @@ public:
 
 	template <std::random_access_iterator RowIterator,
 	          std::random_access_iterator ColumnIterator,
-	          class OutputIterator>
-	          /*typename = movetk::utils::requires_random_access_iterator<RowIterator>,
-	          typename = movetk::utils::requires_random_access_iterator<ColumnIterator>,
-	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
-	          typename = movetk::utils::requires_equality<typename RowIterator::value_type,
-	                                                      typename OutputIterator::value_type::value_type>>*/
+	          utils::OutputIterator<RowIterator> OutputIterator>
 	void operator()(RowIterator rfirst,
 	                RowIterator rbeyond,
 	                ColumnIterator cfirst,
@@ -130,5 +125,5 @@ public:
 };
 
 
-}  // namespace movetk::algo::segmentation
+}  // namespace movetk::segmentation
 #endif

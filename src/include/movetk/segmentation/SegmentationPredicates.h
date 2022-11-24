@@ -49,9 +49,7 @@ public:
 
 	MinimumEnclosingBallPredicate(NT threshold) : m_threshold(threshold) {}
 
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_movetk_point<GeometryTraits, typename InputIterator::value_type>>
+	template <utils::RandomAccessPointIterator<GeometryTraits> InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) const {
 		const auto radius = m_make_min_sphere(first, beyond);
 		return m_compare(radius, m_threshold);
@@ -71,8 +69,8 @@ template <class GeometryTraits>
 class TEST<TestCriteria::meb, GeometryTraits> {
 	// based on https://doi.org/10.1145/1869790.1869821
 private:
-	typedef TEST<TestCriteria::meb, GeometryTraits> TEST_;
-	typedef typename GeometryTraits::NT NT;
+	using TEST_ = TEST<TestCriteria::meb, GeometryTraits>;
+	using NT = typename GeometryTraits::NT;
 	movetk::geom::MakeMinSphere<GeometryTraits> make_min_sphere;
 	NT threshold;
 	size_t NumPoints = 0;
@@ -85,11 +83,8 @@ public:
 	 * @param beyond
 	 * @return
 	 */
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_movetk_point<GeometryTraits, typename InputIterator::value_type>>
+	template <utils::RandomAccessPointIterator<GeometryTraits> InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NumPoints = std::distance(first, beyond);
 		NT radius = make_min_sphere(first, beyond);
 		return radius < threshold;
@@ -112,8 +107,8 @@ template <class GeometryTraits>
 class TEST<TestCriteria::ratio, GeometryTraits> {
 	// based on https://doi.org/10.1145/1869790.1869821
 private:
-	typedef TEST<TestCriteria::ratio, GeometryTraits> TEST_;
-	typedef typename GeometryTraits::NT_ NT;
+	using TEST_ = TEST<TestCriteria::ratio, GeometryTraits>;
+	using NT = typename GeometryTraits::NT_;
 	NT threshold;
 
 public:
@@ -124,11 +119,8 @@ public:
 	 * @param beyond
 	 * @return
 	 */
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		if (std::all_of(first, beyond, [](NT i) { return i == 0; }))
 			return true;
 		NT min = *movetk::utils::min_non_zero_element<GeometryTraits>(first, beyond);
@@ -151,11 +143,9 @@ class MinMaxRatioPredicate {
 public:
 	using NT = typename GeometryTraits::NT;
 
-	MinMaxRatioPredicate(NT threshold) : m_threshold(threshold) {}
+	explicit MinMaxRatioPredicate(NT threshold) : m_threshold(threshold) {}
 
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) const {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		if (std::all_of(first, beyond, [](NT i) { return i == 0; }))
@@ -192,9 +182,7 @@ public:
 	 * @param beyond
 	 * @return
 	 */
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NT min = *std::min_element(first, beyond);
@@ -219,9 +207,7 @@ public:
 
 	MinMaxDifferencePredicate(NT threshold) : m_threshold(threshold) {}
 
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) const {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NT min = *std::min_element(first, beyond);
@@ -256,9 +242,7 @@ public:
 	 * @param beyond
 	 * @return
 	 */
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) {
 		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NT lb = *movetk::utils::min_non_zero_element<GeometryTraits>(first, beyond);
@@ -294,11 +278,8 @@ public:
 
 	RangePredicate(NT threshold) : m_threshold(threshold) {}
 
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>>
+	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NT lb = *movetk::utils::min_non_zero_element<GeometryTraits>(first, beyond);
 		// NT lb = *std::min_element(first, beyond);
 		NT ub = lb + m_threshold;

@@ -34,9 +34,7 @@ class Discrete_Frechet {
 private:
 	typedef typename Kernel::NT NT;
 
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_movetk_point<Kernel, typename InputIterator::value_type>>
+	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> InputIterator>
 	NT distance(InputIterator iter_a, InputIterator iter_b) {
 		Norm norm;
 		typename Kernel::MovetkVector v = *iter_b - *iter_a;
@@ -44,21 +42,19 @@ private:
 	}
 
 public:
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_movetk_point<Kernel, typename InputIterator::value_type>>
-	NT operator()(InputIterator polyline_a_first,
-	              InputIterator polyline_a_beyond,
-	              InputIterator polyline_b_first,
-	              InputIterator polyline_b_beyond) {
+	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> PolylineCoordIterator>
+	NT operator()(PolylineCoordIterator polyline_a_first,
+	              PolylineCoordIterator polyline_a_beyond,
+	              PolylineCoordIterator polyline_b_first,
+	              PolylineCoordIterator polyline_b_beyond) {
 		std::size_t size_polyline_b = std::distance(polyline_b_first, polyline_b_beyond);
 		std::vector<NT> dp_row(size_polyline_b);
 		std::fill(std::begin(dp_row), std::begin(dp_row) + size_polyline_b, -1);
-		InputIterator it_a = polyline_a_first;
+		auto it_a = polyline_a_first;
 		while (it_a != polyline_a_beyond) {
-			InputIterator it_b = polyline_b_first;
+			auto it_b = polyline_b_first;
 			std::size_t j = 0;
-			typename Kernel::NT previous = -1, current = -1;
+			NT previous = -1, current = -1;
 			while (it_b != polyline_b_beyond) {
 				if ((it_a == polyline_a_first) && (it_b == polyline_b_first)) {
 					current = distance(it_a, it_b);

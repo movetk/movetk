@@ -62,10 +62,9 @@ public:
 		    std::array<decltype(firstCoordPair), 2>{firstCoordPair, secondCoordPair});
 
 		std::vector<NT> distances;
-		movetk::utils::get_distances<GeometryKernel>(
-		    beginEndPair.first,
-		    beginEndPair.second,
-		    std::back_inserter(distances));
+		movetk::utils::get_distances<GeometryKernel>(beginEndPair.first,
+		                                             beginEndPair.second,
+		                                             std::back_inserter(distances));
 		// Defaults to summing everything
 		return std::accumulate(distances.begin(), distances.end(), (NT)0.0);
 	}
@@ -81,7 +80,7 @@ public:
 	 * @complexity O(n), with n the number of points
 	 * @return Duration of the trajectory, returned as the type of the difference of the
 	 */
-	template <typename TimeIterator, typename = movetk::utils::requires_atleast_input_iterator<TimeIterator>>
+	template <std::input_iterator TimeIterator>
 	decltype(std::declval<typename TimeIterator::value_type>() - std::declval<typename TimeIterator::value_type>())
 	operator()(TimeIterator begin, TimeIterator end) const {
 		using Time_t = typename TimeIterator::value_type;
@@ -115,11 +114,7 @@ public:
 
 private:
 public:
-	template <typename PointIterator,
-	          typename TimeIterator,
-	          typename = movetk::utils::requires_atleast_input_iterator<PointIterator>,
-	          typename = movetk::utils::requires_atleast_input_iterator<TimeIterator>,
-	          typename = movetk::utils::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>>
+	template <utils::InputIterator<typename GeometryKernel::MovetkPoint> PointIterator, std::input_iterator TimeIterator>
 	std::vector<Speed_t<typename TimeIterator::value_type>> operator()(
 	    PointIterator pointsBegin,
 	    PointIterator pointsEnd,
@@ -196,11 +191,7 @@ public:
 		return output;
 	}
 
-	template <typename PointIterator,
-	          typename TimeIterator,
-	          typename = movetk::utils::requires_atleast_input_iterator<PointIterator>,
-	          typename = movetk::utils::requires_atleast_input_iterator<TimeIterator>,
-	          typename = movetk::utils::requires_movetk_point<GeometryKernel, typename PointIterator::value_type>>
+	template <utils::InputIterator<typename GeometryKernel::MovetkPoint> PointIterator, std::input_iterator TimeIterator>
 	Speed_t<typename TimeIterator::value_type> operator()(PointIterator pointsBegin,
 	                                                      PointIterator pointsEnd,
 	                                                      TimeIterator timeBegin,
@@ -229,7 +220,7 @@ public:
 	 * \param trajectory The trajectory
 	 * \return Dominant sampling time interval
 	 */
-	template <typename InputIterator, typename = movetk::utils::requires_random_access_iterator<InputIterator>>
+	template <std::random_access_iterator InputIterator>
 	Difference_t<typename InputIterator::value_type>
 	operator()(InputIterator begin, InputIterator end, Difference_t<typename InputIterator::value_type> threshold) const {
 		// No differences to compute

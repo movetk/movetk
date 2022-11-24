@@ -28,57 +28,52 @@
 
 
 #include <iterator>
+
 #include "movetk/utils/Requirements.h"
 
 /*!
  * @brief a collection of algorithms in movetk
  */
 namespace movetk::algo {
-    /*!
-     *
-     * @tparam TestType
-     */
-    template <class GeometryTraits, class TestType>
-    class BinarySearch{
-        // based on https://doi.org/10.1145/1869790.1869821
-        // TODO Requirements for TestType
-    private:
-        typedef TestType TEST;
-        typedef typename GeometryTraits::NT NT;
-        TEST test;
-    public:
-        BinarySearch() = default;
-        /*!
-         *
-         * @param threshold
-         */
-        BinarySearch(NT threshold){
-            test = TEST(threshold);
-        }
-        /*!
-         *
-         * @tparam InputIterator
-         * @param first
-         * @param min
-         * @param left
-         * @param right
-         * @return
-         */
-        template<class InputIterator,
-                typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-                typename = movetk::utils::requires_valid_type<GeometryTraits,
-                        typename InputIterator::value_type> >
-        size_t operator()(InputIterator first,size_t min,size_t left,size_t right){
-            //ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
-            if (left >= right) return right;
-            size_t mid = ( left + right ) / 2;
-            if ( !test( first, first + min + mid  ) )
-                return (*this)(first, min, left + 1, mid);
-            else
-                return (*this)(first, min, mid + 1, right);
-        }
-    };
+/*!
+ *
+ * @tparam TestType
+ */
+template <class TestType>
+class BinarySearch {
+	// based on https://doi.org/10.1145/1869790.1869821
+private:
+	TestType test;
 
-}
+public:
+	BinarySearch() = default;
 
-#endif //MOVETK_SEARCH_H
+	template <typename NT>
+		requires(std::constructible_from<TestType, NT>)
+	BinarySearch(NT threshold) : test(threshold) {}
+	/*!
+	 *
+	 * @tparam InputIterator
+	 * @param first
+	 * @param min
+	 * @param left
+	 * @param right
+	 * @return
+	 */
+	template <std::random_access_iterator InputIterator>
+		requires(std::is_invocable_r_v<bool, TestType, InputIterator, InputIterator>)
+	size_t operator()(InputIterator first, size_t min, size_t left, size_t right) {
+		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
+		if (left >= right)
+			return right;
+		size_t mid = (left + right) / 2;
+		if (!test(first, first + min + mid))
+			return (*this)(first, min, left + 1, mid);
+		else
+			return (*this)(first, min, mid + 1, right);
+	}
+};
+
+}  // namespace movetk::algo
+
+#endif  // MOVETK_SEARCH_H

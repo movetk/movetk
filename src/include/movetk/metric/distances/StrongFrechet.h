@@ -52,10 +52,6 @@ public:
 		NT perpendicularDistance;
 		// Smallest epsilon needed to make the ball centered at the point touch the segment
 		NT minimumEpsilon;
-		// Type of relation between point and segment:
-		// 'i' : parallel projection of the point lies on the segment
-		// 'a' : parallel projection of the point lies above the segment (relative to the segment direction)
-		// 'b' : parallel projection of the point lies below the segment (relative to the segment direction)
 		enum class Type { On, Above, Below };
 		Type type = Type::On;
 
@@ -144,12 +140,8 @@ public:
 	using NT = typename Kernel::NT;
 	using MovetkPoint = typename Kernel::MovetkPoint;
 
-	template <class InputIteratorA,
-	          class InputIteratorB,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
+	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	StrongFrechetPredicate(InputIteratorA poly_a,
 	                       InputIteratorA poly_a_beyond,
 	                       InputIteratorB poly_b,
@@ -182,12 +174,8 @@ public:
 	NT get_precision() const { return m_precision; }
 
 private:
-	template <class InputIteratorA,
-	          class InputIteratorB,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
+	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	void precompute(InputIteratorA poly_a,
 	                InputIteratorA poly_a_beyond,
 	                InputIteratorB poly_b,
@@ -704,12 +692,8 @@ public:
 	 * \param epsilon The maximum allowed Frechet distance
 	 * \return Whether or not the polylines are within Frechet distance epsilon
 	 */
-	template <class InputIteratorA,
-	          class InputIteratorB,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
+	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	bool decide(InputIteratorA poly_a,
 	            InputIteratorA poly_a_beyond,
 	            InputIteratorB poly_b,
@@ -785,12 +769,8 @@ public:
 	void setTolerance(NT tolerance) { m_precision = tolerance; }
 	NT tolerance() const { return m_precision; }
 
-	template <class InputIteratorA,
-	          class InputIteratorB,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
+	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	bool operator()(InputIteratorA poly_a,
 	                InputIteratorA poly_a_beyond,
 	                InputIteratorB poly_b,
@@ -855,12 +835,8 @@ public:
 		}
 	}
 
-	template <class InputIteratorA,
-	          class InputIteratorB,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorA>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorA>,
-	          typename = movetk::utils::requires_random_access_iterator<InputIteratorB>,
-	          typename = movetk::utils::requires_movetk_point_iterator<Kernel, InputIteratorB>>
+	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
+	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	typename Kernel::NT operator()(InputIteratorA poly_a,
 	                               InputIteratorA poly_a_beyond,
 	                               InputIteratorB poly_b,

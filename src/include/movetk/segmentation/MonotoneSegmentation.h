@@ -42,7 +42,7 @@ class MonotoneSegmentation {
 private:
 	typedef typename GeometryTraits::NT NT;
 	typedef TestType TEST;
-	movetk::algo::BinarySearch<GeometryTraits, TEST> binary_search;
+	movetk::algo::BinarySearch<TestType> binary_search;
 	TEST test;
 
 public:
@@ -59,16 +59,8 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <class InputIterator,
-	          class OutputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
-	          typename = movetk::utils::requires_valid_type<GeometryTraits, typename InputIterator::value_type>,
-	          typename = movetk::utils::requires_equality<typename InputIterator::value_type,
-	                                                      typename OutputIterator::value_type::value_type>>
+	template <std::random_access_iterator InputIterator, utils::OutputIterator<InputIterator> OutputIterator>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
-		// ASSERT_OUTPUT_ITERATOR(OutputIterator);
 		InputIterator it = first;
 		size_t remainder = std::distance(first, beyond);
 		size_t MaxAllowedSteps = 0;
@@ -112,5 +104,5 @@ public:
 	}
 };
 
-}  // namespace movetk::algo::segmentation
+}  // namespace movetk::segmentation
 #endif

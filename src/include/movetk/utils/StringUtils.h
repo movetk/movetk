@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 
 #include "Asserts.h"
 #include "Requirements.h"
@@ -47,19 +48,16 @@ namespace movetk::utils {
  * @param delim
  * @return the concatenated string
  */
-template <class IteratorType, typename = movetk::utils::requires_random_access_iterator<IteratorType>>
-std::string join(IteratorType first, IteratorType beyond, const char &delim = ',') {
-	// ASSERT_RANDOM_ACCESS_ITERATOR(IteratorType);
-	std::string mergedTokens = std::to_string(*first);
+template <std::random_access_iterator IteratorType>
+std::string join(IteratorType first, IteratorType beyond, char delim = ',') {
+	std::stringstream output;
+	output << std::to_string(*first);
 	IteratorType it = first;
 	it++;
-	while (it != beyond) {
-		mergedTokens += delim;
-		mergedTokens += std::to_string(*it);
-		it++;
+	for (; it != beyond; ++it) {
+		output << delim << std::to_string(*it);
 	}
-	// mergedTokens += "\n";
-	return mergedTokens;
+	return output.str();
 }
 
 /*!
@@ -69,12 +67,8 @@ std::string join(IteratorType first, IteratorType beyond, const char &delim = ',
  * @param iter - Iterator to where the value is to be inserted
  * @param delim
  */
-template <class OutputIterator,
-          typename = movetk::utils::requires_output_iterator<OutputIterator>,
-          typename = movetk::utils::requires_string<typename OutputIterator::value_type>>
-void split(std::string &in, OutputIterator iter, const char &delim = ',') {
-	// ASSERT_OUTPUT_ITERATOR(OutputIterator);
-	// ASSERT_IS_STRING(OutputIterator);
+template <utils::OutputIterator<std::string> OutputIterator>
+void split(std::string &in, OutputIterator iter, char delim = ',') {
 	unsigned long int prevIdx = 0;
 	std::string::size_type currIdx;
 	currIdx = in.find(delim, prevIdx);

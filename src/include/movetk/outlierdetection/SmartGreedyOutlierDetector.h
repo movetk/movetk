@@ -68,7 +68,7 @@ public:
 	 * @param result
 	 */
 	template <std::random_access_iterator InputIterator,
-	          class Container
+	          typename Container
 				//,typename = movetk::utils::requires_random_access_iterator<InputIterator>,
 	          //typename = movetk::utils::requires_equality<InputIterator, typename Container::value_type::value_type>
 	>

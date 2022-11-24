@@ -37,9 +37,7 @@ namespace movetk::metric {
 template <class Kernel, class Norm>
 class Discrete_Hausdorff {
 private:
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_movetk_point<Kernel, typename InputIterator::value_type>>
+	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> InputIterator>
 	typename Kernel::NT singlesided_discrete_hausdorff(InputIterator a_first,
 	                                                   InputIterator a_beyond,
 	                                                   InputIterator b_first,
@@ -72,13 +70,11 @@ private:
 	}
 
 public:
-	template <class InputIterator,
-	          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_movetk_point<Kernel, typename InputIterator::value_type>>
-	typename Kernel::NT operator()(InputIterator polyline_a_first,
-	                               InputIterator polyline_a_beyond,
-	                               InputIterator polyline_b_first,
-	                               InputIterator polyline_b_beyond) {
+	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> PolylineCoordIterator>
+	typename Kernel::NT operator()(PolylineCoordIterator polyline_a_first,
+	                               PolylineCoordIterator polyline_a_beyond,
+	                               PolylineCoordIterator polyline_b_first,
+	                               PolylineCoordIterator polyline_b_beyond) {
 		const auto hd_pq =
 		    singlesided_discrete_hausdorff(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
 
