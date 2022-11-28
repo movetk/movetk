@@ -36,8 +36,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "movetk/utils/unituple.h"
-
 namespace movetk::io::csv {
 
 template <class Tuple, int... idx>
@@ -106,9 +104,7 @@ public:
 			std::stringstream row_stream(row);
 			auto all_columns = std::array<std::string, std::tuple_size_v<Tuple>>();
 			csvtools::read_tuple<0>(row_stream, all_columns, _delim);
-			// const auto all_columns_const = here::unituple<std::string, std::tuple_size<Tuple>::value>();
 			_columns = subset_array(all_columns, selected_indices_t{});
-			//            csvtools::read_tuple<0, header_tuple>(row_stream, _columns, _delim);
 		}
 	}
 
