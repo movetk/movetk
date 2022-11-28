@@ -41,9 +41,9 @@ struct CGALBackend {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
 	// Define the Geometry Backend
-	using GeometryBackend = geom::CGALTraits<NT, dimensions>;
+	using GeometryBackend = backends::cgal::CGALTraits<NT, dimensions>;
 	// Using the Geometry Backend define the Movetk Geometry Kernel
-	using MovetkGeometryKernel = geom::MovetkGeometryKernel<typename GeometryBackend::Wrapper_CGAL_Geometry>;
+	using MovetkGeometryKernel = typename GeometryBackend::Wrapper_CGAL_Geometry;
 };
 }  // namespace movetk::test
 #else
@@ -55,9 +55,9 @@ struct BoostBackend {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
 	// Define the Geometry Backend
-	using GeometryBackend = movetk::geom::BoostGeometryTraits<NT, dimensions>;
+	using GeometryBackend = backends::boost::BoostGeometryTraits<NT, dimensions>;
 	// Using the Geometry Backend define the Movetk Geometry Kernel
-	using MovetkGeometryKernel = geom::MovetkGeometryKernel<typename GeometryBackend::Wrapper_Boost_Geometry>;
+	using MovetkGeometryKernel = typename GeometryBackend::Wrapper_Boost_Geometry;
 };
 }  // namespace movetk::test
 #endif
@@ -142,11 +142,11 @@ inline bool startsWith(const std::string& str, int offset, const std::string& to
 }
 }  // namespace detail
 
-template<typename T>
-inline void vector_from_string(const std::string& input, std::vector<T>& output, char delim=',') {
+template <typename T>
+inline void vector_from_string(const std::string& input, std::vector<T>& output, char delim = ',') {
 	std::stringstream stream(input);
 	std::string part;
-	while(std::getline(stream,part,delim)){
+	while (std::getline(stream, part, delim)) {
 		std::stringstream part_stream(part);
 		T t;
 		part_stream >> t;
@@ -326,6 +326,5 @@ bool range_has_same_value(RangeLike1 range1, RangeLike2 range2, bool output_fail
 	                            std::end(range2),
 	                            output_failure);
 }
-
 }  // namespace test_helpers
 #endif

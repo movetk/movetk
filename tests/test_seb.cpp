@@ -26,9 +26,14 @@
 #include "movetk/geom/GeometryInterface.h"
 #include "third_party/miniball/Seb.h"
 
-TEST_CASE("miniball", "[miniball]") {
+struct MiniballTests {
+	static constexpr size_t dimension = 2;
+	using NT = double;
+	using MovetkGeometryKernel =movetk::backends::boost::KernelFor<NT, dimension>;
+};
+
+TEST_CASE_METHOD(MiniballTests, "miniball", "[miniball]") {
 	typedef double FT;  // miniball library requires FT to be double (not float!)
-	constexpr static int dimension = 2;
 	typedef Seb::Point<FT> Point;
 	typedef Seb::Smallest_enclosing_ball<FT> Miniball;
 
@@ -51,18 +56,7 @@ TEST_CASE("miniball", "[miniball]") {
 	REQUIRE(res[1] == Approx(0.5));
 }
 
-TEST_CASE("miniball2", "[miniball2]") {
-	constexpr static int dimension = 2;
-	//==============================
-	// Define the Number Type
-	typedef double NT;
-	// Define the Geometry Backend
-	typedef movetk::geom::BoostGeometryTraits<NT, dimension> Boost_GeometryBackend;
-	// Using the Geometry Backend define the Movetk Geometry Kernel
-	typedef movetk::geom::MovetkGeometryKernel<typename Boost_GeometryBackend::Wrapper_Boost_Geometry>
-	    MovetkGeometryKernel;
-	//==============================
-
+TEST_CASE_METHOD(MiniballTests, "miniball2", "[miniball]") {
 	// Create some MovetkPoints
 	using ExamplePoint = std::array<typename MovetkGeometryKernel::NT, dimension>;
 	std::vector<ExamplePoint> points = {{0., 0.}, {1., 0.}, {1., 1.}, {0., 1.}, {0., 0.}};
@@ -98,18 +92,7 @@ TEST_CASE("miniball2", "[miniball2]") {
 	REQUIRE(res[1] == Approx(0.5));
 }
 
-TEST_CASE("miniball3", "[miniball3]") {
-	constexpr static int dimension = 2;
-	//==============================
-	// Define the Number Type
-	typedef double NT;
-	// Define the Geometry Backend
-	typedef movetk::geom::BoostGeometryTraits<NT, dimension> Boost_GeometryBackend;
-	// Using the Geometry Backend define the Movetk Geometry Kernel
-	typedef movetk::geom::MovetkGeometryKernel<typename Boost_GeometryBackend::Wrapper_Boost_Geometry>
-	    MovetkGeometryKernel;
-	//==============================
-
+TEST_CASE_METHOD(MiniballTests, "miniball3", "[miniball]") {
 	// Create some MovetkPoints
 	using ExamplePoint = std::array<typename MovetkGeometryKernel::NT, dimension>;
 	std::vector<ExamplePoint> points = {{0., 0.}, {1., 0.}, {1., 1.}, {0., 1.}, {0., 0.}};
