@@ -50,6 +50,9 @@ add_executable(movetk_tests
         test_agarwal.cpp
         )
 
+
+set_property(TARGET movetk_tests PROPERTY CXX_STANDARD 20)
+set_property(TARGET movetk_tests PROPERTY CXX_STANDARD_REQUIRED TRUE)
 # Copy test data
 add_custom_command(TARGET movetk_tests PRE_BUILD 
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:movetk_tests>/data
