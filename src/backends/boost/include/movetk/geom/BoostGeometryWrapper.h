@@ -359,7 +359,7 @@ struct DiscreteHausdorffDistance {
 
 template <class Kernel>
 struct DiscreteFrechetDistance {
-	template <utils::RandomAccessIterator<typename Kernel::Wrapper_Point> InputIterator>
+	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> InputIterator>
 	typename Kernel::NT operator()(InputIterator polyline_a_first,
 	                               InputIterator polyline_a_beyond,
 	                               InputIterator polyline_b_first,
