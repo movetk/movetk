@@ -38,22 +38,21 @@
 #include "third_party/boost_geometry/discrete_hausdorff_distance.hpp"
 #include "third_party/miniball/Seb.h"
 
-// TODO Rename this to a Wrapper
+namespace movetk::backends::boost {
 
-namespace movetk::geom {
+namespace bg = ::boost::geometry;
 
-namespace bg = boost::geometry;
-
+namespace wrappers {
 template <class Kernel>
-class Wrapper_Boost_Point {
+class Point{
 private:
-	typedef typename Kernel::Boost_Point_ Boost_Point;
-	typedef typename Kernel::NT NT;
-	typedef typename utils::movetk_basic_iterator<const NT> CoordinateIterator;
-	typedef typename Kernel::Wrapper_Vector Wrapper_Vector;
-	typedef std::array<typename Kernel::NT, Kernel::dim> Point_Container;
+	using Boost_Point = typename Kernel::Boost_Point_ ;
+	using NT = typename Kernel::NT ;
+	using CoordinateIterator = typename utils::movetk_basic_iterator<const NT> ;
+	using Vector = typename Kernel::MovetkVector;
+	using Point_Container =std::array<typename Kernel::NT, Kernel::dim> ;
 	Boost_Point pt;
-	Wrapper_Boost_Point(Point_Container&& p) {
+	Point(Point_Container&& p) {
 		pt.template set<0>(std::move(p[0]));
 		pt.template set<1>(std::move(p[1]));
 		if constexpr (Kernel::dim == 3) {
@@ -62,12 +61,12 @@ private:
 	}
 
 public:
-	Wrapper_Boost_Point() = default;
+	Point() = default;
 
-	Wrapper_Boost_Point(const Boost_Point& p) : pt(p) {}
+	Point(const Boost_Point& p) : pt(p) {}
 
 	template <utils::InputIterator<NT> CoordinateIterator>
-	Wrapper_Boost_Point(CoordinateIterator first, CoordinateIterator beyond) {
+	Point(CoordinateIterator first, CoordinateIterator beyond) {
 		pt.template set<0>(*first);
 		pt.template set<1>(*(first + 1));
 		if constexpr (Kernel::dim == 3) {
@@ -83,45 +82,46 @@ public:
 
 	NT& operator[](size_t i) { return *(std::addressof(pt.template get<0>()) + i); }
 
-	Wrapper_Vector operator-(const Wrapper_Boost_Point& point) const {
-		Wrapper_Vector v1(*this);
-		Wrapper_Vector v2(point);
+	Vector operator-(const Point& point) const {
+		Vector v1(*this);
+		Vector v2(point);
 		return v1 - v2;
 	}
 
-	Wrapper_Boost_Point operator+(const Wrapper_Vector& v) const {
+	Point operator+(const Vector& v) const {
 		Point_Container result;
 		std::transform(this->begin(), this->end(), v.begin(), result.begin(), std::plus<typename Kernel::NT>());
-		Wrapper_Boost_Point _point(std::move(result));
+		Point _point(std::move(result));
 		return _point;
 	}
 
 	Boost_Point get() const { return pt; }
-};
 
-template <class Kernel>
-std::ostream& operator<<(std::ostream& out, const Wrapper_Boost_Point<Kernel>& point) {
+	friend std::ostream& operator<<(std::ostream& out, const Point& point) {
 	return (out << movetk::utils::join(point.begin(), point.end()));
 }
+};
+
+
 
 template <class Kernel>
-class Wrapper_Boost_Segment {
+class Segment {
 private:
-	typedef typename Kernel::Boost_Segment_ Boost_Segment;
-	typedef typename Kernel::NT NT;
+	using Boost_Segment = typename Kernel::Boost_Segment_ ;
+	using NT = typename Kernel::NT ;
 	Boost_Segment seg;
 
 public:
-	using Point = Wrapper_Boost_Point<Kernel>;
-	Wrapper_Boost_Segment() = default;
+	using Point = typename Kernel::MovetkPoint;
+	Segment() = default;
 
-	Wrapper_Boost_Segment(const Boost_Segment& s) : seg(s) {}
+	Segment(const Boost_Segment& s) : seg(s) {}
 
-	Wrapper_Boost_Segment(const Point& p1, const Point& p2) { seg = Boost_Segment(p1.get(), p2.get()); }
+	Segment(const Point& p1, const Point& p2) { seg = Boost_Segment(p1.get(), p2.get()); }
 
-	Wrapper_Boost_Segment(Point&& p1, Point&& p2) { seg = Boost_Segment(p1.get(), p2.get()); }
+	Segment(Point&& p1, Point&& p2) { seg = Boost_Segment(p1.get(), p2.get()); }
 
-	typename Kernel::Wrapper_Point operator[](size_t idx) const {
+	Point operator[](size_t idx) const {
 		if (idx == 0)
 			return seg.first;
 		if (idx == 1)
@@ -136,31 +136,26 @@ public:
 	}
 
 	Boost_Segment get() const { return seg; }
+	
+friend std::ostream& operator<<(std::ostream& out, Segment& seg) {
+	return out << seg[0] << ";" << seg[1];
+}
 };
 
-template <class Kernel>
-std::ostream& operator<<(std::ostream& out, Wrapper_Boost_Segment<Kernel>& seg) {
-	Wrapper_Boost_Point<Kernel> p1 = seg[0];
-	Wrapper_Boost_Point<Kernel> p2 = seg[1];
-	out << p1;
-	out << ";";
-	out << p2;
-	return out;
-}
 
 template <class Kernel>
-class Wrapper_Boost_Line {
+class Line {
 private:
-	typedef typename Kernel::Boost_PolyLine_ Boost_Line;
-	typedef typename Kernel::NT NT;
+	using Boost_Line = typename Kernel::Boost_PolyLine_ ;
+	using NT = typename Kernel::NT ;
 	Boost_Line line;
 
 public:
-	Wrapper_Boost_Line() = default;
+	Line() = default;
 
-	Wrapper_Boost_Line(const Boost_Line& l) : line(l) {}
+	Line(const Boost_Line& l) : line(l) {}
 
-	Wrapper_Boost_Line(Wrapper_Boost_Point<Kernel>& p1, Wrapper_Boost_Point<Kernel>& p2) {
+	Line(const Point<Kernel>& p1, const Point<Kernel>& p2) {
 		line = Boost_Line({p1.get(), p2.get()});
 	}
 
@@ -168,36 +163,37 @@ public:
 };
 
 template <class Kernel>
-class Wrapper_Boost_Vector {
-	typedef std::array<typename Kernel::NT, Kernel::dim> Boost_Vector;
-	typedef std::array<typename Kernel::NT, Kernel::dim> basis_container;
+class Vector{
+	using Boost_Vector = std::array<typename Kernel::NT, Kernel::dim> ;
+	using basis_container  =std::array<typename Kernel::NT, Kernel::dim> ;
 	Boost_Vector vec;
+	using NT = typename Kernel::NT;
 
-	Wrapper_Boost_Vector(Boost_Vector&& vector) : vec(std::move(vector)) {}
-	Wrapper_Boost_Vector(const Boost_Vector& vector) : vec(vector) {}
+	Vector(Boost_Vector&& vector) : vec(std::move(vector)) {}
+	Vector(const Boost_Vector& vector) : vec(vector) {}
 
 public:
-	explicit Wrapper_Boost_Vector() = default;
+	Vector() = default;
 
-	Wrapper_Boost_Vector(const Wrapper_Boost_Point<Kernel>& p) { std::copy_n(p.begin(), Kernel::dim, vec.begin()); }
+	Vector(const Vector& p) =default;
 
-	Wrapper_Boost_Vector<Kernel> operator*(typename Kernel::NT scalar) const {
-		Wrapper_Boost_Vector<Kernel> copy(*this);
+	Vector operator*(NT scalar) const {
+		Vector copy(*this);
 		copy *= scalar;
 		return copy;
 	}
-	Wrapper_Boost_Vector<Kernel>& operator*=(typename Kernel::NT scalar) {
-		std::for_each(std::begin(vec), std::end(vec), [&scalar](typename Kernel::NT& i) { i *= scalar; });
+	Vector& operator*=(NT scalar) {
+		std::for_each(std::begin(vec), std::end(vec), [&scalar](NT& i) { i *= scalar; });
 		return *this;
 	}
 
-	Wrapper_Boost_Vector<Kernel> operator/(typename Kernel::NT scalar) const {
-		Wrapper_Boost_Vector<Kernel> copy(*this);
+	Vector operator/(NT scalar) const {
+		Vector copy(*this);
 		copy /= scalar;
 		return copy;
 	}
-	Wrapper_Boost_Vector<Kernel>& operator/=(typename Kernel::NT scalar) {
-		std::for_each(std::begin(vec), std::end(vec), [&scalar](typename Kernel::NT& i) { i /= scalar; });
+	Vector& operator/=(NT scalar) {
+		std::for_each(std::begin(vec), std::end(vec), [&scalar](NT& i) { i /= scalar; });
 		return *this;
 	}
 
@@ -206,43 +202,43 @@ public:
 	 * @param vector Other boost vector
 	 * @return The inner product between this and the other vector
 	 */
-	typename Kernel::NT operator*(const Wrapper_Boost_Vector<Kernel>& vector) const {
+	NT operator*(const Vector& vector) const {
 		return std::inner_product(this->begin(), this->end(), vector.begin(), 0.0);
 	}
 
-	Wrapper_Boost_Vector<Kernel> operator-(const Wrapper_Boost_Vector<Kernel>& vector) const {
-		Wrapper_Boost_Vector<Kernel> copy(*this);
+	Vector operator-(const Vector& vector) const {
+		Vector copy(*this);
 		copy -= vector;
 		return copy;
 	}
-	Wrapper_Boost_Vector<Kernel>& operator-=(const Wrapper_Boost_Vector<Kernel>& vector) {
+	Vector& operator-=(const Vector& vector) {
 		for (std::size_t i = 0; i < vec.size(); ++i) {
 			vec[i] -= vector.vec[i];
 		}
 		return *this;
 	}
 
-	Wrapper_Boost_Vector<Kernel> operator+(const Wrapper_Boost_Vector<Kernel>& vector) const {
-		Wrapper_Boost_Vector copy(*this);
+	Vector operator+(const Vector& vector) const {
+		Vector copy(*this);
 		copy += vector;
 		return copy;
 	}
-	Wrapper_Boost_Vector<Kernel>& operator+=(const Wrapper_Boost_Vector<Kernel>& vector) {
+	Vector& operator+=(const Vector& vector) {
 		for (std::size_t i = 0; i < vec.size(); ++i) {
 			vec[i] += vector.vec[i];
 		}
 		return *this;
 	}
 
-	bool operator==(const Wrapper_Boost_Vector<Kernel>& vector) const {
+	bool operator==(const Vector& vector) const {
 		return std::equal(this->begin(), this->end(), vector.begin());
 	}
-	bool operator!=(const Wrapper_Boost_Vector<Kernel>& vector) const { return !((*this) == vector); }
+	bool operator!=(const Vector& vector) const { return !((*this) == vector); }
 
-	Wrapper_Boost_Vector<Kernel> basis(std::size_t i) const {
+	Vector basis(std::size_t i) const {
 		Boost_Vector _e = {0};
 		_e[i] = 1;
-		Wrapper_Boost_Vector basis_vec(std::move(_e));
+		Vector basis_vec(std::move(_e));
 		return basis_vec;
 	}
 
@@ -251,18 +247,18 @@ public:
 	auto end() const { return std::cend(vec); }
 
 	Boost_Vector get() const { return vec; }
-};
-
-template <class Kernel>
-std::ostream& operator<<(std::ostream& out, const Wrapper_Boost_Vector<Kernel>& vec) {
+	friend std::ostream& operator<<(std::ostream& out, const Vector& vec) {
 	return (out << movetk::utils::join(vec.begin(), vec.end()));
 }
+};
+
+
 
 template <class Kernel>
-class Wrapper_SEB {
+class MinSphere {
 private:
 	using NT = typename Kernel::NT;
-	using Point = typename Kernel::Wrapper_Point;
+	using Point = typename Kernel::MovetkPoint;
 	using miniball = Seb::Smallest_enclosing_ball<NT, Point>;
 	template <class T>
 	static std::pair<Point, NT> dispatcher(const size_t& dimensions, T&& values) {
@@ -272,19 +268,20 @@ private:
 	}
 
 public:
-	template <utils::RandomAccessIterator<typename Kernel::Wrapper_Point> PointIterator,
+	template <utils::RandomAccessIterator<Point> PointIterator,
 	          utils::OutputIterator<typename Kernel::NT> CenterIterator>
 	NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const {
 		auto result = dispatcher(std::distance(first->begin(), first->end()), std::vector<Point>(first, beyond));
-		auto cit = result.first.begin();
+		std::copy(result.first.begin(),result.first.end(),iter);
+		/*auto cit = result.first.begin();
 		while (cit != result.first.end()) {
 			iter = *cit;
 			cit++;
-		}
+		}*/
 		return result.second;
 	}
 
-	template <utils::RandomAccessIterator<typename Kernel::Wrapper_Point> PointIterator>
+	template <utils::RandomAccessIterator<Point> PointIterator>
 	NT operator()(PointIterator first, PointIterator beyond) const {
 		auto result = dispatcher(std::distance(first->begin(), first->end()), std::vector<Point>(first, beyond));
 		return result.second;
@@ -292,17 +289,17 @@ public:
 };
 
 template <class Kernel>
-class Wrapper_Boost_Polygon {
+class Polygon {
 private:
-	typedef typename Kernel::Boost_Polygon_ Boost_Polygon;
-	typedef typename Kernel::NT NT;
+	using Boost_Polygon =typename Kernel::Boost_Polygon_ ;
+	using NT = typename Kernel::NT ;
 	Boost_Polygon polygon;
 
 public:
-	Wrapper_Boost_Polygon() = default;
+	Polygon() = default;
 
-	template <utils::RandomAccessIterator<typename Kernel::Wrapper_Point> PointIterator>
-	Wrapper_Boost_Polygon(PointIterator first, PointIterator beyond) {
+	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> PointIterator>
+	Polygon(PointIterator first, PointIterator beyond) {
 		PointIterator it = first;
 		while (it != beyond) {
 			bg::append(polygon.outer(), it->get());
@@ -315,7 +312,6 @@ public:
 	auto v_end() const { return polygon.outer().cend(); }
 
 	Boost_Polygon get() const { return polygon; }
-};
 
 /*!
  * Prints a polygon whose vertices are separated by comma. Since
@@ -324,9 +320,8 @@ public:
  * @param out - OutputStream
  * @param poly - A polygon of type Wrapper_Boost_Polygon<Kernel>
  */
-template <class Kernel>
-std::ostream& operator<<(std::ostream& out, Wrapper_Boost_Polygon<Kernel>& poly) {
-	typedef typename Kernel::Wrapper_Point Point;
+friend std::ostream& operator<<(std::ostream& out, Polygon& poly) {
+	using Point = typename Kernel::MovetkPoint ;
 	auto it = poly.v_begin();
 	Point pt(*it);
 	out << pt;
@@ -339,118 +334,110 @@ std::ostream& operator<<(std::ostream& out, Wrapper_Boost_Polygon<Kernel>& poly)
 	}
 	return out;
 }
+};
 
 template <class Kernel>
-struct Wrapper_Boost_Squared_Distance {
+struct SquaredDistance {
 	template <class T1, class T2>
-	typename Kernel::NT operator()(T1& geometry1, T2& geometry2) {
-		typename Kernel::NT distance = bg::distance(geometry1.get(), geometry2.get());
+	typename Kernel::NT operator()(const T1& geometry1, const T2& geometry2) const {
+		auto distance = bg::distance(geometry1.get(), geometry2.get());
 		return distance * distance;
 	}
 };
 
 template <class Kernel>
-struct Wrapper_Boost_Discrete_Hausdorff_Distance {
-	template <utils::RandomAccessIterator<typename Kernel::Wrapper_Point> InputIterator>
+struct DiscreteHausdorffDistance {
+	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> InputIterator>
 	typename Kernel::NT operator()(InputIterator polyline_a_first,
 	                               InputIterator polyline_a_beyond,
 	                               InputIterator polyline_b_first,
-	                               InputIterator polyline_b_beyond) {
+	                               InputIterator polyline_b_beyond) const{
 		typename Kernel::Boost_PolyLine_ poly1, poly2;
 
-		InputIterator it = polyline_a_first;
-		while (it != polyline_a_beyond) {
+		for(auto it = polyline_a_beyond; it != polyline_a_beyond;++it){
 			poly1.push_back(it->get());
-			it++;
 		}
-		it = polyline_b_first;
-		while (it != polyline_b_beyond) {
+		for(auto it = polyline_b_first; it != polyline_b_beyond;++it){
 			poly2.push_back(it->get());
-			it++;
 		}
-
 		return bg::discrete_hausdorff_distance(poly1, poly2);
 	}
 };
 
 template <class Kernel>
-struct Wrapper_Boost_Discrete_Frechet_Distance {
+struct DiscreteFrechetDistance {
 	template <utils::RandomAccessIterator<typename Kernel::Wrapper_Point> InputIterator>
 	typename Kernel::NT operator()(InputIterator polyline_a_first,
 	                               InputIterator polyline_a_beyond,
 	                               InputIterator polyline_b_first,
-	                               InputIterator polyline_b_beyond) {
+	                               InputIterator polyline_b_beyond) const {
 		typename Kernel::Boost_PolyLine_ poly1, poly2;
-
-		InputIterator it = polyline_a_first;
-		while (it != polyline_a_beyond) {
+		
+		for(auto it = polyline_a_beyond; it != polyline_a_beyond;++it){
 			poly1.push_back(it->get());
-			it++;
 		}
-		it = polyline_b_first;
-		while (it != polyline_b_beyond) {
+		for(auto it = polyline_b_first; it != polyline_b_beyond;++it){
 			poly2.push_back(it->get());
-			it++;
 		}
-
 		return bg::discrete_frechet_distance(poly1, poly2);
 	}
 };
 
 template <class Kernel>
-class Wrapper_Boost_Sphere {
+class Sphere {
 private:
-	typedef typename Kernel::Wrapper_Point Wrapper_Point;
-	typedef typename Kernel::NT NT;
-	Wrapper_Point _center;
+	using Point = typename Kernel::MovetkPoint;
+	using NT = typename Kernel::NT ;
+	Point _center;
 	NT _squared_radius;
 
 public:
-	Wrapper_Boost_Sphere() = default;
+	Sphere() = default;
 
-	Wrapper_Boost_Sphere(Wrapper_Point& center, NT radius, bool square = true) {
+	Sphere(const Point & center, NT radius, bool square = true) {
 		_center = center;
 		if (square)
 			_squared_radius = std::pow(radius, 2);
 		else
 			_squared_radius = radius;
 	}
-	Wrapper_Point center() const { return _center; }
+	Point  center() const { return _center; }
 
 	NT squared_radius() const { return _squared_radius; }
-};
-
-template <class Kernel>
-std::ostream& operator<<(std::ostream& out, const Wrapper_Boost_Sphere<Kernel>& sphere) {
-	Wrapper_Boost_Point<Kernel> center = sphere.center();
-	out << movetk::utils::join(center.begin(), center.end()) + ";";
-	out << sphere.squared_radius();
-	return out;
+friend std::ostream& operator<<(std::ostream& out, const Sphere& sphere) {
+	const auto center = sphere.center();
+	return out << movetk::utils::join(center.begin(), center.end()) << ";" <<sphere.squared_radius();
 }
 
-template <class Boost_Kernel>
-struct Wrapper_Boost_Kernel {
-	typedef typename Boost_Kernel::NT NT;
-	constexpr static size_t dim = Boost_Kernel::dim;
-	typedef typename Boost_Kernel::Point_d Boost_Point_;
-	typedef typename bg::model::segment<Boost_Point_> Boost_Segment_;
-	typedef typename bg::model::linestring<Boost_Point_> Boost_PolyLine_;
-	typedef typename bg::model::polygon<Boost_Point_> Boost_Polygon_;
-	typedef Wrapper_Boost_Point<Wrapper_Boost_Kernel> Wrapper_Point;
-	typedef Wrapper_Boost_Segment<Wrapper_Boost_Kernel> Wrapper_Segment;
-	typedef Wrapper_Boost_Line<Wrapper_Boost_Kernel> Wrapper_Line;
-	typedef Wrapper_Boost_Polygon<Wrapper_Boost_Kernel> Wrapper_Polygon;
-	typedef Wrapper_SEB<Wrapper_Boost_Kernel> Wrapper_MinSphere;
-	typedef Wrapper_Boost_Vector<Wrapper_Boost_Kernel> Wrapper_Vector;
-	typedef Wrapper_Boost_Sphere<Wrapper_Boost_Kernel> Wrapper_Sphere;
-	typedef Wrapper_Boost_Squared_Distance<Wrapper_Boost_Kernel> Wrapper_Squared_Distance;
-	typedef Wrapper_Boost_Discrete_Hausdorff_Distance<Wrapper_Boost_Kernel> Wrapper_Discrete_Hausdorff_Distance;
-	typedef Wrapper_Boost_Discrete_Frechet_Distance<Wrapper_Boost_Kernel> Wrapper_Discrete_Frechet_Distance;
-	typedef void Intersection_visitor;
-	typedef void Wrapper_Curve_Intersection;
-	typedef void Wrapper_Minimum_Bounding_Rectangle;
 };
 
-};  // namespace movetk::geom
+}  // namespace wrappers
+template <class Boost_Kernel>
+struct MovetkBoostKernel {
+	// Movetk kernel interface
+	using NT = typename Boost_Kernel::NT;
+	constexpr static size_t dim = Boost_Kernel::dim;
+	using MovetkPoint = wrappers::Point<MovetkBoostKernel>;
+	using MovetkSegment = wrappers::Segment<MovetkBoostKernel>;
+	using MovetkLine = wrappers::Line<MovetkBoostKernel>;
+	using MovetkPolygon = wrappers::Polygon<MovetkBoostKernel>;
+	using MovetkMinSphere = wrappers::MinSphere<MovetkBoostKernel>;
+	using MovetkVector = wrappers::Vector<MovetkBoostKernel>;
+	using MovetkSphere = wrappers::Sphere<MovetkBoostKernel>;
+	using MovetkSquaredDistance = wrappers::SquaredDistance<MovetkBoostKernel>;
+	using MovetkDiscreteHausdorffDistance = wrappers::DiscreteHausdorffDistance<MovetkBoostKernel>;
+	using MovetkDiscreteFrechetDistance = wrappers::DiscreteFrechetDistance<MovetkBoostKernel>;
+	using MovetkIntersectionVisitor = void;
+	using MovetkCurveIntersection = void;
+	using MovetkMinimumBoundingRectangle = void;
+
+	// Boost types
+	using Boost_Point_ = typename Boost_Kernel::Point_d;
+	using Boost_Segment_ = typename bg::model::segment<Boost_Point_>;
+	using Boost_PolyLine_ = typename bg::model::linestring<Boost_Point_>;
+	using Boost_Polygon_ = typename bg::model::polygon<Boost_Point_>;
+};
+
+};  // namespace movetk::backends::boost
 
 #endif  // MOVETK_BOOSTGEOMETRYADAPTER_H
