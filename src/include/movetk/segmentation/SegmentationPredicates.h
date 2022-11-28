@@ -209,7 +209,6 @@ public:
 
 	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) const {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NT min = *std::min_element(first, beyond);
 		NT max = *std::max_element(first, beyond);
 		NT diff = max - min;
@@ -230,8 +229,7 @@ template <class GeometryTraits>
 class TEST<TestCriteria::range, GeometryTraits> {
 	// based on https://doi.org/10.1145/1869790.1869821
 private:
-	typedef TEST<TestCriteria::range, GeometryTraits> TEST_;
-	typedef typename GeometryTraits::NT NT;
+	using NT = typename GeometryTraits::NT;
 	NT threshold;
 
 public:
@@ -244,7 +242,6 @@ public:
 	 */
 	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NT lb = *movetk::utils::min_non_zero_element<GeometryTraits>(first, beyond);
 		// NT lb = *std::min_element(first, beyond);
 		NT ub = lb + threshold;
