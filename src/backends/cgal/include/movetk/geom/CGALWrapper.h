@@ -75,85 +75,74 @@ concept ValidCGALNumberType = is_valid_NT<T>::value;
 template <bool, class Kernel, class Type>
 struct OutputRep {};
 
-template <class Kernel>
-struct OutputRep<true, Kernel, typename Kernel::Wrapper_Point> {
-	std::ostream &operator()(std::ostream &out, const typename Kernel::Wrapper_Point &pt) {
-		return (out << movetk::utils::join(pt.begin(), pt.end()));
-	}
-};
-
-template <class Kernel>
-struct OutputRep<false, Kernel, typename Kernel::Wrapper_Point> {
-	std::ostream &operator()(std::ostream &out, const typename Kernel::Wrapper_Point &pt) { return (out << pt.get()); }
-};
-
-template <class Kernel>
-struct OutputRep<true, Kernel, typename Kernel::Wrapper_Vector> {
-	std::ostream &operator()(std::ostream &out, const typename Kernel::Wrapper_Vector &v) {
-		return (out << movetk::utils::join(v.begin(), v.end()));
-	}
-};
-
-template <class Kernel>
-struct OutputRep<false, Kernel, typename Kernel::Wrapper_Vector> {
-	std::ostream &operator()(std::ostream &out, const typename Kernel::Wrapper_Point &v) { return (out << v.get()); }
-};
-
-template <class Kernel>
-struct OutputRep<true, Kernel, typename Kernel::Wrapper_Sphere> {
-	std::ostream &operator()(std::ostream &out, const typename Kernel::Wrapper_Sphere &s) {
-		typename Kernel::Wrapper_Point center = s.center();
-		out << movetk::utils::join(center.begin(), center.end()) + ";";
-		out << s.squared_radius();
-		return out;
-	}
-};
-
-template <class Kernel>
-struct OutputRep<false, Kernel, typename Kernel::Wrapper_Sphere> {
-	std::ostream &operator()(std::ostream &out, const typename Kernel::Wrapper_Sphere &s) {
-		typename Kernel::Wrapper_Point center = s.center();
-		out << center.get();
-		out << ",";
-		out << s.squared_radius();
-		return out;
-	}
-};
-
-
-template <class Kernel>
-struct OutputRep<true, Kernel, typename Kernel::Wrapper_Polygon> {
-	std::ostream &operator()(std::ostream &out, typename Kernel::Wrapper_Polygon &poly) {
-		auto it = poly.get().vertices_begin();
-		auto beyond = poly.get().vertices_end();
-		// out << "Number of vertices: " << std::distance(it, beyond) << "\n";
-		std::string mergedTokens = movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
-		it++;
-		while (it != beyond) {
-			mergedTokens += ',';
-			mergedTokens += movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
-			it++;
+template <bool type_is_string_castable, class Kernel>
+struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkPoint> {
+	std::ostream &operator()(std::ostream &out, const typename Kernel::MovetkPoint &pt) {
+		if constexpr (type_is_string_castable) {
+			return (out << movetk::utils::join(pt.begin(), pt.end()));
+		} else {
+			return (out << pt.get());
 		}
-		out << mergedTokens;
-		return out;
 	}
 };
 
-template <class Kernel>
-struct OutputRep<false, Kernel, typename Kernel::Wrapper_Polygon> {
-	std::ostream &operator()(std::ostream &out, typename Kernel::Wrapper_Polygon &poly) {
-		auto it = poly.get().vertices_begin();
-		auto beyond = poly.get().vertices_end();
-		// out << "Number of vertices: " << std::distance(it, beyond) << "\n";
-		out << *it;
-		it++;
-		while (it != beyond) {
+template <bool type_is_string_castable, class Kernel>
+struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkVector> {
+	std::ostream &operator()(std::ostream &out, const typename Kernel::MovetkVector &v) {
+		if constexpr (type_is_string_castable) {
+			return (out << movetk::utils::join(v.begin(), v.end()));
+		} else {
+			return (out << v.get());
+		}
+	}
+};
+
+template <bool type_is_string_castable, class Kernel>
+struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkSphere> {
+	std::ostream &operator()(std::ostream &out, const typename Kernel::MovetkSphere &s) {
+		if constexpr (type_is_string_castable) {
+			typename Kernel::Wrapper_Point center = s.center();
+			out << movetk::utils::join(center.begin(), center.end()) + ";";
+			out << s.squared_radius();
+			return out;
+		} else {
+			typename Kernel::Wrapper_Point center = s.center();
+			out << center.get();
 			out << ",";
+			out << s.squared_radius();
+			return out;
+		}
+	}
+};
+
+
+template <bool type_is_string_castable, class Kernel>
+struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkPolygon> {
+	std::ostream &operator()(std::ostream &out, typename Kernel::MovetkPolygon &poly) {
+		if constexpr (type_is_string_castable) {
+			auto it = poly.get().vertices_begin();
+			auto beyond = poly.get().vertices_end();
+			std::string mergedTokens = movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
+			it++;
+			while (it != beyond) {
+				mergedTokens += ',';
+				mergedTokens += movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
+				it++;
+			}
+			out << mergedTokens;
+			return out;
+		} else {
+			auto it = poly.get().vertices_begin();
+			auto beyond = poly.get().vertices_end();
 			out << *it;
 			it++;
+			while (it != beyond) {
+				out << ",";
+				out << *it;
+				it++;
+			}
+			return out;
 		}
-		// out << mergedTokens;
-		return out;
 	}
 };
 
@@ -261,8 +250,8 @@ public:
 	 * @param out - OutputStream
 	 * @param point - A point of type Wrapper_CGAL_Point<Kernel>
 	 */
-	friend std::ostream &operator<<(std::ostream &out, const Point<Kernel> &point) {
-		OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Point<Kernel>> output;
+	friend std::ostream &operator<<(std::ostream &out, const Point &point) {
+		OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Point> output;
 		return output(out, point);
 	}
 };

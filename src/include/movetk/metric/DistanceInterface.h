@@ -127,7 +127,7 @@ public:
 	 * @return GeometryTraits::NT
 	 */
 	template <utils::Iterable2D<typename GeometryTraits::NT> DistanceMatrix, std::random_access_iterator InputIterator>
-		requires(utils::Iterable<typename InputIterator::value_type, typename GeometryTraits::MovetkPoint>)
+		requires(utils::Iterable<std::iter_value_t<InputIterator>, typename GeometryTraits::MovetkPoint>)
 	typename GeometryTraits::NT operator()(InputIterator first, InputIterator beyond, DistanceMatrix& upper_triag_mat) {
 		using algorithm = discrete_frechet_distance_algorithm<GeometryTraits,
 		                                                      Norm,

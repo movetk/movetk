@@ -7,7 +7,7 @@ namespace movetk::utils {
 namespace detail {
 template <typename TUPLE>
 struct index_sequence_for_tuple {
-	using type = std::make_index_sequence<std::tuple_size_v<TUPLE>>{};
+	using type = std::make_index_sequence<std::tuple_size_v<TUPLE>>;
 };
 template <typename TUPLE>
 using index_sequence_for_tuple_t = typename index_sequence_for_tuple<TUPLE>::type;
@@ -21,7 +21,7 @@ struct tuple_contains_type_impl<std::tuple<TS...>, TYPE, std::index_sequence<>> 
 template <typename TUPLE, typename TYPE, size_t I, size_t... IS>
 struct tuple_contains_type_impl<TUPLE, TYPE, std::index_sequence<I, IS...>> {
 	static constexpr bool value = std::is_same_v<TYPE, std::tuple_element_t<I, TUPLE>> ||
-	                              tuple_contains_type_impl<TUPLE, TYPE, std::index_sequence<IS...>>;
+	                              tuple_contains_type_impl<TUPLE, TYPE, std::index_sequence<IS...>>::value;
 };
 }  // namespace detail
 
