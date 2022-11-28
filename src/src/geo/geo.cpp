@@ -35,8 +35,6 @@ double distance_exact(double lat0, double lon0, double lat1, double lon1) {
     const Geodesic& geod = Geodesic::WGS84();
     double s12;
     geod.Inverse(lat0, lon0, lat1, lon1, s12);
-//    std::cout.setf(std::ios::fixed);
-//    std::cout << "distance: " << std::setprecision(6) << lat0 << " " << std::setprecision(6) << lon0 << " " << std::setprecision(6) << lat1 << " " << std::setprecision(6) << lon1 << " ==> " << s12 << '\n';
     return s12;
 }
 

@@ -38,8 +38,11 @@
 
 namespace movetk::metric {
 
-// based on Eiter, T., & Mannila, H. (1994). Computing Discrete Fréchet Distance ∗.
-
+/**
+ * @brief Squared distance functor for computing the squared distance between geometric objects
+ * @tparam Kernel The kernel of the geometric objects
+ * @tparam _Norm The used norm.
+*/
 template <class Kernel, class _Norm>
 struct squared_distance_d {
 	using Norm = _Norm;
