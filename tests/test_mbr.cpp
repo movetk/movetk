@@ -24,144 +24,81 @@
 #include <array>
 
 #include "catch2/catch.hpp"
-#if CGAL_BACKEND_ENABLED
-#include "movetk/geom/CGALTraits.h"
-#else
-
-#include "movetk/geom/BoostGeometryTraits.h"
-#endif
-
+#include "helpers/CustomCatchTemplate.h"
 #include "movetk/geo/geo.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/metric/Norm.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-
-using namespace std;
-
-#if CGAL_BACKEND_ENABLED
-//==============================
-// Define the Number Type
-// For the CGAL backend,
-// One can choose from the
-// following number types
-typedef long double NT;
-// typedef CGAL::Mpzf NT;
-// typedef CGAL::Gmpfr NT;
-// typedef CGAL::Gmpq NT;
-//==============================
-
-//==============================
-// Define the Dimensions
-const size_t dimensions = 2;
-//==============================
-
-//==============================
-// Define the Geometry Backend
-typedef movetk::geom::CGALTraits<NT, dimensions> CGAL_GeometryBackend;
-// Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk::geom::MovetkGeometryKernel<typename CGAL_GeometryBackend::Wrapper_CGAL_Geometry> MovetkGeometryKernel;
-//==============================
-#else
-//==============================
-// Define the Number Type
-// For the Boost Backend
-typedef long double NT;
-//==============================
-
-//==============================
-// Define the Dimensions
-// It is possible to choose
-// a higher dimension
-// Note: Boost Geometry Adapter supports geometry in two
-// dimensions only
-const static size_t dimensions = 2;
-//==============================
-
-//==============================
-// Define the Geometry Backend
-typedef movetk::geom::BoostGeometryTraits<long double, dimensions> Boost_Geometry_Backend;
-// Using the Geometry Backend define the Movetk Geometry Kernel
-typedef movetk::geom::MovetkGeometryKernel<typename Boost_Geometry_Backend::Wrapper_Boost_Geometry>
-    MovetkGeometryKernel;
-//==============================
-#endif
-
-typedef movetk::metric::FiniteNorm<MovetkGeometryKernel, 2> Norm;
-
-TEST_CASE("mbr of disk intersection 1", "[mbr_disk_intersection_1]") {
-	std::ios_base::sync_with_stdio(false);
-	std::cout.setf(std::ios::fixed);
+#include "test_includes.h"
+template <typename Backend>
+struct MinimumBoundingRectTests {
+	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;
+	using Norm = movetk::metric::FiniteNorm<MovetkGeometryKernel, 2>;
+	using NT = typename MovetkGeometryKernel::NT;
+	using Point = typename MovetkGeometryKernel::MovetkPoint;
 	Norm norm;
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	typename MovetkGeometryKernel::MovetkPoint expected_vertex_a = make_point({-0.283577, 2.512605});
-	typename MovetkGeometryKernel::MovetkPoint expected_vertex_b = make_point({1.818677, 0.013685});
-	typename MovetkGeometryKernel::MovetkPoint p_u = make_point({0, 0});
-
-	typename MovetkGeometryKernel::MovetkPoint p_v = make_point({2.57369, 4.23548});
-
-	typedef typename movetk::geom::mbr_selector<
+	using MinimumBoundingRectangle_ = typename movetk::geom::mbr_selector<
 	    MovetkGeometryKernel,
 	    Norm,
-	    typename MovetkGeometryKernel::MovetkMinimumBoundingRectangle>::MinimumBoundingRectangle MinimumBoundingRectangle;
-	MinimumBoundingRectangle mbr;
+	    typename MovetkGeometryKernel::MovetkMinimumBoundingRectangle>::MinimumBoundingRectangle;
+};
+template <typename Fixture>
+using Norm = typename Fixture::Norm;
+template <typename Fixture>
+using Point = typename Fixture::Point;
+template<typename Fixture>
+using MinimumBoundingRectangle = typename Fixture::MinimumBoundingRectangle_;
+
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(MinimumBoundingRectTests,
+                                      "mbr of disk intersection 1",
+                                      "[mbr_disk_intersection]") {
+	using Fixture = MinimumBoundingRectTests<TestType>;
+	using MovetkGeometryKernel = typename Fixture::MovetkGeometryKernel;
+	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
+	auto expected_vertex_a = make_point({-0.283577, 2.512605});
+	auto expected_vertex_b = make_point({1.818677, 0.013685});
+	auto p_u = make_point({0, 0});
+	auto p_v = make_point({2.57369, 4.23548});
+
+	MinimumBoundingRectangle<Fixture> mbr;
 	auto result = mbr(p_u, p_v, 2, 4);
-	std::cout << "Vertex A: " << result.first << "\n";
-	std::cout << "Vertex B: " << result.second << "\n";
-	MovetkGeometryKernel::MovetkVector eps = expected_vertex_a - result.first;
-	REQUIRE((eps * eps) < MOVETK_EPS);
-	eps = expected_vertex_b - result.second;
-	REQUIRE((eps * eps) < MOVETK_EPS);
+	REQUIRE(this->norm(expected_vertex_a - result.first) < MOVETK_EPS);
+	REQUIRE(this->norm(expected_vertex_b - result.second) < MOVETK_EPS);
 }
 
 
-TEST_CASE("mbr of disk intersection 2", "[mbr_disk_intersection_2]") {
-	std::ios_base::sync_with_stdio(false);
-	std::cout.setf(std::ios::fixed);
-	Norm norm;
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(MinimumBoundingRectTests,
+                                      "mbr of disk intersection 2",
+                                      "[mbr_disk_intersection]") {
+	using Fixture = MinimumBoundingRectTests<TestType>;
+	using MovetkGeometryKernel = typename Fixture::MovetkGeometryKernel;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	typename MovetkGeometryKernel::MovetkPoint expected_vertex_a = make_point({-1.936492, 2.000000});
-	typename MovetkGeometryKernel::MovetkPoint expected_vertex_b = make_point({1.936492, 0.000000});
-	typename MovetkGeometryKernel::MovetkPoint p_u = make_point({0, 0});
+	auto expected_vertex_a = make_point({-1.936492, 2.000000});
+	auto expected_vertex_b = make_point({1.936492, 0.000000});
+	auto p_u = make_point({0, 0});
+	auto p_v = make_point({0, 4});
 
-	typename MovetkGeometryKernel::MovetkPoint p_v = make_point({0, 4});
-
-	typedef typename movetk::geom::mbr_selector<
-	    MovetkGeometryKernel,
-	    Norm,
-	    typename MovetkGeometryKernel::MovetkMinimumBoundingRectangle>::MinimumBoundingRectangle MinimumBoundingRectangle;
-	MinimumBoundingRectangle mbr;
+	MinimumBoundingRectangle<Fixture> mbr;
 	auto result = mbr(p_u, p_v, 2, 4);
-	std::cout << "Vertex A: " << result.first << "\n";
-	std::cout << "Vertex B: " << result.second << "\n";
-	MovetkGeometryKernel::MovetkVector eps = expected_vertex_a - result.first;
-	REQUIRE((eps * eps) < MOVETK_EPS);
-	eps = expected_vertex_b - result.second;
-	REQUIRE((eps * eps) < MOVETK_EPS);
+	REQUIRE(this->norm(expected_vertex_a - result.first) < MOVETK_EPS);
+	REQUIRE(this->norm(expected_vertex_b - result.second) < MOVETK_EPS);
 }
 
 
-TEST_CASE("mbr of disk intersection 3", "[mbr_disk_intersection_3]") {
-	std::ios_base::sync_with_stdio(false);
-	std::cout.setf(std::ios::fixed);
-	Norm norm;
+MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(MinimumBoundingRectTests,
+                                      "mbr of disk intersection 3",
+                                      "[mbr_disk_intersection]") {
+	using Fixture = MinimumBoundingRectTests<TestType>;
+	using MovetkGeometryKernel = typename Fixture::MovetkGeometryKernel;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	typename MovetkGeometryKernel::MovetkPoint expected_vertex_a = make_point({-0.752776, -2.075651});
-	typename MovetkGeometryKernel::MovetkPoint expected_vertex_b = make_point({-1.833011, -0.510135});
-	typename MovetkGeometryKernel::MovetkPoint p_u = make_point({0, 0});
+	auto expected_vertex_a = make_point({-0.752776, -2.075651});
+	auto expected_vertex_b = make_point({-1.833011, -0.510135});
+	auto p_u = make_point({0, 0});
+	auto p_v = make_point({-4, -4});
 
-	typename MovetkGeometryKernel::MovetkPoint p_v = make_point({-4, -4});
-
-	typedef typename movetk::geom::mbr_selector<
-	    MovetkGeometryKernel,
-	    Norm,
-	    typename MovetkGeometryKernel::MovetkMinimumBoundingRectangle>::MinimumBoundingRectangle MinimumBoundingRectangle;
-	MinimumBoundingRectangle mbr;
+	MinimumBoundingRectangle<Fixture> mbr;
 	auto result = mbr(p_u, p_v, 2, 4);
-	std::cout << "Vertex A: " << result.first << "\n";
-	std::cout << "Vertex B: " << result.second << "\n";
-	MovetkGeometryKernel::MovetkVector eps = expected_vertex_a - result.first;
-	REQUIRE((eps * eps) < MOVETK_EPS);
-	eps = expected_vertex_b - result.second;
-	REQUIRE((eps * eps) < MOVETK_EPS);
+	REQUIRE(this->norm(expected_vertex_a - result.first) < MOVETK_EPS);
+	REQUIRE(this->norm(expected_vertex_b - result.second) < MOVETK_EPS);
 }

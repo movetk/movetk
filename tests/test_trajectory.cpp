@@ -200,15 +200,9 @@ TEST_CASE_METHOD(BaseTrajectoryTests, "insert points to trajectory", "[insert_po
 }
 
 TEST_CASE("trajectory lookup by offset", "[lookupbyoffset]") {
-	//==============================
-	// Define the Number Type
+	// 3D kernel using doubles
 	using NT = double;
-	// Define the Geometry Backend
-	using Boost_GeometryBackend = movetk::geom::BoostGeometryTraits<NT, 3>;
-	// Using the Geometry Backend define the Movetk Geometry Kernel
-	using MovetkGeometryKernel =
-	    movetk::geom::MovetkGeometryKernel<typename Boost_GeometryBackend::Wrapper_Boost_Geometry>;
-	//==============================
+	using MovetkGeometryKernel =movetk::backends::boost::KernelFor<NT, 3>;
 
 	// Phoenix_downtown bottom-left as origin
 	double lat0 = 33.439361, lon0 = -112.084793;  // origin
