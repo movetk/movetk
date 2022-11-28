@@ -30,14 +30,14 @@
 #include "BoostGeometryWrapper.h"
 #include "movetk/geom/GeometryInterface.h"
 
-namespace movetk::geom {
+namespace movetk::backends::boost {
 template <class NumberType, size_t dimensions>
 struct BoostGeometryTraits {
 	static_assert(dimensions < 4);
-	typedef NumberType NT;
+	using NT = NumberType;
 	constexpr static size_t dim = dimensions;
-	typedef boost::geometry::model::point<NT, dimensions, boost::geometry::cs::cartesian> Point_d;
-	typedef Wrapper_Boost_Kernel<BoostGeometryTraits> Wrapper_Boost_Geometry;
+	using Point_d = ::boost::geometry::model::point<NT, dimensions, ::boost::geometry::cs::cartesian>;
+	using Wrapper_Boost_Geometry = MovetkBoostKernel<BoostGeometryTraits>;
 };
 };  // namespace movetk::geom
 

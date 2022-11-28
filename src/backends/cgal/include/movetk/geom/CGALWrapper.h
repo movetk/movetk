@@ -46,13 +46,14 @@
 #include <cstdlib>
 #include <list>
 
+#include "movetk/geom/GeometryConcepts.h"
 #include "movetk/utils/Asserts.h"
 #include "movetk/utils/Meta.h"
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/StringUtils.h"
 
 
-namespace movetk::geom {
+namespace movetk::backends::cgal {
 using VALID_CGAL_TYPES = std::tuple<long double, CGAL::MP_Float, CGAL::Gmpfr, CGAL::Gmpq, CGAL::Mpzf>;
 
 using STRING_CASTABLE_CGAL_TYPES = std::tuple<long double>;
@@ -66,6 +67,9 @@ struct is_string_castable_NT : public movetk::utils::tuple_contains_type<STRING_
 
 template <class T = void>
 using requires_valid_CGAL_NT = typename std::enable_if<is_valid_NT<T>::value>::type;
+
+template <typename T>
+concept ValidCGALNumberType = is_valid_NT<T>::value;
 
 
 template <bool, class Kernel, class Type>
@@ -153,7 +157,7 @@ struct OutputRep<false, Kernel, typename Kernel::Wrapper_Polygon> {
 	}
 };
 
-
+namespace wrappers {
 /*! @class Wrapper_CGAL_Point
  *  @brief A wrapper class for CGAL Point.
  *  @details This class acts as a wrapper to a CGAL point by encapsulating
@@ -161,10 +165,10 @@ struct OutputRep<false, Kernel, typename Kernel::Wrapper_Polygon> {
  * @tparam Kernel - A traits class that defines CGAL geometry types
  */
 template <class Kernel>
-class Wrapper_CGAL_Point {
+class Point {
 private:
-	typedef typename Kernel::CGAL_Point_ CGAL_Point;
-	typedef typename Kernel::Wrapper_Vector Wrapper_Vector;
+	using CGAL_Point = typename Kernel::CGAL_Point_;
+	using Vector = typename Kernel::MovetkVector;
 	CGAL_Point pt;
 
 public:
@@ -172,14 +176,15 @@ public:
 	 * 	Creates a CGAL point and a generic interface to a Point as defined
 	 * 	by this class.
 	 */
-	Wrapper_CGAL_Point() = default;
+	Point() = default;
+	Point(const Point &) = default;
 
 	/*!
 	 * Creates a CGAL point and a generic interface to a Point as defined
 	 * by this class.
 	 * @param p - A CGAL point
 	 */
-	Wrapper_CGAL_Point(const CGAL_Point &p) : pt(p) {}
+	Point(const CGAL_Point &p) : pt(p) {}
 
 	/*!
 	 * Creates a CGAL point and a generic interface to a Point as defined
@@ -191,9 +196,8 @@ public:
 	 * @param first - Iterator to the first Cartesian coordinate
 	 * @param beyond - Iterator to the end of the last Cartesian coordinate
 	 */
-	template <std::requires_random_access_iterator CoordinateIterator>
-	Wrapper_CGAL_Point(CoordinateIterator first, CoordinateIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(CoordinateIterator);
+	template <std::random_access_iterator CoordinateIterator>
+	Point(CoordinateIterator first, CoordinateIterator beyond) {
 		ASSERT_NUMBER_TYPE(Kernel, first);
 		size_t dimensions = std::distance(first, beyond);
 		pt = CGAL_Point(dimensions, first, beyond);
@@ -216,7 +220,7 @@ public:
 	 * @param point - A point of type Wrapper_CGAL_Point<Kernel>
 	 * @return  True / False
 	 */
-	bool operator<(const Wrapper_CGAL_Point<Kernel> &point) { return this->get() < point.get(); }
+	bool operator<(const Point &point) const { return this->get() < point.get(); }
 
 
 	/*!
@@ -224,48 +228,44 @@ public:
 	 * @param point - A point of type Wrapper_CGAL_Point<Kernel>
 	 * @return  True / False
 	 */
-	bool operator>(const Wrapper_CGAL_Point<Kernel> &point) { return this->get() > point.get(); }
+	bool operator>(const Point &point) const { return this->get() > point.get(); }
 
 	/*!
 	 * Compares two wrapped CGAL points for less than equality
 	 * @param point -  A point of type Wrapper_CGAL_Point<Kernel>
 	 * @return True / False
 	 */
-	bool operator<=(const Wrapper_CGAL_Point<Kernel> &point) const { return this->get() <= point.get(); }
+	bool operator<=(const Point &point) const { return this->get() <= point.get(); }
 
 	/*!
 	 * Compares two wrapped CGAL points for greater than equality
 	 * @param point - A point of type Wrapper_CGAL_Point<Kernel>
 	 * @return  True / False
 	 */
-	bool operator>=(const Wrapper_CGAL_Point<Kernel> &point) { return this->get() >= point.get(); }
+	bool operator>=(const Point &point) const { return this->get() >= point.get(); }
 
-	Wrapper_Vector operator-(const Wrapper_CGAL_Point<Kernel> &point) const { return this->get() - point.get(); }
+	Vector operator-(const Point &point) const { return this->get() - point.get(); }
 
-	Wrapper_Vector operator-(const Wrapper_CGAL_Point<Kernel> &&point) const { return this->get() - point.get(); }
+	Point operator+(const Vector &v) const { return this->get() + v.get(); }
 
-	Wrapper_CGAL_Point<Kernel> operator+(Wrapper_Vector &v) const { return this->get() + v.get(); }
-
-	Wrapper_CGAL_Point<Kernel> operator+(Wrapper_Vector &&v) const { return this->operator+(v); }
-
-	Wrapper_CGAL_Point<Kernel> operator-(Wrapper_Vector &v) const { return this->get() - v.get(); }
+	Point operator-(const Vector &v) const { return this->get() - v.get(); }
 
 	/*!
 	 * @return  A CGAL point
 	 */
 	CGAL_Point get() const { return pt; }
-};
 
-/*!
- * Prints a point whose coordinates are separated by comma
- * @param out - OutputStream
- * @param point - A point of type Wrapper_CGAL_Point<Kernel>
- */
-template <class Kernel>
-std::ostream &operator<<(std::ostream &out, const Wrapper_CGAL_Point<Kernel> &point) {
-	OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Wrapper_CGAL_Point<Kernel>> output;
-	return output(out, point);
-}
+
+	/*!
+	 * Prints a point whose coordinates are separated by comma
+	 * @param out - OutputStream
+	 * @param point - A point of type Wrapper_CGAL_Point<Kernel>
+	 */
+	friend std::ostream &operator<<(std::ostream &out, const Point<Kernel> &point) {
+		OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Point<Kernel>> output;
+		return output(out, point);
+	}
+};
 
 
 /*! @class Wrapper_CGAL_Line
@@ -276,11 +276,11 @@ std::ostream &operator<<(std::ostream &out, const Wrapper_CGAL_Point<Kernel> &po
  * @tparam Kernel - A traits class that defines CGAL geometry types
  */
 template <class Kernel>
-class Wrapper_CGAL_Line {
+class Line {
 private:
-	typedef typename Kernel::CGAL_Point_ CGAL_Point;
-	typedef typename Kernel::CGAL_Line_ CGAL_Line;
-	typedef typename Kernel::Wrapper_Point Wrapper_Point;
+	using CGAL_Point = typename Kernel::CGAL_Point_;
+	using CGAL_Line = typename Kernel::CGAL_Line_;
+	using Point = typename Kernel::Point;
 	CGAL_Line line;
 
 public:
@@ -288,13 +288,13 @@ public:
 	 * Creates a CGAL line and a generic interface to a Line as defined
 	 * by this class.
 	 */
-	Wrapper_CGAL_Line() = default;
+	Line() = default;
 
 	/*!
 	 * Creates a wrapped CGAL line
 	 * @param l - A CGAL line
 	 */
-	Wrapper_CGAL_Line(const CGAL_Line &l) : line(l) {}
+	Line(const CGAL_Line &l) : line(l) {}
 
 	/*!
 	 * Creates a CGAL line and a generic interface to a Line as defined
@@ -302,11 +302,9 @@ public:
 	 * @param p1 - A wrapped CGAL point through which the wrapped CGAL line passes
 	 * @param p2 - A wrapped CGAL point through which the wrapped CGAL line passes
 	 */
-	Wrapper_CGAL_Line(Wrapper_CGAL_Point<Kernel> &p1, Wrapper_CGAL_Point<Kernel> &p2) {
-		line = CGAL_Line(p1.get(), p2.get());
-	}
+	Line(const Point &p1, const Point &p2) { line = CGAL_Line(p1.get(), p2.get()); }
 
-	Wrapper_Point operator[](size_t idx) { return line[idx]; }
+	Point operator[](size_t idx) const { return line[idx]; }
 
 	/*!
 	 *
@@ -323,12 +321,12 @@ public:
  * @tparam Kernel  - A traits class that defines CGAL geometry types
  */
 template <class Kernel>
-class Wrapper_CGAL_Segment {
+class Segment {
 private:
-	typedef typename Kernel::CGAL_Point_ CGAL_Point;
-	typedef typename Kernel::CGAL_Segment_ CGAL_Segment;
-	typedef typename Kernel::Wrapper_Point Wrapper_Point;
-	typedef typename Kernel::NT NT;
+	using CGAL_Point = typename Kernel::CGAL_Point_;
+	using CGAL_Segment = typename Kernel::CGAL_Segment_;
+	using Point = typename Kernel::MovetkPoint;
+	using NT = typename Kernel::NT;
 	CGAL_Segment seg;
 
 public:
@@ -336,14 +334,14 @@ public:
 	 * Creates a CGAL segment and a generic interface to a Segment as defined
 	 * by this class.
 	 */
-	Wrapper_CGAL_Segment() = default;
+	Segment() = default;
 
 	/*!
 	 * Creates a CGAL segment and a generic interface to a Segment as defined
 	 * by this class.
 	 * @param s  - A CGAL segment
 	 */
-	Wrapper_CGAL_Segment(const CGAL_Segment &s) : seg(s) {}
+	Segment(const CGAL_Segment &seg_) : seg(seg_) {}
 
 	/*!
 	 * Creates a CGAL segment and a generic interface to a Segment as defined
@@ -353,9 +351,7 @@ public:
 	 * @param p2 - A wrapped CGAL point that defines the other end-point of
 	 * a wrapped CGAL segment
 	 */
-	Wrapper_CGAL_Segment(Wrapper_CGAL_Point<Kernel> &p1, Wrapper_CGAL_Point<Kernel> &p2) {
-		seg = CGAL_Segment(p1.get(), p2.get());
-	}
+	Segment(const Point &p1, const Point &p2) { seg = CGAL_Segment(p1.get(), p2.get()); }
 
 	/*!
 	 * Creates a CGAL segment and a generic interface to a Segment as defined
@@ -365,35 +361,28 @@ public:
 	 * @param p2 - A wrapped CGAL point that defines the other end-point of
 	 * a wrapped CGAL segment
 	 */
-	Wrapper_CGAL_Segment(Wrapper_CGAL_Point<Kernel> &&p1, Wrapper_CGAL_Point<Kernel> &&p2) {
-		seg = CGAL_Segment(p1.get(), p2.get());
-	}
+	Segment(Point &&p1, Point &&p2) { seg = CGAL_Segment(p1.get(), p2.get()); }
 
-	Wrapper_Point operator[](size_t idx) const { return seg[idx]; }
+	Point operator[](size_t idx) const { return seg[idx]; }
 
 	/*!
 	 *
 	 * @return Length of the segment
 	 */
-	NT operator()() { return seg.squared_length(); }
+	NT operator()() const { return seg.squared_length(); }
 
 	/*!
 	 *
 	 * @return A CGAL segment
 	 */
 	CGAL_Segment get() const { return seg; }
-};
 
-template <class Kernel>
-std::ostream &operator<<(std::ostream &out, Wrapper_CGAL_Segment<Kernel> &seg) {
-	Wrapper_CGAL_Point<Kernel> p1 = seg[0];
-	Wrapper_CGAL_Point<Kernel> p2 = seg[1];
-	OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Wrapper_CGAL_Point<Kernel>> output;
-	out << output(out, p1);
-	out << ";";
-	out << output(out, p2);
-	return out;
-}
+
+	friend std::ostream &operator<<(std::ostream &out, Segment<Kernel> &seg) {
+		OutputRep<is_string_castable_NT<NT>::value, Kernel, Point> output;
+		return out << output(out, seg[0]) << ";" << output(out, seg[1]);
+	}
+};
 
 
 /*! @class Wrapper_CGAL_Vector
@@ -404,11 +393,12 @@ std::ostream &operator<<(std::ostream &out, Wrapper_CGAL_Segment<Kernel> &seg) {
  * @tparam Kernel  - A traits class that defines CGAL geometry types
  */
 template <class Kernel>
-class Wrapper_CGAL_Vector {
+class Vector {
 private:
-	typedef typename Kernel::CGAL_Point_ CGAL_Point;
-	typedef typename Kernel::CGAL_Vector_ CGAL_Vector;
-	typedef std::array<typename Kernel::NT, Kernel::dim> container;
+	using CGAL_Point = typename Kernel::CGAL_Point_;
+	using CGAL_Vector = typename Kernel::CGAL_Vector_;
+	using Point = typename Kernel::MovetkPoint;
+	using container = std::array<typename Kernel::NT, Kernel::dim>;
 	CGAL_Vector vec;
 
 public:
@@ -417,37 +407,31 @@ public:
 	 * by this class.
 	 * @param pt - A wrapped CGAL point
 	 */
-	explicit Wrapper_CGAL_Vector(Wrapper_CGAL_Point<Kernel> &p) { vec = p.get() - CGAL::ORIGIN; }
+	explicit Vector(const Point &p) { vec = p.get() - CGAL::ORIGIN; }
 
-	Wrapper_CGAL_Vector(const CGAL_Vector &v) : vec(v) {}
+	explicit Vector(const CGAL_Vector &vec_) : vec(vec_) {}
+	explicit Vector() : vec(CGAL::NULL_VECTOR) {}
+	explicit Vector(const Vector &) = default;
 
-	typename Kernel::NT operator*(const Wrapper_CGAL_Vector<Kernel> &vector) const { return this->get() * vector.get(); }
+	typename Kernel::NT operator*(const Vector &vector) const { return this->get() * vector.get(); }
 
-	typename Kernel::NT operator*(const Wrapper_CGAL_Vector<Kernel> &&vector) const { return this->get() * vector.get(); }
-
-	Wrapper_CGAL_Vector<Kernel> &operator*=(typename Kernel::NT scalar) {
+	Vector &operator*=(typename Kernel::NT scalar) {
 		vec *= scalar;
 		return *this;
 	}
 
-	Wrapper_CGAL_Vector<Kernel> operator+(const Wrapper_CGAL_Vector<Kernel> &vector) const {
-		return this->get() + vector.get();
-	}
+	Vector operator+(const Vector &vector) const { return this->get() + vector.get(); }
 
 
-	Wrapper_CGAL_Vector<Kernel> operator-(const Wrapper_CGAL_Vector<Kernel> &vector) const {
-		return this->get() - vector.get();
-	}
+	Vector operator-(const Vector &vector) const { return this->get() - vector.get(); }
 
-	bool operator==(const Wrapper_CGAL_Vector<Kernel> &&vector) const {
-		return std::equal(this->begin(), this->end(), vector.begin());
-	}
+	bool operator==(const Vector &vector) const { return std::equal(this->begin(), this->end(), vector.begin()); }
 
-	Wrapper_CGAL_Vector<Kernel> basis(std::size_t i) const {
+	Vector basis(std::size_t i) const {
 		container e = {0};
 		e[i] = 1;
 		CGAL_Vector basis_vec(Kernel::dim, std::begin(e), std::end(e));
-		return Wrapper_CGAL_Vector(basis_vec);
+		return Vector(basis_vec);
 	}
 
 	/*!
@@ -468,19 +452,18 @@ public:
 	 * @return A CGAL vector
 	 */
 	CGAL_Vector get() const { return vec; }
+
+
+	/*!
+	 * Prints a vector whose components are separated by comma
+	 * @param out - OutputStream
+	 * @param point - A point of type Wrapper_CGAL_Vector<Kernel>
+	 */
+	friend std::ostream &operator<<(std::ostream &out, const Vector &vec) {
+		OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Vector> output;
+		return output(out, vec);
+	}
 };
-
-
-/*!
- * Prints a vector whose components are separated by comma
- * @param out - OutputStream
- * @param point - A point of type Wrapper_CGAL_Vector<Kernel>
- */
-template <class Kernel>
-std::ostream &operator<<(std::ostream &out, const Wrapper_CGAL_Vector<Kernel> &vec) {
-	OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Wrapper_CGAL_Vector<Kernel>> output;
-	return output(out, vec);
-}
 
 
 /*! @class Wrapper_CGAL_Polygon
@@ -492,18 +475,18 @@ std::ostream &operator<<(std::ostream &out, const Wrapper_CGAL_Vector<Kernel> &v
  * @tparam Kernel - A traits class that defines CGAL geometry types
  */
 template <class Kernel>
-class Wrapper_CGAL_Polygon {
+class Polygon {
 private:
-	typedef typename Kernel::Wrapper_CGAL_Kernel_2::GeometryType_2 K;
-	typedef typename K::Point_2 Point_2;
-	typedef CGAL::Polygon_2<K> CGAL_Polygon;
+	using K = typename Kernel::Wrapper_CGAL_Kernel_2::GeometryType_2;
+	using Point_2 = typename K::Point_2;
+	using CGAL_Polygon = typedef CGAL::Polygon_2<K>;
 	CGAL_Polygon polygon;
 
 public:
 	/*!
 	 * 	Creates a wrapped CGAL polygon
 	 */
-	Wrapper_CGAL_Polygon() = default;
+	Polygon() = default;
 
 
 	/*!
@@ -517,9 +500,7 @@ public:
 	 * where each point is of type Wrapper_CGAL_Point<Kernel>
 	 */
 	template <utils::RandomAccessPointIterator<Kernel> PointIterator>
-	Wrapper_CGAL_Polygon(PointIterator first, PointIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
-		// ASSERT_WRAPPER_POINT_TYPE(Kernel, first);
+	Polygon(PointIterator first, PointIterator beyond) {
 		PointIterator it = first;
 		while (it != beyond) {
 			auto CoordinateIter = it->begin();
@@ -538,173 +519,89 @@ public:
 
 	/*!
 	 *
+	 * @return  A CGAL polygon in 2D
+	 */
+	const CGAL_Polygon &get() const { return polygon; }
+
+	/*!
+	 *
 	 * @return Iterator to the first vertex in a set of points
 	 */
-	auto v_begin() { return polygon.vertices_begin(); }
+	auto v_begin() const { return polygon.vertices_begin(); }
 
 	/*!
 	 *
 	 * @return Iterator to the end of the last vertex in a set of points
 	 */
-	auto v_end() { return polygon.vertices_end(); }
+	auto v_end() const { return polygon.vertices_end(); }
 
 	/*!
 	 *
 	 * @return Iterator to the first edge in a set of points
 	 */
-	auto e_begin() { return polygon.edges_begin(); }
+	auto e_begin() const { return polygon.edges_begin(); }
 
 	/*!
 	 * @return Iterator to the end of the last edge in a set of points
 	 */
-	auto e_end() { return polygon.edges_end(); }
+	auto e_end() const { return polygon.edges_end(); }
+
+	/*!
+	 * Prints a polygon whose vertices are separated by comma. Since
+	 * each of these vertices are points, their coordinates are separated
+	 * by semicolon
+	 * @param out - OutputStream
+	 * @param poly - A polygon of type Wrapper_CGAL_Polygon<Kernel>
+	 */
+	friend std::ostream &operator<<(std::ostream &out, const Polygon<Kernel> &poly) {
+		OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Polygon<Kernel>> output;
+		return (output(out, poly));
+	}
 };
 
-/*!
- * Prints a polygon whose vertices are separated by comma. Since
- * each of these vertices are points, their coordinates are separated
- * by semicolon
- * @param out - OutputStream
- * @param poly - A polygon of type Wrapper_CGAL_Polygon<Kernel>
- */
-template <class Kernel>
-std::ostream &operator<<(std::ostream &out, Wrapper_CGAL_Polygon<Kernel> &poly) {
-	OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Wrapper_CGAL_Polygon<Kernel>> output;
-	return (output(out, poly));
-}
 
 template <class Kernel>
-class Wrapper_CGAL_Sphere {
+class Sphere {
 private:
-	typedef typename Kernel::CGAL_Sphere_ CGAL_Sphere;
-	typedef typename Kernel::CGAL_Point_ CGAL_Point;
-	typedef typename Kernel::Wrapper_Point Wrapper_Point;
-	typedef typename Kernel::Wrapper_Vector Wrapper_Vector;
-	typedef typename Kernel::NT NT;
+	using CGAL_Sphere = typename Kernel::CGAL_Sphere_;
+	using CGAL_Point = typename Kernel::CGAL_Point_;
+	using Point = typename Kernel::MovetkPoint;
+	using Vector = typename Kernel::MovetkVector;
+	using NT = typename Kernel::NT;
 	std::set<CGAL_Point> points;
 	CGAL_Sphere sphere;
-	Wrapper_Point _center;
+	Point _center;
 	NT _squared_radius;
 
 public:
-	Wrapper_CGAL_Sphere(Wrapper_Point &center, NT radius, bool square = true) : _center(center) {
+	Sphere(const Point &center, NT radius, bool square = true) : _center(center) {
 		if (square)
 			_squared_radius = std::pow(radius, 2);
 		else
 			_squared_radius = radius;
 	}
 
-	Wrapper_Point center() const { return _center; }
+	Point center() const { return _center; }
 
 	NT squared_radius() const { return _squared_radius; }
-};
 
-template <class Kernel>
-std::ostream &operator<<(std::ostream &out, const Wrapper_CGAL_Sphere<Kernel> &sphere) {
-	OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Wrapper_CGAL_Sphere<Kernel>> output;
-	return output(out, sphere);
-}
-
-namespace CGAL_Algorithms {
-
-/*!
- * @class Intersection_visitor
- * @brief A visitor class for intersection between two geometric objects
- * @details An intersection of two geometric objects can result in a geometric object that
- *  varies based on how two objects intersect. This class provides an interface for
- *  manipulating an object from different geometry types in a uniform manner
- *  For further details , please see: https://www.boost.org/doc/libs/1_64_0/doc/html/variant.html
- * @tparam Kernel - A traits class that defines CGAL geometry types and a variant type
- *  e.g: boost::variant
- */
-template <class Kernel>
-class Intersection_visitor : public boost::static_visitor<typename Kernel::IntersectionVariant> {
-private:
-	typedef typename Kernel::CGAL_Point_ CGAL_Point;
-	typedef typename Kernel::CGAL_Segment_ CGAL_Segment;
-	typedef typename Kernel::CGAL_Line_ CGAL_Line;
-
-public:
-	/*!
-	 *
-	 * @param p - A CGAL point
-	 * @return  A wrapped CGAL point
-	 */
-	typename Kernel::IntersectionVariant operator()(const CGAL_Point &p) const {
-		typename Kernel::Wrapper_Point wrapper_point(p);
-		return wrapper_point;
-	}
-
-	/*!
-	 *
-	 * @param s - A CGAL segment
-	 * @return  A wrapped CGAL segment
-	 */
-	typename Kernel::IntersectionVariant operator()(const CGAL_Segment &s) const {
-		typename Kernel::Wrapper_Segment wrapper_seg(s);
-		return wrapper_seg;
-	}
-
-	/*!
-	 *
-	 * @param l - A CGAL line
-	 * @return A wrapped CGAL line
-	 */
-	typename Kernel::IntersectionVariant operator()(const CGAL_Line &l) const {
-		typename Kernel::Wrapper_Line line(l);
-		return line;
+	friend std::ostream &operator<<(std::ostream &out, const Sphere &sphere) {
+		OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Sphere> output;
+		return output(out, sphere);
 	}
 };
 
-/*!
- * Check whether two lines intersect
- * @tparam Kernel - A traits class that defines CGAL geometry types
- * @param Line1 - A wrapped CGAL line
- * @param Line2 - A wrapped CGAL line
- * @return True / False
- */
-template <class Kernel>
-bool do_intersect(Wrapper_CGAL_Line<Kernel> Line1, Wrapper_CGAL_Line<Kernel> Line2) {
-	return CGAL::do_intersect(Line1.get(), Line2.get());
-}
-
-/*!
- * Get the result of intersection of two lines
- * @tparam Kernel - A traits class that defines CGAL geometry types
- * @param Line1 - A wrapped CGAL line
- * @param Line2 - A wrapped CGAL line
- * @return A CGAL geometric object
- */
-template <class Kernel>
-auto intersect(Wrapper_CGAL_Line<Kernel> Line1, Wrapper_CGAL_Line<Kernel> Line2) {
-	return intersection(Line1.get(), Line2.get());  // intersection() is part of <CGAL/intersections_d.h>
-}
-
-/*!
- * Check whether a point belongs to a polygon
- * @tparam Kernel - A traits class that defines CGAL geometry types
- * @param Point - A wrapped CGAL point
- * @param Polygon - A wrapped CGAL polygon
- * @return True / False
- */
-template <class Kernel>
-bool point_in_polygon(Wrapper_CGAL_Point<Kernel> Point, Wrapper_CGAL_Polygon<Kernel> Polygon) {
-	typedef typename Kernel::Wrapper_CGAL_Kernel_2::GeometryType_2 K;
-	typedef typename K::Point_2 Point_2;
-	auto CoordinateIter = Point.begin();
-	return ((Polygon.get()).bounded_side(Point_2(*CoordinateIter, *(CoordinateIter + 1))) == CGAL::ON_BOUNDED_SIDE);
-}
 
 /*! @class Wrapper_Min_Sphere
  *  @brief A wrapper for Minimum Enclosing Ball construction of CGAL
  * @tparam Kernel - A traits class that defines CGAL geometry types
  */
 template <class Kernel>
-class Wrapper_Min_Sphere {
+class MinSphere {
 private:
-	typedef typename Kernel::CGAL_MinSphere_ CGAL_MinSphere;
-	typedef typename Kernel::CGAL_Point_ CGAL_Point;
-	typedef typename Kernel::NT NT;
+	using CGAL_MinSphere = typename Kernel::CGAL_MinSphere_;
+	using CGAL_Point = typename Kernel::CGAL_Point_;
+	using NT = typename Kernel::NT;
 	std::set<CGAL_Point> points;  // TODO: Remove the use of this datastructure
 	NT radius;
 
@@ -721,8 +618,6 @@ private:
 	 */
 	template <utils::RandomAccessPointIterator<Kernel> PointIterator>
 	void to_CGAL_points(PointIterator first, PointIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
-		// ASSERT_WRAPPER_POINT_TYPE(Kernel, first);
 		PointIterator it = first;
 		while (it != beyond) {
 			points.insert((*it).get());
@@ -745,11 +640,8 @@ public:
 	 * @return Radius of the MEB
 	 */
 	template <utils::RandomAccessPointIterator<Kernel> PointIterator,
-	          utils::RandomAccessIterator<typename Kernel::NT> CenterIterator>
-	NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
-		// ASSERT_WRAPPER_POINT_TYPE(Kernel, first);
-		// ASSERT_OUTPUT_ITERATOR(CenterIterator);
+	          utils::OutputIterator<typename Kernel::NT> CenterIterator>
+	NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const {
 		this->to_CGAL_points(first, beyond);
 		CGAL_MinSphere ms(begin(points), end(points));
 		radius = ms.radius().first + ms.radius().second * sqrt(ms.discriminant());
@@ -774,8 +666,6 @@ public:
 	 */
 	template <utils::RandomAccessPointIterator<Kernel> PointIterator>
 	NT operator()(PointIterator first, PointIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(PointIterator);
-		// ASSERT_WRAPPER_POINT_TYPE(Kernel, first);
 		this->to_CGAL_points(first, beyond);
 		CGAL_MinSphere ms(begin(points), end(points));
 		radius = ms.radius().first + ms.radius().second * sqrt(ms.discriminant());
@@ -786,12 +676,10 @@ public:
 
 
 template <class Kernel>
-class Wrapper_Curve_Intersection {
+class CurveIntersection {
 private:
-	typedef typename Kernel::Wrapper_CGAL_Kernel_2::Point_2 Point_2;
-	typedef typename Kernel::Wrapper_CGAL_Kernel_2::Curve_2 Curve;
-	typedef Wrapper_CGAL_Point<Kernel> Wrapper_Point;
-	typedef Wrapper_CGAL_Vector<Kernel> Wrapper_Vector;
+	using Point_2 = typename Kernel::Wrapper_CGAL_Kernel_2::Point_2;
+	using Curve = typename Kernel::Wrapper_CGAL_Kernel_2::Curve_2;
 	std::vector<Curve> Curves;
 	std::list<Point_2> Points;
 
@@ -802,9 +690,9 @@ public:
 		Curves.clear();
 		Points.clear();
 		while (it != beyond) {
-			Wrapper_Point p1 = *(it - 1);
-			Wrapper_Point p2 = *it;
-			Wrapper_Vector v = p2 - p1;
+			auto p1 = *(it - 1);
+			auto p2 = *it;
+			auto v = p2 - p1;
 			if ((v * v) < MOVETK_EPS) {
 				it++;
 				continue;
@@ -819,6 +707,102 @@ public:
 		return Points.size();
 	}
 };
+
+
+}  // namespace wrappers
+
+
+namespace CGAL_Algorithms {
+
+/*!
+ * @class Intersection_visitor
+ * @brief A visitor class for intersection between two geometric objects
+ * @details An intersection of two geometric objects can result in a geometric object that
+ *  varies based on how two objects intersect. This class provides an interface for
+ *  manipulating an object from different geometry types in a uniform manner
+ *  For further details , please see: https://www.boost.org/doc/libs/1_64_0/doc/html/variant.html
+ * @tparam Kernel - A traits class that defines CGAL geometry types and a variant type
+ *  e.g: boost::variant
+ */
+template <class Kernel>
+class Intersection_visitor : public boost::static_visitor<typename Kernel::IntersectionVariant> {
+private:
+	typedef typename Kernel::CGAL_Point_ CGAL_Point;
+	typedef typename Kernel::CGAL_Segment_ CGAL_Segment;
+	typedef typename Kernel::CGAL_Line_ CGAL_Line;
+
+public:
+	using IntersectionVariant = typename Kernel::IntersectionVariant;
+	/*!
+	 *
+	 * @param p - A CGAL point
+	 * @return  A wrapped CGAL point
+	 */
+	IntersectionVariant operator()(const CGAL_Point &p) const {
+		typename Kernel::MovetkPoint wrapper_point(p);
+		return wrapper_point;
+	}
+
+	/*!
+	 *
+	 * @param s - A CGAL segment
+	 * @return  A wrapped CGAL segment
+	 */
+	IntersectionVariant operator()(const CGAL_Segment &s) const {
+		typename Kernel::MovetkSegment wrapper_seg(s);
+		return wrapper_seg;
+	}
+
+	/*!
+	 *
+	 * @param l - A CGAL line
+	 * @return A wrapped CGAL line
+	 */
+	IntersectionVariant operator()(const CGAL_Line &l) const {
+		typename Kernel::MovetkLine line(l);
+		return line;
+	}
+};
+
+/*!
+ * Check whether two lines intersect
+ * @tparam Kernel - A traits class that defines CGAL geometry types
+ * @param Line1 - A wrapped CGAL line
+ * @param Line2 - A wrapped CGAL line
+ * @return True / False
+ */
+template <class Kernel>
+bool do_intersect(const wrappers::Line<Kernel> &Line1, const wrappers::Line<Kernel> &Line2) {
+	return CGAL::do_intersect(Line1.get(), Line2.get());
+}
+
+/*!
+ * Get the result of intersection of two lines
+ * @tparam Kernel - A traits class that defines CGAL geometry types
+ * @param Line1 - A wrapped CGAL line
+ * @param Line2 - A wrapped CGAL line
+ * @return A CGAL geometric object
+ */
+template <class Kernel>
+auto intersect(const wrappers::Line<Kernel> &Line1, const wrappers::Line<Kernel> &Line2) {
+	return intersection(Line1.get(), Line2.get());  // intersection() is part of <CGAL/intersections_d.h>
+}
+
+/*!
+ * Check whether a point belongs to a polygon
+ * @tparam Kernel - A traits class that defines CGAL geometry types
+ * @param Point - A wrapped CGAL point
+ * @param Polygon - A wrapped CGAL polygon
+ * @return True / False
+ */
+template <class Kernel>
+bool point_in_polygon(const wrappers::Point<Kernel> &Point, const wrappers::Polygon<Kernel> &Polygon) {
+	typedef typename Kernel::Wrapper_CGAL_Kernel_2::GeometryType_2 K;
+	typedef typename K::Point_2 Point_2;
+	auto CoordinateIter = Point.begin();
+	return ((Polygon.get()).bounded_side(Point_2(*CoordinateIter, *(CoordinateIter + 1))) == CGAL::ON_BOUNDED_SIDE);
+}
+
 };  // namespace CGAL_Algorithms
 
 /*!@struct Wrapper_CGAL_Kernel
@@ -826,43 +810,51 @@ public:
  * @tparam Kernel - The CGAL Kernel
  */
 template <class CGAL_Kernel>
-struct Wrapper_CGAL_Kernel {
+struct MovetkCGALKernel {
+	// CGAL wrapping types
+	using SphereTraits = typename CGAL_Kernel::SphereTraits;
+	using CGAL_MinSphere_ = typename CGAL::Min_sphere_of_spheres_d<SphereTraits>;
+	using GeometryType = typename CGAL_Kernel::GeometryType;
+	using CGAL_Point_ = typename GeometryType::Point_d;
+	using CGAL_Vector_ = typename GeometryType::Vector_d;
+	using CGAL_Line_ = typename GeometryType::Line_d;
+	using CGAL_Segment_ = typename GeometryType::Segment_d;
+	using CGAL_Sphere_ = typename GeometryType::Sphere_d;
+
+	// Movetk kernel interface
 	typedef typename CGAL_Kernel::NT NT;
 	constexpr static size_t dim = CGAL_Kernel::dim;
-	typedef typename CGAL_Kernel::SphereTraits SphereTraits;
-	typedef typename CGAL::Min_sphere_of_spheres_d<SphereTraits> CGAL_MinSphere_;
-	typedef typename CGAL_Kernel::GeometryType GeometryType;
-	typedef typename GeometryType::Point_d CGAL_Point_;
-	typedef typename GeometryType::Vector_d CGAL_Vector_;
-	typedef typename GeometryType::Line_d CGAL_Line_;
-	typedef typename GeometryType::Segment_d CGAL_Segment_;
-	typedef typename GeometryType::Sphere_d CGAL_Sphere_;
-	typedef Wrapper_CGAL_Point<Wrapper_CGAL_Kernel> Wrapper_Point;
-	typedef Wrapper_CGAL_Line<Wrapper_CGAL_Kernel> Wrapper_Line;
-	typedef Wrapper_CGAL_Segment<Wrapper_CGAL_Kernel> Wrapper_Segment;
-	typedef Wrapper_CGAL_Vector<Wrapper_CGAL_Kernel> Wrapper_Vector;
-	typedef Wrapper_CGAL_Polygon<Wrapper_CGAL_Kernel> Wrapper_Polygon;
-	typedef Wrapper_CGAL_Sphere<Wrapper_CGAL_Kernel> Wrapper_Sphere;
-	typedef CGAL_Algorithms::Wrapper_Min_Sphere<Wrapper_CGAL_Kernel> Wrapper_MinSphere;
-	typedef boost::variant<Wrapper_Point, Wrapper_Line, Wrapper_Segment> IntersectionVariant;
-	typedef CGAL_Algorithms::Intersection_visitor<Wrapper_CGAL_Kernel> Intersection_visitor;
-	typedef CGAL_Algorithms::Wrapper_Curve_Intersection<Wrapper_CGAL_Kernel> Wrapper_Curve_Intersection;
-	typedef void Wrapper_Squared_Distance;
-	typedef void Wrapper_Discrete_Hausdorff_Distance;
-	typedef void Wrapper_Discrete_Frechet_Distance;
-	typedef void Wrapper_Minimum_Bounding_Rectangle;
+	using MovetkPoint = wrappers::Point<MovetkCGALKernel>;
+	using MovetkLine = wrappers::Line<MovetkCGALKernel>;
+	using MovetkSegment = wrappers::Segment<MovetkCGALKernel>;
+	using MovetkVector = wrappers::Vector<MovetkCGALKernel>;
+	using MovetkPolygon = wrappers::Polygon<MovetkCGALKernel>;
+	using MovetkSphere = wrappers::Sphere<MovetkCGALKernel>;
+	using MovetkMinSphere = wrappers::MinSphere<MovetkCGALKernel>;
+	using MovetkIntersectionVisitor = CGAL_Algorithms::Intersection_visitor<MovetkCGALKernel>;
+	using MovetkCurveIntersection = wrappers::CurveIntersection<MovetkCGALKernel>;
+	using MovetkSquaredDistance = void;
+	using MovetkDiscreteHausdorffDistance = void;
+	using MovetkDiscreteFrechetDistance = void;
+	using MovetkMinimumBoundingRectangle = void;
+
+	// Other CGAL types
+	using IntersectionVariant = boost::variant<MovetkPoint, MovetkLine, MovetkSegment>;
+
 	struct Wrapper_CGAL_Kernel_2 {
-		typedef CGAL::Simple_cartesian<NT> GeometryType_2;
-		typedef CGAL::Arr_segment_traits_2<GeometryType_2> Arrangement_Traits_2;
-		typedef typename GeometryType_2::Point_2 Point_2;
-		typedef typename GeometryType_2::Vector_2 Vector_2;
+		using GeometryType_2 = CGAL::Simple_cartesian<NT>;
+		using Arrangement_Traits_2 = CGAL::Arr_segment_traits_2<GeometryType_2>;
+		using Point_2 = typename GeometryType_2::Point_2;
+		using Vector_2 = typename GeometryType_2::Vector_2;
 		typedef typename GeometryType_2::Line_2 Line_2;
 		typedef typename GeometryType_2::Segment_2 Segment_2;
 		typedef typename Arrangement_Traits_2::Curve_2 Curve_2;
 	};
+	static_assert(movetk::geom::concepts::Point<MovetkPoint, MovetkCGALKernel>);
+	static_assert(movetk::geom::concepts::Vector<MovetkVector, MovetkCGALKernel>);
 };
 
 
-}  // namespace movetk::geom
+}  // namespace movetk::backends::cgal
 
 #endif /* GEOMETRY_H */

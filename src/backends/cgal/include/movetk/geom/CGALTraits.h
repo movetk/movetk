@@ -31,7 +31,7 @@
 #include "movetk/geom/GeometryInterface.h"
 
 
-namespace movetk::geom {
+namespace movetk::backends::cgal {
 
 /*!struct CGALTraits
  * @brief  CGAL traits classes for parameterizing TSL::Wrapper_CGAL_Kernel
@@ -41,13 +41,13 @@ namespace movetk::geom {
  * Cartesian coordinates where each coordinate is of type \c NumberType
  * @tparam dimensions - The dimesionality of the Cartesian coordinate space
  */
-template <class NumberType, size_t dimensions, typename = requires_valid_CGAL_NT<NumberType>>
+template <ValidCGALNumberType NumberType, size_t dimensions>
 struct CGALTraits {
 	typedef NumberType NT;
 	constexpr static size_t dim = dimensions;
 	using GeometryType = CGAL::Cartesian_d<NT>;  // define the geometry type
 	using SphereTraits = CGAL::Min_sphere_of_points_d_traits_d<GeometryType, NT, dimensions>;
-	using Wrapper_CGAL_Geometry = Wrapper_CGAL_Kernel<CGALTraits>;  // the traits class
+	using Wrapper_CGAL_Geometry = MovetkCGALKernel<CGALTraits>;  // the traits class
 };
 
 };  // namespace movetk::geom
