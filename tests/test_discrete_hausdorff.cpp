@@ -32,6 +32,7 @@
 #include "movetk/utils/TrajectoryUtils.h"
 #include "helpers/CustomCatchTemplate.h"
 
+
 template <typename Backend>
 struct DiscreteHausdorffTests {
 	using NT = test_helpers::NTFromBackend<Backend>;
