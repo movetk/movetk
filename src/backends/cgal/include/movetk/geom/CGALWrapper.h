@@ -244,11 +244,11 @@ public:
 	 */
 	bool operator>=(const Point &point) const { return this->get() >= point.get(); }
 
-	Vector operator-(const Point &point) const { return this->get() - point.get(); }
+	Vector operator-(const Point &point) const { return Vector(this->get() - point.get()); }
 
-	Point operator+(const Vector &v) const { return this->get() + v.get(); }
+	Point operator+(const Vector &v) const { return Point(this->get() + v.get()); }
 
-	Point operator-(const Vector &v) const { return this->get() - v.get(); }
+	Point operator-(const Vector &v) const { return Point(this->get() - v.get()); }
 
 	/*!
 	 * @return  A CGAL point
@@ -280,7 +280,7 @@ class Line {
 private:
 	using CGAL_Point = typename Kernel::CGAL_Point_;
 	using CGAL_Line = typename Kernel::CGAL_Line_;
-	using Point = typename Kernel::Point;
+	using Point = typename Kernel::MovetkPoint;
 	CGAL_Line line;
 
 public:
@@ -410,8 +410,8 @@ public:
 	explicit Vector(const Point &p) { vec = p.get() - CGAL::ORIGIN; }
 
 	explicit Vector(const CGAL_Vector &vec_) : vec(vec_) {}
-	explicit Vector() : vec(CGAL::NULL_VECTOR) {}
-	explicit Vector(const Vector &) = default;
+	Vector() : vec(CGAL::NULL_VECTOR) {}
+	Vector(const Vector &) = default;
 
 	typename Kernel::NT operator*(const Vector &vector) const { return this->get() * vector.get(); }
 
@@ -420,10 +420,10 @@ public:
 		return *this;
 	}
 
-	Vector operator+(const Vector &vector) const { return this->get() + vector.get(); }
+	Vector operator+(const Vector &vector) const { return Vector(this->get() + vector.get()); }
 
 
-	Vector operator-(const Vector &vector) const { return this->get() - vector.get(); }
+	Vector operator-(const Vector &vector) const { return Vector(this->get() - vector.get()); }
 
 	bool operator==(const Vector &vector) const { return std::equal(this->begin(), this->end(), vector.begin()); }
 
@@ -850,11 +850,7 @@ struct MovetkCGALKernel {
 		typedef typename GeometryType_2::Segment_2 Segment_2;
 		typedef typename Arrangement_Traits_2::Curve_2 Curve_2;
 	};
-	static_assert(movetk::geom::concepts::Point<MovetkPoint, MovetkCGALKernel>);
-	static_assert(movetk::geom::concepts::Vector<MovetkVector, MovetkCGALKernel>);
 };
-
-
 }  // namespace movetk::backends::cgal
 
 #endif /* GEOMETRY_H */

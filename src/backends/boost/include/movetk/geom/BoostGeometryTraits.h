@@ -39,6 +39,8 @@ struct BoostGeometryTraits {
 	using Point_d = ::boost::geometry::model::point<NT, dimensions, ::boost::geometry::cs::cartesian>;
 	using Wrapper_Boost_Geometry = MovetkBoostKernel<BoostGeometryTraits>;
 };
+template<typename NumberType, size_t dimensions>
+using KernelFor = typename BoostGeometryTraits<NumberType,dimensions>::Wrapper_Boost_Geometry;
 };  // namespace movetk::geom
 
 

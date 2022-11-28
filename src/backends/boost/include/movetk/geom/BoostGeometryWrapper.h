@@ -44,14 +44,14 @@ namespace bg = ::boost::geometry;
 
 namespace wrappers {
 template <class Kernel>
-class Point{
+class Point {
 private:
-	using Boost_Point = typename Kernel::Boost_Point_ ;
-	using NT = typename Kernel::NT ;
-	using CoordinateIterator = typename utils::movetk_basic_iterator<const NT> ;
+	using Boost_Point = typename Kernel::Boost_Point_;
+	using NT = typename Kernel::NT;
+	using CoordinateIterator = typename utils::movetk_basic_iterator<const NT>;
 	using Vector = typename Kernel::MovetkVector;
-	using Point_Container =std::array<typename Kernel::NT, Kernel::dim> ;
-	Boost_Point pt;
+	using Point_Container = std::array<typename Kernel::NT, Kernel::dim>;
+	Boost_Point pt{0, 0};
 	Point(Point_Container&& p) {
 		pt.template set<0>(std::move(p[0]));
 		pt.template set<1>(std::move(p[1]));
@@ -98,17 +98,16 @@ public:
 	Boost_Point get() const { return pt; }
 
 	friend std::ostream& operator<<(std::ostream& out, const Point& point) {
-	return (out << movetk::utils::join(point.begin(), point.end()));
-}
+		return (out << movetk::utils::join(point.begin(), point.end()));
+	}
 };
-
 
 
 template <class Kernel>
 class Segment {
 private:
-	using Boost_Segment = typename Kernel::Boost_Segment_ ;
-	using NT = typename Kernel::NT ;
+	using Boost_Segment = typename Kernel::Boost_Segment_;
+	using NT = typename Kernel::NT;
 	Boost_Segment seg;
 
 public:
@@ -136,18 +135,16 @@ public:
 	}
 
 	Boost_Segment get() const { return seg; }
-	
-friend std::ostream& operator<<(std::ostream& out, Segment& seg) {
-	return out << seg[0] << ";" << seg[1];
-}
+
+	friend std::ostream& operator<<(std::ostream& out, Segment& seg) { return out << seg[0] << ";" << seg[1]; }
 };
 
 
 template <class Kernel>
 class Line {
 private:
-	using Boost_Line = typename Kernel::Boost_PolyLine_ ;
-	using NT = typename Kernel::NT ;
+	using Boost_Line = typename Kernel::Boost_PolyLine_;
+	using NT = typename Kernel::NT;
 	Boost_Line line;
 
 public:
@@ -155,17 +152,15 @@ public:
 
 	Line(const Boost_Line& l) : line(l) {}
 
-	Line(const Point<Kernel>& p1, const Point<Kernel>& p2) {
-		line = Boost_Line({p1.get(), p2.get()});
-	}
+	Line(const Point<Kernel>& p1, const Point<Kernel>& p2) { line = Boost_Line({p1.get(), p2.get()}); }
 
 	Boost_Line get() const { return line; }
 };
 
 template <class Kernel>
-class Vector{
-	using Boost_Vector = std::array<typename Kernel::NT, Kernel::dim> ;
-	using basis_container  =std::array<typename Kernel::NT, Kernel::dim> ;
+class Vector {
+	using Boost_Vector = std::array<typename Kernel::NT, Kernel::dim>;
+	using basis_container = std::array<typename Kernel::NT, Kernel::dim>;
 	Boost_Vector vec;
 	using NT = typename Kernel::NT;
 
@@ -173,9 +168,11 @@ class Vector{
 	Vector(const Boost_Vector& vector) : vec(vector) {}
 
 public:
-	Vector() = default;
+	Vector() : vec({0, 0}) {}
 
-	Vector(const Vector& p) =default;
+	Vector(const Vector& p) = default;
+	Vector(const typename Kernel::MovetkPoint& p);
+
 
 	Vector operator*(NT scalar) const {
 		Vector copy(*this);
@@ -230,9 +227,7 @@ public:
 		return *this;
 	}
 
-	bool operator==(const Vector& vector) const {
-		return std::equal(this->begin(), this->end(), vector.begin());
-	}
+	bool operator==(const Vector& vector) const { return std::equal(this->begin(), this->end(), vector.begin()); }
 	bool operator!=(const Vector& vector) const { return !((*this) == vector); }
 
 	Vector basis(std::size_t i) const {
@@ -248,10 +243,9 @@ public:
 
 	Boost_Vector get() const { return vec; }
 	friend std::ostream& operator<<(std::ostream& out, const Vector& vec) {
-	return (out << movetk::utils::join(vec.begin(), vec.end()));
-}
+		return (out << movetk::utils::join(vec.begin(), vec.end()));
+	}
 };
-
 
 
 template <class Kernel>
@@ -268,15 +262,14 @@ private:
 	}
 
 public:
-	template <utils::RandomAccessIterator<Point> PointIterator,
-	          utils::OutputIterator<typename Kernel::NT> CenterIterator>
+	template <utils::RandomAccessIterator<Point> PointIterator, utils::OutputIterator<typename Kernel::NT> CenterIterator>
 	NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const {
 		auto result = dispatcher(std::distance(first->begin(), first->end()), std::vector<Point>(first, beyond));
-		std::copy(result.first.begin(),result.first.end(),iter);
+		std::copy(result.first.begin(), result.first.end(), iter);
 		/*auto cit = result.first.begin();
 		while (cit != result.first.end()) {
-			iter = *cit;
-			cit++;
+		  iter = *cit;
+		  cit++;
 		}*/
 		return result.second;
 	}
@@ -291,8 +284,8 @@ public:
 template <class Kernel>
 class Polygon {
 private:
-	using Boost_Polygon =typename Kernel::Boost_Polygon_ ;
-	using NT = typename Kernel::NT ;
+	using Boost_Polygon = typename Kernel::Boost_Polygon_;
+	using NT = typename Kernel::NT;
 	Boost_Polygon polygon;
 
 public:
@@ -313,27 +306,27 @@ public:
 
 	Boost_Polygon get() const { return polygon; }
 
-/*!
- * Prints a polygon whose vertices are separated by comma. Since
- * each of these vertices are points, their coordinates are separated
- * by semicolon
- * @param out - OutputStream
- * @param poly - A polygon of type Wrapper_Boost_Polygon<Kernel>
- */
-friend std::ostream& operator<<(std::ostream& out, Polygon& poly) {
-	using Point = typename Kernel::MovetkPoint ;
-	auto it = poly.v_begin();
-	Point pt(*it);
-	out << pt;
-	it++;
-	while (it != poly.v_end()) {
-		out << ";";
+	/*!
+	 * Prints a polygon whose vertices are separated by comma. Since
+	 * each of these vertices are points, their coordinates are separated
+	 * by semicolon
+	 * @param out - OutputStream
+	 * @param poly - A polygon of type Wrapper_Boost_Polygon<Kernel>
+	 */
+	friend std::ostream& operator<<(std::ostream& out, Polygon& poly) {
+		using Point = typename Kernel::MovetkPoint;
+		auto it = poly.v_begin();
 		Point pt(*it);
 		out << pt;
 		it++;
+		while (it != poly.v_end()) {
+			out << ";";
+			Point pt(*it);
+			out << pt;
+			it++;
+		}
+		return out;
 	}
-	return out;
-}
 };
 
 template <class Kernel>
@@ -351,13 +344,13 @@ struct DiscreteHausdorffDistance {
 	typename Kernel::NT operator()(InputIterator polyline_a_first,
 	                               InputIterator polyline_a_beyond,
 	                               InputIterator polyline_b_first,
-	                               InputIterator polyline_b_beyond) const{
+	                               InputIterator polyline_b_beyond) const {
 		typename Kernel::Boost_PolyLine_ poly1, poly2;
 
-		for(auto it = polyline_a_beyond; it != polyline_a_beyond;++it){
+		for (auto it = polyline_a_beyond; it != polyline_a_beyond; ++it) {
 			poly1.push_back(it->get());
 		}
-		for(auto it = polyline_b_first; it != polyline_b_beyond;++it){
+		for (auto it = polyline_b_first; it != polyline_b_beyond; ++it) {
 			poly2.push_back(it->get());
 		}
 		return bg::discrete_hausdorff_distance(poly1, poly2);
@@ -372,11 +365,11 @@ struct DiscreteFrechetDistance {
 	                               InputIterator polyline_b_first,
 	                               InputIterator polyline_b_beyond) const {
 		typename Kernel::Boost_PolyLine_ poly1, poly2;
-		
-		for(auto it = polyline_a_beyond; it != polyline_a_beyond;++it){
+
+		for (auto it = polyline_a_beyond; it != polyline_a_beyond; ++it) {
 			poly1.push_back(it->get());
 		}
-		for(auto it = polyline_b_first; it != polyline_b_beyond;++it){
+		for (auto it = polyline_b_first; it != polyline_b_beyond; ++it) {
 			poly2.push_back(it->get());
 		}
 		return bg::discrete_frechet_distance(poly1, poly2);
@@ -387,28 +380,27 @@ template <class Kernel>
 class Sphere {
 private:
 	using Point = typename Kernel::MovetkPoint;
-	using NT = typename Kernel::NT ;
+	using NT = typename Kernel::NT;
 	Point _center;
 	NT _squared_radius;
 
 public:
 	Sphere() = default;
 
-	Sphere(const Point & center, NT radius, bool square = true) {
+	Sphere(const Point& center, NT radius, bool square = true) {
 		_center = center;
 		if (square)
 			_squared_radius = std::pow(radius, 2);
 		else
 			_squared_radius = radius;
 	}
-	Point  center() const { return _center; }
+	Point center() const { return _center; }
 
 	NT squared_radius() const { return _squared_radius; }
-friend std::ostream& operator<<(std::ostream& out, const Sphere& sphere) {
-	const auto center = sphere.center();
-	return out << movetk::utils::join(center.begin(), center.end()) << ";" <<sphere.squared_radius();
-}
-
+	friend std::ostream& operator<<(std::ostream& out, const Sphere& sphere) {
+		const auto center = sphere.center();
+		return out << movetk::utils::join(center.begin(), center.end()) << ";" << sphere.squared_radius();
+	}
 };
 
 }  // namespace wrappers
