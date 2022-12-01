@@ -76,15 +76,15 @@ namespace movetk::ds {
         constexpr std::size_t num_fields() { return sizeof...(fields); }
 
         template <int field_idx>
-        auto get() -> const std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type>& {
+        auto get() const -> const std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type>& {
             return std::get<field_idx>(_points);
         }
 
-        const std::tuple<std::vector<fields>...>& data() { return _points; }
+        const std::tuple<std::vector<fields>...>& data() const { return _points; }
 
         template <int field_idx>
         void update_field(std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type> new_field_values) {
-            std::get<field_idx>(_points) = new_field_values;
+            std::get<field_idx>(_points) = std::move(new_field_values);
         }
 
         IteratorTuple row_begin() { return _field_iterators_begin(std::make_index_sequence<NUM_FIELDS>{}); }

@@ -47,8 +47,6 @@ class StartStopDiagram<SsdType::compressed, GeometryTraits, NodeType> {
 private:
 	NodeType node;
 	std::back_insert_iterator<NodeType> result = std::back_inserter(node);
-	ASSERT_OUTPUT_ITERATOR(decltype(result));
-	ASSERT_IS_SIZE_T(decltype(result));
 
 public:
 	using iterator = typename NodeType::iterator;
@@ -64,7 +62,6 @@ public:
 	void operator()(InputIterator first,
 	                InputIterator beyond,
 	                movetk::utils::SegmentIdGenerator<PolylineIdxIterator>& segments) {
-		ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		size_t idx = 0;
 		size_t SegmentId, PreviousSegmentId = 0;
 		InputIterator it = first;
@@ -82,7 +79,6 @@ public:
 
 	template <utils::RandomAccessIterator<size_t> InputIterator>
 	void operator()(InputIterator first, InputIterator beyond) {
-		ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		size_t idx = 0;
 		InputIterator it = first;
 		InputIterator previt = it;
@@ -103,11 +99,11 @@ public:
 
 	iterator end() { return node.end(); }
 
-	const_iterator cbegin() { return node.cbegin(); }
+	const_iterator cbegin() const { return node.cbegin(); }
 
-	const_iterator cend() { return node.cend(); }
+	const_iterator cend() const { return node.cend(); }
 
-	size_t size() { return node.size(); }
+	size_t size() const { return node.size(); }
 
 	void operator=(StartStopDiagram rhs) {
 		// TODO: Gets fixed when the return type of * / + operator overloading is fixed
@@ -121,7 +117,6 @@ public:
 	}
 
 	StartStopDiagram operator+(const StartStopDiagram& rhs) const {
-		// TODO: Check how to return by reference...
 		StartStopDiagram result;
 		assert(this->size() == rhs.size());
 		const_iterator rhs_it = rhs.cbegin();
@@ -147,7 +142,7 @@ public:
 	}
 
 
-	StartStopDiagram operator*(StartStopDiagram& rhs) {
+	StartStopDiagram operator*(const StartStopDiagram& rhs) const{
 		// TODO: Check how to return by reference...
 		StartStopDiagram result;
 		assert(this->size() == rhs.size());

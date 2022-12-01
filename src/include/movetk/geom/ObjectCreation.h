@@ -183,7 +183,7 @@ namespace movetk::geom {
          * @param beyond - Iterator to the last point in a set of Movetk points
          * @return Radius of the Minimum Enclosing Ball
          */
-        template <utils::RandomAccessIterator<typename GeometryTraits::NT> PointIterator>
+	      template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> PointIterator>
         typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond) {
             return  make_min_sphere(first, beyond);
         }

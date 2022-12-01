@@ -171,7 +171,7 @@ public:
 	Vector() : vec({0, 0}) {}
 
 	Vector(const Vector& p) = default;
-	Vector(const typename Kernel::MovetkPoint& p);
+	Vector(const typename Kernel::MovetkPoint& p) { std::copy(std::begin(p), std::end(p), std::begin(vec)); }
 
 
 	Vector operator*(NT scalar) const {
