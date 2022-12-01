@@ -118,7 +118,7 @@ struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkSphere>
 
 template <bool type_is_string_castable, class Kernel>
 struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkPolygon> {
-	std::ostream &operator()(std::ostream &out, typename Kernel::MovetkPolygon &poly) {
+	std::ostream &operator()(std::ostream &out, const typename Kernel::MovetkPolygon &poly) {
 		if constexpr (type_is_string_castable) {
 			auto it = poly.get().vertices_begin();
 			auto beyond = poly.get().vertices_end();
@@ -468,7 +468,7 @@ class Polygon {
 private:
 	using K = typename Kernel::Wrapper_CGAL_Kernel_2::GeometryType_2;
 	using Point_2 = typename K::Point_2;
-	using CGAL_Polygon = typedef CGAL::Polygon_2<K>;
+	using CGAL_Polygon = CGAL::Polygon_2<K>;
 	CGAL_Polygon polygon;
 
 public:

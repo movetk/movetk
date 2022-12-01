@@ -49,7 +49,8 @@ struct CGALTraits {
 	using SphereTraits = CGAL::Min_sphere_of_points_d_traits_d<GeometryType, NT, dimensions>;
 	using Wrapper_CGAL_Geometry = MovetkCGALKernel<CGALTraits>;  // the traits class
 };
-
+template<typename NumberType, size_t dimensions>
+using KernelFor = typename CGALTraits<NumberType,dimensions>::Wrapper_CGAL_Geometry;
 };  // namespace movetk::geom
 
 #endif  // MOVETK_CGALTRAITS_H

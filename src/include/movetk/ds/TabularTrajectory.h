@@ -102,7 +102,7 @@ namespace movetk::ds {
         constexpr std::size_t num_fields() { return sizeof...(fields); }
 
         template <int field_idx>
-        auto get() -> std::vector<FieldType<field_idx>> {
+        auto get() const -> std::vector<FieldType<field_idx>> {
             std::vector<FieldType<field_idx>> field_vector;
             for (auto& p : _points) {
                 field_vector.push_back(std::get<field_idx>(p));
@@ -114,7 +114,7 @@ namespace movetk::ds {
          * @brief Retrieves the vector of raw data points
          * @return Const reference to the data points
          */
-        const ValueList& data() { return _points; }
+        const ValueList& data() const { return _points; }
 
         template <int field_idx>
         void update_field(

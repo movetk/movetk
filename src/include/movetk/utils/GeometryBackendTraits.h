@@ -16,7 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  * License-Filename: LICENSE
  */
-
+#ifndef MOVETK_GEOMETRYBACKENDTRAITS_H
+#define MOVETK_GEOMETRYBACKENDTRAITS_H
 //
 // Created by Mitra, Aniket on 29/01/2019.
 //
@@ -38,10 +39,9 @@ namespace movetk::backends {
 struct CGALBackend {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
-	// Define the Geometry Backend
-	using GeometryBackend = movetk::geom::CGALTraits<NT, dimensions>;
-	// Using the Geometry Backend define the Movetk Geometry Kernel
-	using MovetkGeometryKernel = movetk::geom::MovetkGeometryKernel<typename GeometryBackend::Wrapper_CGAL_Geometry>;
+	// Define the kernel
+	using MovetkGeometryKernel = movetk::backends::cgal::KernelFor<NT, dimensions>;
+	static constexpr const char* name = "CGAL";
 };
 }  // namespace movetk::backends
 #else
@@ -49,14 +49,12 @@ struct CGALBackend {
 #if MOVETK_WITH_BOOST_BACKEND
 #include "movetk/geom/BoostGeometryTraits.h"
 namespace movetk::backends {
-struct BoostBackend : public movetk::geom::MovetkGeometryKernel<
-                          typename movetk::geom::BoostGeometryTraits<long double, 2>::Wrapper_Boost_Geometry> {
+struct BoostBackend : public movetk::backends::boost::KernelFor<long double, 2> {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
 	// Define the Geometry Backend
-	using GeometryBackend = movetk::geom::BoostGeometryTraits<NT, dimensions>;
-	// Using the Geometry Backend define the Movetk Geometry Kernel
-	using MovetkGeometryKernel = movetk::geom::MovetkGeometryKernel<typename GeometryBackend::Wrapper_Boost_Geometry>;
+	using MovetkGeometryKernel = BoostBackend;
+	static constexpr const char* name = "Boost";
 };
 }  // namespace movetk::backends
 #endif
@@ -105,3 +103,4 @@ struct BaseGeometryKernel : public Backend {
 // TODO:remove from global namespace
 struct GeometryKernel
     : public movetk::BaseGeometryKernel<std::tuple_element_t<0, movetk::backends::AvailableBackends>> {};
+#endif
