@@ -242,9 +242,8 @@ int main(int argc, char **argv) {
 			idx++;
 		}
 		ts.push_back(ts_v);
-		std::back_inserter result(interpolated_pts);
 		// result = p_u;
-		interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
+		interpolator(p_u, p_v, std::begin(ts), std::end(ts), std::back_inserter(interpolated_pts));
 		// interpolator(p_u, p_v, std::begin(ts), std::end(ts), threshold, result);
 		/*   if ( pit == std::cend(trajectory) - 1 ){
 		    result = p_v;
