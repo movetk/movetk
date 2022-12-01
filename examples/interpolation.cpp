@@ -235,7 +235,7 @@ int main(int argc, char **argv) {
 				it++;
 			}
 			ts.push_back(std::get<IN_SAMPLE_DATE>(*last));
-			std::back_inserter result(interpolated_pts);
+			auto result = std::back_inserter(interpolated_pts);
 			// result = p_u;
 			interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
 			// result = p_v;

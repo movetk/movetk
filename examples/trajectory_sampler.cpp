@@ -168,12 +168,12 @@ int main(int argc, char **argv) {
 	/*typedef movetk::algo::Interpolator<movetk::algo::kinematic_interpolator_tag,
 	        InterpolationTraits> Interpolator;*/
 	typedef movetk::interpolation::Interpolator<movetk::interpolation::random_trajectory_generator_tag,
-	                                   InterpolationTraits,
-	                                   ProbeTraits::ProbeColumns::LAT,
-	                                   ProbeTraits::ProbeColumns::LON,
-	                                   ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                   ProbeTraits::ProbeColumns::SPEED,
-	                                   ProbeTraits::ProbeColumns::HEADING>
+	                                            InterpolationTraits,
+	                                            ProbeTraits::ProbeColumns::LAT,
+	                                            ProbeTraits::ProbeColumns::LON,
+	                                            ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	                                            ProbeTraits::ProbeColumns::SPEED,
+	                                            ProbeTraits::ProbeColumns::HEADING>
 	    Interpolator;
 	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
 	std::size_t line_count = 0;
@@ -248,7 +248,7 @@ int main(int argc, char **argv) {
 			idx++;
 		}
 		ts.push_back(ts_v);
-		std::back_inserter result(interpolated_pts);
+		auto result = std::back_inserter(interpolated_pts);
 		// result = p_u;
 		// interpolator(p_u, p_v, std::begin(ts), std::end(ts), result);
 		interpolator(p_u, p_v, std::begin(ts), std::end(ts), threshold, result);

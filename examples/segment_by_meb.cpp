@@ -46,6 +46,7 @@
 #include "movetk/segmentation/SegmentationTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
+#include "movetk/utils/Requirements.h"
 #include "test_data.h"
 
 int main(int argc, char **argv) {
@@ -99,6 +100,7 @@ int main(int argc, char **argv) {
 	using NT = GeometryKernel::MovetkGeometryKernel::NT;
 	using PolyLine = std::vector<SegmentationTraits::Point>;
 	using SegmentIdx = std::vector<PolyLine::const_iterator>;
+	using MovetkKernel = typename GeometryKernel::MovetkGeometryKernel;
 	SegmentationTraits::LocationSegmentation segment_by_meb(10);
 
 	std::size_t trajectory_count = 0;
@@ -106,7 +108,7 @@ int main(int argc, char **argv) {
 		std::cout << "New trajectory: \n";
 
 		PolyLine polyline;
-		movetk::geom::MakePoint<typename GeometryKernel::MovetkGeometryKernel> make_point;
+		movetk::geom::MakePoint<MovetkKernel> make_point;
 		// Alternatively use movetk::to_geocentered_polyline() (requires dimension = 3)
 		// Project to local coordinates (requires dimension = 2)
 		movetk::geom::to_projected_polyline(make_point,
@@ -148,3 +150,4 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
+
