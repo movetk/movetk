@@ -42,14 +42,16 @@ namespace movetk::geom {
 
     template <class _GeometryTraits, class _Norm>
     struct IntersectionTraits<_GeometryTraits, _Norm, polylines_instersection_tag> {
-        typedef _GeometryTraits GeometryTraits;
-        typedef _Norm Norm;
+        using GeometryTraits = _GeometryTraits;
+        using Norm = _Norm;
+        using value_type = std::size_t;
     };
 
     template <class _GeometryTraits, class _Norm>
     struct IntersectionTraits<_GeometryTraits, _Norm, sphere_sphere_intersection_tag> {
-        typedef _GeometryTraits GeometryTraits;
-        typedef _Norm Norm;
+        using GeometryTraits = _GeometryTraits;
+        using Norm = _Norm;
+        using value_type = typename GeometryTraits::MovetkSphere;
     };
 
     template <class IntersectionTraits>
