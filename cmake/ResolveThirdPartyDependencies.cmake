@@ -43,7 +43,7 @@ if(MOVETK_DOWNLOAD_THIRDPARTY)
         FetchContent_Declare(
             Catch2
             GIT_REPOSITORY "https://github.com/catchorg/Catch2.git"
-            GIT_TAG v2.13.1
+            GIT_TAG v2.13.5
         )
         # Check if population has already been performed
         FetchContent_GetProperties(Catch2)
