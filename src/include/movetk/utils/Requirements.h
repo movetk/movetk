@@ -29,6 +29,7 @@
 
 #include <concepts>
 #include <cstdlib>
+#include <iterator>
 #include <type_traits>
 
 #include "movetk/utils/TypeChecks.h"
@@ -81,11 +82,11 @@ template <typename T>
 using single_type_pair = std::pair<T, T>;
 
 template <typename T, typename VALUE>
-concept RandomAccessIterator = std::random_access_iterator<T> && std::is_convertible_v<typename T::value_type, VALUE>;
+concept RandomAccessIterator = std::random_access_iterator<T> && std::is_convertible_v<std::iter_value_t<T>, VALUE>;
 
 template <typename T, typename KERNEL>
-concept RandomAccessPointIterator =
-    std::random_access_iterator<T> && std::is_convertible_v<typename T::value_type, typename KERNEL::MovetkPoint>;
+concept RandomAccessPointIterator = std::random_access_iterator<T> && std::is_convertible_v < std::iter_value_t<T>,
+typename KERNEL::MovetkPoint > ;
 
 template <typename T, typename VALUE>
 concept OutputIterator = std::output_iterator<T, VALUE>;
