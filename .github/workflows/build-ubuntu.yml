@@ -19,7 +19,7 @@ jobs:
           run: |
             sudo apt-get update
             sudo apt-get install libboost-all-dev cmake libcgal-dev doxygen gcc g++ 
-            sudo apt-get install libgdal-dev libgsl-dev libgslcblas0 gsl-bin libgsl23 
+            sudo apt-get install libgdal-dev libgsl-dev libgslcblas0 gsl-bin libgsl27 
             sudo apt-get install make libmpfr-dev git pybind11-dev python3-dev
         - name: install Geographiclib
           run: |
