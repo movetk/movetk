@@ -23,6 +23,8 @@ jobs:
      
       # Get the ninja generator
       - uses: seanmiddleditch/gha-setup-ninja@v3
+      - name: Setup VS dev environment
+        uses: seanmiddleditch/gha-setup-vsdevenv@master
       - name: Cache Conan packages
         uses: actions/cache@v2
         env:
@@ -33,13 +35,14 @@ jobs:
           restore-keys: |
             win:msvc-build:${{ env.cache-name }}:${{ github.ref }}
             win:msvc-build:${{ env.cache-name }}
+      
       - name: Install conan
         run: pip install conan
+      
       - name: Install dependencies via conan
-        run: conan install . -if ${{github.workspace}}/conan-deps
+        run: conan install ${{github.workspace}}/movetk/conanfile.txt -if ${{github.workspace}}/conan-deps --build=missing 
+      
       # Build movetk
-      - name: Setup  VS dev environment
-        uses: seanmiddleditch/gha-setup-vsdevenv@master
       - name: Configure CMake with Ninja
         id: runcmake
         run: >
