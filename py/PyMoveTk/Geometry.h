@@ -59,8 +59,8 @@ struct GeometryModule {
 		     */
 		    .def(py::init([](py::array_t<NT, MovetkGeometryKernel::dim> const buf) {
 			    py::buffer_info info = buf.request();
-			    CoordinateIterator first(static_cast<const NT *>(info.ptr));
-			    CoordinateIterator beyond(static_cast<const NT *>(info.ptr) + MovetkGeometryKernel::dim);
+			    auto *first = static_cast<const NT *>(info.ptr);
+			    auto *beyond = static_cast<const NT *>(info.ptr) + MovetkGeometryKernel::dim;
 			    std::size_t size = std::distance(first, beyond);
 			    if (size != MovetkGeometryKernel::dim)
 				    throw std::runtime_error("Size of input does not satisfy the predefined dimension of MovetkPoint!");
@@ -174,12 +174,12 @@ struct GeometryModule {
 		    .def(py::self * NT())
 		    .def(py::self / NT())
 		    .def(py::self /= NT())
-			// Inner product
+		    // Inner product
 		    .def(py::self * py::self)
 		    .def(py::self - py::self)
 		    .def(py::self + py::self)
 		    //.def(-py::self)
-					 ;
+		    ;
 	}
 
 	static void register_polyline(pybind11::module &mod) {
@@ -305,9 +305,8 @@ struct GeometryModule {
 		    .def("min_sphere",
 		         [](Sphere &s, Polyline &p) -> Sphere {
 			         std::vector<NT> vec;
-			         using back_insert_iterator = std::back_inserter<decltype(vec)>;
 			         movetk::geom::MakeMinSphere<MovetkGeometryKernel> min_sphere;
-			         NT radius = min_sphere(p.cbegin(), p.cend(), back_insert_iterator(vec));
+			         NT radius = min_sphere(p.cbegin(), p.cend(), std::back_inserter(vec));
 			         Point center(std::begin(vec), std::end(vec));
 			         Sphere sphere(center, radius);
 			         s = sphere;
@@ -319,10 +318,7 @@ struct GeometryModule {
 			             compute_sphere_segment_intersections;
 			         std::vector<typename MovetkGeometryKernel::SphSegIntersectionTraits::value_type>
 			             sphere_segment_intersections;
-			         compute_sphere_segment_intersections(
-			             sp,
-			             seg,
-			             std::back_inserter(sphere_segment_intersections));
+			         compute_sphere_segment_intersections(sp, seg, std::back_inserter(sphere_segment_intersections));
 			         return sphere_segment_intersections;
 		         })
 		    .def("intersection", [](Sphere &sp1, Sphere &sp2) -> Sphere {
