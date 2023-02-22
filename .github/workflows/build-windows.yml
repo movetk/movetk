@@ -31,7 +31,7 @@ jobs:
           cache-name: cache-conan-packages
         with:
           path: ~/.conan
-          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles("movetk/conanfile.txt") }}
+          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
       - name: Install conan
         run: pip install conan
       - name: Install dependencies via conan
@@ -42,7 +42,7 @@ jobs:
           cache-name: cache-conan-packages
         with:
           path: ~/.conan
-          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles("movetk/conanfile.txt") }}
+          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
       
       # Build movetk
       - name: Configure CMake with Ninja
