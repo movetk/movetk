@@ -50,3 +50,6 @@ boost:without_test=True
 boost:without_timer=True
 boost:without_type_erasure=True
 boost:without_wave=True
+
+[imports]
+bin, *.dll -> ./bin # Copies all dll files from packages to bin folder within install folder
