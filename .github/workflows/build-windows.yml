@@ -54,6 +54,7 @@ jobs:
           -DMOVETK_WITH_CGAL_BACKEND=OFF
           -DMOVETK_BUILD_TESTS=ON
           -DMOVETK_BUILD_EXAMPLES=ON
+          -DCMAKE_BUILD_TYPE=Release
       - name: Build MoveTk
         run: cmake --build .
         working-directory: ${{github.workspace}}/build
