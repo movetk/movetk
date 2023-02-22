@@ -30,9 +30,9 @@
 
 namespace movetk::io {
 /**
- * To be used with rows of ProbePoints
- * @tparam FieldIndex
- * @tparam ProbePoint
+ * @brief Predicate object for splitting by a field value
+ * @tparam FieldIndex Index of the field value
+ * @tparam ProbePoint The probe point type
  */
 template <int FieldIndex, class ProbePoint>
 class SplitByField {

@@ -37,11 +37,16 @@
 #include "movetk/io/TupleIterPrinter.h"
 
 namespace movetk::ds {
+    /**
+     * @brief Data structure for storing a trajectory, where each field of the trajectory,
+     * e.g. location, time, heading, etc. is stored as a column, a single vector of values
+     * @tparam ...fields Types of the fields in the trajectory.
+    */
     template <class... fields>
     class ColumnarTrajectory {
     public:
         // Total number of fields for each datapoint in the trajectory
-        constexpr static int NUM_FIELDS = sizeof...(fields);
+	    static constexpr size_t NUM_FIELDS = sizeof...(fields);
         // The value type
         using value_type = std::tuple<fields...>;
         // std::tuple of iterators for the fields
@@ -71,22 +76,46 @@ namespace movetk::ds {
          */
         std::size_t size() { return std::get<0>(_points).size(); }
 
+        /**
+         * @brief Returns the storage scheme
+         * @return The storage scheme
+        */
         constexpr static io::StorageScheme storage_scheme() { return io::StorageScheme::columnar; }
 
-        constexpr std::size_t num_fields() { return sizeof...(fields); }
+        /**
+         * @brief Returns the number of fields (columns)
+         * @return The number of fields in this data structure
+        */
+        constexpr std::size_t num_fields() { return NUM_FIELDS; }
 
+        /**
+         * @brief Returns the column for the given field index.
+         * @return The column data
+        */
         template <int field_idx>
         auto get() const -> const std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type>& {
             return std::get<field_idx>(_points);
         }
 
+        /**
+         * @brief Returns a reference to all data in the data structure
+         * @return Reference to all data
+        */
         const std::tuple<std::vector<fields>...>& data() const { return _points; }
 
+        /**
+         * @brief Updates a single field (column), replacing all values with the supplied values
+         * @param new_field_values The new field values.
+        */
         template <int field_idx>
         void update_field(std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type> new_field_values) {
             std::get<field_idx>(_points) = std::move(new_field_values);
         }
 
+        /**
+	    * @brief Returns a std::tuple of begin iterators for the fields of the trajectory
+	    * @return The std::tuple of begin iterators.
+	    */
         IteratorTuple row_begin() { return _field_iterators_begin(std::make_index_sequence<NUM_FIELDS>{}); }
 
         /**
@@ -104,6 +133,12 @@ namespace movetk::ds {
             return _field_iterators_increment(iters, std::make_index_sequence<NUM_FIELDS>{});
         }
 
+        /**
+         * @brief Stream write for the data structure
+         * @param os Output stream to write to
+         * @param trajectory Data structure to write
+         * @return Reference to the output stream
+        */
         friend std::ostream& operator<<(std::ostream& os, ColumnarTrajectory<fields...>& trajectory) {
             auto iters = trajectory._field_iterators_begin(std::make_index_sequence<NUM_FIELDS>{});
             auto iters_end = trajectory._field_iterators_end(std::make_index_sequence<NUM_FIELDS>{});
@@ -141,9 +176,17 @@ namespace movetk::ds {
         }
     };
 
-
+    /**
+     * @brief Concatenate/Append a column to a ColumnarTrajectory data structure.
+     * Note that the data structure is copied into the new data structure.
+     * @tparam field_type The type of the column to append
+     * @tparam ...fields The field types of the present ColumnarTrajectory
+     * @param t The trajectory data structure
+     * @param new_column The new column
+     * @return A new datastructure with the column added to it.
+    */
     template <class field_type, class... fields>
-    ColumnarTrajectory<fields..., field_type> concat_field(ColumnarTrajectory<fields...> t,
+    ColumnarTrajectory<fields..., field_type> concat_field(const ColumnarTrajectory<fields...>& t,
         std::vector<field_type> new_column) {
         assert(new_column.size() == t.size());
         return ColumnarTrajectory<fields..., field_type>(std::tuple_cat(t.data(), std::make_tuple(new_column)));

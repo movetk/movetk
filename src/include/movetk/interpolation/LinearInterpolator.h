@@ -29,6 +29,12 @@
 namespace movetk::interpolation {
 struct linear_interpolator_tag;
 
+/**
+ * @brief Implementation of the linear interpolator.
+ * This interpolator constructs interpolated points between two points by assuming a constant velocity between
+ * the two points and constructing the points accordingly.
+ * @tparam InterpolationTraits
+ */
 template <class InterpolationTraits, int LatIdx, int LonIdx, int TsIdx, int SpeedIdx, int HeadingIdx>
 class Interpolator<linear_interpolator_tag, InterpolationTraits, LatIdx, LonIdx, TsIdx, SpeedIdx, HeadingIdx> {
 private:
@@ -39,6 +45,13 @@ private:
 	geom::Translation<GeometryTraits> translate;
 
 public:
+	using ProbePoint = typename InterpolationTraits::ProbePoint;
+	/**
+	 * @brief Constructs the interpolator, using the provided latitude and longitude as reference for
+	 * converting to a local Cartesian coordinate system when interpolating.
+	 * @param reflat The reference latitude
+	 * @param reflon The reference longitude
+	*/
 	Interpolator(typename InterpolationTraits::NT reflat, typename InterpolationTraits::NT reflon) {
 		ref = typename InterpolationTraits::GeoProjection(reflat, reflon);
 	}
@@ -79,7 +92,6 @@ public:
 		const auto delta_t = ts_v - ts_u;
 		const auto interval = static_cast<typename InterpolationTraits::NT>(delta_t);
 
-		using ProbePoint = typename InterpolationTraits::ProbePoint;
 
 		std::vector<ProbePoint> interpolated_pts;
 

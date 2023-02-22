@@ -28,101 +28,76 @@
 #ifndef MOVETK_PARSEDATE_H
 #define MOVETK_PARSEDATE_H
 
-#include <iostream>
-#include <iomanip>
-#include <string>
 #include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <string>
 
-namespace movetk::io{
-class ParseDate
-{
-
+namespace movetk::io {
+class ParseDate {
 protected:
-    std::time_t _ts;
-    std::string _date_format;
+	std::time_t _ts;
+	std::string _date_format;
 
 public:
-    explicit ParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d") : _ts(ts), _date_format(std::move(date_format)) {}
+	explicit ParseDate(std::time_t ts = 0, std::string date_format = "%Y-%m-%d")
+	    : _ts(ts)
+	    , _date_format(std::move(date_format)) {}
 
-    ParseDate(std::time_t ts) : _ts(ts) {}
+	/**
+	 * @brief (Implicitly) Construct a ParseData from a timestamp
+	 * @param timestamp The timestamp
+	 */
+	ParseDate(std::time_t timestamp) : _ts(timestamp) {}
 
-    //    ParseDate(const ParseDate&) = default;
-    //    ParseDate(ParseDate&&) = default;
-    //    ParseDate& operator=(const ParseDate&) = default;
-    //    ParseDate& operator=(ParseDate&&) = default;
-    //    ~ParseDate() = default;
+	//    ParseDate(const ParseDate&) = default;
+	//    ParseDate(ParseDate&&) = default;
+	//    ParseDate& operator=(const ParseDate&) = default;
+	//    ParseDate& operator=(ParseDate&&) = default;
+	//    ~ParseDate() = default;
 
-    inline void ts(std::time_t ts)
-    {
-        this->_ts = ts;
-    }
-    inline std::time_t ts() const
-    {
-        return _ts;
-    }
-    double operator-(const ParseDate &rhs) const
-    {
-        return std::difftime(_ts, rhs.ts()); // time_end, time_beg
-    }
+	inline void ts(std::time_t ts) { this->_ts = ts; }
+	inline std::time_t ts() const { return _ts; }
+	double operator-(const ParseDate &rhs) const {
+		return std::difftime(_ts, rhs.ts());  // time_end, time_beg
+	}
 
-    ParseDate operator+(std::size_t delta) const
-    {
-        return ParseDate(_ts + delta, this->_date_format); // time_end, time_beg
-    }
+	ParseDate operator+(std::size_t delta) const {
+		return ParseDate(_ts + delta, this->_date_format);  // time_end, time_beg
+	}
 
-    bool operator<(const ParseDate &rhs) const
-    {
-        return _ts < rhs._ts;
-    }
-    bool operator>(const ParseDate &rhs) const
-    {
-        return rhs < *this;
-    }
-    bool operator<=(const ParseDate &rhs) const
-    {
-        return !(rhs < *this);
-    }
-    bool operator>=(const ParseDate &rhs) const
-    {
-        return !(*this < rhs);
-    }
-    bool operator==(const ParseDate &rhs) const
-    {
-        return *this - rhs == 0; // On POSIX, time_t is int, so should work. Otherwise may be comparing doubles for equality.
-    }
+	bool operator<(const ParseDate &rhs) const { return _ts < rhs._ts; }
+	bool operator>(const ParseDate &rhs) const { return rhs < *this; }
+	bool operator<=(const ParseDate &rhs) const { return !(rhs < *this); }
+	bool operator>=(const ParseDate &rhs) const { return !(*this < rhs); }
+	bool operator==(const ParseDate &rhs) const {
+		return *this - rhs ==
+		       0;  // On POSIX, time_t is int, so should work. Otherwise may be comparing doubles for equality.
+	}
 
-    friend std::istream &operator>>(std::istream &is, ParseDate &date)
-    {
-        if (!date._date_format.empty())
-        {
-            std::tm _tm = {};
-            is >> std::get_time(&_tm, date._date_format.c_str());
-            if (is.fail())
-            {
-                std::cout << "Parse date failed\n";
-                return is;
-            }
-            date.ts(std::mktime(&_tm));
-        }
+	friend std::istream &operator>>(std::istream &is, ParseDate &date) {
+		if (!date._date_format.empty()) {
+			std::tm _tm = {};
+			is >> std::get_time(&_tm, date._date_format.c_str());
+			if (is.fail()) {
+				std::cout << "Parse date failed\n";
+				return is;
+			}
+			date.ts(std::mktime(&_tm));
+		}
 
-        return is;
-    }
+		return is;
+	}
 
-    friend std::ostream &operator<<(std::ostream &os, const ParseDate &date)
-    {
-        if (!date._date_format.empty())
-        {
-            auto ts = date.ts();
-            os << std::put_time(std::gmtime(&ts), date._date_format.c_str()); // "%c"
-        }
-        else
-        {
-            os << date._ts;
-        }
-        return os;
-    }
+	friend std::ostream &operator<<(std::ostream &os, const ParseDate &date) {
+		if (!date._date_format.empty()) {
+			auto ts = date.ts();
+			os << std::put_time(std::gmtime(&ts), date._date_format.c_str());  // "%c"
+		} else {
+			os << date._ts;
+		}
+		return os;
+	}
 };
-
-//char* ParseDate::date_format = "%Y-%m-%d"; //  %H:%M:%S
-}
-#endif //MOVETK_PARSEDATE_H
+}  // namespace movetk::io
+#endif  // MOVETK_PARSEDATE_H

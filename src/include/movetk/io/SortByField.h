@@ -28,19 +28,20 @@
 #include <tuple>
 
 namespace movetk::io {
-// sort using a custom function object
-template <int FieldIndex, class ProbePoint, bool asc = true>
+/**
+ * @brief Custom sorting predicate for probes, using a field in the probe
+ * @tparam ProbePoint The type of the probe
+ */
+template <int FieldIndex, class ProbePoint, bool ascending = true>
 class SortByField {
 public:
-	template <bool enable = asc>
-	bool operator()(ProbePoint a, ProbePoint b, typename std::enable_if<enable>::type* = 0) const {
-		return std::get<FieldIndex>(a) < std::get<FieldIndex>(b);
-	}
-
-	template <bool enable = asc>
-	bool operator()(ProbePoint a, ProbePoint b, typename std::enable_if<!enable>::type* = 0) const {
-		return !(std::get<FieldIndex>(a) < std::get<FieldIndex>(b));
+	bool operator()(const ProbePoint& a, const ProbePoint& b) const {
+		if constexpr (ascending) {
+			return std::get<FieldIndex>(a) < std::get<FieldIndex>(b);
+		} else {
+			return std::get<FieldIndex>(a) > std::get<FieldIndex>(b);
+		}
 	}
 };
-}  // namespace movet::io
+}  // namespace movetk::io
 #endif  // MOVETK_SORTBYFIELD_H

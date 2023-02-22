@@ -29,6 +29,11 @@
 #include "movetk/utils/Asserts.h"
 
 namespace movetk::metric {
+/**
+ * @brief Functor for computing the discrete Frechet distance
+ * @tparam Kernel The kernel to use
+ * @tparam Norm The norm to use
+*/
 template <class Kernel, class Norm>
 class Discrete_Frechet {
 private:

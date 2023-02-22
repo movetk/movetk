@@ -71,18 +71,19 @@ namespace movetk::geom {
     }
 
     /**
-     * Creates a vector of points from the given ranges of latitude and longitude also by converting them to
+     * Creates a vector of points from the given ranges of latitude and longitude, and converts them to
      * geocentric coordinates.
-     * @tparam GeometryTraits
-     * @tparam LatIterator
-     * @tparam LonIterator
-     * @tparam OutputIterator
-     * @param make_point
-     * @param lat_start
-     * @param lat_beyond
-     * @param lon_start
-     * @param polyline_first
-     * @return
+     * @tparam GeometryTraits The kernel
+     * @tparam LatIterator Iterator type for the latitude range
+     * @tparam LonIterator Iterator type for the longitude range
+     * @tparam OutputIterator Output iterator to write result to
+     * @param make_point Point creation algorithm
+     * @param lat_start Start of the latitude range
+     * @param lat_beyond End of the latitude range
+     * @param lon_start Start of the longitude range
+     * The longitude range is assumed to be at least as large as the latitude range
+     * @param polyline_first Output iterator to write to
+     * @return The used output iterator
      */
     template <class GeometryTraits,
         utils::InputIterator<typename GeometryTraits::NT> LatIterator,

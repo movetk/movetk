@@ -32,12 +32,21 @@
 #include "SortByField.h"
 
 namespace movetk::io {
+/**
+ * @brief Probe reader that sorts the probes according to a field
+ * @tparam ProbeInputIterator The input iterator for acquiring probes
+ */
 template <class ProbeInputIterator, int SortByFieldIdx>
 class SortedProbeReader {
 public:
 	using ProbePoint = typename std::iterator_traits<ProbeInputIterator>::value_type;
 	using iterator = typename std::vector<ProbePoint>::iterator;
 
+	/**
+	 * @brief Construct the sorted probe reader using a probe input range
+	 * @param start Start of the probe range
+	 * @param beyond End of the probe range
+	 */
 	SortedProbeReader(ProbeInputIterator start, ProbeInputIterator beyond) {
 		// Store probe points in memory
 		std::size_t probe_count = 0;
@@ -57,8 +66,16 @@ public:
 #endif
 	}
 
+	/**
+	 * @brief Return the begin iterator of the sorted probes
+	 * @return Begin iterator
+	 */
 	iterator begin() { return std::begin(buffered_probe); }
 
+	/**
+	 * @brief Return the end iterator of the sorted probes
+	 * @return End iterator
+	 */
 	iterator end() { return std::end(buffered_probe); }
 
 private:

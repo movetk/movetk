@@ -25,6 +25,16 @@
 #define MOVETK_INTERPOLATION_BASEINTERPOLATOR_H
 namespace movetk::interpolation {
 
+/**
+ * @brief Base interpolator
+ * @tparam AlgorithmTag Tag for the algorithm used
+ * @tparam InterpolationTraits Interpolation traits.
+ * @tparam LatIdx Index in a tuple-like point that gives the latitude
+ * @tparam LonIdx Index in a tuple-like point that gives the longitude
+ * @tparam TsIdx Index in a tuple-like point that gives the timestamp
+ * @tparam SpeedIdx Index in a tuple-like point that gives the speed
+ * @tparam HeadingIdx Index in a tuple-like point that gives the heading
+ */
 template <class AlgorithmTag,
           class InterpolationTraits,
           int LatIdx,

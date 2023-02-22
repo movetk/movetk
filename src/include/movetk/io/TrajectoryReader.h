@@ -39,13 +39,12 @@
 
 namespace movetk::io {
 /**
- *
- * @tparam TrajectoryTraits
- * @tparam ProbeInputIterator
- * @tparam SortTrajectory  Sort trajectory points by SortByFieldIdx.
- * @tparam RemoveDuplicates  Remove duplicate points if there are duplicate values on the sorted field (e.g., timestamp)
- *                           of a trajectory. If true, it also overrides SortTrajectory to be true.
- */
+ * @brief Trajectory reader class, that converts a range of probes into trajectories
+ * @tparam TrajectoryTraits The traits for the reader
+ * @tparam ProbeInputIterator Type of the probe range iterators
+ * @tparam SortTrajectory Whether or not to sort the trajectory
+ * @tparam RemoveDuplicates Whether or not to remove duplicates in the trajectory
+*/
 template <class TrajectoryTraits, class ProbeInputIterator, bool SortTrajectory = true, bool RemoveDuplicates = true>
 class TrajectoryReader {
 public:

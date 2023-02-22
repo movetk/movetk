@@ -26,13 +26,19 @@
 #include "BaseInterpolator.h"
 #include "movetk/utils/TrajectoryUtils.h"
 namespace movetk::interpolation {
+// Tag for the kinematic interpolator
 struct kinematic_interpolator_tag;
 
+/**
+ * @brief Implementation of the kinematic interpolator
+ * Based on https://doi.org/10.1080/13658816.2015.1081909
+ * @tparam InterpolationTraits The interpolation traits to use.
+ */
 template <class InterpolationTraits, int LatIdx, int LonIdx, int TsIdx, int SpeedIdx, int HeadingIdx>
 class Interpolator<kinematic_interpolator_tag, InterpolationTraits, LatIdx, LonIdx, TsIdx, SpeedIdx, HeadingIdx> {
-	// based on https://doi.org/10.1080/13658816.2015.1081909
 private:
 	using GeometryTraits = typename InterpolationTraits::GeometryTraits;
+	using MovetkVector = typename GeometryTraits::MovetkVector;
 	typename InterpolationTraits::Norm norm;
 	typename InterpolationTraits::GeoProjection ref;
 	geom::Scaling<GeometryTraits> scale;
@@ -41,9 +47,27 @@ private:
 	typename InterpolationTraits::MovetkPoint ORIGIN = make_point({0, 0});
 
 public:
+	using ProbePoint = typename InterpolationTraits::ProbePoint;
+	using Timestamp = std::remove_cvref_t<decltype(get<TsIdx>(std::declval<ProbePoint>()))>;
+	using TimeInterval = std::remove_cvref_t<decltype(std::declval<Timestamp>() - std::declval<Timestamp>())>;
+	/**
+	 * @brief Construct the interpolator
+	 * @param reflat Reference latitude to use for local Cartesian coordinate system
+	 * @param reflon Reference longitude to use for local Cartesian coordinate system
+	 */
 	Interpolator(typename InterpolationTraits::NT reflat, typename InterpolationTraits::NT reflon)
 	    : ref(reflat, reflon) {}
 
+	/**
+	 * @brief Interpolate between two probe points
+	 * @tparam TSIterator Timestamp iterator type
+	 * @tparam OutputIterator Output iterator type to write interpolated probes to
+	 * @param probe_u The first probe
+	 * @param probe_v The second probe
+	 * @param first Start of the range of timestamps to interpolate for
+	 * @param beyond End of the range of timestamps to interpolate for
+	 * @param result Output iterator to write the interpolated probes to.
+	 */
 	template <class TSIterator, class OutputIterator>
 	void operator()(typename InterpolationTraits::ProbePoint& probe_u,
 	                typename InterpolationTraits::ProbePoint& probe_v,
@@ -55,7 +79,6 @@ public:
 			                                                     std::get<LonIdx>(probe_point),
 			                                                     ref);
 		};
-		using ProbePoint = typename InterpolationTraits::ProbePoint;
 
 		auto p_u = point_for_probe(probe_u);
 		auto p_v = point_for_probe(probe_v);
