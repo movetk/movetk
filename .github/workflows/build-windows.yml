@@ -8,9 +8,7 @@ on:
 
 jobs:
   build-windows:
-    env:
-      vcpkgCommitId: acc3bcf76b84ae5041c86ab55fe138ae7b8255c7
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
       # Checkout repository
@@ -25,22 +23,26 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@v3
       - name: Setup VS dev environment
         uses: seanmiddleditch/gha-setup-vsdevenv@master
-      - name: Cache Conan packages
-        uses: actions/cache@v2
+
+      # Install dependencies
+      - name: Restore Conan packages from cache
+        uses: actions/cache/restore@v3
         env:
           cache-name: cache-conan-packages
         with:
           path: ~/.conan
-          key: win:msvc-build:${{ env.cache-name }}:${{ github.ref }}:${{ github.sha }}
-          restore-keys: |
-            win:msvc-build:${{ env.cache-name }}:${{ github.ref }}
-            win:msvc-build:${{ env.cache-name }}
-      
+          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles("movetk/conanfile.txt") }}
       - name: Install conan
         run: pip install conan
-      
       - name: Install dependencies via conan
         run: conan install ${{github.workspace}}/movetk/conanfile.txt -if ${{github.workspace}}/conan-deps --build=missing 
+      - name: Save Conan packages
+        uses: actions/cache/save@v3
+        env:
+          cache-name: cache-conan-packages
+        with:
+          path: ~/.conan
+          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles("movetk/conanfile.txt") }}
       
       # Build movetk
       - name: Configure CMake with Ninja
