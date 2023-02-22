@@ -27,6 +27,7 @@ jobs:
       # Install dependencies
       - name: Restore Conan packages from cache
         uses: actions/cache/restore@v3
+        id: conan-restore-cache
         env:
           cache-name: cache-conan-packages
         with:
@@ -35,6 +36,7 @@ jobs:
       - name: Install conan
         run: pip install conan==1.59.0
       - name: Install dependencies via conan
+        if: steps.conan-restore-cache.outputs.cache-hit != 'true'
         run: conan install ${{github.workspace}}/movetk/conanfile.txt -if ${{github.workspace}}/conan-deps --build=missing 
       - name: Save Conan packages
         uses: actions/cache/save@v3
@@ -43,6 +45,7 @@ jobs:
         with:
           path: ~/.conan
           key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
+        if: steps.conan-restore-cache.outputs.cache-hit != 'true'
       
       # Build movetk
       - name: Configure CMake with Ninja
