@@ -35,8 +35,27 @@
 #include "movetk/geom/GeometryInterface.h"
 
 namespace movetk::geo {
+/**
+ * @brief Returns the geodesic distance between two geographical locations.
+ * The coordinates are assumed to be in WGS84, and the resulting distance is in meters.
+ * @param lat0 Latitude of the first location
+ * @param lon0 Longitude of the first location
+ * @param lat1 Latitude of the second location
+ * @param lon1 Longitude of the second location
+ * @return Distance between the locations, in meters
+*/
 double distance_exact(double lat0, double lon0, double lat1, double lon1);
 
+/**
+ * @brief Returns the destination location from a first location, moving in the provided direction (x,y).
+ * x,y are specified in location cartesian coordinates
+ * @param lat0 Start latitude
+ * @param lon0 Start longitude
+ * @param x Offset in x direction
+ * @param y Offset in y direction
+ * @param lat Resulting latitude
+ * @param lon Resulting longitude
+*/
 void destination_exact(double lat0, double lon0, double x, double y, double& lat, double& lon);
 
 void destination_by_bearing_exact(double lat0,

@@ -40,6 +40,11 @@ enum SsdType { compressed };
 template <int SsdType, class GeometryTraits, class NodeType>
 class StartStopDiagram {};
 
+/**
+ * @brief
+ * @tparam GeometryTraits
+ * @tparam NodeType
+ */
 template <class GeometryTraits, class NodeType>
 class StartStopDiagram<SsdType::compressed, GeometryTraits, NodeType> {
 	// based on  https://doi.org/10.1007/s00453-017-0329-x
@@ -63,15 +68,16 @@ public:
 	                InputIterator beyond,
 	                movetk::utils::SegmentIdGenerator<PolylineIdxIterator>& segments) {
 		size_t idx = 0;
-		size_t SegmentId, PreviousSegmentId = 0;
+		size_t segment_id, previous_segment_id = 0;
 		InputIterator it = first;
 		while (it != beyond) {
-			SegmentId = segments.getSegmentID(it);
-			if (SegmentId != PreviousSegmentId)
+			segment_id = segments.getSegmentID(it);
+			if (segment_id != previous_segment_id) {
 				idx = 0;
+			}
 			idx++;
 			*result = idx;
-			PreviousSegmentId = SegmentId;
+			previous_segment_id = segment_id;
 			it++;
 		}
 		segments.reset();
@@ -105,7 +111,7 @@ public:
 
 	size_t size() const { return node.size(); }
 
-	void operator=(StartStopDiagram rhs) {
+	StartStopDiagram& operator=(const StartStopDiagram& rhs) {
 		// TODO: Gets fixed when the return type of * / + operator overloading is fixed
 		const_iterator it = rhs.cbegin();
 		this->node.clear();
@@ -142,7 +148,7 @@ public:
 	}
 
 
-	StartStopDiagram operator*(const StartStopDiagram& rhs) const{
+	StartStopDiagram operator*(const StartStopDiagram& rhs) const {
 		// TODO: Check how to return by reference...
 		StartStopDiagram result;
 		assert(this->size() == rhs.size());

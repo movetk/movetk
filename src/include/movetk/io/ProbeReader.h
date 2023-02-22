@@ -97,11 +97,12 @@ public:
 	static constexpr std::string_view GZ_EXT = ".gz";
 	template <class ProbeTraits>
 	static std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> create(const std::string& file_name) {
+		
 		// TODO: check if file exists
-		if (file_name.find(CSV_EXT, 0) == file_name.size() - CSV_EXT.size()) {
+		if (file_name.ends_with(CSV_EXT)) {
 			auto fin = std::make_unique<std::ifstream>(file_name);
 			return std::make_unique<CsvProbeReader<ProbeTraits>>(std::move(fin));
-		} else if (file_name.find(GZ_EXT, 0) == file_name.size() - GZ_EXT.size()) {
+		} else if (file_name.ends_with(GZ_EXT)) {
 			auto fin = std::make_unique<std::ifstream>(file_name, std::ios_base::in | std::ios_base::binary);
 			return std::make_unique<ZippedProbeReader<ProbeTraits>>(std::move(fin));
 		} else {

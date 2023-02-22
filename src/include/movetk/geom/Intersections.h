@@ -29,6 +29,12 @@ namespace movetk::geom {
 
     struct sphere_sphere_intersection_tag;
 
+    /**
+     * @brief Traits class for defining required types for intersection computations
+     * @tparam _GeometryTraits The kernel
+     * @tparam _Norm The norm to use for distance computations
+     * @tparam Tag Tag for the intersection type.
+    */
     template <class _GeometryTraits, class _Norm, class Tag>
     struct IntersectionTraits {};
 
@@ -54,17 +60,34 @@ namespace movetk::geom {
         using value_type = typename GeometryTraits::MovetkSphere;
     };
 
+    /**
+     * @brief Functor for computing intersections between geometric objects
+     * @tparam IntersectionTraits The traits for the intersection to use
+    */
     template <class IntersectionTraits>
     class ComputeIntersections {
     public:
         using GeometryTraits = typename IntersectionTraits::GeometryTraits;
 
+        /**
+         * @brief Computes the number of self intersections of a curve
+         * @param first Start of the range of points describing the curve
+         * @param beyond End of the range of points describing the curve 
+         * @return The number of self intersections
+        */
         template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> PointIterator>
         std::size_t operator()(PointIterator first, PointIterator beyond) {
             typename GeometryTraits::MovetkCurveIntersection compute_curve_intersections;
             return compute_curve_intersections(first, beyond);
         }
 
+        /**
+         * @brief Computes the intersections between a sphere and a segment
+         * @tparam  
+         * @param sphere the sphere
+         * @param segment The segment
+         * @param result Output iterator to write the resulting intersections to.
+        */
         template <utils::OutputIterator<typename IntersectionTraits::value_type> OutputIterator,
             typename = movetk::utils::requires_L2_norm<typename IntersectionTraits::Norm>>
             void operator()(typename GeometryTraits::MovetkSphere& sphere,
@@ -128,6 +151,15 @@ namespace movetk::geom {
             }
         }
 
+        /**
+         * @brief Computes the intersection between two spheres as another sphere.
+         * The center of the resulting sphere is the center of the intersection lense,
+         * or the halfway point between the spheres if they are distjoint. 
+         * @tparam  
+         * @param sphere_a The first sphere
+         * @param sphere_b The second sphere
+         * @return The intersection between the spheres, as another sphere.
+        */
         template <typename = movetk::utils::requires_L2_norm<typename IntersectionTraits::Norm>>
         typename GeometryTraits::MovetkSphere operator()(
             const typename GeometryTraits::MovetkSphere& sphere_a,

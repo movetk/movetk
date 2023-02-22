@@ -4,6 +4,10 @@
 #include <type_traits>
 #include <vector>
 namespace movetk::geom::concepts {
+/**
+* @concept Point
+* @brief Concept describing a Point for a Kernel.
+*/
 template <typename POINT, typename KERNEL>
 concept Point = requires(POINT& point, const POINT& const_point, size_t index) {
 	// Copy and default constructible

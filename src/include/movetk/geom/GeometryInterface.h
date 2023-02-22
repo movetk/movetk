@@ -17,14 +17,14 @@
  * License-Filename: LICENSE
  */
 
- /*! @file Interface.h
-  *  @brief  An interface for movetk  geometry
-  *  @details A collection of classes that provide a generic
-  *  interface for construction of different geometric types
-  *  by decoupling the underlying geometry library
-  *  (e.g CGAL, Boost etc.) from the interface
-  *  @authors Aniket Mitra (aniket.mitra@here.com)
-  */
+/*! @file Interface.h
+ *  @brief  An interface for movetk  geometry
+ *  @details A collection of classes that provide a generic
+ *  interface for construction of different geometric types
+ *  by decoupling the underlying geometry library
+ *  (e.g CGAL, Boost etc.) from the interface
+ *  @authors Aniket Mitra (aniket.mitra@here.com)
+ */
 
 #ifndef MOVETK_INTERFACE_H
 #define MOVETK_INTERFACE_H
@@ -34,6 +34,7 @@
 #include <array>
 #include <iostream>
 
+#include "GeometryConcepts.h"
 #include "Intersections.h"
 #include "ObjectCreation.h"
 #include "movetk/utils/Asserts.h"
@@ -44,368 +45,452 @@
 #define TWO_PI 6.2831853
 #define LOG_TWO_PI 1.837877066409345
 
-  // TODO  Concepts for the Interface
-  /*!
-   *
-   *  @namespace movetk::utils
-   *  @brief the core of movetk
-   */
+// TODO  Concepts for the Interface
+/*!
+ *
+ *  @namespace movetk::utils
+ *  @brief the core of movetk
+ */
 namespace movetk::geom {
-    // the support library for Movetk
+// the support library for Movetk
 
-    /*!
-     * @brief converts from degree to radians
-     * @tparam NT
-     * @param degrees
-     * @return
-     */
-    template <class NT>
-    NT deg2radians(const NT degrees) {
-        return degrees * PI / 180.0;
-    }
+/*!
+ * @brief Converts from degree to radians
+ * @tparam NT Type of the number to use
+ * @param degrees The degrees
+ * @return Angle in radians
+ */
+template <class NT>
+NT deg2radians(const NT degrees) {
+	return degrees * PI / 180.0;
+}
 
-    /*!
-     * @brief converts from radians to degrees
-     * @tparam NT
-     * @param radians
-     * @return
-     */
-    template <class NT>
-    NT rad2deg(const NT radians) {
-        return radians * 180.0 / PI;
-    }
+/*!
+ * @brief Converts from radians to degrees
+ * @tparam NT The number type to use
+ * @param radians Radians angle
+ * @return Angle in degrees
+ */
+template <class NT>
+NT rad2deg(const NT radians) {
+	return radians * 180.0 / PI;
+}
 
 
-    /*!
-     *
-     * @tparam GeometryTraits
-     * @tparam Norm
-     */
-    template <utils::KernelSatisfying<utils::is_planar_geometry2> GeometryTraits,
-        utils::L2Norm Norm>
-        class Wedge {
-        public:
-            using MovetkVector = typename GeometryTraits::MovetkVector;
-            using MovetkPoint = typename GeometryTraits::MovetkPoint;
+/**
+ * @brief Class representing a Wedge.
+ */
+template <utils::KernelSatisfying<utils::is_planar_geometry2> GeometryTraits, utils::L2Norm Norm>
+class Wedge {
+public:
+	using MovetkVector = typename GeometryTraits::MovetkVector;
+	using MovetkPoint = typename GeometryTraits::MovetkPoint;
 
-        private:
-            using NT = typename GeometryTraits::NT;
-            Norm norm;
-            geom::MakePoint<GeometryTraits> make_point;
-            MovetkPoint ORIGIN = make_point({ 0, 0 });
-            MovetkVector e1 = make_point({ 1, 0 }) - ORIGIN;
-            MovetkVector e2 = make_point({ 0, 1 }) - ORIGIN;
-            MovetkVector _slope = ORIGIN - ORIGIN;
-            MovetkVector _intercept = ORIGIN - ORIGIN;
-            bool horizontal = false, vertical = false;
-            bool degenerate = false;
-            bool upper_right = false, lower_left = false;
-            bool lower_right = false, upper_left = false;
+private:
+	using NT = typename GeometryTraits::NT;
+	Norm norm;
+	geom::MakePoint<GeometryTraits> make_point;
+	MovetkPoint ORIGIN = make_point({0, 0});
+	MovetkVector e1 = make_point({1, 0}) - ORIGIN;
+	MovetkVector e2 = make_point({0, 1}) - ORIGIN;
+	MovetkVector _slope = ORIGIN - ORIGIN;
+	MovetkVector _intercept = ORIGIN - ORIGIN;
+	enum class Direction : public int8_t { NEGATIVE, POSITIVE, ZERO };
+	Direction wedge_directions[2] = {Direction::ZERO, Direction::ZERO};
+	bool horizontal = false, vertical = false;
+	bool degenerate = false;
+	bool upper_right = false, lower_left = false;
+	bool lower_right = false, upper_left = false;
 
-            void construct(const MovetkPoint& p, const MovetkPoint& center, NT radius) {
-                NT m1, m2, c1, c2, tanA, tanB;
-                NT squared_radius = radius * radius;
-                auto _slope_ray = center - p;
-                NT v_x = _slope_ray * e1;
-                NT v_y = _slope_ray * e2;
-                NT segment_squared_length = norm(_slope_ray);
-                NT root = norm ^ 1;
-                if (segment_squared_length < squared_radius) {
-                    degenerate = true;
-                }
-                if (root < MOVETK_EPS) {
-                    degenerate = true;
-                }
-                if (abs(v_x) < MOVETK_EPS) {
-                    vertical = true;
-                }
-                if (abs(v_y) < MOVETK_EPS) {
-                    horizontal = true;
-                }
-                if (v_x >= 0 && v_y >= 0) {
-                    upper_right = true;
-                }
-                if (v_y <= 0 && v_x >= 0) {
-                    lower_right = true;
-                }
-                if (v_y >= 0 && v_x <= 0) {
-                    upper_left = true;
-                }
-                if (v_x <= 0 && v_y <= 0) {
-                    lower_left = true;
-                }
-                NT tangent_squared_length = segment_squared_length - squared_radius;
-                if (abs(tangent_squared_length) < MOVETK_EPS)
-                    degenerate = true;
-                else
-                    tanB = radius / sqrt(tangent_squared_length);
-                if (degenerate) {
-                    _slope = ORIGIN - ORIGIN;
-                }
-                else if (horizontal) {
-                    if (upper_right || lower_right)
-                        _slope = make_point({ tanB, -tanB }) - ORIGIN;
-                    else if (upper_left || lower_left)
-                        _slope = make_point({ -tanB, tanB }) - ORIGIN;
-                }
-                else if (vertical) {
-                    tanA = tan(PI / 2 - MOVETK_EPS * 0.001);
-                    if ((tanA * tanB) == 1)
-                        m1 = (tanA + tanB) / MOVETK_EPS;
-                    else
-                        m1 = (tanA + tanB) / (1 - tanA * tanB);
-                    m2 = -m1;
-                    _slope = make_point({ m1, m2 }) - ORIGIN;
-                }
-                else {
-                    tanA = v_y / v_x;  // slope of the ray
-                    if ((tanA * tanB) == 1) {
-                        m1 = (tanA + tanB) / MOVETK_EPS;
-                        m2 = (tanA - tanB) / (1 + tanA * tanB);
-                    }
-                    else if ((tanA * tanB) == -1) {
-                        m1 = (tanA + tanB) / (1 - tanA * tanB);
-                        m2 = (tanA - tanB) / (-1 * MOVETK_EPS);
-                    }
-                    else {
-                        m1 = (tanA + tanB) / (1 - tanA * tanB);
-                        m2 = (tanA - tanB) / (1 + tanA * tanB);
-                    }
+	/**
+	 * @brief Sets the boolean direction flags, using the center ray direction of the wedge
+	 * @param ray_x The x amount of the ray
+	 * @param ray_y The y amount of the ray
+	 */
+	void set_direction_from_ray(NT ray_x, NT ray_y) {
+		if (abs(ray_x) < MOVETK_EPS) {
+			vertical = true;
+		} else {
+			wedge_directions[0] = ray.x > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
+		}
+		if (abs(ray_y) < MOVETK_EPS) {
+			horizontal = true;
+		} else {
+			wedge_directions[1] = ray.y > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
+		}
 
-                    if (upper_right || lower_right)
-                        _slope = make_point({ m1, m2 }) - ORIGIN;
-                    else if (upper_left || lower_left)
-                        _slope = make_point({ m2, m1 }) - ORIGIN;
-                }
+		if (ray_x >= 0 && ray_y >= 0) {
+			upper_right = true;
+		}
+		if (ray_y <= 0 && ray_x >= 0) {
+			lower_right = true;
+		}
+		if (ray_y >= 0 && ray_x <= 0) {
+			upper_left = true;
+		}
+		if (ray_x <= 0 && ray_y <= 0) {
+			lower_left = true;
+		}
+	}
 
-                c1 = (make_point({ -1 * (_slope * e1), 1 }) - ORIGIN) * (p - ORIGIN);  // (y - y0) = m * (x - x0)
-                c2 = (make_point({ -1 * (_slope * e2), 1 }) - ORIGIN) * (p - ORIGIN);
-                _intercept = make_point({ c1, c2 }) - ORIGIN;
-            }
+	static auto make_vector(NT x, NT y) { return make_point({x, y}) - ORIGIN; }
+	static auto make_vector(const MovetkPoint& p) { return p - ORIGIN; }
 
-        public:
-            Wedge() = default;
+	void compute_slopes_from_radius_and_tangent_length_squared(NT radius, NT tangent_squared_length) {
+		// Degenerate wedge has no slopes.
+		if (degenerate) {
+			_slope = ORIGIN - ORIGIN;
+			return;
+		}
+		// Tangent of the angle between the center ray and a wedge line
+		NT tanB = radius / sqrt(tangent_squared_length);
+		NT m1, m2;
+		// Handle degenerate central ray directions
+		if (horizontal || directions[1] == Direction::ZERO) {
+			// Ray pointing to the left
+			if (directions[0] == Direction::NEGATIVE) {
+				// Flip the slopes to be correct again.
+				tanB *= -1;
+			}
+			_slope = make_vector({tanB, -tanB});
+		} else if (vertical) {
+			NT tanA = tan(PI / 2 - MOVETK_EPS * 0.001);
+			if ((tanA * tanB) == 1)
+				m1 = (tanA + tanB) / MOVETK_EPS;
+			else
+				m1 = (tanA + tanB) / (1 - tanA * tanB);
+			m2 = -m1;
+			_slope = make_vector(m1, m2);
+		} else {
+			// Slope of the ray
+			NT ray_slope = v_y / v_x;
+			// Compute the slopes of the lines of the wedge,
+			// using tan(a+b)=(tan(a)+tan(b))/(1-tan(a)tan(b)) and
+			// similar for tan(a-b).
+			if ((ray_slope * tanB) == 1) {
+				m1 = (ray_slope + tanB) / MOVETK_EPS;
+				m2 = (ray_slope - tanB) / (1 + ray_slope * tanB);
+			} else if ((ray_slope * tanB) == -1) {
+				m1 = (ray_slope + tanB) / (1 - ray_slope * tanB);
+				m2 = (ray_slope - tanB) / (-1 * MOVETK_EPS);
+			} else {
+				m1 = (ray_slope + tanB) / (1 - ray_slope * tanB);
+				m2 = (ray_slope - tanB) / (1 + ray_slope * tanB);
+			}
 
-            Wedge(const MovetkPoint& p, const MovetkPoint& center, NT radius) { construct(p, center, radius); }
+			if (upper_right || lower_right) {
+				_slope = make_vector(m1, m2);
+			} else if (upper_left || lower_left) {
+				_slope = make_vector(m2, m1);
+			}
+		}
+	}
 
-            Wedge(MovetkPoint&& p, MovetkPoint&& center, NT radius) { construct(p, center, radius); }
 
-            Wedge(const MovetkVector& slope, const MovetkVector& intercept) : _slope(slope), _intercept(intercept) {}
+	void construct(const MovetkPoint& p, const MovetkPoint& center, NT radius) {
+		NT c1, c2, tanA, tanB;
+		const auto squared_radius = radius * radius;
+		const auto _slope_ray = center - p;
 
-            const MovetkVector& slope() const { return _slope; }
-            const MovetkVector& intercept() const { return _intercept; }
-            bool is_empty() const {
-                if (_slope == (ORIGIN - ORIGIN)) {
-                    if (_intercept == (ORIGIN - ORIGIN)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+		NT segment_squared_length = norm(_slope_ray);
+		NT root = norm ^ 1;
+		if (segment_squared_length < squared_radius || root < MOVETK_EPS) {
+			degenerate = true;
+		}
+		const auto v_x = _slope_ray * e1;
+		const auto v_y = _slope_ray * e2;
+		set_direction_from_ray(v_x, v_y);
 
-            /*!
-             *
-             * @param w
-             * @return
-             */
-            Wedge operator*(const Wedge& w) const {
-                constexpr std::size_t size = 2 * Norm::P;
-                std::array<std::size_t, size> positions = { 0, 1, 2, 3 };
-                std::size_t sum = *(positions.end() - 1) + *(positions.end() - 2);
-                typename GeometryTraits::MovetkVector that_slope = w.slope();
-                typename GeometryTraits::MovetkVector that_intercept = w.intercept();
-                std::array<NT, size> slopes = { this->_slope * e1, this->_slope * e2, that_slope * e1, that_slope * e2 };
-                std::array<NT, size> intercepts = { this->_intercept * e1,
-                                                   this->_intercept * e2,
-                                                   that_intercept * e1,
-                                                   that_intercept * e2 };
+		NT tangent_squared_length = segment_squared_length - squared_radius;
+		if (abs(tangent_squared_length) < MOVETK_EPS) {
+			degenerate = true;
+		}
+		compute_slopes_from_radius_and_tangent_length_squared(radius, tangent_squared_length);
 
-                std::sort(std::begin(positions), std::end(positions), [&slopes](size_t i, size_t j) {
-                    return slopes[i] < slopes[j];
-                });
+		c1 = make_vector({-1 * (_slope * e1), 1}) * (p - ORIGIN);  // (y - y0) = m * (x - x0)
+		c2 = make_vector({-1 * (_slope * e2), 1}) * (p - ORIGIN);
+		_intercept = make_point({c1, c2}) - ORIGIN;
+	}
 
-                auto start = positions.cbegin();
-                auto end = positions.cend();
-                auto sit = slopes.cbegin();
-                auto it = intercepts.cbegin();
+public:
+	Wedge() = default;
+	/**
+	 * @brief Constructs the wedge from a point, center and radius.
+	 * The lines of the wedge are determine as follows: we construct a ray from the point to
+	 * the center. The wedge lines are then located such that the locations on the line that
+	 * intersect the perpendicular line on the center point are of length radius.
+	 * @param p The point to start the wedge ray from, and becomes the origin of the wedge.
+	 * @param center The center of the (finite length) wedge
+	 * @param radius The radius of the wedge lines
+	 */
+	Wedge(const MovetkPoint& p, const MovetkPoint& center, NT radius) { construct(p, center, radius); }
 
-                NT diff_this = (slopes[0] - slopes[1]) / (1 + (slopes[0] * slopes[1]));
-                NT diff_that = (slopes[2] - slopes[3]) / (1 + (slopes[2] * slopes[3]));
-                NT WedgeAngle_this = 2 * movetk::geom::rad2deg(diff_this);
-                NT WedgeAngle_that = 2 * movetk::geom::rad2deg(diff_that);
+	/**
+	 * @brief Construct a wedge by directly setting the slopes and intersects of the lines defining the
+	 * wedge
+	 * @param slopes The slopes
+	 * @param intercepts The intercepts
+	 */
+	Wedge(const MovetkVector& slopes, const MovetkVector& intercepts) : _slope(slopes), _intercept(intercepts) {}
 
-                if ((*start + *(start + 1) == sum) || (*(end - 1) + *(end - 2) == sum)) {
-                    if ((abs(WedgeAngle_this) < 90) || (abs(WedgeAngle_that) < 90))
-                        return Wedge();
-                }
+	/**
+	 * @brief Get the slopes of the wedge lines
+	 * @return The slopes
+	 */
+	const MovetkVector& slope() const { return _slope; }
+	/**
+	 * @brief Get the intercepts of the wedge lines
+	 * @return The intercepts
+	 */
+	const MovetkVector& intercept() const { return _intercept; }
+	/**
+	 * @brief Check if the wedge is empty
+	 * @return Is the wedge empty.
+	 */
+	bool is_empty() const { return _slope == (ORIGIN - ORIGIN) && _intercept == (ORIGIN - ORIGIN); }
 
-                if (slopes[0] > slopes[1]) {
-                    that_slope = make_point({ *(sit + *(start + 2)), *(sit + *(start + 1)) }) - ORIGIN;
-                    that_intercept = make_point({ *(it + *(start + 2)), *(it + *(start + 1)) }) - ORIGIN;
-                }
-                else {
-                    that_slope = make_point({ *(sit + *(start + 1)), *(sit + *(start + 2)) }) - ORIGIN;
-                    that_intercept = make_point({ *(it + *(start + 1)), *(it + *(start + 2)) }) - ORIGIN;
-                }
-                return Wedge(that_slope, that_intercept);
-            }
+	/**
+	 * @brief Computes the intersection of the current wedge with another
+	 * @param w The other wedge
+	 * @return A Wedge representing the intersection of the two wedges (possibly empty).
+	 */
+	Wedge operator*(const Wedge& w) const {
+		std::array<std::size_t, 4> positions = {0, 1, 2, 3};
+		std::size_t sum = *(positions.end() - 1) + *(positions.end() - 2);
+		typename GeometryTraits::MovetkVector that_slope = w.slope();
+		typename GeometryTraits::MovetkVector that_intercept = w.intercept();
+		std::array<NT, 4> slopes = {this->_slope * e1, this->_slope * e2, that_slope * e1, that_slope * e2};
+		std::array<NT, 4> intercepts = {this->_intercept * e1,
+		                                this->_intercept * e2,
+		                                that_intercept * e1,
+		                                that_intercept * e2};
 
-            /*!
-             *
-             * @param p
-             * @return
-             */
-            bool operator*(const MovetkPoint& p) const {
-                NT mx1 = (make_point({ this->_slope * this->e1, -1 }) - ORIGIN) * (p - ORIGIN);
-                NT mx2 = (make_point({ this->_slope * this->e2, -1 }) - ORIGIN) * (p - ORIGIN);
-                typename GeometryTraits::MovetkVector v = make_point({ mx1, mx2 }) - ORIGIN;
-                typename GeometryTraits::MovetkVector result = v + this->_intercept;
+		std::sort(std::begin(positions), std::end(positions), [&slopes](size_t i, size_t j) {
+			return slopes[i] < slopes[j];
+		});
 
-                if ((result * this->e1) >= 0 && (result * this->e2) <= 0)
-                    return true;
+		auto start = positions.cbegin();
+		auto end = positions.cend();
+		auto sit = slopes.cbegin();
+		auto it = intercepts.cbegin();
 
-                if ((result * this->e1) <= 0 && (result * this->e2) >= 0)
-                    return true;
+		NT diff_this = (slopes[0] - slopes[1]) / (1 + (slopes[0] * slopes[1]));
+		NT diff_that = (slopes[2] - slopes[3]) / (1 + (slopes[2] * slopes[3]));
+		NT WedgeAngle_this = 2 * movetk::geom::rad2deg(diff_this);
+		NT WedgeAngle_that = 2 * movetk::geom::rad2deg(diff_that);
 
-                return false;
-            }
-    };
+		if ((*start + *(start + 1) == sum) || (*(end - 1) + *(end - 2) == sum)) {
+			if ((abs(WedgeAngle_this) < 90) || (abs(WedgeAngle_that) < 90))
+				return Wedge();
+		}
 
-    template <class GeometryTraits, class Norm>
-    std::ostream& operator<<(std::ostream& out, Wedge<GeometryTraits, Norm>& wedge) {
-        MakePoint<GeometryTraits> make_point;
-        const auto ORIGIN = make_point({ 0, 0 });
-        const auto e1 = make_point({ 1, 0 }) - ORIGIN;
-        const auto e2 = make_point({ 0, 1 }) - ORIGIN;
-        const auto slope = wedge.slope();
-        const auto intercept = wedge.intercept();
-        const auto result_m1 = slope * e1;
-        const auto result_m2 = slope * e2;
-        const auto result_c1 = intercept * e1;
-        const auto result_c2 = intercept * e2;
-        out << "Line1 slope: " << result_m1 << ", Line1 intercept: " << result_c1 << "\n";
-        out << "Line2 slope: " << result_m2 << ", Line2 intercept: " << result_c2 << "\n";
-        return out;
-    }
+		if (slopes[0] > slopes[1]) {
+			that_slope = make_point({*(sit + *(start + 2)), *(sit + *(start + 1))}) - ORIGIN;
+			that_intercept = make_point({*(it + *(start + 2)), *(it + *(start + 1))}) - ORIGIN;
+		} else {
+			that_slope = make_point({*(sit + *(start + 1)), *(sit + *(start + 2))}) - ORIGIN;
+			that_intercept = make_point({*(it + *(start + 1)), *(it + *(start + 2))}) - ORIGIN;
+		}
+		return Wedge(that_slope, that_intercept);
+	}
 
-    template <utils::KernelSatisfying<utils::is_planar_geometry2> GeometryTraits,
-        class Norm,
-        typename = utils::requires_L2_norm<Norm>>
-        class MBR {
-        private:
-            typedef typename GeometryTraits::NT NT;
-            typedef typename GeometryTraits::MovetkPoint Point;
-            typedef typename GeometryTraits::MovetkVector Vector;
-            typedef typename GeometryTraits::MovetkSphere Sphere;
-            typedef geom::IntersectionTraits<GeometryTraits, Norm, geom::sphere_sphere_intersection_tag> IntersectionTraits;
-            typename IntersectionTraits::Norm norm;
+	/**
+	 * @brief Determines whether a point p is located inside the wedge
+	 * @param p The point
+	 * @return Is the point inside the wedge.
+	 */
+	bool operator*(const MovetkPoint& p) const {
+		NT mx1 = (make_point({this->_slope * this->e1, -1}) - ORIGIN) * (p - ORIGIN);
+		NT mx2 = (make_point({this->_slope * this->e2, -1}) - ORIGIN) * (p - ORIGIN);
+		typename GeometryTraits::MovetkVector v = make_point({mx1, mx2}) - ORIGIN;
+		typename GeometryTraits::MovetkVector result = v + this->_intercept;
 
-            geom::MakePoint<GeometryTraits> make_point;
-            geom::MakeSphere<GeometryTraits> make_sphere;
-            geom::ComputeIntersections<IntersectionTraits> compute_intersections;
+		if ((result * this->e1) >= 0 && (result * this->e2) <= 0)
+			return true;
 
-            Point ORIGIN = make_point({ 0, 0 });
+		if ((result * this->e1) <= 0 && (result * this->e2) >= 0)
+			return true;
 
-            NT get_x(Vector& v) { return v * v.basis(0); }
+		return false;
+	}
+};
 
-            NT get_x(Point& p) {
-                Vector v = p - ORIGIN;
-                return v * v.basis(0);
-            }
+template <class GeometryTraits, class Norm>
+std::ostream& operator<<(std::ostream& out, Wedge<GeometryTraits, Norm>& wedge) {
+	MakePoint<GeometryTraits> make_point;
+	const auto ORIGIN = make_point({0, 0});
+	const auto e1 = make_point({1, 0}) - ORIGIN;
+	const auto e2 = make_point({0, 1}) - ORIGIN;
+	const auto slope = wedge.slope();
+	const auto intercept = wedge.intercept();
+	const auto result_m1 = slope * e1;
+	const auto result_m2 = slope * e2;
+	const auto result_c1 = intercept * e1;
+	const auto result_c2 = intercept * e2;
+	out << "Line1 slope: " << result_m1 << ", Line1 intercept: " << result_c1 << "\n";
+	out << "Line2 slope: " << result_m2 << ", Line2 intercept: " << result_c2 << "\n";
+	return out;
+}
 
-            NT get_y(Vector& v) { return v * v.basis(1); }
+/**
+ * @brief Class representing the minimum bounding rectangle algorithm.
+ * Currently computes the minimum bounding rectangle for intersection of spheres.
+ * @tparam Norm Norm to use for length computations of vectors
+ * @tparam
+ */
+template <utils::KernelSatisfying<utils::is_planar_geometry2> GeometryTraits,
+          class Norm,
+          typename = utils::requires_L2_norm<Norm>>
+class MBR {
+private:
+	using NT = typename GeometryTraits::NT;
+	using Point = typename GeometryTraits::MovetkPoint;
+	using Vector = typename GeometryTraits::MovetkVector;
+	using Sphere = typename GeometryTraits::MovetkSphere;
+	using IntersectionTraits = geom::IntersectionTraits<GeometryTraits, Norm, geom::sphere_sphere_intersection_tag>;
+	typename IntersectionTraits::Norm norm;
 
-            NT get_y(Point& p) {
-                Vector v = p - ORIGIN;
-                return v * v.basis(1);
-            }
+	geom::MakePoint<GeometryTraits> make_point;
+	geom::MakeSphere<GeometryTraits> make_sphere;
+	geom::ComputeIntersections<IntersectionTraits> compute_intersections;
 
-            NT get_length(Point& p_u, Point& p_v) {
-                Vector direction = p_v - p_u;
-                norm(direction);
-                NT length = norm ^ 1;
-                return length;
-            }
+	Point ORIGIN = make_point({0, 0});
 
-            NT get_length(Vector& direction) {
-                norm(direction);
-                NT length = norm ^ 1;
-                return length;
-            }
+	NT get_x(Vector& v) { return v * v.basis(0); }
 
-            Vector get_direction_vector(Point& p_u, Point& p_v) { return ((p_v - p_u) *= (1 / get_length(p_u, p_v))); }
+	NT get_x(Point& p) {
+		Vector v = p - ORIGIN;
+		return v * v.basis(0);
+	}
 
-            Vector get_direction_vector(Vector& v) {
-                Vector direction = v;
-                return (v *= (1 / get_length(direction)));
-            }
+	NT get_y(Vector& v) { return v * v.basis(1); }
 
-            Point translate(Vector unit_vector, Point& start, NT translation_length) {
-                unit_vector *= translation_length;
-                return start + unit_vector;
-            }
+	NT get_y(Point& p) {
+		Vector v = p - ORIGIN;
+		return v * v.basis(1);
+	}
 
-        public:
-            std::pair<Point, Point> operator()(Point& p_u, Point& p_v, NT radius_u, NT radius_v) {
-                Sphere sphere_u = make_sphere(p_u, radius_u);
-                Sphere sphere_v = make_sphere(p_v, radius_v);
-                Sphere intersection_sphere = compute_intersections(sphere_u, sphere_v);
-                Point center = intersection_sphere.center();
+	NT get_length(Point& p_u, Point& p_v) {
+		Vector direction = p_v - p_u;
+		norm(direction);
+		NT length = norm ^ 1;
+		return length;
+	}
 
-                if (intersection_sphere.squared_radius() == 0)
-                    return std::make_pair(center, center);
+	NT get_length(Vector& direction) {
+		norm(direction);
+		NT length = norm ^ 1;
+		return length;
+	}
 
-                NT half_length = std::pow(intersection_sphere.squared_radius(), 0.5);
+	Vector get_direction_vector(Point& p_u, Point& p_v) { return ((p_v - p_u) *= (1 / get_length(p_u, p_v))); }
 
-                Vector direction_uv = get_direction_vector(p_u, p_v);
-                Point point_sphere_u = translate(direction_uv, p_u, radius_u);
-                Point point_sphere_v = translate(direction_uv, p_v, -radius_v);
+	Vector get_direction_vector(Vector& v) {
+		Vector direction = v;
+		return (v *= (1 / get_length(direction)));
+	}
 
-                // counterclockwise rotation by pi/2
-                Vector direction_p = make_point({ -1 * get_y(direction_uv), get_x(direction_uv) }) - ORIGIN;
+	Point translate(Vector unit_vector, Point& start, NT translation_length) {
+		unit_vector *= translation_length;
+		return start + unit_vector;
+	}
 
-                Point p1 = translate(direction_p, point_sphere_u, half_length);
-                Point p2 = translate(direction_p, point_sphere_v, -half_length);
+public:
+	/**
+	 * @brief Computes the minimum bounding rectangle of the intersection of two spheres
+	 * Returns a pair of the same points if no intersection is present.
+	 * todo(bram): missing one degree of freedom here...
+	 * @param p_u Center of first sphere
+	 * @param p_v Center of second sphere
+	 * @param radius_u Radius of first sphere
+	 * @param radius_v Radius of second sphere
+	 * @return Diagonally opposite points of the box.
+	 */
+	std::pair<Point, Point> operator()(Point& p_u, Point& p_v, NT radius_u, NT radius_v) {
+		Sphere sphere_u = make_sphere(p_u, radius_u);
+		Sphere sphere_v = make_sphere(p_v, radius_v);
+		Sphere intersection_sphere = compute_intersections(sphere_u, sphere_v);
+		Point center = intersection_sphere.center();
 
-                return std::make_pair(p1, p2);
-            }
-    };
+		if (intersection_sphere.squared_radius() == 0)
+			return std::make_pair(center, center);
 
-    template <class GeometryTraits, class Norm, class T>
-    struct mbr_selector {
-        using MinimumBoundingRectangle = T;
-    };
+		NT half_length = std::pow(intersection_sphere.squared_radius(), 0.5);
 
-    template <class GeometryTraits, class Norm>
-    struct mbr_selector<GeometryTraits, Norm, void> {
-        using MinimumBoundingRectangle = MBR<GeometryTraits, Norm>;
-    };
+		Vector direction_uv = get_direction_vector(p_u, p_v);
+		Point point_sphere_u = translate(direction_uv, p_u, radius_u);
+		Point point_sphere_v = translate(direction_uv, p_v, -radius_v);
 
-    template <class GeometryTraits>
-    struct Scaling {
-        typename GeometryTraits::MovetkVector operator()(typename GeometryTraits::MovetkPoint p1,
-            typename GeometryTraits::MovetkPoint p2,
-            typename GeometryTraits::NT eps) {
-            typename GeometryTraits::MovetkVector v = p2 - p1;
-            v *= eps;
-            return v;
-        }
+		// counterclockwise rotation by pi/2
+		Vector direction_p = make_point({-1 * get_y(direction_uv), get_x(direction_uv)}) - ORIGIN;
 
-        typename GeometryTraits::MovetkVector operator()(typename GeometryTraits::MovetkVector v,
-            typename GeometryTraits::NT eps) {
-            v *= eps;
-            return v;
-        }
-    };
+		Point p1 = translate(direction_p, point_sphere_u, half_length);
+		Point p2 = translate(direction_p, point_sphere_v, -half_length);
 
-    template <class GeometryTraits>
-    struct Translation {
-        typename GeometryTraits::MovetkPoint operator()(typename GeometryTraits::MovetkPoint p,
-            typename GeometryTraits::MovetkVector v) {
-            auto p1 = p + v;
-            return p1;
-        }
-    };
+		return std::make_pair(p1, p2);
+	}
+};
+
+template <class GeometryTraits, class Norm, class T>
+struct mbr_selector {
+	using MinimumBoundingRectangle = T;
+};
+
+template <class GeometryTraits, class Norm>
+struct mbr_selector<GeometryTraits, Norm, void> {
+	using MinimumBoundingRectangle = MBR<GeometryTraits, Norm>;
+};
+
+/**
+ * @brief Scaling functor for returning a scaled vector
+ * @tparam GeometryTraits The kernel
+ */
+template <concepts::BaseKernel Kernel>
+struct Scaling {
+	/**
+	 * @brief Returns the vector from \p p1 to \p p2, scaled using \p scale
+	 * @param p1 Start of the vector
+	 * @param p2 End of the vector
+	 * @param scale Scale to apply
+	 * @return Scaled vector
+	 */
+	typename Kernel::MovetkVector operator()(typename Kernel::MovetkPoint p1,
+	                                         typename Kernel::MovetkPoint p2,
+	                                         typename Kernel::NT scale) {
+		const auto v = p2 - p1;
+		v *= scale;
+		return v;
+	}
+	/**
+	 * @brief Returns a copy of vector \p v, scaled by \p scale
+	 * @param v The vector
+	 * @param scale The scale
+	 * @return Scaled vector
+	*/
+	typename Kernel::MovetkVector operator()(typename Kernel::MovetkVector v, typename Kernel::NT scale) {
+		v *= scale;
+		return v;
+	}
+};
+
+/**
+ * @brief Translation functor for translating a MovetkPoint
+ * @tparam Kernel The kernel for the point
+*/
+template <concepts::BaseKernel Kernel>
+struct Translation {
+	/**
+	 * @brief Return a translated copy of point \p p, translated by the vector \p v
+	 * @param p The point
+	 * @param v The vector
+	 * @return The translated point
+	*/
+	typename GeometryTraits::MovetkPoint operator()(const typename GeometryTraits::MovetkPoint& p,
+	                                                const typename GeometryTraits::MovetkVector& v) {
+		auto p1 = p + v;
+		return p1;
+	}
+};
 }  // namespace movetk::geom
 
 #endif  // MOVETK_INTERFACE_H

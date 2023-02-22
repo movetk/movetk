@@ -40,6 +40,12 @@
 namespace movetk::ds {
     // based on https://doi.org/10.1142/S0218195995000064
 
+    /**
+     * @brief Convenience traits class for a FreeSpaceCell. Defines the required types
+     * based on the provided intersection traits.
+     * @tparam _IntersectionTraits Traits of the intersections to compute on the boundary
+     * of the FreeSpaceCell.
+    */
     template <class _IntersectionTraits>
     struct FreeSpaceCellTraits {
         enum edge_orientation { Left, Top, Right, Bottom };
@@ -53,26 +59,47 @@ namespace movetk::ds {
         using vertex_iterator = typename Vertices::const_iterator;
         using const_iterator = typename Intersections::const_iterator;
     };
+    namespace concepts {
+    /*
+    * @concept FreeSpaceCellTraits
+    * @brief Defines the required types to be defined for the traits for 
+    * a freespace cell.
+    */
+    template <typename TRAITS>
+    concept FreeSpaceCellTraits = requires(TRAITS t) {
+	    typename TRAITS::GeometryTraits;
+	    typename TRAITS::OutputIterator;
+	    typename TRAITS::edge_orientation;
+	    typename TRAITS::Intersections;
+	    typename TRAITS::Vertices;
+    };
+    }
 
-    /*!
-     *
-     * @tparam CellTraits
-     *
-     */
+    /**
+     * @brief Class representing a freespace cell in a freespace diagram.
+     * Currently, we only support L_2 based freespace cells.
+     * @tparam CellTraits Traits of the cell
+    */
     template <class CellTraits>
     class FreeSpaceCell {
     public:
         using FreeSpaceCellTraits = CellTraits;
         using GeometryTraits = typename CellTraits::GeometryTraits;
+        using Segment = typename GeometryTraits::MovetkSegment;
+        using NT = typename CellTraits::GeometryTraits::NT;
+        using Attributes = typename CellTraits::IntersectionTraits::Attributes;
 
-        /*!
-         *
-         * @param P
-         * @param Q
-         * @param radius
-         */
-        FreeSpaceCell(typename GeometryTraits::MovetkSegment P,
-            typename GeometryTraits::MovetkSegment Q,
+        /**
+         * @brief Constructs a freespace cell from two segments P,Q and a radius.
+         * P and Q form the sides of the freespace rectangle. The radius defines
+         * the maximum distance for which we consider some point p \in P and q \in Q 
+         * to be free.
+         * @param P The first segment
+         * @param Q The second segment
+         * @param radius The radius
+        */
+	     FreeSpaceCell(const Segment& P,
+            const Segment& Q,
             typename GeometryTraits::NT radius) {
             auto sphere = make_sphere(Q[0], radius);
             auto init_length = std::distance(std::begin(intersections), std::end(intersections));
@@ -115,49 +142,53 @@ namespace movetk::ds {
             init_length = new_length;
         }
 
-        /*!
-         *
-         * @return
-         */
+        /**
+         * @brief Returns the start iterator of the vertices that define the freespace region
+         * @return Start iterator
+        */
         typename CellTraits::vertex_iterator vertices_begin() { return std::begin(vertices); }
 
-        /*!
-         *
-         * @return
-         */
+        /**
+	    * @brief Returns the end iterator of the vertices that define the freespace region
+	    * @return End iterator
+	    */
         typename CellTraits::vertex_iterator vertices_end() { return std::end(vertices); }
 
-        /*!
-         *
-         * @return
-         */
+        /**
+	    * @brief Returns the start iterator of the vertices that define the freespace region
+	    * @return Start iterator
+	    */
         typename CellTraits::const_iterator begin() { return std::begin(intersections); }
 
-        /*!
-         *
-         * @return
-         */
+        /**
+	    * @brief Returns the end iterator of the vertices that define the freespace region
+	    * @return End iterator
+	    */
         typename CellTraits::const_iterator end() { return std::end(intersections); }
 
     private:
-        geom::MakeSphere<typename CellTraits::GeometryTraits> make_sphere;
+        geom::MakeSphere<GeometryTraits> make_sphere;
         geom::ComputeIntersections<typename CellTraits::IntersectionTraits> compute_intersections;
         typename CellTraits::Intersections intersections;
         typename CellTraits::Vertices vertices;
-        using NT = typename CellTraits::GeometryTraits::NT;
-        using Attributes = typename CellTraits::IntersectionTraits::Attributes;
-        using InputIterator = std::remove_cvref_t<decltype(intersections.begin())>;
+        using IntersectionsIterator = std::remove_cvref_t<decltype(intersections.begin())>;
 
-        void update_edge_id(InputIterator first, InputIterator beyond, std::size_t edge_id) {
-            auto it = first;
+        /**
+         * @brief Assigns the given edge ID to all intersections
+         * @param first Start of the intersections range to assign the edge ID to
+         * @param beyond End of the intersections range to assign the edge ID to 
+         * @param edge_id The edge ID to assign
+        */
+	     void update_edge_id(IntersectionsIterator first, IntersectionsIterator beyond, std::size_t edge_id) {
             std::for_each(first, beyond, [edge_id](auto& val) {
                 std::get<Attributes::ID>(val) = edge_id;
             });
         }
 
-        void identify_free_vertices(InputIterator first,
-            InputIterator beyond,
-            typename GeometryTraits::MovetkSegment S,
+         //todo(bram): continue here
+        void identify_free_vertices(IntersectionsIterator first,
+	                                  IntersectionsIterator beyond,
+            const Segment& S,
             std::size_t edge_id) {
             if ((edge_id != CellTraits::edge_orientation::Left) && (edge_id != CellTraits::edge_orientation::Right))
                 return;
@@ -189,8 +220,8 @@ namespace movetk::ds {
                 if ((sign_ip_1 == 1) && (sign_ip_2 == 1))
                     return;
 
-                typename CellTraits::GeometryTraits::MovetkPoint ip_1 = std::get<Attributes::POINT>(*first);
-                typename CellTraits::GeometryTraits::MovetkPoint ip_2 = std::get<Attributes::POINT>(*(first + 1));
+                auto ip_1 = std::get<Attributes::POINT>(*first);
+                auto ip_2 = std::get<Attributes::POINT>(*(first + 1));
                 std::size_t orientation_ip_1 = CellTraits::vertex_orientation::BottomLeft;
                 std::size_t orientation_ip_2 = CellTraits::vertex_orientation::BottomRight;
                 if (sign_ip_1 == -1) {

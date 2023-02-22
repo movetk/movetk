@@ -31,8 +31,16 @@
 #include "ogrsf_frmts.h"
 
 namespace movetk::io {
+/**
+ * @brief Reader for reading polygons from a file using GDAL
+*/
 class GdalPolygonReader {
 public:
+	/**
+	 * @brief Read polygons from the file
+	 * @param file_name The file
+	 * @return The read polygons
+	*/
 	std::vector<OGRPolygon> read_polygons(const std::string& file_name);
 };
 }  // namespace movetk::io

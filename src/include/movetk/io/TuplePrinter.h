@@ -29,28 +29,40 @@
 #include <tuple>
 
 namespace movetk::io {
-// helper function to print a tuple of any size
-template <class Tuple, std::size_t N>
-struct TuplePrinter {
-	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
-		TuplePrinter<Tuple, N - 1>::print_tuple(os, t, precision);
-		os << "," << std::setprecision(precision) << std::get<N - 1>(t);
-	}
-};
 
-template <class Tuple>
-struct TuplePrinter<Tuple, 1> {
-	static void print_tuple(std::ostream& os, const Tuple& t, int precision) {
-		os << std::setprecision(precision) << std::get<0>(t);
-	}
-};
+namespace detail {
+/**
+ * @brief Write the given arguments to stream, using the provided separator
+ * @tparam SEPARATOR The separator type
+ * @tparam ARG Type of first argument to write
+ * @tparam ...ARGS Types of the rest of the arguments to write
+ * @param stream The stream to write to
+ * @param separator The separator to write between elements
+ * @param arg First argument
+ * @param ...args Rest of the arguments
+ * @return The stream
+*/
+template <typename SEPARATOR, typename ARG, typename... ARGS>
+std::ostream& write_separated(std::ostream& stream, SEPARATOR&& separator, ARG&& arg, ARGS&&... args) {
+	stream << std::forward<ARG>(arg);
+	(stream << separator << args, ...);
+	return stream;
+}
+template <typename SEPARATOR, typename TUPLE, size_t... IS>
+std::ostream& write_separated_tuple(std::ostream& stream,
+                                    SEPARATOR&& separator,
+                                    TUPLE&& tuple,
+                                    std::index_sequence<IS...>) {
+	return write_separated(stream, std::forward<SEPARATOR>(separator), std::get<IS>(std::forward<TUPLE>(tuple))...);
+}
+}  // namespace detail
 
 template <typename Tuple>
 void print_tuple(std::ostream& os, const Tuple& t, int precision = 8) {
 	os.setf(std::ios::fixed);
-	TuplePrinter<decltype(t), std::tuple_size_v<Tuple>>::print_tuple(os, t, precision);
+	os << std::setprecision(precision);
+	detail::write_separated_tuple(os, ',', t, std::make_index_sequence<std::tuple_size_v<Tuple>>{});
 }
-// end helper function
 
 /**
  * Print arguments to os enclosed by square braces, for example, for printing coordinates in GeoJSON.
@@ -58,8 +70,7 @@ void print_tuple(std::ostream& os, const Tuple& t, int precision = 8) {
 template <class Arg, class... Args>
 inline void variadic_print(std::ostream& os, Arg&& first, Args&&... rest) {
 	os << "[";
-	os << std::forward<Arg>(first);
-	((os << ", " << std::setprecision(8) << std::forward<Args>(rest)), ...);
+	detail::write_separated(os, ',', std::forward<Arg>(first), std::forward<Args>(rest)...);
 	os << "]";
 }
 

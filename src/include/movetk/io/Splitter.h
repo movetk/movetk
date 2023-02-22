@@ -32,6 +32,12 @@
 #include "movetk/io/TuplePrinter.h"
 
 namespace movetk::io {
+/**
+ * @brief Range adaptor that takes a range of probes as input and outputs trajectories
+ * in the form of a list of probe points
+ * @tparam Predicate The predicate to apply for splitting
+ * @tparam ProbeInputIterator The type of the input iterator
+*/
 template <class Predicate, class ProbeInputIterator>
 class Splitter {
 public:
@@ -39,11 +45,23 @@ public:
 	using value_type = std::vector<ProbePoint>;
 	class iterator;
 
+	/**
+	 * @brief Construct a Splitter using the provided probe range
+	 * @param start The start of the probe range
+	 * @param beyond The end of the probe range
+	*/
 	Splitter(ProbeInputIterator start, ProbeInputIterator beyond) : _start(start), _beyond(beyond) {
 		_state = State::Uninitialized;
 		_exists_carry = false;
 	}
 
+	/**
+	 * @brief Construct a Splitter using the provided probe range, and use the provided
+	 * predicate for determining when to split the range into separate trajectories
+	 * @param start The start of the probe range
+	 * @param beyond The end of the probe range
+	 * @param predicate The predicate to apply
+	*/
 	Splitter(ProbeInputIterator start, ProbeInputIterator beyond, Predicate predicate)
 	    : _start(start)
 	    , _beyond(beyond)
@@ -52,12 +70,22 @@ public:
 		_exists_carry = false;
 	}
 
-	/// Status of the underlying stream
-	/// @{
+	/**
+	 * @brief Return whether we can iterate the splitter
+	 * @return Can we iterate the splitter
+	*/
 	inline bool good() { return _start != _beyond; }
 
+	/**
+	 * @brief Returns the begin iterator of the splitter, returning the trajectories
+	 * @return The begin iterator
+	*/
 	iterator begin() { return iterator(*this); }
 
+	/**
+	 * @brief Returns the end iterator of the splitter, returning the trajectories
+	 * @return The end iterator
+	 */
 	iterator end() { return iterator(); }
 
 private:
@@ -69,6 +97,10 @@ private:
 	ProbePoint _carry;
 	bool _exists_carry;
 
+	/**
+	 * @brief Read a single (sub)trajectory from the probes
+	 * @return The trajectory.
+	*/
 	inline value_type read_segment() {
 		bool segment_done = false;
 		value_type _segment;

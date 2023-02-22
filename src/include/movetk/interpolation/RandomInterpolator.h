@@ -137,37 +137,20 @@ public:
 			auto radius_v = delta_backward * max_speed;
 			auto squared_radius_u = radius_u * radius_u;
 			auto squared_radius_v = radius_v * radius_v;
-			/*std::cerr<<"source: "<<*source<<"\n";
-			std::cerr<<"destination: "<<*destination<<"\n";
-			std::cerr<<"radius_u: "<<radius_u<<"\n";
-			std::cerr<<"radius_v: "<<radius_v<<"\n";*/
 			typename InterpolationTraits::MovetkVector v = *source - *destination;
 			typename InterpolationTraits::NT squared_length = norm(v);
 			if (squared_length < MOVETK_EPS)
 				continue;
 
 			auto bounds = mbr(*source, *destination, radius_u, radius_v);
-			typename InterpolationTraits::NT x_min =
-			    std::min(movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.second));
-			typename InterpolationTraits::NT x_max =
-			    std::max(movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.second));
-			typename InterpolationTraits::NT y_min =
-			    std::min(movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
-			typename InterpolationTraits::NT y_max =
-			    std::max(movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
-			             movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
-			/*    std::cerr<<"x_min: "<<x_min<<"\n";
-			    std::cerr<<"x_max: "<<x_max<<"\n";
-			    std::cerr<<"y_min: "<<y_min<<"\n";
-			    std::cerr<<"y_max: "<<y_max<<"\n";*/
-
-			if ((x_min == 0) && (x_max == 0)) {
-				if ((y_min == 0) && (y_max == 0)) {
-					continue;
-				}
+			const auto [x_min, x_max] =
+			    std::minmax(movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.first),
+			                movetk::utils::get_x<typename InterpolationTraits::GeometryTraits>(bounds.second));
+			const auto [y_min, y_max] =
+			    std::minmax(movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.first),
+			                movetk::utils::get_y<typename InterpolationTraits::GeometryTraits>(bounds.second));
+			if ((x_min == 0) && (x_max == 0) && (y_min == 0) && (y_max == 0)) {
+				continue;
 			}
 
 			intersects = true;
@@ -176,15 +159,13 @@ public:
 			std::uniform_real_distribution<typename InterpolationTraits::NT> distributiony(y_min, y_max);
 			typename InterpolationTraits::NT y = distributiony(rng);
 			while (true) {
-				typename InterpolationTraits::MovetkPoint p = make_point({x, y});
-				typename InterpolationTraits::MovetkVector pu = p - *source;
-				typename InterpolationTraits::MovetkVector pv = p - *destination;
-				typename InterpolationTraits::NT squared_length_pu = norm(pu);
-				typename InterpolationTraits::NT squared_length_pv = norm(pv);
+				const auto p = make_point({x, y});
+				const auto pu = p - *source;
+				const auto pv = p - *destination;
+				const auto squared_length_pu = norm(pu);
+				const auto squared_length_pv = norm(pv);
 
 				if ((squared_length_pu <= squared_radius_u + eps) && (squared_length_pv <= squared_radius_v + eps)) {
-					/*std::cerr<<"x: "<<x<<"\n";
-					std::cerr<<"y: "<<y<<"\n";*/
 					if ((abs(x) > 0) && (abs(y) > 0))
 						break;
 				}

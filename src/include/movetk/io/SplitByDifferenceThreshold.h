@@ -30,6 +30,12 @@
 #include <tuple>
 
 namespace movetk::io {
+/**
+ * @brief Predicate to signal when to split a range of probes into separate trajectories,
+ * based on a threshold for the difference of the field of consecutive probes
+ * @tparam FieldIndex Index of the field in the probe tuple
+ * @tparam ProbePoint The probe point types
+*/
 template <int FieldIndex, class ProbePoint>
 class SplitByDifferenceThreshold {
 public:
@@ -37,6 +43,11 @@ public:
 
 	explicit SplitByDifferenceThreshold(float threshold) : _threshold(threshold) {}
 
+	/**
+	 * @brief Determine whether to split between the previous and current probe pont
+	 * @param p The current probe point
+	 * @return Whether or not to split.
+	*/
 	bool operator()(const ProbePoint& p) {
 		if (!prev_field_value) {
 			prev_field_value = std::get<FieldIndex>(p);

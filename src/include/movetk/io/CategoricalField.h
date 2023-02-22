@@ -24,14 +24,14 @@
 #ifndef MOVETK_CATEGORICALFIELD_H
 #define MOVETK_CATEGORICALFIELD_H
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <string>
 #include <unordered_map>
-#include <vector>
 #include <utility>
+#include <vector>
 
-namespace movetk::io{
+namespace movetk::io {
 /**
  *
  * @tparam T type of the field
@@ -39,69 +39,39 @@ namespace movetk::io{
  *         (Using the "Curiously recurring template pattern" to enforce separate static variables for each subclass)
  */
 template <class T, class CRTP>
-struct CategoricalField
-{
+struct CategoricalField {
+	std::size_t _idx;
+	static inline std::vector<T> _values = {};
+	static inline std::unordered_map<T, std::size_t> _indexOf = {};
 
-    std::size_t _idx;
-    static std::vector<T> _values;
-    static std::unordered_map<T, std::size_t> _indexOf;
+	CategoricalField(const T &value) { _idx = m_indexOf[value]; }
 
-    inline std::size_t idx() const
-    {
-        return _idx;
-    }
-    double operator-(CategoricalField<T, CRTP> &rhs)
-    {
-        return _idx - rhs._idx; // time_end, time_beg
-    }
-    bool operator<(CategoricalField<T, CRTP> &rhs)
-    {
-        return _idx < rhs._idx;
-    }
-    bool operator>(CategoricalField<T, CRTP> &rhs)
-    {
-        return rhs < *this;
-    }
-    bool operator<=(CategoricalField<T, CRTP> &rhs)
-    {
-        return !(rhs < *this);
-    }
-    bool operator>=(CategoricalField<T, CRTP> &rhs)
-    {
-        return !(*this < rhs);
-    }
-    inline void add(T &&t)
-    {
-        if (_indexOf.find(t) == _indexOf.end())
-        {
-            _indexOf[t] = _values.size();
-            _idx = _values.size();
-            _values.push_back(t);
-        }
-        else
-        {
-            _idx = _indexOf[t];
-        }
-    }
-    friend std::istream &operator>>(std::istream &is, CategoricalField<T, CRTP> &field)
-    {
-        T t;
-        is >> t;
-        field.add(std::move(t));
-        return is;
-    }
+	inline std::size_t idx() const { return _idx; }
+	double operator-(const CategoricalField<T, CRTP> &rhs) const { return _idx - rhs._idx; }
+	bool operator<(const CategoricalField<T, CRTP> &rhs) const { return _idx < rhs._idx; }
+	bool operator>(const CategoricalField<T, CRTP> &rhs) const { return rhs < *this; }
+	bool operator<=(const CategoricalField<T, CRTP> &rhs) const { return !(rhs < *this); }
+	bool operator>=(const CategoricalField<T, CRTP> &rhs) const { return !(*this < rhs); }
+	void add(T &&t) {
+		if (_indexOf.find(t) == _indexOf.end()) {
+			_indexOf[t] = _values.size();
+			_idx = _values.size();
+			_values.push_back(t);
+		} else {
+			_idx = _indexOf[t];
+		}
+	}
+	friend std::istream &operator>>(std::istream &is, CategoricalField<T, CRTP> &field) {
+		T t;
+		is >> t;
+		field.add(std::move(t));
+		return is;
+	}
 
-    friend std::ostream &operator<<(std::ostream &os, const CategoricalField<T, CRTP> &field)
-    {
-        os << field._values[field._idx];
-        return os;
-    }
+	friend std::ostream &operator<<(std::ostream &os, const CategoricalField<T, CRTP> &field) {
+		os << field._values[field._idx];
+		return os;
+	}
 };
-
-template <class T, class CRTP>
-std::vector<T> CategoricalField<T, CRTP>::_values;
-
-template <class T, class CRTP>
-std::unordered_map<T, std::size_t> CategoricalField<T, CRTP>::_indexOf;
-}
-#endif //MOVETK_CATEGORICALFIELD_H
+}  // namespace movetk::io
+#endif  // MOVETK_CATEGORICALFIELD_H
