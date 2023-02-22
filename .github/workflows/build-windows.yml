@@ -33,7 +33,7 @@ jobs:
           path: ~/.conan
           key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
       - name: Install conan
-        run: pip install conan
+        run: pip install conan==1.59.0
       - name: Install dependencies via conan
         run: conan install ${{github.workspace}}/movetk/conanfile.txt -if ${{github.workspace}}/conan-deps --build=missing 
       - name: Save Conan packages
