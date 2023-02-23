@@ -45,7 +45,7 @@ namespace detail {
 template <typename SEPARATOR, typename ARG, typename... ARGS>
 std::ostream& write_separated(std::ostream& stream, SEPARATOR&& separator, ARG&& arg, ARGS&&... args) {
 	stream << std::forward<ARG>(arg);
-	(stream << separator << args, ...);
+	((stream << separator << args), ...);
 	return stream;
 }
 template <typename SEPARATOR, typename TUPLE, size_t... IS>

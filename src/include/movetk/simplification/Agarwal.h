@@ -38,6 +38,7 @@ namespace movetk::simplification {
 /**
  * @brief Computes the polyline simplification using the algorithm by Agarwal et al.
  * Based on https://doi.org/10.1007/s00453-005-1165-y
+ * @headerfile Agarwal.h movetk/simplification/Agarwal.h
  * @tparam GeometryTraits The geometry kernel
  * @tparam SqDistanceFunc Algorithm for computing the squared distance between points and points/segments.
  */
@@ -117,7 +118,7 @@ public:
 			// Iterator to the point to check
 			auto nextPointIt = curr + searchUpper + 1;
 			// Distance is larger than epsilon
-			if (!sfd.decide(segment.begin(), segment.end(), curr, nextPointIt, m_epsilon)) {
+			if (!m_strong_frechet_distance.decide(segment.begin(), segment.end(), curr, nextPointIt, m_epsilon)) {
 				auto upper = binary_search_for_violating_point(searchLower, searchUpper, segment,curr);
 				// Assign the output
 				*result = curr + upper - 1;

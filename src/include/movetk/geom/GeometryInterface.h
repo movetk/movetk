@@ -67,9 +67,9 @@ NT rad2deg(const NT radians) {
 }
 
 /**
-* @namespace movetk::backends
-* @brief Collection of supported MoveTK backends.
-*/
+ * @namespace movetk::backends
+ * @brief Collection of supported MoveTK backends.
+ */
 
 /**
  * @brief Class representing a Wedge.
@@ -91,7 +91,7 @@ private:
 	MovetkVector e2 = make_point({0, 1}) - ORIGIN;
 	MovetkVector _slope = ORIGIN - ORIGIN;
 	MovetkVector _intercept = ORIGIN - ORIGIN;
-	enum class Direction : public int8_t { NEGATIVE, POSITIVE, ZERO };
+	enum class Direction : int8_t { NEGATIVE, POSITIVE, ZERO };
 	Direction wedge_directions[2] = {Direction::ZERO, Direction::ZERO};
 	bool horizontal = false, vertical = false;
 	bool degenerate = false;
@@ -107,12 +107,12 @@ private:
 		if (abs(ray_x) < MOVETK_EPS) {
 			vertical = true;
 		} else {
-			wedge_directions[0] = ray.x > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
+			wedge_directions[0] = ray_x > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
 		}
 		if (abs(ray_y) < MOVETK_EPS) {
 			horizontal = true;
 		} else {
-			wedge_directions[1] = ray.y > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
+			wedge_directions[1] = ray_y > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
 		}
 
 		if (ray_x >= 0 && ray_y >= 0) {
@@ -132,7 +132,7 @@ private:
 	static auto make_vector(NT x, NT y) { return make_point({x, y}) - ORIGIN; }
 	static auto make_vector(const MovetkPoint& p) { return p - ORIGIN; }
 
-	void compute_slopes_from_radius_and_tangent_length_squared(NT radius, NT tangent_squared_length) {
+	void compute_slopes_from_radius_and_tangent_length_squared(NT ray_slope, NT radius, NT tangent_squared_length) {
 		// Degenerate wedge has no slopes.
 		if (degenerate) {
 			_slope = ORIGIN - ORIGIN;
@@ -142,9 +142,9 @@ private:
 		NT tanB = radius / sqrt(tangent_squared_length);
 		NT m1, m2;
 		// Handle degenerate central ray directions
-		if (horizontal || directions[1] == Direction::ZERO) {
+		if (horizontal || wedge_directions[1] == Direction::ZERO) {
 			// Ray pointing to the left
-			if (directions[0] == Direction::NEGATIVE) {
+			if (wedge_directions[0] == Direction::NEGATIVE) {
 				// Flip the slopes to be correct again.
 				tanB *= -1;
 			}
@@ -158,8 +158,6 @@ private:
 			m2 = -m1;
 			_slope = make_vector(m1, m2);
 		} else {
-			// Slope of the ray
-			NT ray_slope = v_y / v_x;
 			// Compute the slopes of the lines of the wedge,
 			// using tan(a+b)=(tan(a)+tan(b))/(1-tan(a)tan(b)) and
 			// similar for tan(a-b).
@@ -201,7 +199,8 @@ private:
 		if (abs(tangent_squared_length) < MOVETK_EPS) {
 			degenerate = true;
 		}
-		compute_slopes_from_radius_and_tangent_length_squared(radius, tangent_squared_length);
+		const auto ray_slope = degenerate ? static_cast<NT>(0) : v_y / v_x;
+		compute_slopes_from_radius_and_tangent_length_squared(ray_slope, radius, tangent_squared_length);
 
 		c1 = make_vector({-1 * (_slope * e1), 1}) * (p - ORIGIN);  // (y - y0) = m * (x - x0)
 		c2 = make_vector({-1 * (_slope * e2), 1}) * (p - ORIGIN);
@@ -453,7 +452,7 @@ struct Scaling {
 	typename Kernel::MovetkVector operator()(typename Kernel::MovetkPoint p1,
 	                                         typename Kernel::MovetkPoint p2,
 	                                         typename Kernel::NT scale) {
-		const auto v = p2 - p1;
+		auto v = p2 - p1;
 		v *= scale;
 		return v;
 	}
@@ -462,7 +461,7 @@ struct Scaling {
 	 * @param v The vector
 	 * @param scale The scale
 	 * @return Scaled vector
-	*/
+	 */
 	typename Kernel::MovetkVector operator()(typename Kernel::MovetkVector v, typename Kernel::NT scale) {
 		v *= scale;
 		return v;
@@ -472,7 +471,7 @@ struct Scaling {
 /**
  * @brief Translation functor for translating a MovetkPoint
  * @tparam Kernel The kernel for the point
-*/
+ */
 template <concepts::BaseKernel Kernel>
 struct Translation {
 	/**
@@ -480,9 +479,9 @@ struct Translation {
 	 * @param p The point
 	 * @param v The vector
 	 * @return The translated point
-	*/
-	typename GeometryTraits::MovetkPoint operator()(const typename GeometryTraits::MovetkPoint& p,
-	                                                const typename GeometryTraits::MovetkVector& v) {
+	 */
+	typename Kernel::MovetkPoint operator()(const typename Kernel::MovetkPoint& p,
+	                                        const typename Kernel::MovetkVector& v) {
 		auto p1 = p + v;
 		return p1;
 	}

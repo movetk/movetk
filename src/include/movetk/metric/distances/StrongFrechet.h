@@ -53,8 +53,8 @@ public:
 		// Smallest epsilon needed to make the ball centered at the point touch the segment
 		NT minimumEpsilon;
 		/**
-		 * @brief Enum to define whether the projection of the point on supporting line of
-		 * the segment lands on it or lies above or below it, where the canonical direction
+		 * @brief Enum to define whether the projection of the point onto the supporting line of
+		 * the segment lands on the segment or lies above or below it, where the canonical direction
 		 * of the segment is used.
 		 */
 		enum class Type { On, Above, Below };
