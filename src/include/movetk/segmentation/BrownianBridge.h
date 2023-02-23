@@ -37,11 +37,11 @@
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_math.h>
+#include <gsl/gsl_min.h>
 
 #include <cmath>
 #include <iterator>
 
-#include "gsl/gsl_min.h"
 #include "movetk/geom/trajectory_to_interface.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
@@ -253,14 +253,11 @@ public:
 	}
 
 	/*!
-	 *
-	 * @return
+	 * Returns the estimated parameter
+	 * @return The estimated parameter
 	 */
-	NT operator()() { return estimated_parameter; }
+	NT operator()() const { return estimated_parameter; }
 
-	/*!
-	 *
-	 */
 	~MLE() { gsl_min_fminimizer_free(s); }
 };
 
@@ -283,7 +280,7 @@ private:
 
 	NT joint_log_likelihood = 0;
 
-	Point mean(Point &p1, Point &p2, NT alpha) {
+	static Point lerp(Point &p1, Point &p2, NT alpha) {
 		Vector v = p2 - p1;
 		v *= alpha;
 		return (p1 + v);
@@ -326,7 +323,7 @@ public:
 		TrajectoryIterator tit = first;
 		std::size_t NumPoints = std::distance(first, beyond);
 
-		auto point_from_iterator = [this,&ref](auto iterator) {
+		auto point_from_iterator = [this, &ref](auto iterator) {
 			auto lat = std::get<ProbeTraits::ProbeColumns::LAT>(*iterator);
 			auto lon = std::get<ProbeTraits::ProbeColumns::LON>(*iterator);
 			auto projected_point = ref.project(lat, lon);
@@ -344,7 +341,7 @@ public:
 
 		while (tit != last) {
 			Point p1 = point_from_iterator(tit);
-			Point p2 = point_from_iterator(tit+1);
+			Point p2 = point_from_iterator(tit + 1);
 			Point p3 = point_from_iterator(tit + 2);
 
 			auto ts1 = std::get<ProbeTraits::ProbeColumns::SAMPLE_DATE>(*tit);
@@ -352,15 +349,15 @@ public:
 			auto ts3 = std::get<ProbeTraits::ProbeColumns::SAMPLE_DATE>(*(tit + 2));
 			NT alpha = static_cast<NT>(ts3 - ts2) / static_cast<NT>(ts3 - ts1);
 
-			Point mu = mean(p1, p3, alpha);
+			Point mu = lerp(p1, p3, alpha);
 			*result = std::make_tuple(p2, mu, 0, tit, tit + 2);
 			tit += 2;
 		}
 
 		if (remainder == 1) {
 			Point p1 = point_from_iterator(last);
-			Point p2 = point_from_iterator(last+1);
-			Point mu = mean(p1, p2, 0.5);
+			Point p2 = point_from_iterator(last + 1);
+			Point mu = lerp(p1, p2, 0.5);
 			*result = std::make_tuple(mu, mu, 0, last, last + 1);
 		}
 	}
@@ -413,7 +410,12 @@ public:
 	}
 };
 
-
+/**
+ * @brief Functor for computing the log likelihood for several parameter values
+ * @tparam GeometryTraits The kernel to use
+ * @tparam ParameterTraits Traits for the parameters?
+ * @tparam Norm The norm to use
+*/
 template <class GeometryTraits, class ParameterTraits, class Norm>
 class LogLikelihood {
 	using NT = typename GeometryTraits::NT;
@@ -422,6 +424,16 @@ class LogLikelihood {
 public:
 	LogLikelihood() = default;
 
+	/**
+	 * @brief Computes the log-likelihood for the given parameters, using a range of 
+	 * parameter values for the squared standard deviation
+	 * @tparam InputIterator Type of the input iterator
+	 * @tparam OutputIterator Type of the output iterator to write to.
+	 * @param params The base parameters to use
+	 * @param first Start of standard deviation value range
+	 * @param beyond End of standard deviation value range 
+	 * @param result Output iterator for writing the result to
+	*/
 	template <utils::RandomAccessIterator<NT> InputIterator, utils::OutputIterator<NT> OutputIterator>
 	void operator()(const Parameters &params, InputIterator first, InputIterator beyond, OutputIterator result) {
 		Norm norm;
@@ -436,6 +448,12 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Computes the log-likelihood for a single squared standard deviation
+	 * @param params The base parameters
+	 * @param sigma_squared The squared standard deviation
+	 * @return The log-likelihood
+	*/
 	NT operator()(const Parameters &params, NT sigma_squared) {
 		Norm norm;
 		const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -
