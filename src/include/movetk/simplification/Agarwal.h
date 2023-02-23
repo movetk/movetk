@@ -37,6 +37,7 @@
 namespace movetk::simplification {
 /**
  * @brief Computes the polyline simplification using the algorithm by Agarwal et al.
+ * @include{doc} pages/agarwal.md
  * Based on https://doi.org/10.1007/s00453-005-1165-y
  * @headerfile Agarwal.h movetk/simplification/Agarwal.h
  * @tparam GeometryTraits The geometry kernel

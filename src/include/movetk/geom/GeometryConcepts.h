@@ -4,28 +4,30 @@
 #include <type_traits>
 #include <vector>
 /**
-* @brief Contains concepts for geometric objects used in MoveTK
-*/
+ * @brief Contains concepts for geometric objects used in MoveTK
+ */
 namespace movetk::geom::concepts {
 /**
-* @concept Point
-* @brief Concept describing a Point for a Kernel.
-*/
+ * @concept Point
+ * @brief Concept describing a Point for a Kernel.
+ */
 template <typename POINT, typename KERNEL>
 concept Point = requires(POINT& point, const POINT& const_point, size_t index) {
-	// Copy and default constructible
-	requires std::is_copy_constructible_v<POINT>;
-	requires std::is_default_constructible_v<POINT>;
 	typename KERNEL::NT;
 	typename KERNEL::MovetkVector;
 
-	// Iterations
+	// Copy and default constructible
+	POINT(const_point);
+	POINT();
+
+	// Constructible from an initalizer list of coordinates
+	POINT(std::declval<std::initializer_list<typename KERNEL::NT>>());
+	// Constructible from an input iterator pair. Note that we use std::vector<> iterators as a proxy
+	requires requires(typename std::vector<typename KERNEL::NT>::iterator iterator) { POINT(iterator, iterator); };
+
+	// Iteration of coordinates
 	const_point.begin();
 	const_point.end();
-
-	// Indexing
-	//{ const_point[index] } -> std::same_as<const typename KERNEL::NT&>;
-	//{ point[index] } -> std::same_as<typename KERNEL::NT&>;
 
 	// Arithmetic
 	{ const_point - const_point } -> std::convertible_to<typename KERNEL::MovetkVector>;
