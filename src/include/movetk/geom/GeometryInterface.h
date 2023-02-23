@@ -27,7 +27,6 @@
 #include "GeometryConcepts.h"
 #include "Intersections.h"
 #include "ObjectCreation.h"
-#include "movetk/utils/Asserts.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
 

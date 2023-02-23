@@ -29,8 +29,6 @@
 #include <iostream>
 #include <numeric>
 
-#include "movetk/utils/Asserts.h"
-
 namespace movetk::metric {
 /**
  * @brief L_P norm functor

@@ -26,7 +26,6 @@
 
 
 #include "movetk/geom/GeometryInterface.h"
-#include "movetk/utils/Asserts.h"
 
 namespace movetk::metric {
 /**

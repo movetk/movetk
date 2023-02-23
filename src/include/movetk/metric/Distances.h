@@ -34,7 +34,6 @@
 #include "movetk/metric/distances/DiscreteHausdorff.h"
 #include "movetk/metric/distances/StrongFrechet.h"
 #include "movetk/metric/distances/WeakFrechet.h"
-#include "movetk/utils/Asserts.h"
 
 /**
  * @brief Collection of metric distance computations
