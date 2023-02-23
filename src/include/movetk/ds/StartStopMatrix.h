@@ -120,6 +120,7 @@ public:
 			*this->result = *it;
 			it++;
 		}
+		return *this;
 	}
 
 	StartStopDiagram operator+(const StartStopDiagram& rhs) const {

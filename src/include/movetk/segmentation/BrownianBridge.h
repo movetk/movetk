@@ -327,7 +327,7 @@ public:
 		TrajectoryIterator tit = first;
 		std::size_t NumPoints = std::distance(first, beyond);
 
-		auto point_from_iterator = [](auto iterator) {
+		auto point_from_iterator = [this,&ref](auto iterator) {
 			auto lat = std::get<ProbeTraits::ProbeColumns::LAT>(*iterator);
 			auto lon = std::get<ProbeTraits::ProbeColumns::LON>(*iterator);
 			auto projected_point = ref.project(lat, lon);

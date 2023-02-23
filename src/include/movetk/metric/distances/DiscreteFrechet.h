@@ -72,7 +72,7 @@ public:
 
 		// Compute the Frechet distance using dynamic programming.
 		size_t i = 0;
-		for (auto it_a polyline_a_first; it_a != polyline_a_beyond; ++it_a, ++i) {
+		for (auto it_a = polyline_a_first; it_a != polyline_a_beyond; ++it_a, ++i) {
 			std::size_t j = 0;
 			NT previous = -1, current = -1;
 			for (auto it_b = polyline_b_first; it_b != polyline_b_beyond; ++it_b, ++j) {
