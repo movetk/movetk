@@ -163,7 +163,6 @@ public:
 
 	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) const {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		if (std::all_of(first, beyond, [](NT i) { return i == 0; }))
 			return true;
 		NT min = *movetk::utils::min_non_zero_element<GeometryTraits>(first, beyond);
@@ -200,7 +199,6 @@ public:
 	 */
 	template <std::random_access_iterator InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		NT min = *std::min_element(first, beyond);
 		NT max = *std::max_element(first, beyond);
 		NT diff = max - min;
