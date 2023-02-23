@@ -35,7 +35,6 @@
 #include <string>
 #include <vector>
 
-#include "movetk/utils/Asserts.h"
 #include "movetk/utils/Requirements.h"
 
 namespace movetk::ds {

@@ -39,7 +39,6 @@
 #include <list>
 
 #include "movetk/geom/GeometryConcepts.h"
-#include "movetk/utils/Asserts.h"
 #include "movetk/utils/Meta.h"
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/StringUtils.h"
@@ -186,7 +185,6 @@ public:
 	 */
 	template <std::random_access_iterator CoordinateIterator>
 	Point(CoordinateIterator first, CoordinateIterator beyond) {
-		ASSERT_NUMBER_TYPE(Kernel, first);
 		size_t dimensions = std::distance(first, beyond);
 		pt = CGAL_Point(dimensions, first, beyond);
 	}

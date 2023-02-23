@@ -30,7 +30,6 @@
 #include <iostream>
 #include <utility>
 
-#include "movetk/utils/Asserts.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
 #include "movetk/utils/StringUtils.h"
