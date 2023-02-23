@@ -90,8 +90,8 @@ namespace movetk::geom {
         */
         template <utils::OutputIterator<typename IntersectionTraits::value_type> OutputIterator,
             typename = movetk::utils::requires_L2_norm<typename IntersectionTraits::Norm>>
-            void operator()(typename GeometryTraits::MovetkSphere& sphere,
-                typename GeometryTraits::MovetkSegment& segment,
+            void operator()(const typename GeometryTraits::MovetkSphere& sphere,
+	                      const typename GeometryTraits::MovetkSegment& segment,
                 OutputIterator result) {
             typename IntersectionTraits::Norm norm;
             const auto v1 = segment[1] - segment[0];

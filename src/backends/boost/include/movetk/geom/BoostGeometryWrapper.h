@@ -51,7 +51,7 @@ namespace wrappers {
 /**
  * @brief An adapted point for a Boost point
  * @tparam Kernel The kernel to use
-*/
+ */
 template <class Kernel>
 class Point {
 private:
@@ -64,7 +64,7 @@ private:
 	/**
 	 * @brief Constructs the point from the Boost container for the point
 	 * @param p The container
-	*/
+	 */
 	Point(Point_Container&& p) {
 		pt.template set<0>(std::move(p[0]));
 		pt.template set<1>(std::move(p[1]));
@@ -79,14 +79,14 @@ public:
 	/**
 	 * @brief Construct the Point from a native Boost point
 	 * @param p The point
-	*/
+	 */
 	Point(const Boost_Point& p) : pt(p) {}
 
 	/**
 	 * @brief Constructs a point from a pair of coordinate iterators
 	 * @param first The start of the coordinate range
-	 * @param beyond The end of the coordinate range 
-	*/
+	 * @param beyond The end of the coordinate range
+	 */
 	template <utils::InputIterator<NT> CoordinateIterator>
 	Point(CoordinateIterator first, CoordinateIterator beyond) {
 		pt.template set<0>(*first);
@@ -98,7 +98,7 @@ public:
 	/**
 	 * @brief Begin iterator of the coordinate range
 	 * @return The begin iterator
-	*/
+	 */
 	auto begin() const { return std::addressof(pt.template get<0>()); }
 
 	/**
@@ -111,7 +111,7 @@ public:
 	 * @brief Indexing operator to get the \p i-th coordinate of the point
 	 * @param i The index
 	 * @return The coordinate
-	*/
+	 */
 	const NT& operator[](size_t i) const { return *(std::addressof(pt.template get<0>()) + i); }
 
 	/**
@@ -125,7 +125,7 @@ public:
 	 * @brief Subtracts another point from this point, resulting in a vector
 	 * @param point The other point
 	 * @return The vector pointing from the other point to this point
-	*/
+	 */
 	Vector operator-(const Point& point) const {
 		Vector v1(*this);
 		Vector v2(point);
@@ -143,11 +143,22 @@ public:
 		Point _point(std::move(result));
 		return _point;
 	}
+	/**
+	 * @brief Adds the vector to this point
+	 * @param v The vector
+	 * @return A copy of this point, translated by the given vector
+	 */
+	Point operator-(const Vector& v) const {
+		Point_Container result;
+		std::transform(this->begin(), this->end(), v.begin(), result.begin(), std::minus<typename Kernel::NT>());
+		Point _point(std::move(result));
+		return _point;
+	}
 
 	/**
 	 * @brief Returns a copy of the native point
 	 * @return The native point
-	*/
+	 */
 	Boost_Point get() const { return pt; }
 
 	/**
@@ -155,7 +166,7 @@ public:
 	 * @param out The output stream
 	 * @param point The point
 	 * @return The output stream
-	*/
+	 */
 	friend std::ostream& operator<<(std::ostream& out, const Point& point) {
 		return (out << movetk::utils::join(point.begin(), point.end()));
 	}
@@ -163,8 +174,8 @@ public:
 
 /**
  * @brief An adapted segment for a Boost segment
- * @tparam Kernel 
-*/
+ * @tparam Kernel
+ */
 template <class Kernel>
 class Segment {
 private:

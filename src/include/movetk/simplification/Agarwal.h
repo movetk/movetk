@@ -54,7 +54,7 @@ class Agarwal {
 
 public:
 	Agarwal(typename GeometryTraits::NT epsilon = static_cast<NT>(1.0)) : m_epsilon(epsilon) {
-		m_strong_frechet_distance.setTolerance(tolerance);
+		m_strong_frechet_distance.setTolerance(m_tolerance);
 	}
 
 	void setEpsilon(typename GeometryTraits::NT epsilon) { m_epsilon = epsilon; }
@@ -119,7 +119,7 @@ public:
 			auto nextPointIt = curr + searchUpper + 1;
 			// Distance is larger than epsilon
 			if (!m_strong_frechet_distance.decide(segment.begin(), segment.end(), curr, nextPointIt, m_epsilon)) {
-				auto upper = binary_search_for_violating_point(searchLower, searchUpper, segment,curr);
+				auto upper = binary_search_for_violating_point(searchLower, searchUpper, segment, curr);
 				// Assign the output
 				*result = curr + upper - 1;
 				startPointIndex += upper - 1;
@@ -150,7 +150,7 @@ private:
 	size_t binary_search_for_violating_point(size_t search_lower,
 	                                         size_t search_upper,
 	                                         std::array<typename GeometryTraits::MovetkPoint, 2>& segment_to_check,
-	                                         InputIterator curr) {
+	                                         InputIterator curr) const {
 		// Perform binary search to find p_j such that the subpath to p_{j+1} is above epsilon
 		auto lower = search_lower;  // Guaranteed to be within epsilon
 		auto upper = search_upper;  // Guaranteed to be outside epsilon
