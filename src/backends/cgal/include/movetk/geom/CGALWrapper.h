@@ -408,6 +408,14 @@ public:
 
 	Vector operator+(const Vector &vector) const { return Vector(this->get() + vector.get()); }
 
+	Vector &operator+=(const Vector &vector) {
+		vec += vector.vec;
+		return *this;
+	}
+	Vector &operator-=(const Vector &vector) {
+		vec -= vector.vec;
+		return *this;
+	}
 
 	Vector operator-(const Vector &vector) const { return Vector(this->get() - vector.get()); }
 

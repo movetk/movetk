@@ -85,8 +85,8 @@ public:
 private:
 	using NT = typename GeometryTraits::NT;
 	Norm norm;
-	geom::MakePoint<GeometryTraits> make_point;
-	MovetkPoint ORIGIN = make_point({0, 0});
+	static inline geom::MakePoint<GeometryTraits> make_point = {};
+	static inline MovetkPoint ORIGIN = make_point({0, 0});
 	MovetkVector e1 = make_point({1, 0}) - ORIGIN;
 	MovetkVector e2 = make_point({0, 1}) - ORIGIN;
 	MovetkVector _slope = ORIGIN - ORIGIN;
@@ -107,12 +107,12 @@ private:
 		if (abs(ray_x) < MOVETK_EPS) {
 			vertical = true;
 		} else {
-			wedge_directions[0] = ray_x > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
+			wedge_directions[0] = ray_x > 0 ? Direction::POSITIVE : Direction::NEGATIVE;
 		}
 		if (abs(ray_y) < MOVETK_EPS) {
 			horizontal = true;
 		} else {
-			wedge_directions[1] = ray_y > 0 ? Direction::POSIITVE : Direction::NEGATIVE;
+			wedge_directions[1] = ray_y > 0 ? Direction::POSITIVE : Direction::NEGATIVE;
 		}
 
 		if (ray_x >= 0 && ray_y >= 0) {
@@ -148,7 +148,7 @@ private:
 				// Flip the slopes to be correct again.
 				tanB *= -1;
 			}
-			_slope = make_vector({tanB, -tanB});
+			_slope = make_vector(tanB, -tanB);
 		} else if (vertical) {
 			NT tanA = tan(PI / 2 - MOVETK_EPS * 0.001);
 			if ((tanA * tanB) == 1)
@@ -202,8 +202,8 @@ private:
 		const auto ray_slope = degenerate ? static_cast<NT>(0) : v_y / v_x;
 		compute_slopes_from_radius_and_tangent_length_squared(ray_slope, radius, tangent_squared_length);
 
-		c1 = make_vector({-1 * (_slope * e1), 1}) * (p - ORIGIN);  // (y - y0) = m * (x - x0)
-		c2 = make_vector({-1 * (_slope * e2), 1}) * (p - ORIGIN);
+		c1 = make_vector(-1 * (_slope * e1), 1) * (p - ORIGIN);  // (y - y0) = m * (x - x0)
+		c2 = make_vector(-1 * (_slope * e2), 1) * (p - ORIGIN);
 		_intercept = make_point({c1, c2}) - ORIGIN;
 	}
 
