@@ -60,7 +60,6 @@ public:
 	template <std::random_access_iterator InputIterator>
 		requires(std::is_invocable_r_v<bool, TestType, InputIterator, InputIterator>)
 	size_t operator()(InputIterator first, size_t min, size_t left, size_t right) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		if (left >= right)
 			return right;
 		size_t mid = (left + right) / 2;

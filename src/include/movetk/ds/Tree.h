@@ -480,7 +480,6 @@ private:
 	template <std::random_access_iterator InputIterator>
 	          //typename = utils::requires_arithmetic<typename InputIterator::value_type>>
 	reference find(reference node, InputIterator current, InputIterator beyond) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		if (current == beyond)
 			return node;
 		if (!(*node)(*current))
@@ -544,7 +543,6 @@ public:
 	template <std::random_access_iterator InputIterator,
 	          class ValueType>
 	void insert(InputIterator first, InputIterator beyond, ValueType& val) {
-		// ASSERT_RANDOM_ACCESS_ITERATOR(InputIterator);
 		identifier = "";
 		this->insert(root, first, beyond, val);
 	}
