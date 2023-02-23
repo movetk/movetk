@@ -62,6 +62,11 @@ concept IteratorCheck = requires(T t) {
     std::common_reference_with<std::iter_reference_t<T>&&, std::iter_rvalue_reference_t<T>&&>&&
         std::common_reference_with<std::iter_rvalue_reference_t<T>&&, const std::iter_value_t<T>&>;
 
+/**
+ * @brief Trajectory datastructure that stores fields in "row major" order:
+ * each probe is stored as a tuple, the full trajecory is a list of these tuples.
+ * @tparam ...fields The fields to store.
+ */
 template <class... fields>
 class TabularTrajectory {
 public:
@@ -93,8 +98,8 @@ public:
 	 * @brief Construct a TabularTrajectory from a range of row values
 	 * @param first Start of the range
 	 * @param last End of the range
-	*/
-	template<utils::InputIterator<value_type> ROW_ITERATOR>
+	 */
+	template <utils::InputIterator<value_type> ROW_ITERATOR>
 	TabularTrajectory(ROW_ITERATOR first, ROW_ITERATOR last) {
 		std::copy(first, last, std::back_inserter(_points));
 	}
@@ -114,12 +119,29 @@ public:
 	TabularTrajectory& operator=(const TabularTrajectory&) = default;
 	TabularTrajectory& operator=(TabularTrajectory&&) = default;
 
-	std::size_t size() { return _points.size(); }
+	/**
+	 * @brief Returns the number of probes(rows) in the trajectory
+	 * @return The number of probes
+	 */
+	std::size_t size() const { return _points.size(); }
 
+	/**
+	 * @brief Returns the storage scheme
+	 * @return The storage scheme
+	 */
 	constexpr static io::StorageScheme storage_scheme() { return io::StorageScheme::tabular; }
 
-	constexpr std::size_t num_fields() { return sizeof...(fields); }
+	/**
+	 * @brief Returns the number of fields
+	 * @return The number of feilds
+	 */
+	constexpr std::size_t num_fields() const { return sizeof...(fields); }
 
+	/**
+	 * @brief Returns the values of the field with the given index
+	 * @tparam field_idx Index of the field to return
+	 * @return A copy of the values of the field
+	 */
 	template <int field_idx>
 	auto get() const -> std::vector<FieldType<field_idx>> {
 		std::vector<FieldType<field_idx>> field_vector;
@@ -135,9 +157,12 @@ public:
 	 */
 	const ValueList& data() const { return _points; }
 
+	/**
+	 * @brief Updates all the values of the specified field with the new values
+	 * @param new_field_values The new values
+	 */
 	template <int field_idx>
-	void update_field(
-	    std::vector<typename std::tuple_element<field_idx, std::tuple<fields...>>::type>& new_field_values) {
+	void update_field(const std::vector<FieldType<field_idx>>& new_field_values) {
 		assert(new_field_values.size() == _points.size());
 		auto it = std::begin(_points);
 		for (auto fv : new_field_values) {
@@ -145,13 +170,28 @@ public:
 			++it;
 		}
 	}
-
+	/**
+	 * @brief Returns the begin of the range of probes
+	 * @return The begin iterator
+	 */
 	TrajectoryIterator begin() { return _points.begin(); }
 
+	/**
+	 * @brief Returns the end of the range of probes
+	 * @return The end iterator
+	 */
 	TrajectoryIterator end() { return _points.end(); }
 
+	/**
+	 * @brief Returns the begin of the reverse range of probes
+	 * @return The begin iterator
+	 */
 	ReverseTrajectoryIterator rbegin() { return _points.rbegin(); }
 
+	/**
+	 * @brief Returns the End of the reverse range of probes
+	 * @return The end iterator
+	 */
 	ReverseTrajectoryIterator rend() { return _points.rend(); }
 
 	/**
@@ -205,6 +245,12 @@ public:
 		return os;
 	}
 
+	/**
+	 * @brief Functor to lookup probes by an offset
+	 * @tparam GeometryTraits The kernel to use
+	 * @tparam LatIdx Index of the latitude coordinate in the probe
+	 * @tparam LonIdx Index of the longitude coordinate in the probe
+	*/
 	template <class GeometryTraits, int LatIdx, int LonIdx>
 	class LookupByOffsetFn {
 	public:

@@ -44,7 +44,7 @@ namespace movetk::io {
  * @tparam ProbeInputIterator Type of the probe range iterators
  * @tparam SortTrajectory Whether or not to sort the trajectory
  * @tparam RemoveDuplicates Whether or not to remove duplicates in the trajectory
-*/
+ */
 template <class TrajectoryTraits, class ProbeInputIterator, bool SortTrajectory = true, bool RemoveDuplicates = true>
 class TrajectoryReader {
 public:
@@ -112,7 +112,11 @@ private:
 };
 
 
-/// Iterator; just calls recursively @ref TrajectoryReader::read_trajectory and stores the result.
+/**
+ * @brief Transforming iterator of the trajectory reader
+ * @tparam TrajectoryTraits The traits of the trajectory reader
+ * @tparam ProbeInputIterator The probe input iterator type
+ */
 template <class TrajectoryTraits, class ProbeInputIterator, bool SortTrajectory, bool RemoveDuplicates>
 class TrajectoryReader<TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates>::iterator {
 private:
@@ -120,19 +124,19 @@ private:
 	TrajectoryReader *_parent;
 
 public:
-	typedef std::input_iterator_tag iterator_category;
-	typedef TrajectoryReader::value_type value_type;
-	typedef std::size_t difference_type;
-	typedef TrajectoryReader::value_type *pointer;
-	typedef TrajectoryReader::value_type &reference;
+	using iterator_category = std::input_iterator_tag;
+	using value_type = TrajectoryReader::value_type;
+	using difference_type = std::size_t;
+	using pointer = TrajectoryReader::value_type *;
+	using reference = typedef TrajectoryReader::value_type &;
 
 	/// Construct an empty/end iterator
-	inline iterator() : _parent(nullptr) {}
+	iterator() : _parent(nullptr) {}
 	/// Construct an iterator at the beginning of the @p parent object.
-	inline iterator(TrajectoryReader &parent) : _parent(parent.good() ? &parent : nullptr) { ++(*this); }
+	explicit iterator(TrajectoryReader &parent) : _parent(parent.good() ? &parent : nullptr) { ++(*this); }
 
 	/// Read one segment, if possible. Set to end if parent is not good anymore.
-	inline iterator &operator++() {
+	iterator &operator++() {
 		if (_parent != nullptr) {
 			_trajectory = _parent->read_trajectory();
 			if (!_parent->good()) {
@@ -144,15 +148,21 @@ public:
 		return *this;
 	}
 
-	inline iterator operator++(int) {
+	iterator operator++(int) {
 		iterator copy = *this;
 		++(*this);
 		return copy;
 	}
-
-	inline TrajectoryReader::value_type &operator*() { return _trajectory; }
-
-	inline TrajectoryReader::value_type *operator->() { return &_trajectory; }
+	/**
+	 * @brief Returns a trajectory on dereference
+	 * @return The trajectory
+	*/
+	TrajectoryReader::value_type &operator*() { return _trajectory; }
+	/**
+	 * @brief Returns a pointer to the trajectory 
+	 * @return Pointer to the trajectory
+	 */
+	TrajectoryReader::value_type *operator->() { return &_trajectory; }
 
 	bool operator==(iterator const &other) {
 		return (this == &other) || (_parent == nullptr && other._parent == nullptr);

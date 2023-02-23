@@ -36,6 +36,9 @@
 #if MOVETK_WITH_CGAL_BACKEND
 #include "movetk/geom/CGALTraits.h"
 namespace movetk::backends {
+/**
+ * @brief Base 2D CGAL kernel using long double as number type
+*/
 struct CGALBackend {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
@@ -49,6 +52,9 @@ struct CGALBackend {
 #if MOVETK_WITH_BOOST_BACKEND
 #include "movetk/geom/BoostGeometryTraits.h"
 namespace movetk::backends {
+/**
+ * @brief Base 2D Boost kernel using long double as number type
+ */
 struct BoostBackend : public movetk::backends::boost::KernelFor<long double, 2> {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
@@ -87,6 +93,10 @@ static_assert(std::tuple_size_v<AvailableBackends> > 0);
 }  // namespace movetk::backends
 
 namespace movetk {
+/**
+ * @brief Basic geometric kernel
+ * @tparam Backend The backend kernel to use
+*/
 template <typename Backend>
 struct BaseGeometryKernel : public Backend {
 	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;

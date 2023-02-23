@@ -331,7 +331,6 @@ std::ostream& operator<<(std::ostream& out, Wedge<GeometryTraits, Norm>& wedge) 
  * @brief Class representing the minimum bounding rectangle algorithm.
  * Currently computes the minimum bounding rectangle for intersection of spheres.
  * @tparam Norm Norm to use for length computations of vectors
- * @tparam
  */
 template <utils::KernelSatisfying<utils::is_planar_geometry2> GeometryTraits,
           class Norm,
@@ -351,6 +350,11 @@ private:
 
 	Point ORIGIN = make_point({0, 0});
 
+	/**
+	 * @brief Returns the x  coordinate of the vector
+	 * @param v The vector
+	 * @return The x coordinate
+	*/
 	NT get_x(Vector& v) { return v * v.basis(0); }
 
 	NT get_x(Point& p) {
