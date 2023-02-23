@@ -38,6 +38,13 @@
 
 namespace movetk::interpolation {
 
+/**
+ * @brief Convenience traits class for the interpolation algorithms
+ * @tparam _GeometryTraits The kernel to use
+ * @tparam _GeoProjection The geoprojection class to use
+ * @tparam _ProbeTraits Traits of the probes to process
+ * @tparam _Norm The norm to use for computing distances
+*/
 template <class _GeometryTraits, class _GeoProjection, class _ProbeTraits, class _Norm>
 struct InterpolationTraits {
 	using GeometryTraits = _GeometryTraits;

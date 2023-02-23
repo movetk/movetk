@@ -50,6 +50,13 @@ template <class TestTag, class CoordinateTag, class Traits>
 class TEST {};
 
 
+/**
+ * @brief Linear speed bound test predicate for geographic coordinates.
+ * Considers consecutive probes inconsistent if the constant speed between probes,
+ * computing by dividing their distance by their time difference, exceeds the provided
+ * threshold
+ * @tparam Kernel The kernel to use
+ */
 template <class Kernel>
 class TEST<linear_speed_bounded_test_tag, movetk::algo::geo_coordinates_tag, Kernel> {
 public:
@@ -64,6 +71,13 @@ public:
 	explicit TEST(NT threshold) : m_threshold(threshold){};
 
 
+	/**
+	 * @brief Returns true if the constant speed between probes is less
+	 * than the specified threshold
+	 * @param p1 First probe
+	 * @param p2 Second probe
+	 * @return Whether the constant speed between the probes is below the threshold.
+	 */
 	template <utils::TupleWithTypes<utils::TypeAt<Cols::LAT, NT>,
 	                                utils::TypeAt<Cols::LON, NT>,
 	                                utils::TypeAt<Cols::SAMPLE_DATE, size_t>> T1>
@@ -74,7 +88,7 @@ public:
 		assert(tdiff > 0);
 		auto len = movetk::geo::distance_exact(lat0, lon0, lat1, lon1);
 		return len / tdiff <= m_threshold;
-	}  // operator()
+	}
 
 private:
 	template <typename TUPLE>
@@ -85,6 +99,13 @@ private:
 };
 
 
+/**
+ * @brief Linear speed bound test predicate for Cartesian coordinates.
+ * Considers consecutive probes inconsistent if the constant speed between probes,
+ * computing by dividing their distance by their time difference, exceeds the provided
+ * threshold
+ * @tparam Kernel The kernel to use
+ */
 template <class T>
 class TEST<linear_speed_bounded_test_tag, movetk::algo::cartesian_coordinates_tag, T> {
 public:
@@ -97,23 +118,23 @@ public:
 	TEST() = default;
 	TEST(const TEST &) = default;
 
-	/*!
-	 *@param InThreshold
+	/**
+	 * @brief Constructs the predicate
+	 * @param InThreshold
 	 */
 	explicit TEST(NT threshold) : m_threshold(threshold), m_squared_threshold(threshold * threshold) {}
 
 
 	/*!
-	 *
-	 * @tparam ProbePoint
-	 * @param p1
-	 * @param p2
-	 * @return
+	 * Determines whether the linear speed between the probes exceeds the provided threshold
+	 * @tparam ProbePoint The point type 
+	 * @param p1 The first point
+	 * @param p2 The second point
+	 * @return Whether the threshold was exceeded.
 	 */
-
 	template <utils::TupleWithTypes<utils::TypeAt<Cols::PROJECTED_COORDS, typename GeometryTraits::MovetkPoint>,
-	                                utils::TypeAt<Cols::SAMPLE_DATE, size_t>> T1>
-	bool operator()(const T1 &p1, const T1 &p2) {
+	                                utils::TypeAt<Cols::SAMPLE_DATE, size_t>> ProbePoint>
+	bool operator()(const ProbePoint &p1, const ProbePoint &p2) {
 		Norm norm;
 		auto point1 = std::get<ProbeTraits::ProbeColumns::PROJECTED_COORDS>(p1);
 		auto point2 = std::get<ProbeTraits::ProbeColumns::PROJECTED_COORDS>(p2);

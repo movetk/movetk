@@ -16,16 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  * License-Filename: LICENSE
  */
-
-/*! @file Interface.h
- *  @brief  An interface for movetk  geometry
- *  @details A collection of classes that provide a generic
- *  interface for construction of different geometric types
- *  by decoupling the underlying geometry library
- *  (e.g CGAL, Boost etc.) from the interface
- *  @authors Aniket Mitra (aniket.mitra@here.com)
- */
-
 #ifndef MOVETK_INTERFACE_H
 #define MOVETK_INTERFACE_H
 
@@ -45,15 +35,16 @@
 #define TWO_PI 6.2831853
 #define LOG_TWO_PI 1.837877066409345
 
-// TODO  Concepts for the Interface
 /*!
- *
- *  @namespace movetk::utils
- *  @brief the core of movetk
+ *  @namespace movetk::geom
+ *  @brief Defines geometric primitives for usage in MoveTK
+ *  @details A collection of classes that provide a generic
+ *  interface for construction of different geometric types
+ *  by decoupling the underlying geometry library
+ *  (e.g CGAL, Boost etc.) from the interface
+ *  @authors Aniket Mitra (aniket.mitra@here.com)
  */
 namespace movetk::geom {
-// the support library for Movetk
-
 /*!
  * @brief Converts from degree to radians
  * @tparam NT Type of the number to use
@@ -76,9 +67,15 @@ NT rad2deg(const NT radians) {
 	return radians * 180.0 / PI;
 }
 
+/**
+* @namespace movetk::backends
+* @brief Collection of supported MoveTK backends.
+*/
 
 /**
  * @brief Class representing a Wedge.
+ * @details A wedge is defined by a center point and two infinite rays, where all points between
+ * the rays are considered to be part of the wedge.
  */
 template <utils::KernelSatisfying<utils::is_planar_geometry2> GeometryTraits, utils::L2Norm Norm>
 class Wedge {

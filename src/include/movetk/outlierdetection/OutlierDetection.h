@@ -39,13 +39,13 @@ namespace movetk::outlierdetection {
  */
 template <class _ProbeTraits, class _GeometryTraits, class _Norm, class _ContainerTraits = void>
 struct OutlierDetectionTraits {
-	typedef _Norm Norm;
-	typedef _ProbeTraits ProbeTraits;
-	typedef _GeometryTraits GeometryTraits;
-	typedef _ContainerTraits ContainerTraits;
-	typedef typename _GeometryTraits::NT NT;
-	typedef typename _GeometryTraits::MovetkPoint Point;
-	typedef typename _GeometryTraits::MovetkVector Vector;
+	using Norm = _Norm;
+	using ProbeTraits = _ProbeTraits;
+	using GeometryTraits = _GeometryTraits;
+	using ContainerTraits = _ContainerTraits;
+	using NT = typename _GeometryTraits::NT;
+	using Point = typename _GeometryTraits::MovetkPoint;
+	using Vector = typename _GeometryTraits::MovetkVector;
 };
 
 

@@ -31,6 +31,13 @@
 #include "movetk/geom/GeometryInterface.h"
 
 namespace movetk::backends::boost {
+/**
+ * @brief A traits class for the Boost geometry backend
+ * @details
+ * @tparam NumberType The number type to use
+ * @tparam dimensions The number of dimensions to support
+ * Currently we only support dimensions 2 and 3.
+ */
 template <class NumberType, size_t dimensions>
 struct BoostGeometryTraits {
 	static_assert(dimensions < 4);
@@ -39,9 +46,14 @@ struct BoostGeometryTraits {
 	using Point_d = ::boost::geometry::model::point<NT, dimensions, ::boost::geometry::cs::cartesian>;
 	using Wrapper_Boost_Geometry = MovetkBoostKernel<BoostGeometryTraits>;
 };
-template<typename NumberType, size_t dimensions>
-using KernelFor = typename BoostGeometryTraits<NumberType,dimensions>::Wrapper_Boost_Geometry;
-};  // namespace movetk::geom
+/**
+ * @brief Convenience definition to get the Boost MoveTK kernel for the supplied arguments
+ * @tparam NumberType The number type to use
+ * @tparam dimensions The number of dimensions to support
+ */
+template <typename NumberType, size_t dimensions>
+using KernelFor = MovetkBoostKernel<BoostGeometryTraits<NumberType, dimensions>>;
+};  // namespace movetk::backends::boost
 
 
 #endif  // MOVETK_BOOSTGEOMETRYTRAITS_H

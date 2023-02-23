@@ -29,6 +29,12 @@
 #include "SegmentationPredicates.h"
 
 namespace movetk::segmentation {
+/**
+ * @brief Traits for segmentation algorithms
+ * @tparam NT The number type to use
+ * @tparam MovetkGeometryKernel The kernel to use
+ * @tparam dimensions The dimensions of the kernel to use
+*/
 template <class NT, class MovetkGeometryKernel, size_t dimensions>
 struct SegmentationTraits {
 	// type definitions required for algorithm

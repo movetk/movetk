@@ -39,10 +39,19 @@
 namespace movetk::outlierdetection {
 struct output_sensitive_outlier_detector_tag;
 
-// based on B. Custers & M. van de Kerkhof & W. Meulemans and B. Speckmann & F. Staals (2019) .
-// Maximum Physically Consistent Trajectories
-// published in SIGSPATIAL 2019
-// Optimal physics-based outlier detection running in O(nk) time, where k is the number of outliers
+/**
+ * @brief Optimal outlier detection algorithm for concatenable consistency models, such as a speedbounded
+ * model.
+ * Based on B. Custers & M. van de Kerkhof & W. Meulemans and B. Speckmann & F. Staals (2019) .
+ * Optimal physics-based outlier detection running in O(nk) time, where k is the number of outliers
+ * @tparam GeometryKernel
+ * @tparam Predicate Predicate to use for determining consistency between two probes.
+ * Note that we assume that this predicate satistifies the concatenability property:
+ * assuming we could apply the predicate to more than two probes, the following must hold:
+ * \f$Predicate(p1,p2) \land Predicate(p2,p3) \iff Predicate(p1,p2,p3)\f$ for consecutive probes
+ * \f$p1,p2,p3\f$. 
+ * @complexity \f$O(nk)\f$ with \f$n\f$ the number of probes and \f$k\f$ the number of outliers.
+ */
 template <class GeometryKernel, class Predicate>
 class OutlierDetection<GeometryKernel, Predicate, output_sensitive_outlier_detector_tag> {
 private:
@@ -50,6 +59,10 @@ private:
 	Predicate m_predicate;
 	NT m_threshold;
 
+	/**
+	 * @brief A node in the consistency linked list
+	 * @tparam InputIterator
+	 */
 	template <class InputIterator>
 	struct Node {
 	public:
@@ -64,23 +77,23 @@ private:
 	};
 
 	template <class Node>
-	class __base_iterator
+	class base_iterator
 	    : public std::iterator<std::bidirectional_iterator_tag, Node, std::size_t, std::shared_ptr<Node>, Node &> {
 	protected:
 		std::shared_ptr<Node> it;
 
 	public:
-		__base_iterator() = default;
+		base_iterator() = default;
 
-		typedef typename __base_iterator::reference reference;
-		typedef typename __base_iterator::pointer pointer;
-		typedef typename __base_iterator::difference_type difference_type;
+		typedef typename base_iterator::reference reference;
+		typedef typename base_iterator::pointer pointer;
+		typedef typename base_iterator::difference_type difference_type;
 
-		explicit __base_iterator(pointer value) : it(value) {}
+		explicit base_iterator(pointer value) : it(value) {}
 
 		pointer base() const { return it; }
 
-		__base_iterator &operator=(std::shared_ptr<Node> iter) {
+		base_iterator &operator=(std::shared_ptr<Node> iter) {
 			it = iter;
 			return *this;
 		}
@@ -91,18 +104,18 @@ private:
 
 		pointer operator->() const { return it; }
 
-		bool operator!=(__base_iterator const &other) const { return (this->base() != other.base()); }
+		bool operator!=(base_iterator const &other) const { return (this->base() != other.base()); }
 
-		bool operator==(__base_iterator const &other) const { return (this->base() == other.base()); }
+		bool operator==(base_iterator const &other) const { return (this->base() == other.base()); }
 	};
 
 	template <class Node>
-	class iterator : public __base_iterator<Node> {
+	class iterator : public base_iterator<Node> {
 	public:
 		iterator() = default;
-		typedef typename __base_iterator<Node>::pointer pointer;
+		typedef typename base_iterator<Node>::pointer pointer;
 
-		explicit iterator(pointer value) : __base_iterator<Node>(value) {}
+		explicit iterator(pointer value) : base_iterator<Node>(value) {}
 
 
 		iterator &operator++() {
@@ -130,12 +143,12 @@ private:
 
 
 	template <class Node>
-	class consistency_bactracker : public __base_iterator<Node> {
+	class consistency_bactracker : public base_iterator<Node> {
 	public:
 		consistency_bactracker() = default;
-		typedef typename __base_iterator<Node>::pointer pointer;
+		typedef typename base_iterator<Node>::pointer pointer;
 
-		explicit consistency_bactracker(pointer value) : __base_iterator<Node>(value) {}
+		explicit consistency_bactracker(pointer value) : base_iterator<Node>(value) {}
 
 
 		consistency_bactracker &operator--() {
@@ -212,12 +225,11 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <std::random_access_iterator InputIterator,
-	          utils::OutputIterator<InputIterator> OutputIterator>
+	template <std::random_access_iterator InputIterator, utils::OutputIterator<InputIterator> OutputIterator>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		InputIterator it = first;
 		ConsistencyLinkedList<InputIterator> list(it);
-		while (++it != beyond) {
+		for (; it != beyond; ++it) {
 			bool consistent = false;
 			auto iter = list.end();
 			auto longest_sequence = list.begin();
@@ -235,8 +247,7 @@ public:
 			}
 			if (consistent) {
 				list.insert(longest_sequence, it);
-			}
-			if (!consistent) {
+			} else {
 				list.insert(it);
 			}
 		}

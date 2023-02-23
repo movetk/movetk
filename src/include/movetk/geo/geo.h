@@ -34,6 +34,9 @@
 
 #include "movetk/geom/GeometryInterface.h"
 
+/**
+ * @brief Contains functions for working with geographic coordinates
+*/
 namespace movetk::geo {
 /**
  * @brief Returns the geodesic distance between two geographical locations.

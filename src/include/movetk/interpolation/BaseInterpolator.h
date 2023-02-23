@@ -23,6 +23,10 @@
 //
 #ifndef MOVETK_INTERPOLATION_BASEINTERPOLATOR_H
 #define MOVETK_INTERPOLATION_BASEINTERPOLATOR_H
+
+/**
+ * @brief Collection of interpolation algorithms for trajectories
+*/
 namespace movetk::interpolation {
 
 /**

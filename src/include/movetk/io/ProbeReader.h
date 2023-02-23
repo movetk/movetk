@@ -38,6 +38,10 @@
 #include "movetk/io/csv/csv.h"
 #include "movetk/utils/text.h"  // for ends_with
 
+/**
+ * @namespace movetk::io
+ * @brief Contains functionality for reading and writing trajectories
+*/
 namespace movetk::io {
 template <class ProbeTraits>
 class ProbeReader {

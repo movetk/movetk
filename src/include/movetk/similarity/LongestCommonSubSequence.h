@@ -33,12 +33,19 @@
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
 
-
+/**
+ * @brief Contains a collection of similarity algorithms for trajectory processing
+ */
 namespace movetk::similarity {
+/**
+ * @brief Functor for computing the longest common subsequence
+ * @details Implementation is based on doi=10.1.1.78.240
+ * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.78.240&rep=rep1&type=pdf
+ * @tparam GeometryTraits The kernel to use
+ * @tparam Norm The norm to use
+ */
 template <class GeometryTraits, class Norm>
 class LongestCommonSubSequence {
-	// based on doi=10.1.1.78.240
-	// http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.78.240&rep=rep1&type=pdf
 private:
 	typedef typename GeometryTraits::NT NT;
 	NT eps;
@@ -49,11 +56,17 @@ private:
 	}
 
 public:
+	/**
+	 * @brief Constructs the longest common subsequence functor
+	 * @param epsilon The maximum distance allowed to match elements.
+	 * @param delta The maximum coordinate index distance allowed to match
+	*/
 	LongestCommonSubSequence(NT epsilon, std::size_t delta) {
 		eps = epsilon;
 		del = delta;
 	}
 
+	
 	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> InputIterator,
 	          utils::OutputIterator<std::pair<InputIterator, InputIterator>> OutputIterator>
 	std::size_t operator()(InputIterator polyline_a_first,
@@ -74,6 +87,15 @@ public:
 	}
 
 private:
+	/**
+	 * @brief Predicate for determining whether two values can be matched
+	 * @tparam VALUE_TYPE The value type to use
+	 * @param i Index of the first element
+	 * @param i_value Value of the first element
+	 * @param j Index of the second element
+	 * @param j_value Value of the second element
+	 * @return Whether these elements can be matched
+	*/
 	template <typename VALUE_TYPE>
 	bool lcss_predicate(size_t i, const VALUE_TYPE& i_value, size_t j, const VALUE_TYPE& j_value) {
 		auto v = i_value - j_value;

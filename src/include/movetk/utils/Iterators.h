@@ -33,7 +33,7 @@
 #include "movetk/utils/Requirements.h"
 
 /*!
- * @brief the core of movetk
+ * @brief Collection of utilities used in parts of the MoveTK library
  */
 namespace movetk::utils {
 /*!

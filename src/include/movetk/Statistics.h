@@ -37,12 +37,28 @@
 #include "movetk/io/TrajectoryTraits.h"
 
 namespace movetk::statistics {
+/**
+ * @brief Functor for computingthe length of a trajectory
+ * Currently only supports 2 dimensions.
+ * @tparam GeometryKernel The geometry kernel to use
+ * @tparam PointDistanceFunc Distance function to compute the distance between points
+*/
 template <class GeometryKernel, typename PointDistanceFunc = movetk::geom::ComputeLength<GeometryKernel>>
 class TrajectoryLength {
 private:
 	using NT = typename GeometryKernel::NT;
 
 public:
+	/**
+	 * @brief Computes the length of a trajectory, supplied as two ranges of coordinates for the
+	 * first and second coordinate
+	 * @tparam CoordinateIterator Type of the coordinate iterator
+	 * @param firstCoordBegin Start of the range of values of the first coordinate
+	 * @param firstCoordEnd End of the range of values of the first coordinate
+	 * @param secondCoordBegin Start of the range of values of the second coordinate
+	 * @param secondCoordEnd End of the range of values of the second coordinate
+	 * @return The length
+	*/
 	template <typename CoordinateIterator>
 	typename GeometryKernel::NT operator()(CoordinateIterator firstCoordBegin,
 	                                       CoordinateIterator firstCoordEnd,
@@ -70,6 +86,10 @@ public:
 	}
 };
 
+/**
+ * @brief Functor for computing the duration of a trajectory.
+ * @details It computes the difference between the minimum and maximum time.
+*/
 class TrajectoryDuration {
 public:
 	/**
@@ -96,7 +116,11 @@ public:
 		return *(minMaxIts.second) - *(minMaxIts.first);
 	}
 };
-
+/**
+ * @brief Computs statistics for the constant speed between probes
+ * @tparam GeometryKernel The kernel to use
+ * @tparam PointDistanceFunc Point distance to use
+*/
 template <typename GeometryKernel, typename PointDistanceFunc = movetk::geom::ComputeLength<GeometryKernel>>
 class TrajectorySpeedStatistic {
 public:
@@ -112,8 +136,18 @@ public:
 	template <typename Time_t>
 	using Speed_t = decltype(std::declval<Dist_t>() / std::declval<Duration_t<Time_t>>());
 
-private:
-public:
+	/**
+	 * @brief Computes the requested statistics for the speed between probes for a given
+	 * trajectory.
+	 * @tparam PointIterator The iterator type of the point range
+	 * @tparam TimeIterator The iterator type of the time range
+	 * @param pointsBegin Start of the range of points
+	 * @param pointsEnd End of the range of points
+	 * @param timeBegin Start of the range of timestamps
+	 * @param timeEnd End of the range of timestamps
+	 * @param requiredStatistics The requested statistics
+	 * @return The computed statistics, corresponding to the requested statistics in requiredStatistics 
+	*/
 	template <utils::InputIterator<typename GeometryKernel::MovetkPoint> PointIterator, std::input_iterator TimeIterator>
 	std::vector<Speed_t<typename TimeIterator::value_type>> operator()(
 	    PointIterator pointsBegin,
@@ -191,6 +225,19 @@ public:
 		return output;
 	}
 
+	
+	/**
+	 * @brief Computes a single statistic for the speed between probes for a given
+	 * trajectory.
+	 * @tparam PointIterator The iterator type of the point range
+	 * @tparam TimeIterator The iterator type of the time range
+	 * @param pointsBegin Start of the range of points
+	 * @param pointsEnd End of the range of points
+	 * @param timeBegin Start of the range of timestamps
+	 * @param timeEnd End of the range of timestamps
+	 * @param requiredStatistic The requested statistics
+	 * @return The computed statistic, corresponding to the requested statistic \p requiredStatistic
+	 */
 	template <utils::InputIterator<typename GeometryKernel::MovetkPoint> PointIterator, std::input_iterator TimeIterator>
 	Speed_t<typename TimeIterator::value_type> operator()(PointIterator pointsBegin,
 	                                                      PointIterator pointsEnd,
@@ -203,6 +250,9 @@ public:
 	}
 };
 
+/**
+ * @brief Computes the dominant difference for a given input range
+*/
 class ComputeDominantDifference {
 public:
 	template <typename T>

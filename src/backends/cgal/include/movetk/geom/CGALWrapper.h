@@ -16,14 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  * License-Filename: LICENSE
  */
-
-/*! @file CGALAdapter.h
- *  @brief  An adapter for the CGAL library
- *  @details A collection of adapter classes for all
- *  CGAL geometric objects and CGAL algorithms that are used by movetk.
- *  @authors Aniket Mitra (aniket.mitra@here.com)
- */
-
 #ifndef MOVEKT_GEOM_CGALWRAPPER_H
 #define MOVEKT_GEOM_CGALWRAPPER_H
 
@@ -53,6 +45,11 @@
 #include "movetk/utils/StringUtils.h"
 
 
+/*! @brief  CGAL backend
+ *  @details A collection of adapter classes for all
+ *  CGAL geometric objects and CGAL algorithms that are used by movetk.
+ *  @authors Aniket Mitra (aniket.mitra@here.com) Bram Custers (bacusters@gmail.com)
+ */
 namespace movetk::backends::cgal {
 using VALID_CGAL_TYPES = std::tuple<long double, CGAL::MP_Float, CGAL::Gmpfr, CGAL::Gmpq, CGAL::Mpzf>;
 
@@ -146,9 +143,11 @@ struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkPolygon
 	}
 };
 
+/**
+ * @brief Collection of adapters of CGAL geometry to the MoveTK geometry interface
+ */
 namespace wrappers {
-/*! @class Wrapper_CGAL_Point
- *  @brief A wrapper class for CGAL Point.
+/** @brief A wrapper class for CGAL Point.
  *  @details This class acts as a wrapper to a CGAL point by encapsulating
  *  CGAL specific details of a point. Provides a generic interface for a Point.
  * @tparam Kernel - A traits class that defines CGAL geometry types
@@ -257,7 +256,7 @@ public:
 };
 
 
-/*! @class Wrapper_CGAL_Line
+/**
  * @brief A wapper class for CGAL line
  * @details This class acts as a wrapper to a CGAL line by
  * encapsulating CGAL specific details of a line.
@@ -302,7 +301,7 @@ public:
 	CGAL_Line get() const { return line; }
 };
 
-/*! @class Wrapper_CGAL_Segment
+/**
  *  @brief A wrapper class for CGAL Segment
  *  @details This class acts as a wrapper to a CGAL segment by encapsulating
  *  CGAL specific details of segment.
@@ -374,7 +373,7 @@ public:
 };
 
 
-/*! @class Wrapper_CGAL_Vector
+/*!
  * @brief A wrapper class for CGAL vector
  * @details This class acts as a wrapper to a CGAL vector by encapsulating
  *  CGAL specific details of vector.
@@ -446,7 +445,7 @@ public:
 	/*!
 	 * Prints a vector whose components are separated by comma
 	 * @param out - OutputStream
-	 * @param point - A point of type Wrapper_CGAL_Vector<Kernel>
+	 * @param point - A point of type vector<Kernel>
 	 */
 	friend std::ostream &operator<<(std::ostream &out, const Vector &vec) {
 		OutputRep<is_string_castable_NT<typename Kernel::NT>::value, Kernel, Vector> output;
@@ -455,7 +454,7 @@ public:
 };
 
 
-/*! @class Wrapper_CGAL_Polygon
+/*!
  *  @brief A wrapper class for CGAL polygon
  *  @details This class acts as a wrapper to a CGAL polygon by encapsulating
  *  CGAL specific details of polygon.
@@ -794,9 +793,9 @@ bool point_in_polygon(const wrappers::Point<Kernel> &Point, const wrappers::Poly
 
 };  // namespace CGAL_Algorithms
 
-/*!@struct Wrapper_CGAL_Kernel
+/**
  * @brief A traits class that defines CGAL geometry types and its wrappers
- * @tparam Kernel - The CGAL Kernel
+ * @tparam Kernel The CGAL Kernel
  */
 template <class CGAL_Kernel>
 struct MovetkCGALKernel {
@@ -811,7 +810,7 @@ struct MovetkCGALKernel {
 	using CGAL_Sphere_ = typename GeometryType::Sphere_d;
 
 	// Movetk kernel interface
-	typedef typename CGAL_Kernel::NT NT;
+	using NT = typename CGAL_Kernel::NT;
 	constexpr static size_t dim = CGAL_Kernel::dim;
 	using MovetkPoint = wrappers::Point<MovetkCGALKernel>;
 	using MovetkLine = wrappers::Line<MovetkCGALKernel>;

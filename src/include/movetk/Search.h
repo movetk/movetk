@@ -31,9 +31,6 @@
 
 #include "movetk/utils/Requirements.h"
 
-/*!
- * @brief a collection of algorithms in movetk
- */
 namespace movetk::algo {
 /*!
  *

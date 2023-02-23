@@ -44,7 +44,8 @@ public:
 	using NT = typename Kernel::NT;
 	using Point = typename Kernel::MovetkPoint;
 	/**
-	 * \brief Polynomial for the freespace cell boundary.
+	 * \brief Polynomial to describe the freespace at a freespace cellboundary.
+	 * The polynomial is associated to a vertex of one polyline and a segment of the other.
 	 */
 	struct Polynomial {
 		// Parallel-perpendicular decomposition of distance between point and segment
@@ -52,10 +53,21 @@ public:
 		NT perpendicularDistance;
 		// Smallest epsilon needed to make the ball centered at the point touch the segment
 		NT minimumEpsilon;
+		/**
+		 * @brief Enum to define whether the projection of the point on supporting line of
+		 * the segment lands on it or lies above or below it, where the canonical direction
+		 * of the segment is used.
+		 */
 		enum class Type { On, Above, Below };
 		Type type = Type::On;
 
-		// Non-normalized reachable range
+		/**
+		 * @brief Compute the non-normalized reachable range for some value of the maximum allowed distance
+		 * \p epsilon
+		 * @param epsilon The maximum allowed distance for a mathcing between points on the polyline to be free
+		 * @return The (non-normalized) coordinates on the cell boundary that are free. If the first element
+		 * is larger than the second element, the range is considered empty.
+		 */
 		std::pair<NT, NT> range(NT epsilon) const {
 			auto sq = [](auto el) { return el * el; };
 			if (epsilon < minimumEpsilon)
@@ -64,7 +76,14 @@ public:
 			    type == Type::Below ? 0.0 : parallelDistance - std::sqrt(sq(epsilon) - sq(perpendicularDistance)),
 			    type == parallelDistance + (Type::Above ? 0 : std::sqrt(sq(epsilon) - sq(perpendicularDistance))));
 		}
-
+		/**
+		 * @brief Compute the polynomial coefficients on a freespace cell boundary,
+		 * corresponding to the boundary for the reachability between point \p point and
+		 * the segment defined by \p seg0 and \p seg1
+		 * @param point The point
+		 * @param seg0 Start of the segment
+		 * @param seg1 End of the segment
+		 */
 		void compute(const Point &point, const Point &seg0, const Point &seg1) {
 			typename SqDistance::Norm norm;
 			auto dir = seg1 - seg0;
@@ -85,6 +104,9 @@ public:
 		}
 	};
 
+	/**
+	 * @brief Structure for holdying the polynomials for the left and bottom cell boundary
+	 */
 	struct CellPolynomials {
 		// Cell boundary polynomials for left (0) and bottom (1) boundaries.
 		static constexpr size_t LEFT = 0;
@@ -122,24 +144,59 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Computes a parameterized freespace diagram using the given polylines.
+	 * @tparam PointItA Iterator type of the first polyline
+	 * @tparam PointItB Iterator type of the second polyline
+	 * @param polyA Pair of polyline iterators that represent polyline A
+	 * @param polyB Pair of polyline iterators that represent polyline B
+	 */
 	template <typename PointItA, typename PointItB>
 	FreespaceDiagram(const std::pair<PointItA, PointItA> &polyA, const std::pair<PointItB, PointItB> &polyB) {
 		compute_freespace(polyA, polyB);
 	}
 
+	/**
+	 * @brief Returns the list of CellPolynomials associated with row i
+	 * @param i The row in the diagram
+	 * @return The cell polynomials
+	 */
 	const std::vector<CellPolynomials> &operator[](size_t i) const { return parameterized_freespace[i]; }
+	/**
+	 * @brief Returns the number of rows of the freespace diagram
+	 * @return The number of rows.
+	 */
 	size_t size() const { return parameterized_freespace.size(); }
 };
 
+/**
+ * @brief Base template for the strong Frechet predicate functor, which determines whether two
+ * polylines are within a given strong Frechet distance
+ * @tparam Kernel The kernel to use
+ * @tparam SqDistance The squared distance function
+ * @tparam Approach Tag for the approach to use
+ */
 template <typename Kernel, typename SqDistance, typename Approach>
 class StrongFrechetPredicate;
 
+/**
+ * @brief Implementation of the StrongFrechetPredicate using a full freespace diagram.
+ * @tparam Kernel The kernel to use
+ * @tparam SqDistance The squared distance function to use
+ */
 template <typename Kernel, typename SqDistance>
 class StrongFrechetPredicate<Kernel, SqDistance, strong_frechet_strategy::full_freespace> {
 public:
 	using NT = typename Kernel::NT;
 	using MovetkPoint = typename Kernel::MovetkPoint;
 
+	/**
+	 * @brief Construct the predicate for two polylines
+	 * @param poly_a Start of the first polyline
+	 * @param poly_a_beyond End of the first polyline
+	 * @param poly_b Start of the second polyline
+	 * @param poly_b_beyond End of the second polyline
+	 */
 	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
 	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	StrongFrechetPredicate(InputIteratorA poly_a,
@@ -151,10 +208,9 @@ public:
 
 
 	/**
-	 * \brief Given two polylines, decide if the strong Frechet distance is at most epsilon.
-	 * \param polynomials Freespace diagram, given as a table of polynomials
+	 * \brief Given two polylines provided in the constructor, decide if the strong Frechet distance is at most epsilon.
 	 * \param epsilon The maximum allowed Frechet distance
-	 * \return Whether or not the polylines are within Frechet distance epsilon
+	 * \return Whether or not the polylines are within Frechet distance \p epsilon
 	 */
 	bool operator()(NT epsilon) const {
 		// Compare with precomputed distance (no freespace needed)
@@ -333,7 +389,7 @@ private:
 };
 
 /**
- * \brief Strong Frechet distance between polylines
+ * \brief Functor for computing the Strong Frechet distance between polylines
  * Implementation of Alt & Godau in combination with either a double-and-search approach or a
  * bisection (binary search) approach. For the latter, a decent upperbound is needed to determine
  * the search range.
@@ -708,13 +764,6 @@ public:
 			return false;
 
 		if (polyASize == 1) {
-			// std::function<const NT &(const typename Kernel::MovetkPoint &)> transform = [poly_a](const auto &polyBEl) ->
-			// const NT & {
-			//     SqDistance sqDist;
-			//     return std::sqrt(sqDist(*poly_a, polyBEl));
-			// };
-			// auto first = boost::make_transform_iterator(poly_b, transform);
-			// auto beyond = boost::make_transform_iterator(poly_b_beyond, transform);
 			std::vector<NT> distances;
 			std::transform(poly_b, poly_b_beyond, std::back_insert_iterator(distances), [poly_a](const auto &polyBEl) {
 				SqDistance sqDist;
@@ -724,15 +773,6 @@ public:
 			return *maxElIt <= epsilon + m_precision;
 		}
 		if (polyBSize == 1) {
-			// std::function<const NT &(const typename Kernel::MovetkPoint &)> transform = [poly_b](const auto &polyAEl) ->
-			// const NT & {
-			//     SqDistance sqDist;
-			//     return std::sqrt(sqDist(*poly_b, polyAEl));
-			// };
-			// auto first = boost::make_transform_iterator(poly_a, transform);
-			// auto beyond = boost::make_transform_iterator(poly_a_beyond, transform);
-			// auto maxElIt = std::max_element(first, beyond);
-
 			std::vector<NT> distances;
 			std::transform(poly_a, poly_a_beyond, std::back_insert_iterator(distances), [poly_b](const auto &polyAEl) {
 				SqDistance sqDist;
@@ -769,6 +809,16 @@ public:
 	void setTolerance(NT tolerance) { m_precision = tolerance; }
 	NT tolerance() const { return m_precision; }
 
+	/**
+	 * @brief Computes the strong Frechet distance between polylines A and B and returns 
+	 * whether it is less than a prespecified upperbound, specified via setUpperbound()
+	 * @param poly_a Start of the coordinate range of polyline A
+	 * @param poly_a_beyond End of the coordinate range of polyline A
+	 * @param poly_b Start of the coordinate range of polyline B
+	 * @param poly_b_beyond End of the coordinate range of polyline B
+	 * @param output The output distance
+	 * @return Whether or not the distance is within the specified upperbound.
+	*/
 	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
 	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	bool operator()(InputIteratorA poly_a,
@@ -789,15 +839,6 @@ public:
 
 		if (polyASize == 1) {
 			auto sqDist = m_sqDistance;
-			// Use std::function, otherwise boost will error when trying to copy the transform_iterator
-			// std::function<NT(const typename Kernel::MovetkPoint &)> transform = [poly_a](const auto &polyBEl) {
-			//     SqDistance sqDist;
-			//     return std::sqrt(sqDist(*poly_a, polyBEl));
-			// };
-
-			// auto maxElIt = std::max_element(boost::make_transform_iterator(poly_b, transform),
-			// boost::make_transform_iterator(poly_b_beyond, transform));
-
 			std::vector<NT> distances;
 			std::transform(poly_b, poly_b_beyond, std::back_insert_iterator(distances), [poly_a](const auto &polyBEl) {
 				SqDistance sqDist;
@@ -809,14 +850,6 @@ public:
 			return output <= m_upperBound + m_precision;
 		}
 		if (polyBSize == 1) {
-			// // Use std::function, otherwise boost will error when trying to copy the transform_iterator
-			// std::function<NT(const typename Kernel::MovetkPoint &)> transform = [poly_b](const auto &polyAEl) {
-			//     SqDistance sqDist;
-			//     return std::sqrt(sqDist(*poly_b, polyAEl));
-			// };
-			// auto maxElIt = std::max_element(boost::make_transform_iterator(poly_a, transform),
-			// boost::make_transform_iterator(poly_a_beyond, transform));
-
 			std::vector<NT> distances;
 			std::transform(poly_a, poly_a_beyond, std::back_insert_iterator(distances), [poly_b](const auto &polyAEl) {
 				SqDistance sqDist;
@@ -835,6 +868,14 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Computes the strong Frechet distance between polyline A and B
+	 * @param poly_a Start of the coordinate range of polyline A
+	 * @param poly_a_beyond End of the coordinate range of polyline A
+	 * @param poly_b Start of the coordinate range of polyline B
+	 * @param poly_b_beyond End of the coordinate range of polyline B
+	 * @return 
+	*/
 	template <utils::RandomAccessPointIterator<Kernel> InputIteratorA,
 	          utils::RandomAccessPointIterator<Kernel> InputIteratorB>
 	typename Kernel::NT operator()(InputIteratorA poly_a,

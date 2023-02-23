@@ -33,39 +33,34 @@
 #include "Requirements.h"
 
 
-/*!
- * @namespace movetk_support
- * @brief support system of movetk
- */
 namespace movetk::utils {
-
-
 /*!
- * @brief joins a set of input values
+ * @brief Constructs a string, containing the stringified version of the
+ * values in the provided range, separated by the provided delimiter.
+ * Requires the values in the range to be convertible to string via
+ * std::to_string().
  * @tparam IteratorType - Iterator over a set of values
  * @param first - Iterator to the first value
  * @param beyond - Iterator to the last value
- * @param delim
+ * @param delimiter The delimiter to use
  * @return the concatenated string
  */
 template <std::random_access_iterator IteratorType>
-std::string join(IteratorType first, IteratorType beyond, char delim = ',') {
+std::string join(IteratorType first, IteratorType beyond, char delimiter = ',') {
 	std::stringstream output;
 	output << std::to_string(*first);
-	IteratorType it = first;
-	it++;
-	for (; it != beyond; ++it) {
-		output << delim << std::to_string(*it);
+	for (auto it = std::next(first); it != beyond; ++it) {
+		output << delimiter << std::to_string(*it);
 	}
 	return output.str();
 }
 
 /*!
- * @brief splits a string into tokens
- * @tparam OutputIterator - an insert iterator
- * @param in - input string
- * @param iter - Iterator to where the value is to be inserted
- * @param delim
+ * @brief Splits a string into substring
+ * @tparam OutputIterator Type of the output iterator
+ * @param in The input string
+ * @param iter Output iterator where the substring will be written to
+ * @param delim The delimiter to use for splitting the string
  */
 template <utils::OutputIterator<std::string> OutputIterator>
 void split(std::string &in, OutputIterator iter, char delim = ',') {
