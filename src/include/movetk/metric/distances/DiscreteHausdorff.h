@@ -34,54 +34,68 @@
 
 namespace movetk::metric {
 
+/**
+ * @brief Functor for computing the discrete Hausdorff distance
+ * @tparam Kernel The kernel to use
+ * @tparam Norm The norm to use
+ */
 template <class Kernel, class Norm>
 class Discrete_Hausdorff {
 private:
+	/**
+	 * @brief Compute the singlesided discrete Hausdorff distance from polyline a
+	 * to polyline b
+	 * @param a_first Start of the coordinate range of polyline a
+	 * @param a_beyond End of the coordinate range of polyline a
+	 * @param b_first Start of the coordinate range of polyline b
+	 * @param b_beyond End of the coordinate range of polyline b
+	 * @return The singlesided discrete Hausdorff distance.
+	 */
 	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> InputIterator>
 	typename Kernel::NT singlesided_discrete_hausdorff(InputIterator a_first,
 	                                                   InputIterator a_beyond,
 	                                                   InputIterator b_first,
 	                                                   InputIterator b_beyond) {
 		Norm norm;
-		InputIterator it_a = a_first;
+
 		typename Kernel::NT max_dist = 0;
-		while (it_a != a_beyond) {
+		for (InputIterator it_a = a_first; it_a != a_beyond; ++it_a) {
 			InputIterator it_b = b_first;
-			typename Kernel::MovetkVector v = *it_b - *it_a;
-			typename Kernel::NT distance = norm(v);
-			typename Kernel::NT min_dist = distance;
+			auto v = *it_b - *it_a;
+			auto distance = norm(v);
+			auto min_dist = distance;
 			it_b++;
-			while (it_b != b_beyond) {
+			for (; it_b != b_beyond; ++it_b) {
 				v = *it_b - *it_a;
 				distance = norm(v);
-				if (distance < min_dist) {
-					min_dist = distance;
-				}
-				it_b++;
+				min_dist = std::min(distance, min_dist);
 			}
-			if (min_dist > max_dist) {
-				max_dist = min_dist;
-			}
-			it_a++;
+			max_dist = std::max(max_dist, min_dist);
 		}
-
-		typename Kernel::NT n = 1 / static_cast<typename Kernel::NT>(Norm::P);
-		return std::pow(max_dist, n);
+		return max_dist;
 	}
 
 public:
+	/**
+	 * @brief Computes the discrete Hausdorff distance between two polylines a and b
+	 * @param polyline_a_first Start of the coordinate range of polyline a
+	 * @param polyline_a_beyond End of the coordinate range of polyline a
+	 * @param polyline_b_first Start of the coordinate range of polyline b
+	 * @param polyline_b_beyond End of the coordinate range of polyline b
+	 * @return The discrete Hausdorff distance betwee poyline a and polyline b.
+	 */
 	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> PolylineCoordIterator>
 	typename Kernel::NT operator()(PolylineCoordIterator polyline_a_first,
 	                               PolylineCoordIterator polyline_a_beyond,
 	                               PolylineCoordIterator polyline_b_first,
 	                               PolylineCoordIterator polyline_b_beyond) {
-		const auto hd_pq =
+		const auto distance_ab =
 		    singlesided_discrete_hausdorff(polyline_a_first, polyline_a_beyond, polyline_b_first, polyline_b_beyond);
 
-		const auto hd_qp =
+		const auto distance_ba =
 		    singlesided_discrete_hausdorff(polyline_b_first, polyline_b_beyond, polyline_a_first, polyline_a_beyond);
-
-		return std::max(hd_pq, hd_qp);
+		typename Kernel::NT n = 1 / static_cast<typename Kernel::NT>(Norm::P);
+		return std::pow(std::max(distance_ab, distance_ba), n);
 	}
 };
 

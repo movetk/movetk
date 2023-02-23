@@ -16,12 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  * License-Filename: LICENSE
  */
-
-/*! @file IteratorTypeCheck.h
- *  @brief  A collection of compile time iterator type checks
- *  @authors Aniket Mitra (aniket.mitra@here.com)
- */
-
 #ifndef MOVETK_TYPECHECKS_H
 #define MOVETK_TYPECHECKS_H
 
@@ -46,6 +40,8 @@
  *
  *  @namespace movetk::utils
  *  @brief the core of movetk
+ *  @author Aniket Mitra (aniket.mitra@here.com) 
+ *	@author Bram Custers (b.a.custers@gmail.com)
  */
 namespace movetk::utils {
 
@@ -68,7 +64,7 @@ struct is_random_access_iterator : public std::is_same<IteratorTag, std::random_
 template <class IteratorTag>
 struct is_forward_iterator : public std::is_same<IteratorTag, std::forward_iterator_tag> {};
 
-/*!@struct is_output_iterator
+/*!
  * @brief  A class for checking whether an iterator is
  * an output iterator
  * @tparam IteratorTag - The iterator category as defined
@@ -79,21 +75,13 @@ struct is_output_iterator {
 	static constexpr bool value = std::is_same_v<IteratorTag, std::output_iterator_tag>;
 };
 
+/**
+ * @brief Predicate to check if the iterator tag corresponds to an input iterator
+ * @tparam IteratorTag The iterator tag
+*/
 template <class IteratorTag>
 struct is_input_iterator {
 	static constexpr bool value = std::is_same_v<IteratorTag, std::input_iterator_tag>;
-};
-
-template <class OutputIterator, typename ValueType>
-struct is_output_iterator_assignable_with {
-	static constexpr bool value = is_output_iterator<typename std::iterator_traits<OutputIterator>::iterator_category>::value &&
-	                              std::is_assignable_v<decltype(*std::declval<OutputIterator>()), ValueType>;
-};
-
-template <class InputIterator, typename ValueType>
-struct is_input_iterator_with_value {
-	static constexpr bool value = is_input_iterator<typename std::iterator_traits<InputIterator>::iterator_category>::value &&
-	                              std::is_same_v<typename InputIterator::value_type, ValueType>;
 };
 
 template <size_t dimensions>
@@ -176,6 +164,10 @@ struct is_pair<std::pair<T1, T2>> {
 	static const bool value = true;
 };
 
+/**
+ * @concept Pair
+ * @brief Models the concept of a Pair: an element being exactly a std::pair<U,V> for now.
+*/
 template<typename T>
 concept Pair = requires() {
 	typename T::first_type;

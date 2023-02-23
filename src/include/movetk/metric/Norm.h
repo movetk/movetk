@@ -35,6 +35,9 @@ namespace movetk::metric {
 /**
  * @brief L_P norm functor
  * @tparam Kernel Kernel to use
+ * todo(bram): I think the chosen operators are quite confusing, maybe rename this.
+ * Also, maybe don't save the result internally, but return a proxy object for which
+ * you can apply the power.
  */
 template <class Kernel, std::size_t p>
 class FiniteNorm {

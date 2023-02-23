@@ -33,12 +33,18 @@ namespace movetk::metric {
  * @brief Functor for computing the discrete Frechet distance
  * @tparam Kernel The kernel to use
  * @tparam Norm The norm to use
-*/
+ */
 template <class Kernel, class Norm>
 class Discrete_Frechet {
 private:
-	typedef typename Kernel::NT NT;
+	using NT = typename Kernel::NT;
 
+	/**
+	 * @brief Compute the distance between two points, referenced by the given iterators
+	 * @param iter_a First iterator
+	 * @param iter_b Second iterator
+	 * @return Distance between the iterators.
+	 */
 	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> InputIterator>
 	NT distance(InputIterator iter_a, InputIterator iter_b) {
 		Norm norm;
@@ -47,44 +53,49 @@ private:
 	}
 
 public:
+	/**
+	 * @brief Computes the discrete Frechet distance between two polyline, given as two coordinate
+	 * ranges.
+	 * @param polyline_a_first Start of the coordinate range of the first polyline
+	 * @param polyline_a_beyond Endof the coordinate range of the first polyline
+	 * @param polyline_b_first Start of the coordinate range of the second polyline
+	 * @param polyline_b_beyond End of the coordinate range of the second polyline
+	 * @return The discrete Frechet distance
+	 */
 	template <utils::RandomAccessIterator<typename Kernel::MovetkPoint> PolylineCoordIterator>
 	NT operator()(PolylineCoordIterator polyline_a_first,
 	              PolylineCoordIterator polyline_a_beyond,
 	              PolylineCoordIterator polyline_b_first,
 	              PolylineCoordIterator polyline_b_beyond) {
 		std::size_t size_polyline_b = std::distance(polyline_b_first, polyline_b_beyond);
-		std::vector<NT> dp_row(size_polyline_b);
-		std::fill(std::begin(dp_row), std::begin(dp_row) + size_polyline_b, -1);
-		auto it_a = polyline_a_first;
-		while (it_a != polyline_a_beyond) {
-			auto it_b = polyline_b_first;
+		// Initialize the dynamic programming table row.
+		std::vector<NT> dp_row(size_polyline_b, static_cast<NT>(-1));
+
+		// Compute the Frechet distance using dynamic programming.
+		size_t i = 0;
+		for (auto it_a polyline_a_first; it_a != polyline_a_beyond; ++it_a, ++i) {
 			std::size_t j = 0;
 			NT previous = -1, current = -1;
-			while (it_b != polyline_b_beyond) {
-				if ((it_a == polyline_a_first) && (it_b == polyline_b_first)) {
+			for (auto it_b = polyline_b_first; it_b != polyline_b_beyond; ++it_b, ++j) {
+				if (i == 0 && j == 0) {
 					current = distance(it_a, it_b);
 					dp_row[0] = current;
-				}
-
-				else if ((it_a != polyline_a_first) && (it_b == polyline_b_first)) {
+				} else if (i != 0 && j == 0) {
 					current = std::max(dp_row[0], distance(it_a, it_b));
 					dp_row[0] = current;
-				} else if ((it_a == polyline_a_first) && (it_b != polyline_b_first)) {
+				} else if (i == 0 && j != 0) {
 					current = std::max(previous, distance(it_a, it_b));
 					dp_row[j - 1] = previous;
 				} else {
-					current = std::max(std::min(std::min(dp_row[j], previous), dp_row[j - 1]), distance(it_a, it_b));
+					current = std::max(std::min({dp_row[j], previous, dp_row[j - 1]}), distance(it_a, it_b));
 					dp_row[j - 1] = previous;
 				}
-
 				previous = current;
-				j++;
-				it_b++;
 			}
 			dp_row[j - 1] = previous;
-			it_a++;
 		}
 
+		// Return the normed distance of the last element, this is now the discrete Frechet distance.
 		NT dfd = dp_row.back();
 		NT n = 1 / static_cast<NT>(Norm::P);
 		return std::pow(dfd, n);

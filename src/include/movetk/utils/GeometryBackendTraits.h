@@ -60,6 +60,9 @@ struct BoostBackend : public movetk::backends::boost::KernelFor<long double, 2> 
 #endif
 
 namespace movetk::backends {
+/**
+ * @cond HIDDEN_SYMBOLS
+*/
 template <typename T>
 struct remove_first_type;
 template <typename T, typename... Ts>
@@ -67,7 +70,9 @@ struct remove_first_type<std::tuple<T, Ts...>> {
 	using type = std::tuple<Ts...>;
 };
 struct noop {};
-
+/**
+ * @endcond
+ */
 using AvailableBackends = typename remove_first_type<std::tuple<noop
 #if MOVETK_WITH_BOOST_BACKEND
                                                                 ,

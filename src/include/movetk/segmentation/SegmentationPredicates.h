@@ -42,13 +42,29 @@ enum TestCriteria { meb, ratio, difference, range };
 template <int TestCriteria, class GeometryTraits>
 class TEST {};
 
+/**
+ * @brief Predicate for determining whether a range of points have a minimum enclosing ball
+ * that compares to true for a provided threshold, using the given comparison functor
+ * @tparam GeometryTraits The kernel to use
+ * @tparam ThresholdCompare Comparison functor
+*/
 template <typename GeometryTraits, template <typename> typename ThresholdCompare = std::less>
 class MinimumEnclosingBallPredicate {
 public:
 	using NT = typename GeometryTraits::NT;
 
-	MinimumEnclosingBallPredicate(NT threshold) : m_threshold(threshold) {}
+	/**
+	 * @brief Construct the predicate
+	 * @param threshold The threshold to use
+	*/
+	explicit MinimumEnclosingBallPredicate(NT threshold) : m_threshold(threshold) {}
 
+	/**
+	 * @brief Determine whether the predicate holds true for the given point range
+	 * @param first Start of the point range
+	 * @param beyond End of the point range
+	 * @return Whether the predicate holds for the given point range.
+	*/
 	template <utils::RandomAccessPointIterator<GeometryTraits> InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) const {
 		const auto radius = m_make_min_sphere(first, beyond);

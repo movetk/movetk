@@ -36,8 +36,13 @@
 #include "movetk/io/CartesianProbeTraits.h"
 #include "movetk/utils/Requirements.h"
 
+/**
+ * @brief Contains a collection of outlier detection algorithms
+*/
 namespace movetk::outlierdetection {
-
+/**
+ * @brief Tag for the greedy outlier algorithm
+*/
 struct greedy_outlier_detector_tag;
 
 /**
@@ -53,21 +58,21 @@ template <class GeometryKernel, class BinaryPredicate>
 class OutlierDetection<GeometryKernel, BinaryPredicate, greedy_outlier_detector_tag> {
 public:
 	using NT = typename GeometryKernel::NT;
-	/*!
-	 *@param InThreshold
+	/**
+	 * @brief Construct greedy outlier detector with the given threshold for the predicate
+	 * @param threshold The threshold for the predicate
 	 */
-	OutlierDetection(NT threshold) : m_threshold(threshold), m_predicate(m_threshold) {}
+	explicit OutlierDetection(NT threshold) : m_threshold(threshold), m_predicate(m_threshold) {}
 
-	/*!
-	 *
-	 * @tparam TrajectoryIterator
-	 * @tparam OutputIterator
-	 * @param first
-	 * @param beyond
-	 * @param result
+	/**
+	 * @brief Computes the consistent range of the elements of the provided input range.
+	 * The first element is always included. Otherwise, for any element, if the predicate is
+	 * satisfied between the element and the previous element, it is added as a consistent element
+	 * @param first Start of the range
+	 * @param beyond End of the range
+	 * @param result Output iterator for writing the result to. Result is given as iterators.
 	 */
-	template <std::random_access_iterator InputIterator,
-	          utils::OutputIterator<InputIterator> OutputIterator>
+	template <std::random_access_iterator InputIterator, utils::OutputIterator<InputIterator> OutputIterator>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		*result = first;
 		for (auto it = std::next(first), prev_it = first; it != beyond; it++, ++prev_it) {
@@ -75,7 +80,8 @@ public:
 				*result = it;
 			}
 		}
-	}  // operator()
+	}
+
 private:
 	BinaryPredicate m_predicate;
 	NT m_threshold;

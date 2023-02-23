@@ -3,6 +3,9 @@
 #include <concepts>
 #include <type_traits>
 #include <vector>
+/**
+* @brief Contains concepts for geometric objects used in MoveTK
+*/
 namespace movetk::geom::concepts {
 /**
 * @concept Point

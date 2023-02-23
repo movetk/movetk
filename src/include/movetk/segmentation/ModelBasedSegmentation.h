@@ -46,7 +46,7 @@ class ModelBasedSegmentation {
 	} ic;
 
 public:
-	ModelBasedSegmentation(NT p) { ic.penalty_factor = p; }
+	explicit ModelBasedSegmentation(NT penalty_factor) { ic.penalty_factor = penalty_factor; }
 
 	template <std::random_access_iterator RowIterator,
 	          std::random_access_iterator ColumnIterator,

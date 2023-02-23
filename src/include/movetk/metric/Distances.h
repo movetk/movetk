@@ -36,40 +36,60 @@
 #include "movetk/metric/distances/WeakFrechet.h"
 #include "movetk/utils/Asserts.h"
 
+/**
+ * @brief Collection of metric distance computations
+*/
 namespace movetk::metric {
 
 /**
  * @brief Squared distance functor for computing the squared distance between geometric objects
  * @tparam Kernel The kernel of the geometric objects
  * @tparam _Norm The used norm.
-*/
+ */
 template <class Kernel, class _Norm>
 struct squared_distance_d {
 	using Norm = _Norm;
 	using MovetkPoint = typename Kernel::MovetkPoint;
 
-	typename Kernel::NT operator()(const MovetkPoint &p, const typename Kernel::MovetkLine &l) const {
+	/**
+	 * @brief Compute the squared distance between a point and a line
+	 * @param point The point
+	 * @param line The line
+	 * @return The squared distance
+	 */
+	typename Kernel::NT operator()(const MovetkPoint &point, const typename Kernel::MovetkLine &line) const {
 		Norm n;
-		typename Kernel::MovetkVector v = l[1] - l[0];
-		typename Kernel::MovetkVector u = p - l[0];
-		typename Kernel::NT uv = u * v;
-		n(v);
-		typename Kernel::NT vv = n ^ 2;
-		v *= (uv / vv);
-		typename Kernel::MovetkPoint Pb = l[0] + v;
-		typename Kernel::MovetkVector v2 = p - Pb;
+		const auto line_direction = line[1] - line[0];
+		const auto line_to_point_direction = point - line[0];
+		const auto product = line_direction * line_to_point_direction;
+		n(product);
+		const auto vv = n ^ 2;
+		product *= (product / vv);
+		const auto Pb = line[0] + line_to_point_direction;
+		const auto v2 = point - Pb;
 		return n(v2);
 	}
-
-	typename Kernel::NT operator()(typename Kernel::MovetkLine &l, const MovetkPoint &p) {
-		return this->operator()(p, l);
+	/**
+	 * @brief Compute the squared distance between a point and a line
+	 * @param line The line
+	 * @param point The point
+	 * @return The squared distance
+	 */
+	typename Kernel::NT operator()(const typename Kernel::MovetkLine &line, const MovetkPoint &point) {
+		return this->operator()(point, line);
 	}
 
-	typename Kernel::NT operator()(const MovetkPoint &p, const typename Kernel::MovetkSegment &s) const {
+	/**
+	 * @brief Compute the squared distance between a point and a segment
+	 * @param point The point
+	 * @param segment The segment
+	 * @return The squared distance
+	 */
+	typename Kernel::NT operator()(const MovetkPoint &point, const typename Kernel::MovetkSegment &segment) const {
 		Norm n;
-		typename Kernel::MovetkVector v = s[1] - s[0];
-		typename Kernel::MovetkVector u = p - s[0];
-		typename Kernel::MovetkVector v1 = p - s[1];
+		typename Kernel::MovetkVector v = segment[1] - segment[0];
+		typename Kernel::MovetkVector u = point - segment[0];
+		typename Kernel::MovetkVector v1 = point - segment[1];
 		typename Kernel::NT uv = u * v;
 		if (uv <= 0) {
 			return n(u);
@@ -80,14 +100,27 @@ struct squared_distance_d {
 			return n(v1);
 		}
 		v *= (uv / vv);
-		typename Kernel::MovetkPoint Pb = s[0] + v;
-		typename Kernel::MovetkVector v2 = p - Pb;
+		typename Kernel::MovetkPoint Pb = segment[0] + v;
+		typename Kernel::MovetkVector v2 = point - Pb;
 		return n(v2);
 	}
-	typename Kernel::NT operator()(typename Kernel::MovetkSegment &s, const MovetkPoint &p) const {
-		return this->operator()(p, s);
+
+	/**
+	 * @brief Compute the squared distance between a point and a segment
+	 * @param point The point
+	 * @param segment The segment
+	 * @return The squared distance
+	 */
+	typename Kernel::NT operator()(typename Kernel::MovetkSegment &segment, const MovetkPoint &point) const {
+		return this->operator()(point, segment);
 	}
 
+	/**
+	 * @brief Compute the squared distance between two points
+	 * @param p1 First point
+	 * @param p2 Second point
+	 * @return The squared distance
+	*/
 	typename Kernel::NT operator()(const MovetkPoint &p1, const MovetkPoint &p2) const {
 		Norm n;
 		typename Kernel::MovetkVector v = p2 - p1;

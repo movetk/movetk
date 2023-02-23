@@ -44,8 +44,6 @@ struct CategoricalField {
 	static inline std::vector<T> _values = {};
 	static inline std::unordered_map<T, std::size_t> _indexOf = {};
 
-	CategoricalField(const T &value) { _idx = m_indexOf[value]; }
-
 	inline std::size_t idx() const { return _idx; }
 	double operator-(const CategoricalField<T, CRTP> &rhs) const { return _idx - rhs._idx; }
 	bool operator<(const CategoricalField<T, CRTP> &rhs) const { return _idx < rhs._idx; }

@@ -29,10 +29,10 @@ namespace movetk::metric {
 /**
  * @brief Interface for the squared distance algorithm
  *
- * @tparam GeometryTraits
- * @tparam Norm
+ * @tparam Kernel The kernel to use
+ * @tparam Norm The norm to use
  */
-template <class GeometryTraits, class Norm>
+template <class Kernel, class Norm>
 struct ComputeSquaredDistance {
 	/**
 	 * @brief Overloads the function operator to calculate the squared distance
@@ -44,8 +44,8 @@ struct ComputeSquaredDistance {
 	 * @return GeometryTraits::NT
 	 */
 	template <class T1, class T2>
-	typename GeometryTraits::NT operator()(T1& object1, T2& object2) {
-		using algorithm = squared_distance_algorithm<GeometryTraits, Norm, typename GeometryTraits::MovetkSquaredDistance>;
+	typename Kernel::NT operator()(T1& object1, T2& object2) {
+		using algorithm = squared_distance_algorithm<Kernel, Norm, typename Kernel::MovetkSquaredDistance>;
 		typename algorithm::square_distance distance;
 		return distance(object1, object2);
 	}
@@ -117,7 +117,7 @@ public:
 	/**
 	 * @brief Overloads the function operator to accept iterator over
 	 * a collection of point sets and an upper traingular matrix to
-	 * store the result of the pairwise Frechet Distance computation
+	 * store the result of the pairwise discrete Frechet Distance computation
 	 * @tparam DistanceMatrix
 	 * @tparam InputIterator
 	 * @tparam InputIterator

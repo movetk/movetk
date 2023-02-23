@@ -53,7 +53,7 @@
  */
 
 /*!
- *  @brief a collection of algorithms in movetk
+ *  @brief Collection of trajectory segmentation algorithms
  */
 namespace movetk::segmentation {
 
@@ -61,7 +61,7 @@ namespace movetk::segmentation {
 // https://www.semanticscholar.org/paper/Computational-Movement-Analysis-Using-Brownian-Sijben/c6104979e609e12e1514b8b605a7d14fa6b5d81a
 
 /*!
- *  @brief a collection of classes for BBMM
+ *  @brief A collection of classes for BBMM
  */
 namespace brownian_bridge {
 
@@ -112,8 +112,6 @@ struct ParameterTraits {
 
 
 /*!
- * @class template<class GeometryTraits, class ParameterTraits,
- *  class Norm, class InputIterator, std::size_t MaxIter> MLE
  * @brief The Maximum Likelihood Estimator
  * @tparam GeometryTraits -   This class is a collection of movetk
  *  geometry types. For example @refitem movetk::geom::MovetkGeometryKernel
@@ -161,13 +159,13 @@ private:
 		struct fn_params *params = (fn_params *)p;
 		InputIterator it = params->first;
 		NT log_likelihood = 0;
-		while (it != params->beyond) {
-			typename GeometryTraits::MovetkVector v = std::get<ParameterTraits::ParameterColumns::POINT>(*it) -
-			                                          std::get<ParameterTraits::ParameterColumns::MU>(*it);
+		for (; it != params->beyond; ++it) {
+			const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(*it) -
+			               std::get<ParameterTraits::ParameterColumns::MU>(*it);
+			// Elements of the log of a Gaussian with sigma as standard deviation
 			NT operand1 = -LOG_TWO_PI - log(static_cast<NT>(sigma_squared));
 			NT operand2 = -norm(v) / (2 * sigma_squared);
 			log_likelihood += operand1 + operand2;
-			it++;
 		}
 		return -1 * log_likelihood;
 	}
@@ -212,8 +210,8 @@ public:
 		Norm norm;
 		std::size_t num_elements = std::distance(first, beyond);
 		if (num_elements == 1) {
-			typename GeometryTraits::MovetkVector v = std::get<ParameterTraits::ParameterColumns::POINT>(*first) -
-			                                          std::get<ParameterTraits::ParameterColumns::MU>(*first);
+			const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(*first) -
+			               std::get<ParameterTraits::ParameterColumns::MU>(*first);
 			NT l = norm(v);
 			if (l < MOVETK_EPS) {
 				estimated_parameter = MOVETK_EPS;
@@ -234,22 +232,22 @@ public:
 		NT upper_bound = 0, squared_length = 0;
 		std::size_t num_elements = std::distance(first, beyond);
 		if (num_elements == 1) {
-			typename GeometryTraits::MovetkVector v = std::get<ParameterTraits::ParameterColumns::POINT>(*first) -
-			                                          std::get<ParameterTraits::ParameterColumns::MU>(*first);
+			const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(*first) -
+			               std::get<ParameterTraits::ParameterColumns::MU>(*first);
 			NT l = norm(v);
 			if (l < MOVETK_EPS) {
 				estimated_parameter = MOVETK_EPS;
 				return;
 			}
 		}
-		while (it != beyond) {
-			typename GeometryTraits::MovetkVector v = std::get<ParameterTraits::ParameterColumns::POINT>(*it) -
-			                                          std::get<ParameterTraits::ParameterColumns::MU>(*it);
+		for (; it != beyond; ++it) {
+			const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(*it) -
+			               std::get<ParameterTraits::ParameterColumns::MU>(*it);
 			NT l = norm(v);
 			squared_length += l;
-			if (l > upper_bound)
+			if (l > upper_bound) {
 				upper_bound = l;
-			it++;
+			}
 		}
 		NT initial_estimate = squared_length / (2 * num_elements);
 		(*this)(first, beyond, initial_estimate, MOVETK_EPS, upper_bound, MOVETK_EPS);
@@ -301,27 +299,26 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <std::random_access_iterator TrajectoryIterator,
-	          class OutputIterator>
-	          /*typename = movetk::utils::requires_random_access_iterator<TrajectoryIterator>,
-	          typename = movetk::utils::requires_tuple<typename TrajectoryIterator::value_type>,
-	          typename = movetk::utils::requiresct_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
-	                                                                         typename TrajectoryIterator::value_type>,
-	          typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON,
-	                                                                         typename TrajectoryIterator::value_type>,
-	          typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                                                     typename TrajectoryIterator::value_type>,
-	          typename = movetk::utils::requires_output_iterator<OutputIterator>,
-	          typename = movetk::utils::requires_tuple<typename OutputIterator::value_type>,
-	          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-	                                                                           ParameterTraits::ParameterColumns::POINT,
-	                                                                           typename OutputIterator::value_type>,
-	          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-	                                                                           ParameterTraits::ParameterColumns::MU,
-	                                                                           typename OutputIterator::value_type>,
-	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-	                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                                 typename OutputIterator::value_type>>*/
+	template <std::random_access_iterator TrajectoryIterator, class OutputIterator>
+	/*typename = movetk::utils::requires_random_access_iterator<TrajectoryIterator>,
+	typename = movetk::utils::requires_tuple<typename TrajectoryIterator::value_type>,
+	typename = movetk::utils::requiresct_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
+	                                                               typename TrajectoryIterator::value_type>,
+	typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON,
+	                                                               typename TrajectoryIterator::value_type>,
+	typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
+	                                                           typename TrajectoryIterator::value_type>,
+	typename = movetk::utils::requires_output_iterator<OutputIterator>,
+	typename = movetk::utils::requires_tuple<typename OutputIterator::value_type>,
+	typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
+	                                                                 ParameterTraits::ParameterColumns::POINT,
+	                                                                 typename OutputIterator::value_type>,
+	typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
+	                                                                 ParameterTraits::ParameterColumns::MU,
+	                                                                 typename OutputIterator::value_type>,
+	typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
+	                                                       ParameterTraits::ParameterColumns::SIGMA_SQUARED,
+	                                                       typename OutputIterator::value_type>>*/
 	Model(TrajectoryIterator first, TrajectoryIterator beyond, OutputIterator result) {
 		const auto reflat = std::get<ProbeTraits::ProbeColumns::LAT>(*first);
 		const auto reflon = std::get<ProbeTraits::ProbeColumns::LON>(*first);
@@ -330,11 +327,14 @@ public:
 		TrajectoryIterator tit = first;
 		std::size_t NumPoints = std::distance(first, beyond);
 
-		if (NumPoints == 1) {
-			auto lat = std::get<ProbeTraits::ProbeColumns::LAT>(*first);
-			auto lon = std::get<ProbeTraits::ProbeColumns::LON>(*first);
+		auto point_from_iterator = [](auto iterator) {
+			auto lat = std::get<ProbeTraits::ProbeColumns::LAT>(*iterator);
+			auto lon = std::get<ProbeTraits::ProbeColumns::LON>(*iterator);
 			auto projected_point = ref.project(lat, lon);
-			Point p1 = make_point(std::cbegin(projected_point), std::cend(projected_point));
+			return make_point(std::cbegin(projected_point), std::cend(projected_point));
+		};
+		if (NumPoints == 1) {
+			Point p1 = point_from_iterator(first);
 			*result = std::make_tuple(p1, p1, 0, first, first);
 			return;
 		}
@@ -343,22 +343,10 @@ public:
 		std::size_t remainder = (NumPoints - 1) % 2;
 		TrajectoryIterator last = first + 2 * multiple;
 
-
 		while (tit != last) {
-			auto lat = std::get<ProbeTraits::ProbeColumns::LAT>(*tit);
-			auto lon = std::get<ProbeTraits::ProbeColumns::LON>(*tit);
-			auto projected_point = ref.project(lat, lon);
-			Point p1 = make_point(std::cbegin(projected_point), std::cend(projected_point));
-
-			lat = std::get<ProbeTraits::ProbeColumns::LAT>(*(tit + 1));
-			lon = std::get<ProbeTraits::ProbeColumns::LON>(*(tit + 1));
-			projected_point = ref.project(lat, lon);
-			Point p2 = make_point(std::cbegin(projected_point), std::cend(projected_point));
-
-			lat = std::get<ProbeTraits::ProbeColumns::LAT>(*(tit + 2));
-			lon = std::get<ProbeTraits::ProbeColumns::LON>(*(tit + 2));
-			projected_point = ref.project(lat, lon);
-			Point p3 = make_point(std::cbegin(projected_point), std::cend(projected_point));
+			Point p1 = point_from_iterator(tit);
+			Point p2 = point_from_iterator(tit+1);
+			Point p3 = point_from_iterator(tit + 2);
 
 			auto ts1 = std::get<ProbeTraits::ProbeColumns::SAMPLE_DATE>(*tit);
 			auto ts2 = std::get<ProbeTraits::ProbeColumns::SAMPLE_DATE>(*(tit + 1));
@@ -371,15 +359,8 @@ public:
 		}
 
 		if (remainder == 1) {
-			auto lat = std::get<ProbeTraits::ProbeColumns::LAT>(*last);
-			auto lon = std::get<ProbeTraits::ProbeColumns::LON>(*last);
-			auto projected_point = ref.project(lat, lon);
-			Point p1 = make_point(std::cbegin(projected_point), std::cend(projected_point));
-
-			lat = std::get<ProbeTraits::ProbeColumns::LAT>(*(last + 1));
-			lon = std::get<ProbeTraits::ProbeColumns::LON>(*(last + 1));
-			projected_point = ref.project(lat, lon);
-			Point p2 = make_point(std::cbegin(projected_point), std::cend(projected_point));
+			Point p1 = point_from_iterator(last);
+			Point p2 = point_from_iterator(last+1);
 			Point mu = mean(p1, p2, 0.5);
 			*result = std::make_tuple(mu, mu, 0, last, last + 1);
 		}
@@ -413,11 +394,11 @@ public:
 	 */
 	template <std::random_access_iterator InputIterator,
 	          utils::OutputIterator<typename GeometryTraits::NT> OutputIterator>
-	          /*typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	          typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
-	          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-	                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                                 typename InputIterator::value_type>>*/
+	/*typename = movetk::utils::requires_random_access_iterator<InputIterator>,
+	typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
+	typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
+	                                                       ParameterTraits::ParameterColumns::SIGMA_SQUARED,
+	                                                       typename InputIterator::value_type>>*/
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		assert(static_cast<std::size_t>(std::distance(first, beyond)) >= SIZE);
 		std::vector<typename ParameterTraits::NT> coeffs;
@@ -436,14 +417,13 @@ public:
 
 template <class GeometryTraits, class ParameterTraits, class Norm>
 class LogLikelihood {
-	using NT = typename GeometryTraits::NT ;
-	using Parameters = typename ParameterTraits::Parameters ;
+	using NT = typename GeometryTraits::NT;
+	using Parameters = typename ParameterTraits::Parameters;
 
 public:
 	LogLikelihood() = default;
 
-	template <utils::RandomAccessIterator<NT> InputIterator,
-		utils::OutputIterator<NT> OutputIterator>
+	template <utils::RandomAccessIterator<NT> InputIterator, utils::OutputIterator<NT> OutputIterator>
 	void operator()(const Parameters &params, InputIterator first, InputIterator beyond, OutputIterator result) {
 		Norm norm;
 		const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -

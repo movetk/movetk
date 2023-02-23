@@ -38,11 +38,21 @@
 #include "third_party/boost_geometry/discrete_hausdorff_distance.hpp"
 #include "third_party/miniball/Seb.h"
 
+/**
+ * @brief Contains the definitions for the Boost geometry backend
+ */
 namespace movetk::backends::boost {
 
 namespace bg = ::boost::geometry;
 
+/**
+ * @brief Contains a collection of adapters from Boost geometry primitives to the MoveTK interface
+ */
 namespace wrappers {
+/**
+ * @brief An adapted point for a Boost point
+ * @tparam Kernel The kernel to use
+*/
 template <class Kernel>
 class Point {
 private:
@@ -52,6 +62,10 @@ private:
 	using Vector = typename Kernel::MovetkVector;
 	using Point_Container = std::array<typename Kernel::NT, Kernel::dim>;
 	Boost_Point pt{0, 0};
+	/**
+	 * @brief Constructs the point from the Boost container for the point
+	 * @param p The container
+	*/
 	Point(Point_Container&& p) {
 		pt.template set<0>(std::move(p[0]));
 		pt.template set<1>(std::move(p[1]));
@@ -63,8 +77,17 @@ private:
 public:
 	Point() = default;
 
+	/**
+	 * @brief Construct the Point from a native Boost point
+	 * @param p The point
+	*/
 	Point(const Boost_Point& p) : pt(p) {}
 
+	/**
+	 * @brief Constructs a point from a pair of coordinate iterators
+	 * @param first The start of the coordinate range
+	 * @param beyond The end of the coordinate range 
+	*/
 	template <utils::InputIterator<NT> CoordinateIterator>
 	Point(CoordinateIterator first, CoordinateIterator beyond) {
 		pt.template set<0>(*first);
@@ -73,21 +96,48 @@ public:
 			pt.template set<2>(*(first + 2));
 		}
 	}
-
+	/**
+	 * @brief Begin iterator of the coordinate range
+	 * @return The begin iterator
+	*/
 	auto begin() const { return std::addressof(pt.template get<0>()); }
 
+	/**
+	 * @brief End iterator of the coordinate range
+	 * @return The end iterator
+	 */
 	auto end() const { return std::addressof(pt.template get<0>()) + Kernel::dim; }
 
+	/**
+	 * @brief Indexing operator to get the \p i-th coordinate of the point
+	 * @param i The index
+	 * @return The coordinate
+	*/
 	const NT& operator[](size_t i) const { return *(std::addressof(pt.template get<0>()) + i); }
 
+	/**
+	 * @brief Indexing operator to get the modifiable \p i-th coordinate of the point
+	 * @param i The index
+	 * @return Reference to the coordinate
+	 */
 	NT& operator[](size_t i) { return *(std::addressof(pt.template get<0>()) + i); }
 
+	/**
+	 * @brief Subtracts another point from this point, resulting in a vector
+	 * @param point The other point
+	 * @return The vector pointing from the other point to this point
+	*/
 	Vector operator-(const Point& point) const {
 		Vector v1(*this);
 		Vector v2(point);
 		return v1 - v2;
 	}
 
+	/**
+	 * @brief Adds the vector to this point
+	 * @param v The vector
+	 * @return A copy of this point, translated by the given vector
+	 */
 	Point operator+(const Vector& v) const {
 		Point_Container result;
 		std::transform(this->begin(), this->end(), v.begin(), result.begin(), std::plus<typename Kernel::NT>());
@@ -95,14 +145,27 @@ public:
 		return _point;
 	}
 
+	/**
+	 * @brief Returns a copy of the native point
+	 * @return The native point
+	*/
 	Boost_Point get() const { return pt; }
 
+	/**
+	 * @brief Writes the coordinates to an output stream
+	 * @param out The output stream
+	 * @param point The point
+	 * @return The output stream
+	*/
 	friend std::ostream& operator<<(std::ostream& out, const Point& point) {
 		return (out << movetk::utils::join(point.begin(), point.end()));
 	}
 };
 
-
+/**
+ * @brief An adapted segment for a Boost segment
+ * @tparam Kernel 
+*/
 template <class Kernel>
 class Segment {
 private:
