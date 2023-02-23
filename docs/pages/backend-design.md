@@ -18,7 +18,7 @@ choice.
 Therefore, one of the design decisions of **MoveTK**
 is to let the user choose their own geometry backend. This in turn requires designing a generic interface for different geometric objects. 
 
-[<img src="geomety_agnostic_backend_main_design.jpeg" height="370" width="570"/>](geomety_agnostic_backend_main_design.jpeg)
+![Overview of the agnostic backend design](geomety_agnostic_backend_main_design.jpeg){html: width=570}
 
 ## Design Patterns
 
