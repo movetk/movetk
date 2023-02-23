@@ -114,11 +114,10 @@ struct ParameterTraits {
 /*!
  * @brief The Maximum Likelihood Estimator
  * @tparam GeometryTraits -   This class is a collection of movetk
- *  geometry types. For example @refitem movetk::geom::MovetkGeometryKernel
+ *  geometry types.
  * @tparam ParameterTraits -  This traits class serves as a collection of types
  * for parameterization of BBMM
  * @tparam Norm - The type that models Euclidean distance
- * For example @refitem movetk_support::FiniteNorm
  * @tparam InputIterator - A random access iterator type over a collection of
  * tuples where each tuple is a model of type ParameterTraits::Parameters
  * @tparam MaxIter - A positive integer that bounds the number of iterations in the MLE

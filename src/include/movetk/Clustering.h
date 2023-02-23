@@ -29,9 +29,14 @@
 
 namespace movetk::clustering {
 
+/**
+ * @brief Functor for subtrajectory clustering
+ * @details Based on https://doi.org/10.1007/978-3-540-92182-0_57
+ * @tparam ClusteringTraits The traits for the clustering algorithm
+*/
 template <class ClusteringTraits>
 class SubTrajectoryClustering {
-	// based on https://doi.org/10.1007/978-3-540-92182-0_57
+	
 private:
 	typename ClusteringTraits::Graph graph;
 	typename ClusteringTraits::vertex_iterator vi, vi_end;
@@ -170,6 +175,14 @@ private:
 	}
 
 public:
+	/**
+	 * @brief Constructs the clusters for the provided polyline
+	 * @tparam InputIterator The iterator type of the polyline coordinate range
+	 * @param polyline_first Start of the polyline coordinate range
+	 * @param polyline_beyond End of the polyline coordinate range 
+	 * @param num_cluster_threshold  
+	 * @param radius 
+	*/
 	template <class InputIterator>
 	SubTrajectoryClustering(InputIterator polyline_first,
 	                        InputIterator polyline_beyond,

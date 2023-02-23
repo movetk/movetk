@@ -31,7 +31,7 @@
 
 namespace movetk::metric {
 /**
- * @brief L_P norm functor
+ * @brief \f$L_p\f$ norm functor
  * @tparam Kernel Kernel to use
  * todo(bram): I think the chosen operators are quite confusing, maybe rename this.
  * Also, maybe don't save the result internally, but return a proxy object for which
@@ -47,6 +47,12 @@ public:
 	static_assert(P > 0);
 	FiniteNorm() {}
 
+	/**
+	 * @brief Computes the sum of the absolute values of the coordinates of \p v, raise
+	 * to the power power \p p.
+	 * @param v The vector
+	 * @return The sum of raised coordinates
+	*/
 	typename Kernel::NT operator()(const typename Kernel::MovetkVector &v) {
 		auto sum_exponent_p = [](typename Kernel::NT sum, typename Kernel::NT coord) ->
 		    typename Kernel::NT { return std::move(sum) + std::pow(abs(coord), p); };
@@ -54,6 +60,12 @@ public:
 		return result;
 	}
 
+	/**
+	 * @brief Computes the \f$L_p\f$ norm from a previous call to operator(), raised
+	 * to the power \p exponent
+	 * @param exponent The exponent to raise the result to
+	 * @return The raised \f$L_p\f$ norm.
+	*/
 	typename Kernel::NT operator^(std::size_t exponent) const {
 		typename Kernel::NT n = exponent / static_cast<typename Kernel::NT>(p);
 		return std::pow(result, n);
@@ -61,7 +73,7 @@ public:
 };
 
 /**
- * @brief L_\infty norm functor
+ * @brief \f$L_\infty\f$ norm functor
  * @tparam Kernel Kernel to use
  */
 template <class Kernel>

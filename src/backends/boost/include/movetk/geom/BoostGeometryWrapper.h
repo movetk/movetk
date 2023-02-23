@@ -212,7 +212,10 @@ public:
 	friend std::ostream& operator<<(std::ostream& out, Segment& seg) { return out << seg[0] << ";" << seg[1]; }
 };
 
-
+/**
+ * @brief An adapted line for a Boost line
+ * @tparam Kernel The kernel to use
+*/
 template <class Kernel>
 class Line {
 private:
@@ -222,14 +225,30 @@ private:
 
 public:
 	Line() = default;
-
+	/**
+	 * @brief Construct a line from a native Boost line
+	 * @param l The native Boost line
+	*/
 	Line(const Boost_Line& l) : line(l) {}
 
+	/**
+	 * @brief Construct a line from two adapted points
+	 * @param p1 First point
+	 * @param p2 Second point
+	*/
 	Line(const Point<Kernel>& p1, const Point<Kernel>& p2) { line = Boost_Line({p1.get(), p2.get()}); }
 
+	/**
+	 * @brief Returns a copy of the native Boost line
+	 * @return The copy of the Boost line
+	*/
 	Boost_Line get() const { return line; }
 };
 
+/**
+ * @brief Adapted vector for a Boost vector
+ * @tparam Kernel The kernel to use
+*/
 template <class Kernel>
 class Vector {
 	using Boost_Vector = std::array<typename Kernel::NT, Kernel::dim>;
@@ -238,35 +257,63 @@ class Vector {
 	using NT = typename Kernel::NT;
 
 	Vector(Boost_Vector&& vector) : vec(std::move(vector)) {}
-	Vector(const Boost_Vector& vector) : vec(vector) {}
-
 public:
 	Vector() : vec({0, 0}) {}
+	/**
+	 * @brief Construct a vector from the native Boost vector
+	 * @param vector The Boost vector
+	*/
+	Vector(const Boost_Vector& vector) : vec(vector) {}
 
 	Vector(const Vector& p) = default;
+	/**
+	 * @brief Construct a vector from a kernel Point.
+	 * @details The vector points from the origin to the provided point
+	 * @param p The point
+	*/
 	Vector(const typename Kernel::MovetkPoint& p) { std::copy(std::begin(p), std::end(p), std::begin(vec)); }
 
-
+	/** @name Arithmetic Operators
+	 *  Operators on the Vector
+	 */
+	/**@{*/
+	/**
+	 * @brief Multiplication with a scalar. Scales the vector
+	 * @param scalar The scalar
+	 * @return Scaled vector
+	*/
 	Vector operator*(NT scalar) const {
 		Vector copy(*this);
 		copy *= scalar;
 		return copy;
 	}
+	/**
+	 * @brief Scales this vector
+	 * @return Reference to self
+	 */
 	Vector& operator*=(NT scalar) {
 		std::for_each(std::begin(vec), std::end(vec), [&scalar](NT& i) { i *= scalar; });
 		return *this;
 	}
-
+	/**
+	 * @brief Returns a scaled vector, scaled by 1/scalar
+	 * @param scalar The scale
+	 * @return Scaled vector.
+	*/
 	Vector operator/(NT scalar) const {
 		Vector copy(*this);
 		copy /= scalar;
 		return copy;
 	}
+	/**
+	 * @brief Scales this vector by 1/scalar.
+	 * @param scalar The scalar
+	 * @return Reference to self
+	*/
 	Vector& operator/=(NT scalar) {
 		std::for_each(std::begin(vec), std::end(vec), [&scalar](NT& i) { i /= scalar; });
 		return *this;
 	}
-
 	/**
 	 * @brief Inner product operator
 	 * @param vector Other boost vector
@@ -275,34 +322,58 @@ public:
 	NT operator*(const Vector& vector) const {
 		return std::inner_product(this->begin(), this->end(), vector.begin(), 0.0);
 	}
-
+	/**
+	 * @brief Returns the subtraction of \p vector from this vector.
+	 * @param vector The other vector
+	 * @return The new vector
+	*/
 	Vector operator-(const Vector& vector) const {
 		Vector copy(*this);
 		copy -= vector;
 		return copy;
 	}
+	/**
+	 * @brief Subtracts \p vector from this vector
+	 * @param vector The other vector
+	 * @return Reference to self
+	 */
 	Vector& operator-=(const Vector& vector) {
 		for (std::size_t i = 0; i < vec.size(); ++i) {
 			vec[i] -= vector.vec[i];
 		}
 		return *this;
 	}
-
+	/**
+	 * @brief Returns the addition of \p vector and this vector.
+	 * @param vector The other vector
+	 * @return The new vector
+	 */
 	Vector operator+(const Vector& vector) const {
 		Vector copy(*this);
 		copy += vector;
 		return copy;
 	}
+	/**
+	 * @brief Adds \p vector to this vector
+	 * @param vector The other vector
+	 * @return Reference to self
+	 */
 	Vector& operator+=(const Vector& vector) {
 		for (std::size_t i = 0; i < vec.size(); ++i) {
 			vec[i] += vector.vec[i];
 		}
 		return *this;
 	}
+	/**@}*/ 
 
 	bool operator==(const Vector& vector) const { return std::equal(this->begin(), this->end(), vector.begin()); }
 	bool operator!=(const Vector& vector) const { return !((*this) == vector); }
 
+	/**
+	 * @brief Returns the (unit) basis for the given axis
+	 * @param i The axis
+	 * @return The basis vector
+	*/
 	Vector basis(std::size_t i) const {
 		Boost_Vector _e = {0};
 		_e[i] = 1;
@@ -335,18 +406,27 @@ private:
 	}
 
 public:
+	/**
+	 * @brief Computes the smallest enclosing sphere of a range of points.
+	 * @param first Start of the range of points
+	 * @param beyond End of the range of points 
+	 * @param iter The output iterator to write the coordinates of the center of the minsphere to.
+	 * @return The radius of the smallest enclosing sphere
+	*/
 	template <utils::RandomAccessIterator<Point> PointIterator, utils::OutputIterator<typename Kernel::NT> CenterIterator>
 	NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const {
 		auto result = dispatcher(std::distance(first->begin(), first->end()), std::vector<Point>(first, beyond));
 		std::copy(result.first.begin(), result.first.end(), iter);
-		/*auto cit = result.first.begin();
-		while (cit != result.first.end()) {
-		  iter = *cit;
-		  cit++;
-		}*/
 		return result.second;
 	}
 
+	/**
+	 * @brief Computes the radius of the smallest enclosing sphere of a range of points.
+	 * @param first Start of the range of points
+	 * @param beyond End of the range of points
+	 * @param iter The output iterator to write the coordinates of the center of the minsphere to.
+	 * @return The radius of the smallest enclosing sphere
+	 */
 	template <utils::RandomAccessIterator<Point> PointIterator>
 	NT operator()(PointIterator first, PointIterator beyond) const {
 		auto result = dispatcher(std::distance(first->begin(), first->end()), std::vector<Point>(first, beyond));

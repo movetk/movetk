@@ -45,6 +45,14 @@
  */
 namespace movetk::utils {
 
+/**
+ * @brief Constructs a projected MovetkPoint from the latitude and longitude
+ * @tparam Traits The geometry kernel to use
+ * @param lat The latitude
+ * @param lon The longitude
+ * @param georef Projection object
+ * @return The constructed point after projection
+*/
 template <class Traits>
 typename Traits::MovetkPoint get_point(typename Traits::NT lat,
                                        typename Traits::NT lon,
@@ -55,11 +63,23 @@ typename Traits::MovetkPoint get_point(typename Traits::NT lat,
 	return make_point(std::cbegin(projected_point), std::cend(projected_point));
 }
 
+/**
+ * @brief Retrieves the first coordinate of the vector
+ * @tparam GeometryTraits Kernel to use
+ * @param v The vector
+ * @return The first coordinate
+*/
 template <class GeometryTraits>
 typename GeometryTraits::NT get_x(const typename GeometryTraits::MovetkVector& v) {
 	return v * v.basis(0);
 }
 
+/**
+ * @brief Retrieves the first coordinate of the point
+ * @tparam GeometryTraits Kernel to use
+ * @param p The point
+ * @return The first coordinate
+ */
 template <class GeometryTraits>
 typename GeometryTraits::NT get_x(const typename GeometryTraits::MovetkPoint& p) {
 	geom::MakePoint<GeometryTraits> make_point;
@@ -68,11 +88,23 @@ typename GeometryTraits::NT get_x(const typename GeometryTraits::MovetkPoint& p)
 	return v * v.basis(0);
 }
 
+/**
+ * @brief Retrieves the second coordinate of the vector
+ * @tparam GeometryTraits Kernel to use
+ * @param v The vector
+ * @return The second coordinate
+ */
 template <class GeometryTraits>
 typename GeometryTraits::NT get_y(const typename GeometryTraits::MovetkVector& v) {
 	return v * v.basis(1);
 }
 
+/**
+ * @brief Retrieves the second coordinate of the point
+ * @tparam GeometryTraits Kernel to use
+ * @param p The point
+ * @return The second coordinate
+ */
 template <class GeometryTraits>
 typename GeometryTraits::NT get_y(const typename GeometryTraits::MovetkPoint& p) {
 	geom::MakePoint<GeometryTraits> make_point;
@@ -84,7 +116,7 @@ typename GeometryTraits::NT get_y(const typename GeometryTraits::MovetkPoint& p)
 
 /*!
  * @brief checks if input values are a sequence
- * TODO: this check is necessry, but not sufficient for the input to be a sequence.
+ * TODO: this check is necessary, but not sufficient for the input to be a sequence.
  * @tparam InputIterator A random access iterator over a set of values of type size_t
  * @param first
  * @param beyond
@@ -188,6 +220,17 @@ void get_distances(InputIterator first, InputIterator beyond, OutputIterator ite
 	}
 }
 
+/**
+ * @brief computes the distance between consecutive probes and stores it in the probe field, defined by
+ * DistIdx
+ * @tparam Traits The kernel to use
+ * @tparam InputIterator The type of the probe iterator
+ * @tparam LatIdx Index of the latitude coordinate in the probe
+ * @tparam LonIdx Index of the longitude coordinate in the probe
+ * @tparam DistIdx Index to store the distance in in the probe
+ * @param first Start of the probe range
+ * @param beyond End of the probe range
+*/
 template <class Traits, class InputIterator, std::size_t LatIdx, std::size_t LonIdx, std::size_t DistIdx>
 void get_distances(InputIterator first, InputIterator beyond) {
 	InputIterator pit = first;
@@ -527,6 +570,16 @@ InputIterator merge_intervals(InputIterator first, InputIterator beyond, bool so
 	return (curr + 1);
 }
 
+/**
+ * @brief TODO: check this
+ * @tparam GeometryTraits The traits to use
+ * @tparam Norm The norm to use
+ * @tparam InputIterator Input iterator type
+ * @tparam OutputIterator Output iterator type
+ * @param first Start of the curve
+ * @param beyond End of the curve
+ * @param result Output iterator to write the result to
+*/
 template <class GeometryTraits, class Norm, class InputIterator, class OutputIterator>
 void compute_curve_squared_length(InputIterator first, InputIterator beyond, OutputIterator result) {
 	Norm norm;
