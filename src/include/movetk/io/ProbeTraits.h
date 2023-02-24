@@ -25,20 +25,14 @@
 #define MOVETK_PROBETRAITS_H
 
 namespace movetk::io {
-template <class _ProbeColumns,
-          class _ProbeParseDate,
-          class _ProbeCsv,
-          class _ProbePoint,
-          bool _header = true,
-          char _delimiter = ','>
+template <class _ProbeColumns, class _ProbeCsv, class _ProbePoint, bool _header = true, char _delimiter = ','>
 struct _ProbeTraits {
-	typedef _ProbeColumns ProbeColumns;
-	typedef _ProbeParseDate ProbeParseDate;
-	typedef _ProbeCsv ProbeCsv;
-	typedef _ProbePoint ProbePoint;
-	typedef typename _ProbeCsv::iterator ProbeInputIterator;
-	constexpr static bool header = _header;
-	constexpr static char delimiter = _delimiter;
+	using ProbeColumns = _ProbeColumns;
+	using ProbeCsv = _ProbeCsv;
+	using ProbePoint = _ProbePoint;
+	using ProbeInputIterator = typename _ProbeCsv::iterator;
+	static constexpr bool header = _header;
+	static constexpr char delimiter = _delimiter;
 };
 }  // namespace movetk::io
 

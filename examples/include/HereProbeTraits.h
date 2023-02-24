@@ -56,7 +56,7 @@ using ProbeCsv = movetk::io::csv::csv<
 
 using ProbePoint = typename ProbeCsv::value_type;
 
-using ProbeTraits = movetk::io::_ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint>;
+using ProbeTraits = movetk::io::_ProbeTraits<ProbeColumns, ProbeCsv, ProbePoint>;
 
 }  // namespace here::c2d::raw
 

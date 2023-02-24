@@ -23,6 +23,17 @@ struct tuple_contains_type_impl<TUPLE, TYPE, std::index_sequence<I, IS...>> {
 	static constexpr bool value = std::is_same_v<TYPE, std::tuple_element_t<I, TUPLE>> ||
 	                              tuple_contains_type_impl<TUPLE, TYPE, std::index_sequence<IS...>>::value;
 };
+template <typename TUPLE_LIKE_TYPE, template <typename...> typename TARGET_CONTAINER, typename... FRONT_TYPES>
+struct transfer_types_impl;
+
+template <template <typename...> typename SOURCE_CONTAINER,
+          template <typename...>
+          typename TARGET_CONTAINER,
+          typename... FRONT_TYPES,
+          typename... CONTAINER_TYPES>
+struct transfer_types_impl<SOURCE_CONTAINER<CONTAINER_TYPES...>, TARGET_CONTAINER, FRONT_TYPES...> {
+	using type = TARGET_CONTAINER<FRONT_TYPES..., CONTAINER_TYPES...>;
+};
 }  // namespace detail
 
 
@@ -31,5 +42,7 @@ struct tuple_contains_type {
 	using tuple_index_sequence = detail::index_sequence_for_tuple_t<TUPLE>;
 	static constexpr bool value = detail::tuple_contains_type_impl<TUPLE, TYPE, tuple_index_sequence>::value;
 };
+template <typename TUPLE_LIKE_TYPE, template <typename...> typename TARGET_CONTAINER, typename... FRONT_TYPES>
+using transfer_types = typename detail::transfer_types_impl<TUPLE_LIKE_TYPE, TARGET_CONTAINER, FRONT_TYPES...>::type;
 }  // namespace movetk::utils
 #endif
