@@ -55,6 +55,8 @@ target_compile_features(movetk PUBLIC cxx_std_20)
 target_compile_definitions(movetk PUBLIC -DBOOST_LOG_DYN_LINK=1)
 if(MSVC)
 	target_compile_options(movetk PUBLIC /experimental:external /Zc:preprocessor /external:anglebrackets /external:W0)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(movetk PUBLIC -fconcepts-diagnostics-depth=3)
 endif()
 
 #
