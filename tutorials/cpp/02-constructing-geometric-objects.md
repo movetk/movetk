@@ -8,21 +8,20 @@ static constexpr size_t DIMENSIONS = 2;
 using NT = ...;
 using GeometryKernel = ...;
 
-int main(){
-    // Create the construction functor
-    movetk::geom::MakePoint<GeometryKernel> make_point;
-    // Construct a point. 
-    // Its type is GeometryKernel::MovetkPoint
-    auto point = make_point({3.14, 1.618});
-    // Construct a point using the constructor instead
-    std::array<NT,2> coords ={-2.14, -3.618};
-    // Use one of the point constructors instead
-    GeometryKernel::MovetkPoint point2(coords.begin(), coords.end());
+// Create the construction functor
+movetk::geom::MakePoint<GeometryKernel> make_point;
+// Construct a point. 
+// Its type is GeometryKernel::MovetkPoint
+auto point = make_point({3.14, 1.618});
+// Construct a point using the constructor instead
+std::array<NT,2> coords ={-2.14, -3.618};
+// Use one of the point constructors instead
+GeometryKernel::MovetkPoint point2(coords.begin(), coords.end());
 
-    movetk::geom::MakeLine<GeometryKernel> make_line;
-    // Creates a line through the given points.
-    auto line = make_line(point, point2);
-}
+movetk::geom::MakeLine<GeometryKernel> make_line;
+// Creates a line through the given points.
+auto line = make_line(point, point2);
+
 ```
 To show what interface the geometric objects provide, MoveTK makes use of C++20 [Concepts](https://en.cppreference.com/w/cpp/language/constraints). Each geometric object has an associated concept in the ``movetk::geom::concepts`` namespace, which are defined in the ``movetk/geom/GeomtryConcepts.h`` file. In addition, the concepts also allow MoveTK to verify that the required interface is implemented by the backend. Here is an example of the ``Point`` concept:
 ```c++
