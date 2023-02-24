@@ -177,6 +177,14 @@ private:
 };
 
 /**
+ * @brief Convenience definition to get a ColumnarTrajectory with as fields the types of the PROBE_TYPE type,
+ * which should be a tuple-like type
+ * @tparam PROBE_TYPE The probe type
+*/
+template<typename PROBE_TYPE>
+using ColumnarTrajectoryForProbeType = movetk::utils::transfer_types<PROBE_TYPE, ColumnarTrajectory>;
+
+/**
  * @brief Concatenate/Append a column to a ColumnarTrajectory data structure.
  * Note that the data structure is copied into the new data structure.
  * @tparam field_type The type of the column to append
