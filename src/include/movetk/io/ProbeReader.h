@@ -41,8 +41,18 @@
 /**
  * @namespace movetk::io
  * @brief Contains functionality for reading and writing trajectories
-*/
+ */
 namespace movetk::io {
+
+namespace concepts {
+template <typename TRAITS>
+concept ProbeReaderTraits = requires() {
+	typename TRAITS::ProbeCsv;
+	typename TRAITS::ProbeInputIterator;
+	requires std::input_iterator<typename TRAITS::ProbeInputIterator>;
+};
+}  // namespace concepts
+
 template <class ProbeTraits>
 class ProbeReader {
 public:
@@ -101,7 +111,6 @@ public:
 	static constexpr std::string_view GZ_EXT = ".gz";
 	template <class ProbeTraits>
 	static std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> create(const std::string& file_name) {
-		
 		// TODO: check if file exists
 		if (file_name.ends_with(CSV_EXT)) {
 			auto fin = std::make_unique<std::ifstream>(file_name);
