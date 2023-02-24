@@ -44,6 +44,7 @@
 #include "movetk/segmentation/SegmentationTraits.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
+#include "movetk/utils/Meta.h"
 
 namespace dl {
 
@@ -72,20 +73,13 @@ using ProbeCsv = movetk::io::csv::csv<data_tuple,
                                       _RAW_LON,
                                       _RAW_HEADING,
                                       _RAW_SPEED>;
-template <typename T, template <typename...> typename Container>
-struct transfer_types {};
-template <template <typename...> typename SrcContainer, template <typename...> typename Container, typename... Args>
-struct transfer_types<SrcContainer<Args...>, Container> {
-	using type = Container<Args...>;
-};
-
 typedef typename ProbeCsv::value_type ProbePoint;
 typedef int Dummy;
-using ProbeTraits = movetk::io::_ProbeTraits<ProbeColumns, Dummy, ProbeCsv, ProbePoint>;
+using ProbeTraits = movetk::io::_ProbeTraits<ProbeColumns, ProbeCsv, ProbePoint>;
 
 constexpr static int SplitByFieldIdx = ProbeTraits::ProbeColumns::RAW_DEVICEID;
 constexpr static int SortByFieldIdx = ProbeTraits::ProbeColumns::RAW_GPSTIME;
-using trajectory_type = typename transfer_types<data_tuple, movetk::ds::TabularTrajectory>::type;
+using trajectory_type = movetk::utils::transfer_types<data_tuple, movetk::ds::TabularTrajectory>;
 
 using TrajectoryTraits = movetk::io::_TrajectoryTraits<ProbeTraits, SplitByFieldIdx, SortByFieldIdx, trajectory_type>;
 
