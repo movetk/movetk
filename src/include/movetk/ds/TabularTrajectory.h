@@ -42,6 +42,7 @@
 #include "movetk/PolylineUtils.h"
 #include "movetk/io/TrajectoryTraits.h"
 #include "movetk/io/TuplePrinter.h"
+#include "movetk/utils/Meta.h"
 
 namespace movetk::ds {
 
@@ -250,7 +251,7 @@ public:
 	 * @tparam GeometryTraits The kernel to use
 	 * @tparam LatIdx Index of the latitude coordinate in the probe
 	 * @tparam LonIdx Index of the longitude coordinate in the probe
-	*/
+	 */
 	template <class GeometryTraits, int LatIdx, int LonIdx>
 	class LookupByOffsetFn {
 	public:
@@ -420,6 +421,13 @@ private:
 	std::vector<std::tuple<fields...>> _points;
 };
 
+/**
+ * @brief Convenience definition to get a TabularTrajectory with as fields the types of the PROBE_TYPE type,
+ * which should be a tuple-like type
+ * @tparam PROBE_TYPE The probe type
+*/
+template<typename PROBE_TYPE>
+using TabularTrajectoryForProbeType = movetk::utils::transfer_types<PROBE_TYPE, TabularTrajectory>;
 
 // Helper functions for concat_field
 template <class... fields, std::size_t... idx>
