@@ -33,7 +33,6 @@
 #include <array>
 #include <exception>
 #include <iostream>
-#include <ranges>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -425,8 +424,8 @@ private:
  * @brief Convenience definition to get a TabularTrajectory with as fields the types of the PROBE_TYPE type,
  * which should be a tuple-like type
  * @tparam PROBE_TYPE The probe type
-*/
-template<typename PROBE_TYPE>
+ */
+template <typename PROBE_TYPE>
 using TabularTrajectoryForProbeType = movetk::utils::transfer_types<PROBE_TYPE, TabularTrajectory>;
 
 // Helper functions for concat_field
