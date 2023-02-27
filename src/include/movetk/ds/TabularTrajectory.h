@@ -68,11 +68,11 @@ concept IteratorCheck = requires(T t) {
  * each probe is stored as a tuple, the full trajecory is a list of these tuples.
  * @tparam ...fields The fields to store.
  */
-template <class... fields>
+template <class... FIELDS>
 class TabularTrajectory {
 public:
-	constexpr static int NUM_FIELDS = sizeof...(fields);
-	using value_type = std::tuple<fields...>;
+	constexpr static int NUM_FIELDS = sizeof...(FIELDS);
+	using value_type = std::tuple<FIELDS...>;
 	using ValueList = std::vector<value_type>;
 	/*!
 	 * TrajectoryIterator
@@ -136,7 +136,7 @@ public:
 	 * @brief Returns the number of fields
 	 * @return The number of feilds
 	 */
-	constexpr std::size_t num_fields() const { return sizeof...(fields); }
+	constexpr std::size_t num_fields() const { return sizeof...(FIELDS); }
 
 	/**
 	 * @brief Returns the values of the field with the given index
@@ -238,7 +238,7 @@ public:
 	 * @param trajectory
 	 * @return
 	 */
-	friend std::ostream& operator<<(std::ostream& os, TabularTrajectory<fields...>& trajectory) {
+	friend std::ostream& operator<<(std::ostream& os, TabularTrajectory<FIELDS...>& trajectory) {
 		for (auto row : trajectory) {
 			movetk::io::print_tuple(os, row);
 			os << "\r\n";
@@ -350,7 +350,7 @@ public:
 
 	public:
 		using iterator_category = std::input_iterator_tag;
-		using value_type = std::tuple_element_t<field_idx, std::tuple<fields...>>;
+		using value_type = std::tuple_element_t<field_idx, std::tuple<FIELDS...>>;
 		using difference_type = long long;
 		using pointer = value_type*;
 		using reference = value_type&;
@@ -418,7 +418,7 @@ public:
 	}
 
 private:
-	std::vector<std::tuple<fields...>> _points;
+	std::vector<std::tuple<FIELDS...>> _points;
 };
 
 /**
@@ -430,37 +430,37 @@ template<typename PROBE_TYPE>
 using TabularTrajectoryForProbeType = movetk::utils::transfer_types<PROBE_TYPE, TabularTrajectory>;
 
 // Helper functions for concat_field
-template <class... fields, std::size_t... idx>
-std::tuple<typename std::vector<fields>::iterator...> field_iterators_increment(
-    std::tuple<typename std::vector<fields>::iterator...>& iters,
+template <class... FIELDS, std::size_t... idx>
+std::tuple<typename std::vector<FIELDS>::iterator...> field_iterators_increment(
+    std::tuple<typename std::vector<FIELDS>::iterator...>& iters,
     std::index_sequence<idx...>) {
 	return {(std::get<idx>(iters)++)...};
 }
 
-template <class... fields>
-std::tuple<typename std::vector<fields>::iterator...> row_next(
-    std::tuple<typename std::vector<fields>::iterator...>& iters) {
-	return field_iterators_increment<fields...>(iters, std::make_index_sequence<sizeof...(fields)>{});
+template <class... FIELDS>
+std::tuple<typename std::vector<FIELDS>::iterator...> row_next(
+    std::tuple<typename std::vector<FIELDS>::iterator...>& iters) {
+	return field_iterators_increment<FIELDS...>(iters, std::make_index_sequence<sizeof...(FIELDS)>{});
 }
 
-template <class... fields, std::size_t... idx>
-typename std::tuple<fields...> _read_row(std::tuple<typename std::vector<fields>::iterator...>& iters,
+template <class... FIELDS, std::size_t... idx>
+typename std::tuple<FIELDS...> _read_row(std::tuple<typename std::vector<FIELDS>::iterator...>& iters,
                                          std::index_sequence<idx...>) {
 	return std::make_tuple(*std::get<idx>(iters)...);
 }
 
-template <class... fields>
-typename std::tuple<fields...> read_row(std::tuple<typename std::vector<fields>::iterator...>& iters) {
-	return _read_row<fields...>(iters, std::make_index_sequence<sizeof...(fields)>{});
+template <class... FIELDS>
+typename std::tuple<FIELDS...> read_row(std::tuple<typename std::vector<FIELDS>::iterator...>& iters) {
+	return _read_row<FIELDS...>(iters, std::make_index_sequence<sizeof...(FIELDS)>{});
 }
 
-template <class... fields, class... new_fields>
-TabularTrajectory<fields..., new_fields...> concat_field(TabularTrajectory<fields...> t,
+template <class... FIELDS, class... new_fields>
+TabularTrajectory<FIELDS..., new_fields...> concat_field(TabularTrajectory<FIELDS...> t,
                                                          std::vector<new_fields>... new_columns) {
 	std::array<std::size_t, sizeof...(new_fields)> new_sizes = {new_columns.size()...};
 	std::size_t size = t.size();
 	assert(std::all_of(std::begin(new_sizes), std::end(new_sizes), [&size](std::size_t s) { return s == size; }));
-	std::vector<std::tuple<fields..., new_fields...>> new_data;
+	std::vector<std::tuple<FIELDS..., new_fields...>> new_data;
 	new_data.reserve(t.size());
 	auto new_it = std::make_tuple(std::begin(new_columns)...);
 	for (auto row_it = std::begin(t); row_it != std::end(t); ++row_it) {
@@ -468,7 +468,7 @@ TabularTrajectory<fields..., new_fields...> concat_field(TabularTrajectory<field
 		row_next<new_fields...>(new_it);
 		new_data.emplace_back(std::tuple_cat(*row_it, new_slice));
 	}
-	return TabularTrajectory<fields..., new_fields...>(new_data);
+	return TabularTrajectory<FIELDS..., new_fields...>(new_data);
 }
 }  // namespace movetk::ds
 #endif  // MOVETK_TABULAR_TRAJECTORY_H

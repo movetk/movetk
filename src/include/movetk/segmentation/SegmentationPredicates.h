@@ -48,10 +48,10 @@ class TEST {};
  * @tparam GeometryTraits The kernel to use
  * @tparam ThresholdCompare Comparison functor
 */
-template <typename GeometryTraits, template <typename> typename ThresholdCompare = std::less>
+template <typename Kernel, template <typename> typename ThresholdCompare = std::less>
 class MinimumEnclosingBallPredicate {
 public:
-	using NT = typename GeometryTraits::NT;
+	using NT = typename Kernel::NT;
 
 	/**
 	 * @brief Construct the predicate
@@ -65,7 +65,7 @@ public:
 	 * @param beyond End of the point range
 	 * @return Whether the predicate holds for the given point range.
 	*/
-	template <utils::RandomAccessPointIterator<GeometryTraits> InputIterator>
+	template <utils::RandomAccessPointIterator<Kernel> InputIterator>
 	bool operator()(InputIterator first, InputIterator beyond) const {
 		const auto radius = m_make_min_sphere(first, beyond);
 		return m_compare(radius, m_threshold);
@@ -73,7 +73,7 @@ public:
 
 private:
 	ThresholdCompare<NT> m_compare;
-	movetk::geom::MakeMinSphere<GeometryTraits> m_make_min_sphere;
+	movetk::geom::MakeMinSphere<Kernel> m_make_min_sphere;
 	NT m_threshold;
 };
 

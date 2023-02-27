@@ -58,9 +58,9 @@ typedef movetk::io::csv::csv<std::tuple<double, double, double, std::time_t, std
                              _MODEID>
     ProbeCsv;
 
-typedef typename ProbeCsv::value_type ProbePoint;
+using ProbePoint = typename ProbeCsv::value_type;
 
-typedef movetk::io::_ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv, ProbePoint> ProbeTraits;
+using ProbeTraits = movetk::io::_ProbeTraits<ProbeColumns, ProbeCsv, ProbePoint>;
 
 }  // namespace raw
 }  // namespace c2d

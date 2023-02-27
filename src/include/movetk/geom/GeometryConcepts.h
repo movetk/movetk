@@ -21,7 +21,7 @@ concept Point = requires(POINT& point, const POINT& const_point, size_t index) {
 	POINT();
 
 	// Constructible from an initalizer list of coordinates
-	POINT(std::declval<std::initializer_list<typename KERNEL::NT>>());
+	//POINT(std::declval<std::initializer_list<typename KERNEL::NT>>());
 	// Constructible from an input iterator pair. Note that we use std::vector<> iterators as a proxy
 	requires requires(typename std::vector<typename KERNEL::NT>::iterator iterator) { POINT(iterator, iterator); };
 

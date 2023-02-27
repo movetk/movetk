@@ -133,6 +133,9 @@ concept BackInsertable = requires(T t, VALUE v) {
 	t.push_back(v);
 };
 
+template <typename T, typename... TYPES_AT>
+concept RandomAccessIteratorOfTupleWith = std::random_access_iterator<T> && TupleWithTypes<typename T::value_type, TYPES_AT...>;
+
 
 /*!
  *@brief Requirement for  template \c T  to be an input iterator

@@ -31,26 +31,29 @@
 #include "movetk/utils/Requirements.h"
 namespace movetk::segmentation {
 
-/*!
+/**
+ * @brief Segmentation algorithm for a monotone predicate
  *
+ * This segmentation algorithm considers monotone predicates:
+ * Based on https://doi.org/10.1145/1869790.1869821
+ * @tparam GeometryTraits The kernel
  * @tparam TestType
+ *
  */
-template <class GeometryTraits, class TestType>
+template <class Kernel, class PREDICATE>
 class MonotoneSegmentation {
-	// based on https://doi.org/10.1145/1869790.1869821
-	// TODO Requirements for TestType
 private:
-	typedef typename GeometryTraits::NT NT;
-	typedef TestType TEST;
-	movetk::algo::BinarySearch<TestType> binary_search;
-	TEST test;
+	using NT = typename Kernel::NT;
+	movetk::algo::BinarySearch<PREDICATE> m_binary_search;
+	PREDICATE m_predicate;
 
 public:
 	/*!
-	 *
-	 * @param threshold
+	 * Constructs a monotone segmentation functor
+	 * @param threshold The threshold to use for the binary predicate.
 	 */
-	MonotoneSegmentation(NT threshold) : binary_search(threshold), test(threshold){};
+	explicit MonotoneSegmentation(NT threshold) : m_binary_search(threshold), m_predicate(threshold){};
+
 	/*!
 	 *
 	 * @tparam InputIterator
@@ -61,22 +64,24 @@ public:
 	 */
 	template <std::random_access_iterator InputIterator, utils::OutputIterator<InputIterator> OutputIterator>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
-		InputIterator it = first;
+		auto it = first;
 		size_t remainder = std::distance(first, beyond);
-		size_t MaxAllowedSteps = 0;
+		size_t max_allowed_steps = 0;
 		size_t steps = 1, a = 1;
 		size_t range = 0;
+		// Perform double-and-search: an exponential search, followed by a binary search, to find
+		// the right measurement in the trajectory where the predicate changes from being true to being false.
 		while (it != beyond) {
 			steps = 1;
 			a = 2;
-			MaxAllowedSteps = floor(log2(remainder));
-			while (steps <= MaxAllowedSteps) {
-				if (test(it, it + a)) {
+			max_allowed_steps = floor(log2(remainder));
+			while (steps <= max_allowed_steps) {
+				if (m_predicate(it, it + a)) {
 					steps++;
 					a = 2 * a;
 				} else {
 					range = pow(2, steps) - pow(2, steps - 1);
-					a = a / 2 + binary_search(it, a / 2, 0, range);
+					a = a / 2 + m_binary_search(it, a / 2, 0, range);
 					if (a == 1)
 						a++;
 					break;
@@ -86,10 +91,10 @@ public:
 				*result = it + (a - 1);
 				it = it + (a - 1);
 			} else {
-				if (test(it, it + remainder))
+				if (m_predicate(it, it + remainder))
 					it = beyond;
 				else {
-					a = a / 2 + binary_search(it, a / 2, 1, remainder - a / 2);
+					a = a / 2 + m_binary_search(it, a / 2, 1, remainder - a / 2);
 					if (a == 1)
 						a++;
 					if (a <= remainder) {
@@ -100,7 +105,6 @@ public:
 			}
 			remainder = std::distance(it, beyond);
 		}
-		// cout<<endl;
 	}
 };
 

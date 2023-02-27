@@ -31,6 +31,17 @@
 #include "movetk/utils/Requirements.h"
 
 namespace movetk::segmentation {
+/**
+ * @brief Implements a model based segmentation algorithm.
+ * 
+ * This algorithm allows for segmenting a trajectory in subtrajectory that exhibit similar 
+ * movement characteristics. The algorithm assumes that the movement model can be parameterized by 
+ * a single parameter. 
+ * @tparam GeometryTraits 
+ * @tparam LogLikelihood 
+ * @complexity \f$O(nm)\f$ for a trajectory of complexity \f$n\f$ and for \f$m\f$ model parameter values.
+ * Based on \mtkCite{alewijnse2018model}.
+*/
 template <class GeometryTraits, class LogLikelihood>
 class ModelBasedSegmentation {
 	// based on https://doi.org/10.1007/s00453-017-0329-x
@@ -46,8 +57,20 @@ class ModelBasedSegmentation {
 	} ic;
 
 public:
+	/**
+	 * @brief Construct the segmentation algorithm
+	 * @param penalty_factor The penalty factor for the information criterion.
+	*/
 	explicit ModelBasedSegmentation(NT penalty_factor) { ic.penalty_factor = penalty_factor; }
 
+	/**
+	 * @brief 
+	 * @param rfirst 
+	 * @param rbeyond 
+	 * @param cfirst 
+	 * @param cbeyond 
+	 * @param result 
+	*/
 	template <std::random_access_iterator RowIterator,
 	          std::random_access_iterator ColumnIterator,
 	          utils::OutputIterator<RowIterator> OutputIterator>

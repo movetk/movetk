@@ -44,7 +44,7 @@ template <class GeometryTraits>
 using ProbeCsv = std::vector<ProbePoint<GeometryTraits>>;
 
 template <class GeometryTraits>
-using ProbeTraits = _ProbeTraits<ProbeColumns, ProbeParseDate, ProbeCsv<GeometryTraits>, ProbePoint<GeometryTraits>>;
+using ProbeTraits = _ProbeTraits<ProbeColumns, ProbeCsv<GeometryTraits>, ProbePoint<GeometryTraits>>;
 
 }  // namespace movetk::io
 #endif  // MOVETK_CARTESIANPROBETRAITS_H
