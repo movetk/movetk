@@ -76,27 +76,27 @@ namespace brownian_bridge {
  */
 template <class _GeometryTraits, class TrajectoryIterator>
 struct ParameterTraits {
-	typedef _GeometryTraits GeometryTraits;
+	using GeometryTraits = _GeometryTraits;
 	/*!*
 	 * @typedef ::NT
 	 * @brief typedef  of the number type defined in GeometryTraits.
 	 * For example @refitem  movetk::geom::MovetkGeometryKernel::NT
 	 * */
-	typedef typename GeometryTraits::NT NT;
+	using NT = typename GeometryTraits::NT;
 	/*!*
 	 * @typedef ::Point
 	 * @brief typedef of the point type defined in GeometryTraits.
 	 * For example @refitem movetk::geom::MovetkGeometryKernel::MovetkPoint
 	 *  */
-	typedef typename GeometryTraits::MovetkPoint Point;
+	using Point = typename GeometryTraits::MovetkPoint;
 	/*!* @typedef ::Vector
 	 * @brief typedef of the vector type defined in GeometryTraits.
 	 * For example @refitem  movetk::geom::MovetkGeometryKernel::MovetkVector
 	 * */
-	typedef typename GeometryTraits::MovetkVector Vector;
+	using Vector = typename GeometryTraits::MovetkVector;
 	/*!* @typedef ::Parameters
 	 */
-	typedef std::tuple<Point, Point, NT, TrajectoryIterator, TrajectoryIterator> Parameters;
+	using Parameters = std::tuple<Point, Point, NT, TrajectoryIterator, TrajectoryIterator>;
 	/*!
 	 * @enum ParameterColumns
 	 *
@@ -110,6 +110,14 @@ struct ParameterTraits {
 	};
 };
 
+namespace concepts {
+template <typename PARAMETER_TRAITS>
+concept ParameterTraits = requires() {
+	requires std::convertible_to<decltype(PARAMETER_TRAITS::ParameterColumns::POINT), size_t>;
+	requires std::convertible_to<decltype(PARAMETER_TRAITS::ParameterColumns::MU), size_t>;
+	requires std::convertible_to<decltype(PARAMETER_TRAITS::ParameterColumns::SIGMA_SQUARED), size_t>;
+};
+}  // namespace concepts
 
 /*!
  * @brief The Maximum Likelihood Estimator
@@ -123,25 +131,18 @@ struct ParameterTraits {
  * @tparam MaxIter - A positive integer that bounds the number of iterations in the MLE
  * algorithm
  */
-template <class GeometryTraits,
-          class ParameterTraits,
-          class Norm,
-          class InputIterator,
-          std::size_t MaxIter,
-          typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-          typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
-          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-                                                                           ParameterTraits::ParameterColumns::POINT,
-                                                                           typename InputIterator::value_type>,
-          typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-                                                                           ParameterTraits::ParameterColumns::MU,
-                                                                           typename InputIterator::value_type>,
-          typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-                                                                 ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-                                                                 typename InputIterator::value_type>>
+template <
+    class GeometryTraits,
+    concepts::ParameterTraits ParameterTraits,
+    class Norm,
+    utils::RandomAccessIteratorOfTupleWith<
+        utils::TypeAt<ParameterTraits::ParameterColumns::POINT, typename GeometryTraits::MovetkPoint>,
+        utils::TypeAt<ParameterTraits::ParameterColumns::MU, typename GeometryTraits::MovetkPoint>,
+        utils::TypeAt<ParameterTraits::ParameterColumns::SIGMA_SQUARED, typename GeometryTraits::NT>> InputIterator,
+    std::size_t MaxIter>
 class MLE {
 private:
-	typedef typename GeometryTraits::NT NT;
+	using NT = typename GeometryTraits::NT;
 	const gsl_min_fminimizer_type *T = gsl_min_fminimizer_goldensection;
 	gsl_min_fminimizer *s = gsl_min_fminimizer_alloc(T);
 	gsl_function F;
@@ -170,7 +171,7 @@ private:
 	}
 
 	void operator()(InputIterator first, InputIterator beyond, NT result, NT x_lower, NT x_upper, NT eps) {
-		struct fn_params params;
+		fn_params params;
 		params.first = first;
 		params.beyond = beyond;
 		F.function = &MLE::fn;
@@ -295,7 +296,8 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <std::random_access_iterator TrajectoryIterator, class OutputIterator>
+	template <std::random_access_iterator TrajectoryIterator,
+	          utils::OutputIterator<std::tuple<Point, Point, int, TrajectoryIterator, TrajectoryIterator>> OutputIterator>
 	/*typename = movetk::utils::requires_random_access_iterator<TrajectoryIterator>,
 	typename = movetk::utils::requires_tuple<typename TrajectoryIterator::value_type>,
 	typename = movetk::utils::requiresct_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LAT,
@@ -303,18 +305,7 @@ public:
 	typename = movetk::utils::requires_tuple_element_as_arithmetic<ProbeTraits::ProbeColumns::LON,
 	                                                               typename TrajectoryIterator::value_type>,
 	typename = movetk::utils::requires_tuple_element_as_size_t<ProbeTraits::ProbeColumns::SAMPLE_DATE,
-	                                                           typename TrajectoryIterator::value_type>,
-	typename = movetk::utils::requires_output_iterator<OutputIterator>,
-	typename = movetk::utils::requires_tuple<typename OutputIterator::value_type>,
-	typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-	                                                                 ParameterTraits::ParameterColumns::POINT,
-	                                                                 typename OutputIterator::value_type>,
-	typename = movetk::utils::requires_tuple_element_as_movetk_point<GeometryTraits,
-	                                                                 ParameterTraits::ParameterColumns::MU,
-	                                                                 typename OutputIterator::value_type>,
-	typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-	                                                       ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                       typename OutputIterator::value_type>>*/
+	                                                           typename TrajectoryIterator::value_type>*/
 	Model(TrajectoryIterator first, TrajectoryIterator beyond, OutputIterator result) {
 		const auto reflat = std::get<ProbeTraits::ProbeColumns::LAT>(*first);
 		const auto reflon = std::get<ProbeTraits::ProbeColumns::LON>(*first);
@@ -366,19 +357,20 @@ public:
 
 /*!
  *
- * @tparam GeometryTraits
+ * @tparam Kernel
  * @tparam ParameterTraits
  */
-template <class GeometryTraits, class ParameterTraits>
+template <class Kernel, class ParameterTraits>
 class ParameterSelector {
 	std::size_t SIZE;
 
 public:
+	using NT = typename Kernel::NT;
 	/*!
 	 *
 	 * @param size
 	 */
-	ParameterSelector(std::size_t size) : SIZE(size) {}
+	explicit ParameterSelector(std::size_t size) : SIZE(size) {}
 
 	/*!
 	 *
@@ -388,13 +380,9 @@ public:
 	 * @param beyond
 	 * @param result
 	 */
-	template <std::random_access_iterator InputIterator,
-	          utils::OutputIterator<typename GeometryTraits::NT> OutputIterator>
-	/*typename = movetk::utils::requires_random_access_iterator<InputIterator>,
-	typename = movetk::utils::requires_tuple<typename InputIterator::value_type>,
-	typename = movetk::utils::requires_tuple_element_as_NT<GeometryTraits,
-	                                                       ParameterTraits::ParameterColumns::SIGMA_SQUARED,
-	                                                       typename InputIterator::value_type>>*/
+	template <utils::RandomAccessIteratorOfTupleWith<utils::TypeAt<ParameterTraits::ParameterColumns::SIGMA_SQUARED, NT>>
+	              InputIterator,
+	          utils::OutputIterator<NT> OutputIterator>
 	void operator()(InputIterator first, InputIterator beyond, OutputIterator result) {
 		assert(static_cast<std::size_t>(std::distance(first, beyond)) >= SIZE);
 		std::vector<typename ParameterTraits::NT> coeffs;
@@ -415,7 +403,7 @@ public:
  * @tparam GeometryTraits The kernel to use
  * @tparam ParameterTraits Traits for the parameters?
  * @tparam Norm The norm to use
-*/
+ */
 template <class GeometryTraits, class ParameterTraits, class Norm>
 class LogLikelihood {
 	using NT = typename GeometryTraits::NT;
@@ -425,15 +413,15 @@ public:
 	LogLikelihood() = default;
 
 	/**
-	 * @brief Computes the log-likelihood for the given parameters, using a range of 
+	 * @brief Computes the log-likelihood for the given parameters, using a range of
 	 * parameter values for the squared standard deviation
 	 * @tparam InputIterator Type of the input iterator
 	 * @tparam OutputIterator Type of the output iterator to write to.
 	 * @param params The base parameters to use
 	 * @param first Start of standard deviation value range
-	 * @param beyond End of standard deviation value range 
+	 * @param beyond End of standard deviation value range
 	 * @param result Output iterator for writing the result to
-	*/
+	 */
 	template <utils::RandomAccessIterator<NT> InputIterator, utils::OutputIterator<NT> OutputIterator>
 	void operator()(const Parameters &params, InputIterator first, InputIterator beyond, OutputIterator result) {
 		Norm norm;
@@ -453,7 +441,7 @@ public:
 	 * @param params The base parameters
 	 * @param sigma_squared The squared standard deviation
 	 * @return The log-likelihood
-	*/
+	 */
 	NT operator()(const Parameters &params, NT sigma_squared) {
 		Norm norm;
 		const auto v = std::get<ParameterTraits::ParameterColumns::POINT>(params) -

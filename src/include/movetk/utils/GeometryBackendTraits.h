@@ -26,6 +26,7 @@
 #include <tuple>
 
 #include "movetk/ds/FreeSpaceDiagram.h"
+#include "movetk/geom/GeometryConcepts.h"
 #include "movetk/geom/GeometryInterface.h"
 #include "movetk/io/TuplePrinter.h"
 #include "movetk/metric/Norm.h"
@@ -38,7 +39,7 @@
 namespace movetk::backends {
 /**
  * @brief Base 2D CGAL kernel using long double as number type
-*/
+ */
 struct CGALBackend {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
@@ -46,6 +47,7 @@ struct CGALBackend {
 	using MovetkGeometryKernel = movetk::backends::cgal::KernelFor<NT, dimensions>;
 	static constexpr const char* name = "CGAL";
 };
+static_assert(movetk::geom::concepts::BaseKernel<CGALBackend::MovetkGeometryKernel>);
 }  // namespace movetk::backends
 #else
 #endif
@@ -62,13 +64,14 @@ struct BoostBackend : public movetk::backends::boost::KernelFor<long double, 2> 
 	using MovetkGeometryKernel = BoostBackend;
 	static constexpr const char* name = "Boost";
 };
+static_assert(movetk::geom::concepts::BaseKernel<BoostBackend::MovetkGeometryKernel>);
 }  // namespace movetk::backends
 #endif
 
 namespace movetk::backends {
 /**
  * @cond HIDDEN_SYMBOLS
-*/
+ */
 template <typename T>
 struct remove_first_type;
 template <typename T, typename... Ts>
@@ -96,7 +99,7 @@ namespace movetk {
 /**
  * @brief Basic geometric kernel
  * @tparam Backend The backend kernel to use
-*/
+ */
 template <typename Backend>
 struct BaseGeometryKernel : public Backend {
 	using MovetkGeometryKernel = typename Backend::MovetkGeometryKernel;

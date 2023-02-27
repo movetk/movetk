@@ -64,14 +64,14 @@ struct FreeSpaceCellTraits {
 	using const_iterator = typename Intersections::const_iterator;
 };
 namespace concepts {
-/*
+/**
  * @concept FreeSpaceCellTraits
- * @brief Defines the required types to be defined for the traits for
- * a freespace cell.
+ * @brief Defines the required types to be defined for the traits for a freespace cell.
  */
 template <typename TRAITS>
 concept FreeSpaceCellTraits = requires(TRAITS t) {
 	typename TRAITS::GeometryTraits;
+	requires movetk::geom::concepts::BaseKernel<TRAITS>;
 	typename TRAITS::OutputIterator;
 	typename TRAITS::edge_orientation;
 	typename TRAITS::Intersections;
@@ -270,17 +270,20 @@ private:
 	}
 };
 
-
+/**
+ * @brief Convenience class for the traits for the FreeSpaceDiagram
+ * @tparam FreeSpaceCell The freespace cell traits to base these traits on
+ */
 template <class FreeSpaceCell>
 struct FreeSpaceDiagramTraits {
-	typedef typename FreeSpaceCell::FreeSpaceCellTraits FreeSpaceCellTraits;
-	typedef typename FreeSpaceCellTraits::GeometryTraits GeometryTraits;
-	typedef FreeSpaceCell Cell;
-	typedef std::vector<Cell> Cells;
-	typedef std::vector<Cells> Rows;
-	typedef std::back_insert_iterator<typename Rows::value_type> CellsOutputIterator;
-	typedef std::back_insert_iterator<Rows> RowsOutputIterator;
-	typedef movetk::utils::movetk_grid_iterator<Rows> iterator;
+	using FreeSpaceCellTraits = typename FreeSpaceCell::FreeSpaceCellTraits;
+	using GeometryTraits = typename FreeSpaceCellTraits::GeometryTraits;
+	using Cell = FreeSpaceCell;
+	using Cells = std::vector<Cell>;
+	using Rows = std::vector<Cells>;
+	using CellsOutputIterator = std::back_insert_iterator<typename Rows::value_type>;
+	using RowsOutputIterator = std::back_insert_iterator<Rows>;
+	using iterator = movetk::utils::movetk_grid_iterator<Rows>;
 };
 
 /**
@@ -331,8 +334,15 @@ public:
 			rit = cells;
 		}
 	}
+	/**
+	 * @brief Returns the begin iterator over the rows of the diagram
+	 * @return The begin iterator
+	*/
 	typename FreeSpaceDiagramTraits::iterator begin() { return typename FreeSpaceDiagramTraits::iterator(rows); }
-
+	/**
+	 * @brief Returns the end iterator over the rows of the diagram
+	 * @return The end iterator
+	 */
 	typename FreeSpaceDiagramTraits::iterator end() { return typename FreeSpaceDiagramTraits::iterator(rows, true); }
 };
 

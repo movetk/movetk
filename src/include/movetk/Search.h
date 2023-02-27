@@ -36,17 +36,17 @@ namespace movetk::algo {
  *
  * @tparam TestType
  */
-template <class TestType>
+template <class PREDICATE>
 class BinarySearch {
 	// based on https://doi.org/10.1145/1869790.1869821
 private:
-	TestType test;
+	PREDICATE test;
 
 public:
 	BinarySearch() = default;
 
 	template <typename NT>
-		requires(std::constructible_from<TestType, NT>)
+		requires(std::constructible_from<PREDICATE, NT>)
 	BinarySearch(NT threshold) : test(threshold) {}
 	/*!
 	 *
@@ -58,7 +58,7 @@ public:
 	 * @return
 	 */
 	template <std::random_access_iterator InputIterator>
-		requires(std::is_invocable_r_v<bool, TestType, InputIterator, InputIterator>)
+		requires(std::is_invocable_r_v<bool, PREDICATE, InputIterator, InputIterator>)
 	size_t operator()(InputIterator first, size_t min, size_t left, size_t right) {
 		if (left >= right)
 			return right;

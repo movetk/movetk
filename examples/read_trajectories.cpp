@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
 	// Specializations for the Commit2Data raw probe format
 	using TrajectoryTraits = here::c2d::raw::TabularTrajectoryTraits;
 	using ProbeTraits = typename TrajectoryTraits::ProbeTraits;
+	using ProbeParseDate = here::c2d::raw::ProbeParseDate;
 
 	// Create trajectory reader
 	std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> probe_reader;
@@ -105,7 +106,7 @@ int main(int argc, char **argv) {
 		std::vector<std::size_t> trajectory_id_col;
 		trajectory_id_col.assign(trajectory.size(), trajectory_count);
 		// Create the timestamp column
-		std::vector<ProbeTraits::ProbeParseDate> dates = trajectory.get<ProbeTraits::ProbeColumns::SAMPLE_DATE>();
+		std::vector<ProbeParseDate> dates = trajectory.get<ProbeTraits::ProbeColumns::SAMPLE_DATE>();
 		std::vector<std::time_t> ts_col;
 		for (auto &d : dates) {
 			ts_col.push_back(d.ts());

@@ -29,18 +29,18 @@
 #include <vector>
 
 namespace movetk::utils {
-template <class... fields>
+template <class... FIELDS>
 struct Transpose {
-	constexpr static std::size_t N = sizeof...(fields);
-	typedef std::tuple<fields...> row_tuple_type;
-	typedef std::tuple<std::vector<fields>...> tuple_of_vectors_type;
+	constexpr static std::size_t N = sizeof...(FIELDS);
+	typedef std::tuple<FIELDS...> row_tuple_type;
+	typedef std::tuple<std::vector<FIELDS>...> tuple_of_vectors_type;
 	std::vector<row_tuple_type> &_inp;
 
 	explicit Transpose(std::vector<row_tuple_type> &inp) : _inp(inp) {}
 
 	template <std::size_t idx>
-	std::vector<typename std::tuple_element<idx, std::tuple<fields...>>::type> convert_rows_to_column() {
-		using type = typename std::tuple_element<idx, std::tuple<fields...>>::type;
+	std::vector<typename std::tuple_element<idx, std::tuple<FIELDS...>>::type> convert_rows_to_column() {
+		using type = typename std::tuple_element<idx, std::tuple<FIELDS...>>::type;
 		std::vector<type> v;
 		for (auto x : _inp) {
 			v.push_back(std::get<idx>(x));

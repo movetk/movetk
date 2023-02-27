@@ -128,7 +128,7 @@ public:
 	using value_type = TrajectoryReader::value_type;
 	using difference_type = std::size_t;
 	using pointer = TrajectoryReader::value_type *;
-	using reference = typedef TrajectoryReader::value_type &;
+	using reference = TrajectoryReader::value_type &;
 
 	/// Construct an empty/end iterator
 	iterator() : _parent(nullptr) {}
