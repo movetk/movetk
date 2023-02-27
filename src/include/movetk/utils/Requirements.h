@@ -44,22 +44,42 @@ struct is_specialization_of : public std::false_type {};
 template <template <typename...> typename ELEMENT, typename... ARGS>
 struct is_specialization_of<ELEMENT<ARGS...>, ELEMENT> : public std::true_type {};
 
+/**
+ * @concept TupleType
+ * @brief Models a tuple. Considers something a tuple if it is a specialization of std::tuple
+*/
 template <typename T>
 concept TupleType = is_specialization_of<T, std::tuple>::value;
 
+/**
+ * @concept TupleTypeOf
+ * @brief Models a tuple with the given ARGS as expected types.
+ */
 template <typename T, typename... ARGS>
 concept TupleTypeOf = std::is_same_v<T, std::tuple<ARGS...>>;
 
 template <typename T>
 using single_type_pair = std::pair<T, T>;
 
+/**
+ * @concept RandomAccessIterator
+ * @brief Models a random access iterator whose value type is VALUE.
+*/
 template <typename T, typename VALUE>
 concept RandomAccessIterator = std::random_access_iterator<T> && std::is_convertible_v<std::iter_value_t<T>, VALUE>;
 
+/**
+ * @concept RandomAccessPointIterator 
+ * @brief Models a random access iterator whose value type is a point as defined by the MoveTK KERNEL
+ */
 template <typename T, typename KERNEL>
 concept RandomAccessPointIterator = std::random_access_iterator<T> && std::is_convertible_v < std::iter_value_t<T>,
 typename KERNEL::MovetkPoint > ;
 
+/**
+ * @concept OutputIterator 
+ * @brief Models an output iterator that is assignable with a VALUE object
+ */
 template <typename T, typename VALUE>
 concept OutputIterator = std::output_iterator<T, VALUE>;
 

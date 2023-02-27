@@ -32,13 +32,12 @@
 #include "movetk/utils/Requirements.h"
 
 namespace movetk::algo {
-/*!
- *
- * @tparam TestType
+/**
+ * @brief Binary search functor
+ * @tparam PREDICATE The binary predicate to use. Should accept two iterators.
  */
 template <class PREDICATE>
 class BinarySearch {
-	// based on https://doi.org/10.1145/1869790.1869821
 private:
 	PREDICATE test;
 
@@ -60,13 +59,20 @@ public:
 	template <std::random_access_iterator InputIterator>
 		requires(std::is_invocable_r_v<bool, PREDICATE, InputIterator, InputIterator>)
 	size_t operator()(InputIterator first, size_t min, size_t left, size_t right) {
-		if (left >= right)
-			return right;
-		size_t mid = (left + right) / 2;
-		if (!test(first, first + min + mid))
-			return (*this)(first, min, left + 1, mid);
-		else
-			return (*this)(first, min, mid + 1, right);
+		auto current_left = left, current_right = right;
+		while (true) {
+			if (left >= right)
+				return right;
+			size_t mid = (left + right) / 2;
+			if (!test(first, first + min + mid)) {
+				left += 1;
+				right = mid;
+			} else {
+				left = mid + 1;
+			}
+		}
+		// Never reached
+		return 0;
 	}
 };
 
