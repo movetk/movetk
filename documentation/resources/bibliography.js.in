@@ -1,0 +1,53 @@
+$(document).ready(function(){
+    const citationjs = require('citation-js');
+    // Setup our bibliography. The $ element below gets expanded with the content of movetk.bib
+    var bibliography = '$bibliography';
+    
+    // Replace all occurences of citations with links.
+    const elements = document.getElementsByClassName('citationjs');
+
+    let citation_count = 0;
+    let citation_map = {};
+    let citation_ids = []
+
+    for (let i = 0; i < elements.length; i++) {
+        let value = elements[i]
+        const cite_id = value.dataset.citeid;
+        // Find the index of the citation
+        let index = 0;
+        if(cite_id in citation_map){
+            index = citation_map[cite_id];
+        }else{
+            index = citation_count+1
+            citation_map[cite_id] = index;
+            citation_count++;
+            citation_ids.push(cite_id)
+        }
+        // Link to the right citation.
+        value.getElementsByClassName('ref-container')[0].textContent = `[${index}]`;
+    }
+    
+    // Output the bibliography
+    if(citation_count > 0){
+        // Construct the citation object
+        let cite = citationjs.Cite(bibliography);
+        const result = cite.format('bibliography', {
+            format: 'html',
+            template: 'apa',
+            entry: citation_ids,
+             prepend (entry) { return `[${citation_map[entry.id]}] ` } 
+          });
+        // Add the bibliography section
+        $('.contents').append('<h1>Bibliography</h1>');
+        $('.contents').append(result);
+        // Make sure the citations are linked to the csl-entry elements.
+        $('.csl-entry').each(function(index,e){
+            let $elem = $(this);
+            console.log(this);
+            const id = $elem.data('csl-entry-id');
+            $elem.attr('id',`cite-${id}`)
+        });
+    }
+    
+    document.getElementById('projectnumber').textContent = ' latest';
+});
