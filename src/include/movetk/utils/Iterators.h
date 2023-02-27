@@ -186,8 +186,16 @@ public:
 	auto operator-(movetk_basic_iterator const &other) const { return (this->base() - other.base()); }
 };
 
-template <class Container,
-          typename = movetk::utils::requires_random_access_iterator<typename Container::value_type::const_iterator>>
+namespace concepts {
+template <typename T>
+concept RandomAccessIterable = requires(const T &t) {
+	typename T::const_iterator;
+	{ t.begin() } -> std::random_access_iterator;
+	{ t.end() } -> std::random_access_iterator;
+};
+}  // namespace concepts
+
+template <concepts::RandomAccessIterable Container>
 class movetk_grid_iterator : public std::iterator<std::random_access_iterator_tag,
                                                   Container,
                                                   std::size_t,
@@ -200,9 +208,9 @@ protected:
 
 public:
 	using column_iterator = typename Container::value_type::const_iterator;
-	typedef typename movetk_grid_iterator::reference reference;
-	typedef typename movetk_grid_iterator::pointer pointer;
-	typedef typename movetk_grid_iterator::difference_type difference_type;
+	using reference = typename movetk_grid_iterator::reference;
+	using pointer = typename movetk_grid_iterator::pointer;
+	using difference_type = typename movetk_grid_iterator::difference_type;
 
 	movetk_grid_iterator(const Container &container, bool is_end = false) {
 		rit_end = container.cend();

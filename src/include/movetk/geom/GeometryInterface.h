@@ -29,6 +29,7 @@
 #include "ObjectCreation.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/Requirements.h"
+#include "movetk/utils/TypeChecks.h"
 
 #define PI 3.14159265
 #define TWO_PI 6.2831853
@@ -333,8 +334,7 @@ std::ostream& operator<<(std::ostream& out, Wedge<GeometryTraits, Norm>& wedge) 
  * @tparam Norm Norm to use for length computations of vectors
  */
 template <utils::KernelSatisfying<utils::is_planar_geometry2> GeometryTraits,
-          class Norm,
-          typename = utils::requires_L2_norm<Norm>>
+          utils::L2Norm Norm>
 class MBR {
 private:
 	using NT = typename GeometryTraits::NT;
@@ -354,7 +354,7 @@ private:
 	 * @brief Returns the x  coordinate of the vector
 	 * @param v The vector
 	 * @return The x coordinate
-	*/
+	 */
 	NT get_x(Vector& v) { return v * v.basis(0); }
 
 	NT get_x(Point& p) {
