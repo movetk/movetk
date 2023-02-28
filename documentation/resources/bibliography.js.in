@@ -35,7 +35,13 @@ $(document).ready(function(){
             format: 'html',
             template: 'apa',
             entry: citation_ids,
-             prepend (entry) { return `[${citation_map[entry.id]}] ` } 
+             prepend (entry) { console.log(entry);return `[${citation_map[entry.id]}] `; },
+             append(entry){
+                if('URL' in entry){
+                    return `<a href="${entry.URL}">Link</a>`;
+                }
+                return ``;
+             }
           });
         // Add the bibliography section
         $('.contents').append('<h1>Bibliography</h1>');
@@ -48,6 +54,4 @@ $(document).ready(function(){
             $elem.attr('id',`cite-${id}`)
         });
     }
-    
-    document.getElementById('projectnumber').textContent = ' latest';
 });
