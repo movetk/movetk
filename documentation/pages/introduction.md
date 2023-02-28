@@ -1,6 +1,7 @@
 # The Movement Toolkit {#mainpage}
 
 # MoveTK: the movement toolkit
+
 MoveTK is a library for computational movement analysis written in C++. The library has been developed as part of a collaboration between [HERE Technologies](https://www.here.com/) , [Eindhoven University of Technology](https://alga.win.tue.nl/) and [Utrecht University](https://www.uu.nl/en/research/algorithms/geometric-computing) under the [Commit2Data](https://commit2data.nl/en/commit2data-program/data-handling/data-science-voor-veranderende-data-2/analysis-and-visualization-of-heterogeneous-spatio-temporal-data) program.
 
 ## Overview
@@ -34,52 +35,85 @@ The following table lists some of the algorithms available in MoveTK
 | **Trajectory Interpolation** | Kinematic Interpolation [[Long 2016](https://www.tandfonline.com/doi/abs/10.1080/13658816.2015.1081909?journalCode=tgis20)] |
 |                          | Random Trajectory Generator [[Technitis et al. 2015](https://www.tandfonline.com/doi/abs/10.1080/13658816.2014.999682?journalCode=tgis20)] |
 
-
-## Quick Start
-1. Install Docker on your machine see the installation instructions for instance, for [Windows](https://docs.docker.com/docker-for-windows/install/), [Mac](https://docs.docker.com/docker-for-mac/install/) or [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/).
-
-2. Run the container
-
-```bash
-docker run -p 6013:8888 -p 80:80 -it aniketmitra001/movetk
-```
-
-3. Follow instructions in the output of step 2 to open Jupyter Notebook in a web browser. Replace port number 8888 with 6013 (or another port depending on your configuration)
+## Supported compilers
+MoveTK has been tested with
+* MSVC 14.29.30133 (VS2019)
+* GCC 11.3.0
 
 
-4. Once JupyterLab can be accessed from your browser, in-order to access the notebooks please navigate to ```/tutorials/cpp``` for the C++ notebooks and  ```/tutorials/py``` for the python notebooks
-
-**Notes** : 
-
-- On Mac it is important to start Docker from Docker Desktop , so that ```localhost``` of the container gets mapped to the ```localhost``` of the host machine. This will allow the documentation to be rendered in Jupyter notebooks.  
-- If you are running a ```docker build``` yourself, it it important to ensure that at least 4GB of memory has been allocated to the docker container 
-
-
-##  Build Artifacts 
-
-A push event to the master branch of MoveTK triggers a set of continuous integration (CI) [workflows](https://github.com/heremaps/movetk/actions). If the worflows are sucessful, this results in the following artifacts to be generated
-
-- A Docker image. Do ```docker pull aniketmitra001/movetk:latest``` to get the image
-- A RPM & DEB package. If the latest run of the CI workflow for [MoveTK-CI-Ubuntu](https://github.com/heremaps/movetk/actions?query=workflow%3AMoveTK-CI-Ubuntu+branch%3Amaster) is successful, select the last run. The packages can be found on the *Artifacts* section.   
-
-## Installation with cmake
-
-1. Clone the repository.
+## Building MoveTK 
+MoveTK uses the well-established build tool CMake for generating its build files for different generators and OSes. To download and build MoveTK, follow the below steps:
+1. Clone the repository in your desired directory, let this directory be ``<movetk_root>``
 ```bash
 git clone --recursive https://github.com/heremaps/movetk.git
 ```
+2. Install the dependencies of MoveTK. The following strategies are supported:
+<details>
+  <summary><b>Installing dependencies via apt (Ubuntu 22.04)</b></summary>
+For Ubuntu, install the following packages using apt 
 
-2. Replicate the  steps in corresponding YAML files
+```sh
+sudo apt install libboost-all-dev libgdal-dev libgsl-dev libgslcblas0 gsl-bin libgsl27 
+```
+For building the documentation, you also need [Doxygen](https://www.doxygen.nl/)
+```sh
+sudo apt install doxygen
+```
+For the CGAL backend, you also need the following dependencies
+```sh
+sudo apt install libmpfr-dev libcgal-dev
+```
+</details>
+<details>
+  <summary><b>Installing dependencies via vcpkg (Windows/Linux)</b></summary>
 
-    -[Mac](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-macos.yml)
+MoveTK provides a vcpkg.json manifest file for use with [vcpkg](https://vcpkg.io/). To install the dependencies, you can either let vcpkg handle it during the CMake generation step in Step 3., or directly call the following inside ``<movetk_root>``:
+```sh
+vcpkg.exe install 
+```
+During the CMake generation step in Step 3, you need to add ``-DCMAKE_TOOLCHAIN_FILE=<vcpkg_root>/scripts/buildsystems/vcpkg.cmake`` to the CMake command line arguments, where ``<vcpkg_root>`` is the root of your vcpkg installation.
 
-    -[Windows](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-windows.yml)
 
-    -[Ubuntu](https://github.com/heremaps/movetk/blob/master/.github/workflows/build-ubuntu.yml)
+</details>
+<details>
+  <summary><b>Installing dependencies via conan (Windows/Linux)</b></summary>
+
+MoveTK also provides a conanfile.txt to install its dependencies using [Conan](https://conan.io/). For this, install a conan version less than 2.0 (2.0 is at the time of writing the default version when installed via ``pip``, but the dependencies are not up to speed yet).
+You need a profile for conan to install packages. This profile can be created via the ``conan profile`` subcommands, see [https://docs.conan.io/1/reference/commands/misc/profile.html](https://docs.conan.io/1/reference/commands/misc/profile.html). 
+To install the dependencies, run
+```sh
+conan install <movetk_root>/conanfile.txt -if <installation_folder_for_conan> --build=missing
+```
+where ``<installation_folder_for_conan>`` is some folder you specify where files for finding the dependencies are written.
+
+Finally, add ``-DCMAKE_PREFIX_PATH=<installation_folder_for_conan>`` to the end of the CMake invocation at Step 3. This way, CMake can find the dependencies and link them with MoveTK.
+
+> Note: if you use a single configuration generator for CMake, such as Ninja or Make, also add the explicit build type to the invocation at Step 3 using ``-DCMAKE_BUILD_TYPE=<build_type>``, with ``<build_type`` a CMake build type such as ``Release``. Make sure to match this build type with a build type that you installed the dependencies for (which is determined by the profile).
+</details>
+> Note: the vcpkg and conan installation files contain the dependencies for both the Boost and CGAL backend. If you do not want to use the CGAL backend, you need to manually remove the dependency from the respective dependency file.
+
+3. Generate the MoveTK build files
+```sh
+cmake -S <movetk_root> -B <build_folder> <dependency_options>
+```
+with ``<build_folder`` your favourite buildfolder for MoveTK and ``<dependency_options>`` any options required by the installation of the dependencies, e.g. ``-DCMAKE_PREFIX_PATH=<conan_install_folder>`` for the conan approach.
+
+4. Build MoveTK. Run the following from the build folder
+```sh
+cmake --build .
+```
+
+### Building tests and examples
+To build the tests and/or examples, add ``-DMOVETK_BUILD_TESTS=ON`` resp. ``-DMOVETK_MOVETK_BUILD_EXAMPLES`` to the CMake generation step (Step 3).
+
+### Selecting backends
+MoveTK currently supplies two geometry backends that you can choose from: one based on Boost geometry and one on CGAL. By default, MoveTK only builds with the Boost backend enable. The CGAL backend can be separately enabled by adding ``-DMOVETK_WITH_CGAL_BACKEND=ON`` to the CMake generation step. To disable the Boost backend, you can add ``-DMOVETK_WITH_BOOST_BACKEND=OFF`` to the generation step.
 
 ## Using MoveTK in your App
 
 Please refer to this [example](https://github.com/aniketmitra001/movetk-app-template) for a template on how to use MoveTK in your app 
+
+In addition, if you add the MoveTK CMake to your own project via ``add_subdirectory``, all you have to do is link with the ``movetk`` target.
 
 ## Third Party Libraries Included In MoveTK
 
@@ -90,6 +124,7 @@ MoveTK utilizes some open source components including:
  3. Selection of headers of Boost version 1.70.0 (see [src/include/third_party/boost_future]) 
  4. Miniball (see [src/include/third_party/miniball])
  5. rapidjson (see include/third_party/rapidjson)
+MoveTK 
 
 ## Acknowledgements 
 This project includes GsTL which is software developed by Stanford University and
@@ -98,4 +133,5 @@ its contributors.
 ## License
 Copyright (C) 2017-2020 HERE Europe B.V.
 
-Unless otherwise noted in `LICENSE` files for specific files or directories, the [LICENSE](LICENSE) in the root applies to all content in this repository.
+Unless otherwise noted in `LICENSE` files for specific files or directories, the [LICENSE](LICENSE) in the root applies to all content in this repository. Note that CGAL is largely GPL, so choosing the CGAL backend may affect the license under which MoveTK is available.
+
