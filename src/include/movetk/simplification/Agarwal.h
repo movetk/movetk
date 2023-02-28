@@ -36,7 +36,7 @@
  */
 namespace movetk::simplification {
 /**
- * @brief Computes the polyline simplification using the algorithm by Agarwal et al.
+ * @brief Computes the polyline simplification using the algorithm by Agarwal et al.\mtkCite{agarwal2005near}
  * @include{doc} pages/agarwal.md
  * Based on https://doi.org/10.1007/s00453-005-1165-y
  * @headerfile Agarwal.h movetk/simplification/Agarwal.h
