@@ -136,7 +136,7 @@ def prepare_config(doc_params: DocumentationParameters):
 
     def substitution_func(match_obj):
         key = match_obj.group(1).strip()
-        print('Replacing {}'.format(key))
+        print('[MoveTK docs] Replacing "{}" in config'.format(key))
         return doc_params.get_value(key)
     config_template = re.sub(regex, substitution_func, config_template)
     # Write to output file, to be used with doxygen
@@ -289,7 +289,7 @@ if __name__ == '__main__':
     # Setup documentation parameters
     doc_params = DocumentationParameters(output_folder=str(
         output_folder), movetk_version=str(version))
-    print('Outputting to {}'.format(output_folder))
+    print('[MoveTK docs] Outputting to {}'.format(output_folder))
     # Add bibliography support via javascript
     add_bibliography()
 
