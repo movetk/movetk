@@ -169,6 +169,23 @@ class LayoutUpdater:
             # Ref to use within Doxygen
             self.ref = ref
             self.title = title
+    
+    @staticmethod
+    def _get_headers(markdown_files:list[Path])->list[str]:
+        output:list[str] = []
+        for file  in markdown_files:
+            header_line = ''
+            with open(file) as f:
+                # Read one line
+                for line in f:
+                    header_line=line
+                    break
+            # Parse header, assume of an h1 Markdown shape, i.e. '# Title ...'
+            match = re.match(r'#\s*([0-9A-Za-z_\-\s]+)\s*([^0-9A-Za-z_\-])?', header_line)
+            assert match is not None
+            title = match.group(1).strip()
+            output.append(title)
+        return output
     @staticmethod
     def _get_tutorials(tutorials_folder:Path)->list[Tutorial]:
         output:list[LayoutUpdater.Tutorial] = []
@@ -193,6 +210,24 @@ class LayoutUpdater:
                 )
 
         return output
+    def add_pages(self, pages_folder: Path):
+        namespaces_node = self.root.find("./navindex/tab[@type='mainpage']")
+        nav_node = self.root.find('./navindex')
+        # Don't include introduction.md, this is the main page
+        pages = list(filter(lambda x:x!='introduction.md',os.listdir(pages_folder)))
+        # Write tab elements for the tutorials
+        prev_node = namespaces_node
+        headers = LayoutUpdater._get_headers([pages_folder / p for p in pages])
+        for i, page in enumerate(pages):
+            print(page)
+            new_node = ET.Element('tab', dict(
+                type='user',
+                title=headers[i],
+                # TODO: this ref should be md_<subpath_to_file>_<file_name_no_ext>
+                url=str('@ref md_pages_{}'.format(page.replace('-','_').replace('.md','')))
+            ))
+            LayoutUpdater.insert_after(nav_node, prev_node, new_node)
+            prev_node = new_node
 
     def add_tutorial_pages(self, tutorials_folder: Path):
         namespaces_node = self.root.find("./navindex/tab[@type='namespaces']")
@@ -254,7 +289,7 @@ def update_doxygen_layout():
     # Add tutorial pages to the layout. They get a separate menu
     updater.add_tutorial_pages(
         ROOT_PATH / '..' / 'tutorials' / 'cpp')
-    
+    updater.add_pages(ROOT_PATH / 'pages')
     # Write the resulting layout.
     updater.write_updated_layout(MOVETK_DOXYGEN_LAYOUT_OUT)
 
