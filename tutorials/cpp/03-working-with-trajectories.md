@@ -2,7 +2,7 @@
 Trajectories are generally represented in MoveTK by a (sorted) range of **probe points** (measurements in the trajectory), where each probe is a tuple that contains spatio-temporal data, as well as any additional data that is associated with the individual probe points. 
 
 ## Trajectory Representation
-To store such probes, MoveTK provides the ``movetk::io::TabularTrajectory`` and ``movetk::io::ColumnarTrajectory`` template classes. These classes differ in the way they store the probes: ``movetk::io::TabularTrajectory`` stores a list of probe tuples, whereas ``movetk::io::ColumnarTrajectory`` stores a tuple of lists of the individual  probe fields. For those of you that are familiar with _R_ or Python's _pandas_, these datastructures are similar to the ``DataFrame`` datastructure.
+To store such probes, MoveTK provides the ``movetk::ds::TabularTrajectory`` and ``movetk::ds::ColumnarTrajectory`` template classes. These classes differ in the way they store the probes: ``movetk::ds::TabularTrajectory`` stores a list of probe tuples, whereas ``movetk::ds::ColumnarTrajectory`` stores a tuple of lists of the individual  probe fields. For those of you that are familiar with _R_ or Python's _pandas_, these datastructures are similar to the ``DataFrame`` datastructure.
 The following example shows how to construct and use these datastructures:
 ```c++
 #include <movetk/ds/ColumnarTrajectory.h>
