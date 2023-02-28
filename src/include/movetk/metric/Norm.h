@@ -31,7 +31,7 @@
 
 namespace movetk::metric {
 /**
- * @brief \f$L_p\f$ norm functor
+ * @brief \f$L^p\f$ norm functor
  * @tparam Kernel Kernel to use
  * todo(bram): I think the chosen operators are quite confusing, maybe rename this.
  * Also, maybe don't save the result internally, but return a proxy object for which
@@ -73,7 +73,7 @@ public:
 };
 
 /**
- * @brief \f$L_\infty\f$ norm functor
+ * @brief \f$L^\infty\f$ norm functor
  * @tparam Kernel Kernel to use
  */
 template <class Kernel>
