@@ -116,9 +116,10 @@ def check_doxygen():
 
 
 class DocumentationParameters:
-    def __init__(self, output_folder: str = '', movetk_version: str = '') -> None:
+    def __init__(self, output_folder: str = '', movetk_version: str = '', output_folder_name:str='') -> None:
         self.output_folder = output_folder
         self.movetk_version = movetk_version
+        self.html_output = movetk_version if len(output_folder_name) == 0 else output_folder_name
 
     def get_value(self, key: str):
         if hasattr(self, key):
@@ -194,7 +195,7 @@ class LayoutUpdater:
         return output
 
     def add_tutorial_pages(self, tutorials_folder: Path):
-        pages_node = self.root.find("./navindex/tab[@type='pages']")
+        namespaces_node = self.root.find("./navindex/tab[@type='namespaces']")
         nav_node = self.root.find('./navindex')
         new_node = ET.Element('tab', {
             'type': 'usergroup',
@@ -210,7 +211,7 @@ class LayoutUpdater:
                 url=str('@ref {}'.format(tut.ref))
             ))
 
-        LayoutUpdater.insert_after(nav_node, pages_node, new_node)
+        LayoutUpdater.insert_before(nav_node, namespaces_node, new_node)
 
     @staticmethod
     def get_index(parent, element):
@@ -298,6 +299,7 @@ if __name__ == '__main__':
     sync_to_build_folder('images')
     sync_to_build_folder('extra_pages')
     sync_to_build_folder('pages')
+    sync_to_build_folder('resources')
 
     # Copy tutorial files
     copy_tutorials(ROOT_PATH / '..' / 'tutorials' / 'cpp', BUILD_PATH / 'pages')
