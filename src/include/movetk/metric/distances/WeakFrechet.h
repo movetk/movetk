@@ -34,9 +34,7 @@
 
 namespace movetk::metric {
 /**
- * \brief Functor for computing the weak Frechet distance between two polylines
- *  Based on 'Computing the Fréchet distance between two polygonal curves', Alt & Godau, 1995
- *  http://www.staff.science.uu.nl/~kreve101/asci/ag-cfdbt-95.pdf
+ * \brief Functor for computing the weak Frechet distance\mtkCite{alt1995computing} between two polylines.
  * \tparam GeometryTraits The geometry kernel
  * \tparam SquaredDistance Squared difference computer that supports computing the distance between a point and a
  * segment
