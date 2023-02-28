@@ -17,3 +17,4 @@ src/include/.DS_Store
 src/include/third_party/.DS_Store
 vcpkg_installed/
 **/__pycache__
+build-docs/
