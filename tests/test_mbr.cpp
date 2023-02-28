@@ -38,16 +38,13 @@ struct MinimumBoundingRectTests {
 	using NT = typename MovetkGeometryKernel::NT;
 	using Point = typename MovetkGeometryKernel::MovetkPoint;
 	Norm norm;
-	using MinimumBoundingRectangle_ = typename movetk::geom::mbr_selector<
-	    MovetkGeometryKernel,
-	    Norm,
-	    typename MovetkGeometryKernel::MovetkMinimumBoundingRectangle>::MinimumBoundingRectangle;
+	using MinimumBoundingRectangle_ = typename movetk::geom::MBR<MovetkGeometryKernel, Norm>;
 };
 template <typename Fixture>
 using Norm = typename Fixture::Norm;
 template <typename Fixture>
 using Point = typename Fixture::Point;
-template<typename Fixture>
+template <typename Fixture>
 using MinimumBoundingRectangle = typename Fixture::MinimumBoundingRectangle_;
 
 MOVETK_TEMPLATE_LIST_TEST_CASE_METHOD(MinimumBoundingRectTests,
