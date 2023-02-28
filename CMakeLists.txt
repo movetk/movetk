@@ -85,7 +85,7 @@ MOVETK_LOG(STATUS "WITH_CGAL_BACKEND ${MOVETK_WITH_CGAL_BACKEND}")
 
 # Build project documentation
 if (MOVETK_BUILD_DOC)
-    add_subdirectory(docs)
+    add_subdirectory(documentation)
 endif()
 
 # Build unit tests
