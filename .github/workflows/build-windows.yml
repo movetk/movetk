@@ -29,9 +29,9 @@ jobs:
         uses: actions/cache/restore@v3
         id: conan-restore-cache
         env:
-          cache-name: cache-conan-packages
+          cache-name: cache-conan-packages-with-short
         with:
-          path: ~/.conan
+          path: [~/.conan, C:/.conan]
           key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
       - name: Install conan
         run: pip install conan==1.59.0
@@ -40,9 +40,9 @@ jobs:
       - name: Save Conan packages
         uses: actions/cache/save@v3
         env:
-          cache-name: cache-conan-packages
+          cache-name: cache-conan-packages-with-short
         with:
-          path: ~/.conan
+          path: [~/.conan, C:/.conan]
           key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
         if: steps.conan-restore-cache.outputs.cache-hit != 'true'
       - name: Add dependencies binary folder to PATH
