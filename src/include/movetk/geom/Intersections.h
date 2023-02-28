@@ -76,7 +76,7 @@ public:
 	 * @return The number of self intersections
 	 */
 	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> PointIterator>
-	std::size_t operator()(PointIterator first, PointIterator beyond) {
+	std::size_t operator()(PointIterator first, PointIterator beyond) const {
 		typename GeometryTraits::MovetkCurveIntersection compute_curve_intersections;
 		return compute_curve_intersections(first, beyond);
 	}
@@ -92,7 +92,7 @@ public:
 		requires utils::L2Norm<typename IntersectionTraits::Norm>
 	void operator()(const typename GeometryTraits::MovetkSphere& sphere,
 	                const typename GeometryTraits::MovetkSegment& segment,
-	                OutputIterator result) {
+	                OutputIterator result) const {
 		typename IntersectionTraits::Norm norm;
 		const auto v1 = segment[1] - segment[0];
 		const auto squared_length_v1 = norm(v1);
@@ -149,6 +149,7 @@ public:
 	 * @brief Computes the intersection between two spheres as another sphere.
 	 * The center of the resulting sphere is the center of the intersection lense,
 	 * or the halfway point between the spheres if they are distjoint.
+	 * Based on https://hal.archives-ouvertes.fr/hal-01955983/document
 	 * @tparam
 	 * @param sphere_a The first sphere
 	 * @param sphere_b The second sphere
@@ -157,8 +158,7 @@ public:
 	template <typename = void>
 		requires utils::L2Norm<typename IntersectionTraits::Norm>
 	typename GeometryTraits::MovetkSphere operator()(const typename GeometryTraits::MovetkSphere& sphere_a,
-	                                                 const typename GeometryTraits::MovetkSphere& sphere_b) {
-		// based on https://hal.archives-ouvertes.fr/hal-01955983/document
+	                                                 const typename GeometryTraits::MovetkSphere& sphere_b) const {
 		typename IntersectionTraits::Norm norm;
 		movetk::geom::MakePoint<GeometryTraits> make_point;
 		MakeSphere<GeometryTraits> make_sphere;

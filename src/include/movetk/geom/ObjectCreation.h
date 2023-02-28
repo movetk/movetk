@@ -44,7 +44,12 @@ struct MakePoint {
 		typename GeometryTraits::MovetkPoint p(first, beyond);
 		return p;
 	}
-
+	/**
+	 * @brief Construct a point from a list of coordinates. The number of coordinates should be at least the number
+	 * of dimensions of the kernel.
+	 * @param l The list of coordinates
+	 * @return The point
+	 */
 	typename GeometryTraits::MovetkPoint operator()(std::initializer_list<typename GeometryTraits::NT> l) const {
 		typename GeometryTraits::MovetkPoint p(l.begin(), l.end());
 		return p;
@@ -64,7 +69,7 @@ struct MakeLine {
 	 * @return A movetk line
 	 */
 	typename GeometryTraits::MovetkLine operator()(typename GeometryTraits::MovetkPoint p1,
-	                                               typename GeometryTraits::MovetkPoint p2) {
+	                                               typename GeometryTraits::MovetkPoint p2) const {
 		typename GeometryTraits::MovetkLine l(p1, p2);
 		return l;
 	}
@@ -93,8 +98,6 @@ struct ComputeLength {
 	/**
 	 * @brief Computes the length of a polyline, specified as an iterator range
 	 * @tparam PointIterator Input iterator that dereferences to MovetkPoint elements.
-	 * @tparam
-	 * @tparam
 	 * @param first Begin of the polyline points
 	 * @param beyond End of the polyline points
 	 * @return The length of the polyline
@@ -125,7 +128,7 @@ struct MakeSegment {
 	 * @param p2 The second point
 	 * @return The segment
 	 */
-	Segment operator()(Point p1, Point p2) {
+	Segment operator()(Point p1, Point p2) const {
 		Segment s(p1, p2);
 		return s;
 	}
@@ -136,7 +139,8 @@ struct MakeSegment {
 	 * @param l2 The second initializer list
 	 * @return The segment
 	 */
-	Segment operator()(std::initializer_list<typename Kernel::NT> l1, std::initializer_list<typename Kernel::NT> l2) {
+	Segment operator()(std::initializer_list<typename Kernel::NT> l1,
+	                   std::initializer_list<typename Kernel::NT> l2) const {
 		MakePoint<Kernel> make_point;
 		const auto p1 = make_point(l1);
 		const auto p2 = make_point(l2);
@@ -160,7 +164,7 @@ struct MakeSphere {
 	 */
 	typename Kernel::MovetkSphere operator()(typename Kernel::MovetkPoint center,
 	                                         typename Kernel::NT radius,
-	                                         bool square = true) {
+	                                         bool square = true) const {
 		typename Kernel::MovetkSphere s(center, radius, square);
 		return s;
 	}
@@ -175,7 +179,7 @@ struct MakeSphere {
 	 */
 	typename Kernel::MovetkSphere operator()(std::initializer_list<typename Kernel::NT> l,
 	                                         typename Kernel::NT radius,
-	                                         bool square = true) {
+	                                         bool square = true) const {
 		MakePoint<Kernel> make_point;
 		const auto center = make_point(l.begin(), l.end());
 		typename Kernel::MovetkSphere s(center, radius, square);
@@ -197,7 +201,7 @@ struct MakePolygon {
 	 * @return A movetk polygon
 	 */
 	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> PointIterator>
-	typename GeometryTraits::MovetkPolygon operator()(PointIterator first, PointIterator beyond) {
+	typename GeometryTraits::MovetkPolygon operator()(PointIterator first, PointIterator beyond) const {
 		typename GeometryTraits::MovetkPolygon polygon(first, beyond);
 		return polygon;
 	}
@@ -219,7 +223,7 @@ struct MakeMinSphere {
 	 * @return Radius of the Minimum Enclosing Ball
 	 */
 	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> PointIterator>
-	typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond) {
+	typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond) const {
 		return make_min_sphere(first, beyond);
 	}
 
@@ -235,7 +239,7 @@ struct MakeMinSphere {
 	 */
 	template <utils::RandomAccessIterator<typename GeometryTraits::MovetkPoint> PointIterator,
 	          utils::OutputIterator<typename GeometryTraits::NT> CenterIterator>
-	typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) {
+	typename GeometryTraits::NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const {
 		return make_min_sphere(first, beyond, iter);
 	}
 };

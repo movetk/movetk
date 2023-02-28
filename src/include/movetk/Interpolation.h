@@ -30,10 +30,11 @@
 #include <random>
 
 #include "movetk/AlgorithmTraits.h"
+#include "movetk/geo/geo.h"
+#include "movetk/geom/GeometryInterface.h"
 #include "movetk/interpolation/KinematicInterpolator.h"
 #include "movetk/interpolation/LinearInterpolator.h"
 #include "movetk/interpolation/RandomInterpolator.h"
-#include "movetk/geo/geo.h"
 #include "movetk/utils/TrajectoryUtils.h"
 
 namespace movetk::interpolation {
@@ -44,7 +45,7 @@ namespace movetk::interpolation {
  * @tparam _GeoProjection The geoprojection class to use
  * @tparam _ProbeTraits Traits of the probes to process
  * @tparam _Norm The norm to use for computing distances
-*/
+ */
 template <class _GeometryTraits, class _GeoProjection, class _ProbeTraits, class _Norm>
 struct InterpolationTraits {
 	using GeometryTraits = _GeometryTraits;
@@ -56,8 +57,7 @@ struct InterpolationTraits {
 	using NT = typename GeometryTraits::NT;
 	using Norm = _Norm;
 	using MinimumBoundingRectangle =
-	    typename geom::mbr_selector<GeometryTraits, Norm, typename GeometryTraits::MovetkMinimumBoundingRectangle>::
-	        MinimumBoundingRectangle;
+	    geom::MBR<GeometryTraits, Norm>;
 };
 
 template <class TrajectoryPoint, int LatIdx, int LonIdx, int SpeedIdx = -1, int HeadingIdx = -1>
