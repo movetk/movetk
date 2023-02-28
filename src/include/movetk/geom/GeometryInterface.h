@@ -355,41 +355,43 @@ private:
 	 * @param v The vector
 	 * @return The x coordinate
 	 */
-	NT get_x(Vector& v) { return v * v.basis(0); }
+	NT get_x(const Vector& v) const { return v * v.basis(0); }
 
-	NT get_x(Point& p) {
+	NT get_x(const Point& p) const {
 		Vector v = p - ORIGIN;
 		return v * v.basis(0);
 	}
 
-	NT get_y(Vector& v) { return v * v.basis(1); }
+	NT get_y(const Vector& v) const { return v * v.basis(1); }
 
-	NT get_y(Point& p) {
+	NT get_y(const Point& p) const {
 		Vector v = p - ORIGIN;
 		return v * v.basis(1);
 	}
 
-	NT get_length(Point& p_u, Point& p_v) {
+	NT get_length(const Point& p_u, const Point& p_v) const {
 		Vector direction = p_v - p_u;
 		norm(direction);
 		NT length = norm ^ 1;
 		return length;
 	}
 
-	NT get_length(Vector& direction) {
+	NT get_length(const Vector& direction) const {
 		norm(direction);
 		NT length = norm ^ 1;
 		return length;
 	}
 
-	Vector get_direction_vector(Point& p_u, Point& p_v) { return ((p_v - p_u) *= (1 / get_length(p_u, p_v))); }
+	Vector get_direction_vector(const Point& p_u, const Point& p_v) const {
+		return ((p_v - p_u) *= (1 / get_length(p_u, p_v)));
+	}
 
-	Vector get_direction_vector(Vector& v) {
+	Vector get_direction_vector(Vector& v) const {
 		Vector direction = v;
 		return (v *= (1 / get_length(direction)));
 	}
 
-	Point translate(Vector unit_vector, Point& start, NT translation_length) {
+	Point translate(Vector unit_vector, const Point& start, NT translation_length) const {
 		unit_vector *= translation_length;
 		return start + unit_vector;
 	}
@@ -405,7 +407,7 @@ public:
 	 * @param radius_v Radius of second sphere
 	 * @return Diagonally opposite points of the box.
 	 */
-	std::pair<Point, Point> operator()(Point& p_u, Point& p_v, NT radius_u, NT radius_v) {
+	std::pair<Point, Point> operator()(const Point& p_u, const Point& p_v, NT radius_u, NT radius_v) const {
 		Sphere sphere_u = make_sphere(p_u, radius_u);
 		Sphere sphere_v = make_sphere(p_v, radius_v);
 		Sphere intersection_sphere = compute_intersections(sphere_u, sphere_v);
@@ -430,15 +432,6 @@ public:
 	}
 };
 
-template <class GeometryTraits, class Norm, class T>
-struct mbr_selector {
-	using MinimumBoundingRectangle = T;
-};
-
-template <class GeometryTraits, class Norm>
-struct mbr_selector<GeometryTraits, Norm, void> {
-	using MinimumBoundingRectangle = MBR<GeometryTraits, Norm>;
-};
 
 /**
  * @brief Scaling functor for returning a scaled vector

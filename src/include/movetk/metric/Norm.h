@@ -40,7 +40,7 @@ namespace movetk::metric {
 template <class Kernel, std::size_t p>
 class FiniteNorm {
 private:
-	typename Kernel::NT result;
+	mutable typename Kernel::NT result;
 
 public:
 	constexpr static size_t P = p;
@@ -52,8 +52,8 @@ public:
 	 * to the power power \p p.
 	 * @param v The vector
 	 * @return The sum of raised coordinates
-	*/
-	typename Kernel::NT operator()(const typename Kernel::MovetkVector &v) {
+	 */
+	typename Kernel::NT operator()(const typename Kernel::MovetkVector &v) const {
 		auto sum_exponent_p = [](typename Kernel::NT sum, typename Kernel::NT coord) ->
 		    typename Kernel::NT { return std::move(sum) + std::pow(abs(coord), p); };
 		result = std::accumulate(std::begin(v), std::end(v), 0.0, sum_exponent_p);
@@ -65,7 +65,7 @@ public:
 	 * to the power \p exponent
 	 * @param exponent The exponent to raise the result to
 	 * @return The raised \f$L_p\f$ norm.
-	*/
+	 */
 	typename Kernel::NT operator^(std::size_t exponent) const {
 		typename Kernel::NT n = exponent / static_cast<typename Kernel::NT>(p);
 		return std::pow(result, n);
@@ -79,18 +79,18 @@ public:
 template <class Kernel>
 class InfinityNorm {
 private:
-	typename Kernel::NT result;
+	mutable typename Kernel::NT result;
 	static bool abs_compare(typename Kernel::NT coord1, typename Kernel::NT coord2) {
 		return (std::abs(coord1) < std::abs(coord2));
 	};
 
 public:
-	typename Kernel::NT operator()(const typename Kernel::MovetkVector &v) {
+	typename Kernel::NT operator()(const typename Kernel::MovetkVector &v) const {
 		result = abs(*std::max_element(std::begin(v), std::end(v), abs_compare));
 		return result;
 	}
 
-	typename Kernel::NT operator^(std::size_t exponent) { return std::pow(result, exponent); }
+	typename Kernel::NT operator^(std::size_t exponent) const { return std::pow(result, exponent); }
 };
 }  // namespace movetk::metric
 #endif  // MOVETK_NORM_H
