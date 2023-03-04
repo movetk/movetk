@@ -44,5 +44,22 @@ struct tuple_contains_type {
 };
 template <typename TUPLE_LIKE_TYPE, template <typename...> typename TARGET_CONTAINER, typename... FRONT_TYPES>
 using transfer_types = typename detail::transfer_types_impl<TUPLE_LIKE_TYPE, TARGET_CONTAINER, FRONT_TYPES...>::type;
+
+/**
+ * @brief Execute a callable for each compile time index
+ * @tparam start Start of the range
+ * @tparam end End of the integer range
+ * @tparam CALLABLE The callable type. Should accept a std::integral_constant<int,value> argument, with
+ * value the index.
+ * @param function The function  to call
+ */
+template <int start, int end, typename CALLABLE>
+void for_each_c(CALLABLE&& function) {
+	if constexpr (start < end) {
+		function(std::integral_constant<int, start>{});
+		for_each_c<start + 1, end>(std::forward<CALLABLE>(function));
+	}
+}
+
 }  // namespace movetk::utils
 #endif
