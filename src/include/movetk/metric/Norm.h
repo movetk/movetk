@@ -72,6 +72,11 @@ public:
 	}
 };
 
+template<typename Kernel>
+using L1Norm = FiniteNorm<Kernel,1>;
+template<typename Kernel>
+using L2Norm = FiniteNorm<Kernel,2>;
+
 /**
  * @brief \f$L^\infty\f$ norm functor
  * @tparam Kernel Kernel to use
