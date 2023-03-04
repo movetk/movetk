@@ -140,8 +140,6 @@ int main(int argc, char **argv) {
 	                                                                                            hifreq_min_num_pts);
 	tr.init(argv[1]);
 
-	// std::cout <<"Number of filtered trajectories: "<<std::distance(tr.begin(),tr.end());
-
 	// Create an output csv file
 	std::ofstream ofcsv_traj("output_trajectories.csv");
 

@@ -12,6 +12,11 @@ else ()
   set(CGAL_BACKEND_ENABLED 0)
 endif ()
 
+find_package(cxxopts REQUIRED GLOBAL)
+if(NOT TARGET cxxopts::cxxopts)
+    message(FATAL_ERROR "cxxopts::cxxopts not a target")
+endif()
+
 # Enable folders
 if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
     set_property( GLOBAL PROPERTY USE_FOLDERS ON)
@@ -23,13 +28,16 @@ function(CreateExample name)
         if(${ARGC} GREATER 1)
                 set(SRC_NAME ${ARGV1})
         endif()
+        file(GLOB _HEADERS CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/include/*.h)
         MOVETK_LOG(VERBOSE "Created example ${name}")
-        add_executable(${name} ${SRC_NAME})
+        add_executable(${name} ${SRC_NAME} ${_HEADERS})
         target_compile_definitions(${name} PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
         target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
         target_link_libraries(${name}
                 PRIVATE
                 c2d::movetk
+                PUBLIC 
+                cxxopts::cxxopts
                 )
         if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
                 set_target_properties(${name} PROPERTIES FOLDER "Examples")
@@ -66,7 +74,6 @@ CreateExample(compute_squared_distance)
 CreateExample(douglas_peucker_simplification)
 CreateExample(simplification)
 
-CreateExample(directed_graph)
 CreateExample(model_based_segmentation)
 CreateExample(outlier_detection)
 CreateExample(trajectory_sampler)
