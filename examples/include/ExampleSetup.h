@@ -54,6 +54,15 @@ inline int get_backend_index_for_name(const std::string& backend) {
 	});
 	return backend_index;
 }
+inline std::vector<std::string> get_backend_names() {
+	constexpr auto BACKEND_COUNT = std::tuple_size_v<movetk::backends::AvailableBackends>;
+	std::vector<std::string> names;
+	movetk::utils::for_each_c<0, BACKEND_COUNT>([&names](auto index) {
+		using Backend = std::tuple_element_t<index.value, movetk::backends::AvailableBackends>;
+		names.push_back(Backend::name);
+	});
+	return names;
+}
 
 namespace concepts {
 using first_backend = std::tuple_element_t<0, movetk::backends::AvailableBackends>;
@@ -88,8 +97,11 @@ struct ExampleRunner {
 	int run_example(int argc, char** argv) {
 		EXAMPLE example;
 		cxxopts::Options options(EXAMPLE::NAME, EXAMPLE::DESCRIPTION);
+		const auto default_backend = std::tuple_element_t<0, movetk::backends::AvailableBackends>::name;
 		[[maybe_unused]] auto option_adder =
-		    options.add_options()("b,backend", "Backend to run", cxxopts::value<std::string>());
+		    options.add_options()("b,backend",
+		                          "Backend to run",
+		                          cxxopts::value<std::string>()->default_value(default_backend));
 
 		if constexpr (concepts::ExampleWithOptions<EXAMPLE>) {
 			example.add_options(option_adder);
@@ -97,7 +109,19 @@ struct ExampleRunner {
 		auto result = options.parse(argc, argv);
 
 		const auto backend_string = result["backend"].as<std::string>();
-		assert(is_backend(backend_string));
+		if (!is_backend(backend_string)) {
+			std::string message = "Invalid backend string '" + backend_string + "'. Available options: ";
+			bool first = true;
+			for (const auto& backend : get_backend_names()) {
+				if (!first) {
+					message += ",";
+				} else {
+					first = false;
+				}
+				message += backend;
+			}
+			throw std::invalid_argument(message.c_str());
+		}
 		const auto backend_index = get_backend_index_for_name(backend_string);
 
 		std::cout << "Running " << EXAMPLE::NAME << " with backend " << backend_string << '\n';
