@@ -60,6 +60,7 @@ CreateExample(TrajectorySegmentationVelocity segment_by_velocity.cpp)
 CreateExample(MonotoneSegmentation monotone_segmentation.cpp)
 
 # Creation examples
+CreateExample(creating_geometry)
 CreateExample(make_point)
 CreateExample(make_min_sphere)
 CreateExample(make_segment)
