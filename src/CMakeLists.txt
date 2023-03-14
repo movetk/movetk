@@ -75,7 +75,6 @@ target_link_libraries(movetk
             PUBLIC
             Threads::Threads
             Boost::headers Boost::log Boost::iostreams Boost::thread Boost::system Boost::log_setup Boost::graph
-            GDAL::GDAL
             RapidJSON::RapidJSON
             GeographicLib::GeographicLib
             GSL::gsl GSL::gslcblas #${GSL_LIBRARIES}
@@ -109,7 +108,6 @@ install(DIRECTORY include/movetk include/third_party ${GsTL_INCLUDE_DIR}
 # Install our dependencies resolution script
 set(_MOVETK_CMAKE_DIR ${CMAKE_CURRENT_LIST_DIR}/../cmake)
 install(FILES ${_MOVETK_CMAKE_DIR}/ResolveMovetkDependencies.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
-install(FILES ${_MOVETK_CMAKE_DIR}/PatchGdalInclude.cmake DESTINATION ${_CFG_CMAKE_DIR}/helpers)
 
 # Install backend data
 foreach(_BACKEND ${MOVETK_BACKENDS})
@@ -148,8 +146,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_CFG_FILE}.cmake
 SET (CPACK_GENERATOR "DEB;RPM")
 SET (CPACK_PACKAGE_FILE_LICENSE "../LICENSE")
 SET (CPACK_PACKAGE_VERSION "0.0.1")
-SET (CPACK_DEBIAN_PACKAGE_DEPENDS "gcc, libboost-dev, libgdal-dev, libcgal-dev, libgeographic-dev, libgsl-dev")
-SET (CPACK_RPM_PACKAGE_REQUIRES "gcc, boost-devel, gdal-devel, CGAL-devel, GeographicLib-devel, gsl-devel")
+SET (CPACK_DEBIAN_PACKAGE_DEPENDS "gcc, libboost-dev, libcgal-dev, libgeographic-dev, libgsl-dev")
+SET (CPACK_RPM_PACKAGE_REQUIRES "gcc, boost-devel, CGAL-devel, GeographicLib-devel, gsl-devel")
 SET (CPACK_DEBIAN_PACKAGE_MAINTAINER "HERE Technologies")
 
 INCLUDE(CPack)

@@ -14,7 +14,6 @@ RUN dnf -y update \
     gcc \
     gcc-c++ \
     gsl-devel\
-    gdal-devel \
     GeographicLib-devel \
     make \
     mpfr-devel \

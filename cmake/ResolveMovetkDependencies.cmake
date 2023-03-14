@@ -9,10 +9,6 @@ CreateImportTarget(Boost)
 
 find_package(Threads REQUIRED)
 
-# Find GDAL and fix the target if it is not provided.
-find_package(GDAL 3.0 REQUIRED)
-CreateImportTarget(GDAL)
-
 find_package(GeographicLib REQUIRED COMPONENTS SHARED)
 CreateImportTarget(GeographicLib)
 

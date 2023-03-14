@@ -42,7 +42,6 @@ CreateExample(probe2trajectories)
 CreateExample(geolife_count_probes)
 CreateExample(geolife_distance_heading)
 CreateExample(read_trajectories)
-CreateExample(probe2wkt)
 CreateExample(write_geojson)
 
 # Segmentation examples

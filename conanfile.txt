@@ -1,6 +1,5 @@
 [requires]
 cgal/5.3
-gdal/3.4.1
 gsl/2.7
 gmp/6.2.1
 mpfr/4.1.0
@@ -8,16 +7,12 @@ boost/1.77.0
 catch2/2.13.6
 rapidjson/1.1.0 
 geographiclib/1.52
-zlib/1.2.12 # To fix conflict between boost and gdal requirement...
 
 [generators]
 CMakeToolchain
 CMakeDeps
 
 [options]
-#GDAL
-gdal:shared=True
-
 # Disable a lot of boost libraries
 #Required by "log": "atomic"
 #Required by "thread": "chrono"

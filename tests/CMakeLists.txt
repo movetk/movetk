@@ -20,7 +20,6 @@ add_executable(movetk_tests
         test_geo.cpp
         test_rows2cols.cpp
         test_trajectory.cpp
-        test_trajectory_gdal.cpp
         test_polyline_utils.cpp
         test_interpolation.cpp
         test_tree.cpp
