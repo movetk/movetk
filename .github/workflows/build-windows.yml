@@ -35,6 +35,8 @@ jobs:
             ~/.conan
             C:/.conan
           key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
+          restore-keys: |
+            win:msvc-build:${{ env.cache-name }}:
       - name: Install conan
         run: pip install conan==1.59.0
       - name: Install dependencies via conan
