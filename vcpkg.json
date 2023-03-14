@@ -5,10 +5,6 @@
     "description": "MoveTK is a library for computational movement analysis written in C++.",
     "dependencies": [
         {
-            "name": "gdal",
-            "version>=": "3.4.1"
-        },
-        {
             "name": "boost-graph",
             "version>=": "1.77.0"
         },

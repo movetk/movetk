@@ -53,7 +53,7 @@ git clone --recursive https://github.com/heremaps/movetk.git
 For Ubuntu, install the following packages using apt 
 
 ```sh
-sudo apt install libboost-all-dev libgdal-dev libgsl-dev libgslcblas0 gsl-bin libgsl27 
+sudo apt install libboost-all-dev libgsl-dev libgslcblas0 gsl-bin libgsl27 
 ```
 For building the documentation, you also need [Doxygen](https://www.doxygen.nl/)
 ```sh
