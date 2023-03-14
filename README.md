@@ -15,7 +15,7 @@ You can use this library to:
 
 Some examples are shown below:
 
-![movetk_algorithm_visualization](docs/images/algorithm_visualization.png)
+![movetk_algorithm_visualization](documentation/images/algorithm_visualization.png)
 
 The following table lists some of the algorithms available in MoveTK
 
