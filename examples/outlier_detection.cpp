@@ -83,7 +83,7 @@ Pre-Conditions:
 		namespace od = movetk::outlierdetection;
 
 		using Probe = CartesianProbeTraits::ProbePoint;
-		using Trajectory = std::vector<CartesianProbeTraits::ProbePoint>;
+		using Trajectory = std::vector<typename CartesianProbeTraits::ProbePoint>;
 		using Trajectories = std::vector<Trajectory>;
 		using OutlierDetectionTraits = movetk::outlierdetection::OutlierDetectionTraits<CartesianProbeTraits, Kernel, Norm>;
 		using Predicate =
@@ -141,7 +141,7 @@ Pre-Conditions:
 		}
 
 
-		std::vector<Trajectory::const_iterator> result;
+		std::vector<typename Trajectory::const_iterator> result;
 		OutlierDetector outlier_detector(threshold);
 		outlier_detector(std::cbegin(trajectory), std::cend(trajectory), std::back_inserter(result));
 		std::reverse(std::begin(result), std::end(result));

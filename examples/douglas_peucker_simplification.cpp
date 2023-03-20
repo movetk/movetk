@@ -55,7 +55,7 @@ struct Example {
 		}
 		std::cout << "}\n";
 
-		std::vector<PolyLine::const_iterator> result;
+		std::vector<typename PolyLine::const_iterator> result;
 		using Norm = movetk::metric::L2Norm<Kernel>;
 		using FindFarthest = movetk::simplification::FindFarthest<Kernel, Norm>;
 		const auto epsilon = static_cast<typename Kernel::NT>(arguments["epsilon"].as<long double>());

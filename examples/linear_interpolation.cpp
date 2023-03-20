@@ -84,7 +84,7 @@ Pre-Conditions:
 		                                                         ProbeTraits::ProbeColumns::HEADING>;
 		std::size_t line_count = 0;
 		std::vector<std::string> input;
-		std::vector<ProbeTraits::ProbePoint> trajectory;
+		std::vector<typename ProbeTraits::ProbePoint> trajectory;
 
 		NT threshold = arguments["speed_threshold"].as<double>() * 0.277778;
 		std::cerr << "Threshold: " << threshold << "\n";

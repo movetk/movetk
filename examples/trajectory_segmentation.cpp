@@ -81,7 +81,7 @@ struct Example {
 		switch (m_type) {
 			case SegmentationType::Heading: {
 				typename SegmentationTraits::HeadingSegmentation segment_by_heading(90);
-				using SegmentStartReferences = std::vector<Headings::iterator>;
+				using SegmentStartReferences = std::vector<typename Headings::iterator>;
 				auto headings = trajectory.get<ProbeTraits::ProbeColumns::HEADING>();
 
 				Headings headings_(headings.cbegin(), headings.cend());
@@ -142,7 +142,7 @@ struct Example {
 				auto speeds = trajectory.get<ProbeTraits::ProbeColumns::SPEED>();
 				Headings headings_(std::cbegin(headings), std::cend(headings));
 
-				using SegmentStartReferences = std::vector<Speeds::iterator>;
+				using SegmentStartReferences = std::vector<typename Speeds::iterator>;
 				SegmentStartReferences segIdx;
 				segment_by_heading(std::begin(headings_), std::end(headings_), std::back_inserter(segIdx));
 

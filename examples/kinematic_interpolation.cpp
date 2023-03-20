@@ -90,7 +90,7 @@ Pre-Conditions:
 		std::size_t line_count = 0;
 		std::string line, key;
 		std::vector<std::string> input;
-		std::vector<ProbeTraits::ProbePoint> trajectory;
+		std::vector<typename ProbeTraits::ProbePoint> trajectory;
 		std::vector<std::string> tokens;
 		const auto is_stream = arguments.count("trajectory") == 0;
 		const auto has_header = arguments.count("head") == 0;

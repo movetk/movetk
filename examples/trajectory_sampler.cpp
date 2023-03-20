@@ -91,7 +91,7 @@ Pre-Conditions:
 		movetk::geom::MakePoint<Kernel> make_point;
 		std::size_t line_count = 0;
 		std::vector<std::string> input;
-		std::vector<ProbeTraits::ProbePoint> trajectory;
+		std::vector<typename ProbeTraits::ProbePoint> trajectory;
 		if (is_stream) {
 			while (std::getline(std::cin, line)) {
 				tokens.clear();

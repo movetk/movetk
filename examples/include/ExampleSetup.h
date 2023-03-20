@@ -197,7 +197,7 @@ struct ExampleRunner {
 				return;
 			}
 			using Backend = std::tuple_element_t<index.value, movetk::backends::AvailableBackends>;
-			example.run<typename Backend::MovetkGeometryKernel>(arguments);
+			example.template run<typename Backend::MovetkGeometryKernel>(arguments);
 		});
 	}
 };
