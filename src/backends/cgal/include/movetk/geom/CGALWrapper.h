@@ -97,12 +97,12 @@ template <bool type_is_string_castable, class Kernel>
 struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkSphere> {
 	std::ostream &operator()(std::ostream &out, const typename Kernel::MovetkSphere &s) {
 		if constexpr (type_is_string_castable) {
-			typename Kernel::Wrapper_Point center = s.center();
+			const auto center = s.center();
 			out << movetk::utils::join(center.begin(), center.end()) + ";";
 			out << s.squared_radius();
 			return out;
 		} else {
-			typename Kernel::Wrapper_Point center = s.center();
+			const auto center = s.center();
 			out << center.get();
 			out << ",";
 			out << s.squared_radius();
@@ -110,7 +110,12 @@ struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkSphere>
 		}
 	}
 };
-
+template <bool type_is_string_castable, class Kernel>
+struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkSegment> {
+	std::ostream &operator()(std::ostream &out, const typename Kernel::MovetkSegment &s) {
+		return out << s[0] << " -- " << s[1];
+	}
+};
 
 template <bool type_is_string_castable, class Kernel>
 struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkPolygon> {
@@ -118,24 +123,19 @@ struct OutputRep<type_is_string_castable, Kernel, typename Kernel::MovetkPolygon
 		if constexpr (type_is_string_castable) {
 			auto it = poly.get().vertices_begin();
 			auto beyond = poly.get().vertices_end();
-			std::string mergedTokens = movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
+			std::cout << movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
 			it++;
-			while (it != beyond) {
-				mergedTokens += ',';
-				mergedTokens += movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
-				it++;
+			for (; it != beyond; ++it) {
+				std::cout << ',' << movetk::utils::join(it->cartesian_begin(), it->cartesian_end(), ';');
 			}
-			out << mergedTokens;
 			return out;
 		} else {
 			auto it = poly.get().vertices_begin();
 			auto beyond = poly.get().vertices_end();
 			out << *it;
 			it++;
-			while (it != beyond) {
-				out << ",";
-				out << *it;
-				it++;
+			for (; it != beyond; ++it) {
+				out << "," << *it;
 			}
 			return out;
 		}
@@ -364,9 +364,10 @@ public:
 	CGAL_Segment get() const { return seg; }
 
 
-	friend std::ostream &operator<<(std::ostream &out, Segment<Kernel> &seg) {
+	friend std::ostream &operator<<(std::ostream &out, const Segment<Kernel> &seg) {
 		OutputRep<is_string_castable_NT<NT>::value, Kernel, Point> output;
-		return out << output(out, seg[0]) << ";" << output(out, seg[1]);
+		output(out, seg[0]) << ";";
+		return output(out, seg[1]);
 	}
 };
 
@@ -596,28 +597,6 @@ private:
 	using CGAL_MinSphere = typename Kernel::CGAL_MinSphere_;
 	using CGAL_Point = typename Kernel::CGAL_Point_;
 	using NT = typename Kernel::NT;
-	std::set<CGAL_Point> points;  // TODO: Remove the use of this datastructure
-	NT radius;
-
-	/*!
-	 * @details Takes a set of points (not necessarily unique) and creates a
-	 * unique set of points since it is required by the CGAL MEB
-	 * algorithm to converge
-	 * @tparam PointIterator - A random access iterator over a set of points
-	 * where each point is of type Wrapper_CGAL_Point<Kernel>
-	 * @param first - Iterator to the first point in a set of points
-	 * where each point is of type Wrapper_CGAL_Point<Kernel>
-	 * @param beyond - Iterator to the first point in a set of points
-	 * where each point is of type Wrapper_CGAL_Point<Kernel>
-	 */
-	template <utils::RandomAccessPointIterator<Kernel> PointIterator>
-	void to_CGAL_points(PointIterator first, PointIterator beyond) {
-		PointIterator it = first;
-		while (it != beyond) {
-			points.insert((*it).get());
-			it++;
-		}
-	}
 
 public:
 	/*!
@@ -636,15 +615,15 @@ public:
 	template <utils::RandomAccessPointIterator<Kernel> PointIterator,
 	          utils::OutputIterator<typename Kernel::NT> CenterIterator>
 	NT operator()(PointIterator first, PointIterator beyond, CenterIterator iter) const {
-		this->to_CGAL_points(first, beyond);
+		std::set<CGAL_Point> points;
+		this->to_CGAL_points(points, first, beyond);
 		CGAL_MinSphere ms(begin(points), end(points));
-		radius = ms.radius().first + ms.radius().second * sqrt(ms.discriminant());
+		NT radius = ms.radius().first + ms.radius().second * sqrt(ms.discriminant());
 		for (typename CGAL_MinSphere::Cartesian_const_iterator cit = ms.center_cartesian_begin();
 		     cit != ms.center_cartesian_end();
 		     cit++) {
 			*iter = cit->first + cit->second;
 		}
-		points.clear();
 		return radius;
 	}
 
@@ -659,12 +638,33 @@ public:
 	 * @return Radius of the MEB
 	 */
 	template <utils::RandomAccessPointIterator<Kernel> PointIterator>
-	NT operator()(PointIterator first, PointIterator beyond) {
-		this->to_CGAL_points(first, beyond);
+	NT operator()(PointIterator first, PointIterator beyond) const {
+		std::set<CGAL_Point> points;
+		this->to_CGAL_points(points, first, beyond);
 		CGAL_MinSphere ms(begin(points), end(points));
-		radius = ms.radius().first + ms.radius().second * sqrt(ms.discriminant());
-		points.clear();
+		NT radius = ms.radius().first + ms.radius().second * sqrt(ms.discriminant());
 		return radius;
+	}
+
+private:
+	/*!
+	 * @details Takes a set of points (not necessarily unique) and creates a
+	 * unique set of points since it is required by the CGAL MEB
+	 * algorithm to converge
+	 * @tparam PointIterator - A random access iterator over a set of points
+	 * where each point is of type Wrapper_CGAL_Point<Kernel>
+	 * @param first - Iterator to the first point in a set of points
+	 * where each point is of type Wrapper_CGAL_Point<Kernel>
+	 * @param beyond - Iterator to the first point in a set of points
+	 * where each point is of type Wrapper_CGAL_Point<Kernel>
+	 */
+	template <utils::RandomAccessPointIterator<Kernel> PointIterator>
+	void to_CGAL_points(std::set<CGAL_Point> &points, PointIterator first, PointIterator beyond) const {
+		PointIterator it = first;
+		while (it != beyond) {
+			points.insert((*it).get());
+			it++;
+		}
 	}
 };
 

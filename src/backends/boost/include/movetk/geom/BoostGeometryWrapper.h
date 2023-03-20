@@ -466,7 +466,7 @@ public:
 	 * @param out - OutputStream
 	 * @param poly - A polygon of type Wrapper_Boost_Polygon<Kernel>
 	 */
-	friend std::ostream& operator<<(std::ostream& out, Polygon& poly) {
+	friend std::ostream& operator<<(std::ostream& out, const Polygon& poly) {
 		using Point = typename Kernel::MovetkPoint;
 		auto it = poly.v_begin();
 		Point pt(*it);
