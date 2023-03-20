@@ -1,3 +1,5 @@
+#ifndef MOVETK_EXAMPLES_EXAMPLESETUP_H
+#define MOVETK_EXAMPLES_EXAMPLESETUP_H
 /*
  * Copyright (C) 2018-2023
  * HERE Europe B.V.
@@ -25,7 +27,9 @@
 //
 #include <concepts>
 #include <cxxopts.hpp>
+#include <string>
 #include <tuple>
+#include <vector>
 
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Meta.h"
@@ -77,6 +81,11 @@ template <typename T>
 concept ExampleWithOptions = Example<T> && requires(T& t, cxxopts::OptionAdder& option_adder) {
 	t.add_options(option_adder);
 };
+template <typename T>
+concept ExampleWithOptionsAndPositionals = Example<T> &&
+    requires(T& t, cxxopts::OptionAdder& option_adder, std::vector<std::string>& positionals) {
+	t.add_options(option_adder, positionals);
+};
 }  // namespace concepts
 
 /**
@@ -102,9 +111,13 @@ struct ExampleRunner {
 		    options.add_options()("b,backend",
 		                          "Backend to run",
 		                          cxxopts::value<std::string>()->default_value(default_backend));
-
+		option_adder("h,help", "Show help");
 		if constexpr (concepts::ExampleWithOptions<EXAMPLE>) {
 			example.add_options(option_adder);
+		} else if constexpr (concepts::ExampleWithOptionsAndPositionals<EXAMPLE>) {
+			std::vector<std::string> positionals;
+			example.add_options(option_adder, positionals);
+			options.parse_positional(positionals.begin(), positionals.end());
 		}
 		auto result = options.parse(argc, argv);
 
@@ -125,7 +138,19 @@ struct ExampleRunner {
 		const auto backend_index = get_backend_index_for_name(backend_string);
 
 		std::cout << "Running " << EXAMPLE::NAME << " with backend " << backend_string << '\n';
-		run_example_with_backend(example, result, backend_index);
+
+		if (result.count("help") == 1) {
+			std::cout << options.help() << std::endl;
+			return 0;
+		}
+		try {
+			run_example_with_backend(example, result, backend_index);
+		} catch (std::exception& e) {
+			std::cout << "Caught exception: " << e.what() << '\n';
+			std::cout << "Usage:" << std::endl;
+			std::cout << options.help() << std::endl;
+			return 1;
+		}
 		return 0;
 	}
 	/**
@@ -147,3 +172,4 @@ struct ExampleRunner {
 	}
 };
 }  // namespace movetk::examples
+#endif
