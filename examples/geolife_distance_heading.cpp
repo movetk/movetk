@@ -56,6 +56,9 @@ struct Example {
 		    movetk::io::TrajectoryReader<TrajectoryTraits, ProbeInputIterator>(probe_reader->begin(), probe_reader->end());
 
 		for (auto trajectory : trajectory_reader) {
+			std::cout << "=====================================" << std::endl;
+			std::cout << "======== New trajectory: " << trajectory.template get<ProbeTraits::ProbeColumns::TRAJID>()[0];
+			std::cout << " Size:" << trajectory.size() << std::endl;
 			double prev_lat, prev_lon;
 			bool first = true;
 
@@ -76,10 +79,8 @@ struct Example {
 					prev_lon = curr_lon;
 				}
 			}
+			std::cout << "=====================================" << std::endl;
 		}
-
-		// Create an output csv file
-		std::ofstream ofcsv("output_distance_heading.csv");
 	}
 };
 

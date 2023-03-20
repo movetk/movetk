@@ -88,14 +88,15 @@ struct Example {
 		// Process trajectories in a streaming fashion
 		std::size_t count = 0;
 		// Shorthands for fields
-		constexpr int LON_Idx = ProbeTraits::ProbeColumns::LON;
-		constexpr int LAT_Idx = ProbeTraits::ProbeColumns::LAT;
-		constexpr int TS_Idx = ProbeTraits::ProbeColumns::SAMPLE_DATE;
-		constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;
+		constexpr int LON_Idx = ProbeTraits::ProbeColumns::LON;         // Longitude
+		constexpr int LAT_Idx = ProbeTraits::ProbeColumns::LAT;         // Latitude
+		constexpr int TS_Idx = ProbeTraits::ProbeColumns::SAMPLE_DATE;  // Timestamp
+		constexpr int PROBE_ID = ProbeTraits::ProbeColumns::PROBE_ID;   // ID
 
 		for (auto trajectory : trajectory_reader) {
-			std::cout << "New trajectory: " << trajectory.template get<PROBE_ID>()[0];
-			std::cout << "Size:" << trajectory.size() << std::endl;
+			std::cout << "=====================================" << std::endl;
+			std::cout << "======== New trajectory: " << trajectory.template get<PROBE_ID>()[0];
+			std::cout << " Size:" << trajectory.size() << std::endl;
 			using Trajectory_t = decltype(trajectory);
 
 			// Get iterators for data
@@ -127,8 +128,9 @@ struct Example {
 
 			// Show time mode
 			movetk::statistics::ComputeDominantDifference timeMode;
-			std::cout << "Most common time interval: " << timeMode(ts.begin(), ts.end(), 0);
+			std::cout << "Most common time interval: " << timeMode(ts.begin(), ts.end(), 0) << std::endl;
 
+			std::cout << "=====================================" << std::endl;
 			count++;
 		}
 		std::cout << "Processed " << count << " trajectories" << std::endl;

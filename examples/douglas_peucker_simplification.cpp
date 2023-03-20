@@ -27,7 +27,7 @@
 #include "movetk/utils/Iterators.h"
 
 struct Example {
-	static constexpr const char* NAME = "compute_statistics";
+	static constexpr const char* NAME = "douglas_peucker_simplification";
 	static constexpr const char* DESCRIPTION = "Computes statistics on a trajectory";
 
 	void add_options(cxxopts::OptionAdder& adder) {
@@ -48,11 +48,10 @@ struct Example {
 		                   make_point({-1.15, 3.06}),
 		                   make_point({5.33, -1.12})});
 
-		std::cout << "Polyline to be simplified: ";
-		std::cout << "{";
+		std::cout << "Polyline to be simplified: \n";
+		std::cout << "{\n";
 		for (auto vertex : polyline) {
-			std::cout << vertex;
-			std::cout << ";";
+			std::cout << vertex << ";\n";
 		}
 		std::cout << "}\n";
 
@@ -65,9 +64,9 @@ struct Example {
 
 
 		std::cout << "Simplified polyline has: " << result.size() << " vertices\n";
-		std::cout << "Simplified Polyline: {";
+		std::cout << "Simplified Polyline: {\n";
 		for (auto reference : result) {
-			std::cout << *reference << ";";
+			std::cout << *reference << ";\n";
 		}
 		std::cout << "}\n";
 	}

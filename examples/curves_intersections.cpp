@@ -36,7 +36,7 @@ struct Example {
 		using Norm = movetk::metric::L2Norm<Kernel>;
 		// Require that the Kernel has an intersections function
 		if constexpr (!std::is_void_v<typename Kernel::MovetkCurveIntersection>) {
-			movetk::geom::MakePoint<typename Kernel::MovetkGeometryKernel> make_point;
+			movetk::geom::MakePoint<Kernel> make_point;
 			using IntersectionTraits =
 			    movetk::geom::IntersectionTraits<Kernel, Norm, movetk::geom::polylines_instersection_tag>;
 			movetk::geom::ComputeIntersections<IntersectionTraits> compute_intersections;
