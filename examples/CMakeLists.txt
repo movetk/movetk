@@ -42,6 +42,19 @@ function(CreateExample name)
         if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
                 set_target_properties(${name} PROPERTIES FOLDER "Examples")
         endif()
+        
+        if(NOT "${name}" MATCHES "rawprobe2trajectories")
+            target_precompile_headers(${name}
+                REUSE_FROM rawprobe2trajectories
+            )
+        else()
+            target_precompile_headers(${name}
+                PRIVATE include/ExampleSetup.h
+                include/GeolifeTrajectoryTraits.h
+                include/HereTrajectoryTraits.h
+                include/test_data.h
+            )
+        endif()
 endfunction()
 
 #IO examples
@@ -61,12 +74,6 @@ CreateExample(MonotoneSegmentation monotone_segmentation.cpp)
 
 # Creation examples
 CreateExample(creating_geometry)
-CreateExample(make_point)
-CreateExample(make_min_sphere)
-CreateExample(make_segment)
-CreateExample(make_line)
-CreateExample(make_polygon)
-CreateExample(make_sphere)
 
 # Computations
 CreateExample(compute_squared_distance)
