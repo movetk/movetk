@@ -21,54 +21,65 @@
 // Created by Mitra, Aniket on 2019-03-05.
 //
 
+#include "ExampleSetup.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
+struct Example {
+	static constexpr const char* NAME = "curves_intersections";
+	static constexpr const char* DESCRIPTION = "Computes intersections between curves";
 
-int main(int argc, char **argv) {
-	using MovetkPoint = GeometryKernel::MovetkGeometryKernel::MovetkPoint;
-	using PolyLine = std::vector<MovetkPoint>;
-	if constexpr (!std::is_void_v<typename GeometryKernel::MovetkGeometryKernel::MovetkCurveIntersection>) {
-		movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
-		using IntersectionTraits = movetk::geom::IntersectionTraits<GeometryKernel::MovetkGeometryKernel,
-		                                                            GeometryKernel::Norm,
-		                                                            movetk::geom::polylines_instersection_tag>;
-		movetk::geom::ComputeIntersections<IntersectionTraits> compute_intersections;
+	template <typename Kernel>
+	void run(cxxopts::ParseResult& arguments) {
+		using MovetkPoint = typename Kernel::MovetkPoint;
+		using PolyLine = std::vector<MovetkPoint>;
+		using Norm = movetk::metric::L2Norm<Kernel>;
+		// Require that the Kernel has an intersections function
+		if constexpr (!std::is_void_v<typename Kernel::MovetkCurveIntersection>) {
+			movetk::geom::MakePoint<Kernel> make_point;
+			using IntersectionTraits =
+			    movetk::geom::IntersectionTraits<Kernel, Norm, movetk::geom::polylines_instersection_tag>;
+			movetk::geom::ComputeIntersections<IntersectionTraits> compute_intersections;
 
-		PolyLine polyline({make_point({3, 3}),
-		                   make_point({3, 3}),
-		                   make_point({6, 5}),
-		                   make_point({6, 5}),
-		                   make_point({9, 3}),
-		                   make_point({2.94, 5.42}),
-		                   make_point({3, 3}),
-		                   make_point({5.92, 1.62}),
-		                   make_point({8.8, 5.12}),
-		                   make_point({1.26, 4.24})});
+			PolyLine polyline({make_point({3, 3}),
+			                   make_point({3, 3}),
+			                   make_point({6, 5}),
+			                   make_point({6, 5}),
+			                   make_point({9, 3}),
+			                   make_point({2.94, 5.42}),
+			                   make_point({3, 3}),
+			                   make_point({5.92, 1.62}),
+			                   make_point({8.8, 5.12}),
+			                   make_point({1.26, 4.24})});
 
-		std::cout << "Number of intersections: " << compute_intersections(std::begin(polyline), std::end(polyline));
+			std::cout << "Number of intersections: " << compute_intersections(std::begin(polyline), std::end(polyline));
 
-		std::cout << "\n";
+			std::cout << "\n";
 
-		polyline = PolyLine({make_point({-8228041.827950, 4975892.874943}),
-		                     make_point({-8228041.827950, 4975892.874943}),
-		                     make_point({-8228042.677250, 4975893.996076}),
-		                     make_point({-8228039.280049, 4975892.874943}),
-		                     make_point({-8228040.129349, 4975892.874943}),
-		                     make_point({-8228034.184247, 4975892.874943}),
-		                     make_point({-8228031.636346, 4975894.556643}),
-		                     make_point({-8228032.485646, 4975892.874943}),
-		                     make_point({-8228033.334946, 4975893.996076}),
-		                     make_point({-8228033.334946, 4975893.996076}),
-		                     make_point({-8228033.334946, 4975894.556643}),
-		                     make_point({-8228033.334946, 4975893.996076}),
-		                     make_point({-8228035.033547, 4975892.314376}),
-		                     make_point({-8228035.033547, 4975892.874943}),
-		                     make_point({-8228034.184247, 4975892.314376}),
-		                     make_point({-8228034.184247, 4975892.314376})});
-		std::cout << "Number of intersections: " << compute_intersections(std::begin(polyline), std::end(polyline));
-		std::cout << "\n";
-	} else {
-		std::cout << "Selected backend doesn't support intersections" << '\n';
+			polyline = PolyLine({make_point({-8228041.827950, 4975892.874943}),
+			                     make_point({-8228041.827950, 4975892.874943}),
+			                     make_point({-8228042.677250, 4975893.996076}),
+			                     make_point({-8228039.280049, 4975892.874943}),
+			                     make_point({-8228040.129349, 4975892.874943}),
+			                     make_point({-8228034.184247, 4975892.874943}),
+			                     make_point({-8228031.636346, 4975894.556643}),
+			                     make_point({-8228032.485646, 4975892.874943}),
+			                     make_point({-8228033.334946, 4975893.996076}),
+			                     make_point({-8228033.334946, 4975893.996076}),
+			                     make_point({-8228033.334946, 4975894.556643}),
+			                     make_point({-8228033.334946, 4975893.996076}),
+			                     make_point({-8228035.033547, 4975892.314376}),
+			                     make_point({-8228035.033547, 4975892.874943}),
+			                     make_point({-8228034.184247, 4975892.314376}),
+			                     make_point({-8228034.184247, 4975892.314376})});
+			std::cout << "Number of intersections: " << compute_intersections(std::begin(polyline), std::end(polyline));
+			std::cout << "\n";
+		} else {
+			std::cout << "Selected backend doesn't support intersections" << '\n';
+		}
 	}
+};
+
+int main(int argc, char** argv) {
+	return movetk::examples::ExampleRunner().run_example<Example>(argc, argv);
 }

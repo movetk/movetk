@@ -35,268 +35,176 @@
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 #include "movetk/utils/TrajectoryUtils.h"
-using namespace std;
 
-class ParseInput {
-public:
-	static void show_usage(std::string& name) {
-		std::cerr
-		    << "Usage: " << name << " <option(s)>\n"
-		    << "Description: Model based Segmentation of a Trajectory \n"
-		    << "The model used is a Brownian Bridge Movement Model (BBMM) \n"
-		    << "Therefore, given a trajectory T = {(x_0,t_0), (x_1,t_1), (x_2,t_2), ... ,(x_n, t_n)} \n"
-		    << "where x is a position vector. The trajectory is partitioned into two sets \n"
-		    << "The even-numbered points are used \n"
-		    << "to define Brownian bridges, and the odd-numbered points are use to \n "
-		    << "estimate the diffusion coefficient and are assumed to be independent. \n"
-		    << "The BBMM is defined with parameters mu(t) and sigma^2(t) \n"
-		    << "where,\n"
-		    << "      mu(i) =  x(i) + alpha * ( x(i+1) - x(i) ) \n"
-		    << "      sigma^2(i) =  (t(i+1) - t(i)) * alpha * (1 - alpha) * diffusion_coefficient^2 \n"
-		    << "      alpha = ( t(i+1) - t'(i) ) / ( t(i+1) - t(i) ) \n"
-		    << "      where (x(i),t(i)) and (x(i+1), t(i+1)) are the even numbered points in the trajectory \n"
-		    << "      and (x'(i),t'(i)) are the off numbered points in the trajectory \n"
-		    << "Therefore, the likelihood of a candidate diffusion coefficient given a Brownian bridge T[i,i'] is \n"
-		    << "      L(diffusion_coefficient^2 | T[i, i'] ) = ( 1/(2 * pi * diffusion_coefficient^2 )) * exp(- || x'(i) - "
-		       "mu(i) || / 2 * diffusion_coefficient^2 )  \n"
-		    << "Using Maximum Likelihood Estimation, the diffusion coefficient for each bridge is estimated \n"
-		    << "Finally, given the bridges and their diffusion coefficients , the segmentation algorithm  \n"
-		    << "segments that trajectory in such a way that the information criteria of the segmentation is minimized \n"
-		    << "Input Format: Lon, Lat, TS\n"
-		    << "Output Format: Lon, Lat, TS, SegID\n"
-		    << "Pre-Conditions:\n"
-		    << "\t - Input sorted by Timestamp\n"
-		    << "Options:\n"
-		    << "\t-h,--help\t\tShow this help message\n"
-		    << "\t-tr,--trajectory\t\tTrajectories file\n"
-		    << "\t--head\t\t\tSpecify this when the input file has header\n"
-		    << "\t-idx,--indexes\t\tPosition of columns in the input\n"
-		    << "\t-s, --size\t\t Size of the model (number diffusion coefficinets to be selected. Should be between 1 and "
-		       "(n-1)/2 )\n"
-		    << "\t-p,--penalty\t\tPenalty factor\n";
+struct Example {
+	static constexpr const char* NAME = "kinematic_interpolation";
+	static constexpr const char* DESCRIPTION = R"(Model based Segmentation of a Trajectory
+The model used is a Brownian Bridge Movement Model (BBMM)
+Therefore, given a trajectory T = {(x_0,t_0), (x_1,t_1), (x_2,t_2), ... ,(x_n, t_n)}
+where x is a position vector. The trajectory is partitioned into two sets
+The even-numbered points are used 
+to define Brownian bridges, and the odd-numbered points are use to 
+estimate the diffusion coefficient and are assumed to be independent. 
+The BBMM is defined with parameters mu(t) and sigma^2(t) 
+where,
+		mu(i) =  x(i) + alpha * ( x(i+1) - x(i) ) 
+		sigma^2(i) =  (t(i+1) - t(i)) * alpha * (1 - alpha) * diffusion_coefficient^2 
+		alpha = ( t(i+1) - t'(i) ) / ( t(i+1) - t(i) ) 
+		where (x(i),t(i)) and (x(i+1), t(i+1)) are the even numbered points in the trajectory 
+		and (x'(i),t'(i)) are the off numbered points in the trajectory 
+Therefore, the likelihood of a candidate diffusion coefficient given a Brownian bridge T[i,i'] is 
+		L(diffusion_coefficient^2 | T[i, i'] ) = ( 1/(2 * pi * diffusion_coefficient^2 )) * exp(- || x'(i) -
+mu(i) || / 2 * diffusion_coefficient^2 ) 
+Using Maximum Likelihood Estimation, the diffusion coefficient for each bridge is estimated 
+Finally, given the bridges and their diffusion coefficients , the segmentation algorithm  
+segments that trajectory in such a way that the information criteria of the segmentation is minimized 
+Input Format: Lon, Lat, TS
+Output Format: Lon, Lat, TS, SegID
+Pre-Conditions:
+	- Input sorted by Timestamp
+)";
+	void add_options(cxxopts::OptionAdder& adder) {
+		adder("t,trajectory", "Trajectories file", cxxopts::value<std::string>());
+		adder("head", "Specify this when the input file has a header");
+		adder("i,indexes", "Position of the columns in the input", cxxopts::value<std::vector<size_t>>());
+		adder("s,size",
+		      "Size of the model (number diffusion coefficients to be selected. Should be between 1 and "
+		      "(n-1)/2 ",
+		      cxxopts::value<size_t>());
+		adder("p,penalty", "Penalty factor", cxxopts::value<double>());
 	}
 
-	bool operator()(int argc, char** argv) {
-		std::string executable = argv[0];
-		if ((argc >= MinArgs) && (argc <= MaxArgs)) {
-			auto it = argv;
-			it++;
-			while (it != (argv + argc)) {
-				bool Matched = false;
-				auto eit = eargs.cbegin();
-				while (eit != eargs.cend()) {
-					if ((std::get<0>(*eit) == *it) || (std::get<1>(*eit) == *it)) {
-						Matched = true;
-						break;
+
+	struct ProbeTraits {
+		enum ProbeColumns { LAT, LON, SAMPLE_DATE };
+	};
+
+	template <typename Kernel>
+	void run(cxxopts::ParseResult& arguments) {
+		std::cerr << "Has Header?: " << arguments.count("head") << "\n";
+		std::cout.setf(std::ios::fixed);
+
+		std::vector<std::string> tokens;
+		std::string line;
+		std::vector<std::size_t> columns = arguments["indexes"].as<std::vector<size_t>>();
+		assert(columns.size() == 3);
+		using NT = typename Kernel::NT;
+		NT num_coefficients = arguments["size"].as<size_t>();
+		std::cerr << "Number of coefficients: " << num_coefficients << "\n";
+		assert(num_coefficients > 0);
+
+		NT penalty_factor = arguments["penalty_factory"].as<double>();
+		std::size_t line_count = 0;
+		NT lat, lon;
+		std::size_t ts;
+		using ProbePoint = std::tuple<long double, long double, std::size_t>;
+		std::vector<ProbePoint> trajectory;
+		bool is_stream = arguments.count("trajectory") == 0;
+		bool has_header = arguments.count("head");
+		if (is_stream) {
+			while (std::getline(std::cin, line)) {
+				tokens.clear();
+				if (line_count == 0) {
+					if (has_header) {
+						line_count++;
+						continue;
 					}
-					eit++;
 				}
-				if (Matched) {
-					if (std::get<2>(*eit)) {
-						params[std::get<0>(*eit)] = *(it + 1);
-						it = it + 2;
-					} else
-						it++;
-					set_flags(std::get<0>(*eit));
-					eargs.erase(eit);
-				} else {
-					show_usage(executable);
-					return false;
-				}
+				movetk::utils::split(line, std::back_inserter(tokens));
+				lon = std::stold(tokens[columns[0]]);
+				lat = std::stold(tokens[columns[1]]);
+				ts = static_cast<std::size_t>(std::stoul(tokens[columns[2]]));
+				trajectory.push_back(std::make_tuple(lat, lon, ts));
+				line_count++;
 			}
-			return true;
+
+		} else {
+			std::string trajfile = arguments["trajectory"].as<std::string>();
+			std::ifstream infile;
+			infile.open(trajfile);
+			while (std::getline(infile, line)) {
+				tokens.clear();
+				if (line_count == 0) {
+					if (has_header) {
+						line_count++;
+						continue;
+					}
+				}
+				movetk::utils::split(line, std::back_inserter(tokens));
+				lon = std::stold(tokens[columns[0]]);
+				lat = std::stold(tokens[columns[1]]);
+				ts = static_cast<std::size_t>(std::stoul(tokens[columns[2]]));
+				trajectory.push_back(std::make_tuple(lat, lon, ts));
+				line_count++;
+			}
 		}
-		show_usage(executable);
-		return false;
-	}
 
-	std::string& get_parameter(std::string& key) { return params[key]; }
+		using ParameterTraits =
+		    movetk::segmentation::brownian_bridge::ParameterTraits<Kernel, decltype(trajectory.begin())>;
+		using BridgeIterator = std::vector<typename ParameterTraits::Parameters>::const_iterator;
+		using Projection = movetk::geo::LocalCoordinateReference<NT>;
+		std::vector<typename ParameterTraits::Parameters> bridges;
+		using Norm = typename Kernel::Norm;
 
-	bool has_header() { return header; }
+		using BBMM = movetk::segmentation::brownian_bridge::Model<Kernel, ProbeTraits, ParameterTraits, Norm, Projection>;
 
-	bool is_stream() { return stream; }
+		BBMM bb(trajectory.begin(), trajectory.end(), std::back_inserter(bridges));
 
-private:
-	static const int MinArgs = 7;
-	static const int MaxArgs = 10;
-	bool header = false, stream = true;
-	typedef std::tuple<std::string, std::string, bool> earg;
-	std::vector<earg> eargs{std::make_tuple("--head", "--head", false),
-	                        std::make_tuple("-tr", "--trajectory", true),
-	                        std::make_tuple("-idx", "--indexes", true),
-	                        std::make_tuple("-s", "--size", true),
-	                        std::make_tuple("-p", "--penalty", true)};
+		std::vector<NT> selected_coeffs;
 
-	std::map<std::string, std::string> params{{"-tr", ""}, {"-p", ""}, {"-s", ""}, {"-idx", ""}, {"--head", ""}};
+		// Maximum likelihood estimator
+		movetk::segmentation::brownian_bridge::MLE<Kernel, ParameterTraits, Norm, BridgeIterator, 1000> mle(
+		    std::cbegin(bridges),
+		    std::cend(bridges));
 
-	void set_flags(std::string arg) {
-		if (arg == "--head")
-			header = true;
-		if (arg == "-tr" || (arg == "--trajectory"))
-			stream = false;
+		for (auto bit = begin(bridges); bit != end(bridges); ++bit) {
+			movetk::segmentation::brownian_bridge::MLE<Kernel, ParameterTraits, Norm, BridgeIterator, 1000>
+			    mle(bit, bit + 1);
+			std::get<ParameterTraits::ParameterColumns::SIGMA_SQUARED>(*bit) = mle();
+		}
+
+
+		movetk::segmentation::brownian_bridge::ParameterSelector<Kernel, ParameterTraits> selector(
+		    num_coefficients);
+
+		selector(std::cbegin(bridges), std::cend(bridges), std::back_inserter(selected_coeffs));
+
+
+		using LogLikelihood =
+		    movetk::segmentation::brownian_bridge::LogLikelihood<Kernel, ParameterTraits, Norm>;
+
+		using ModelBasedSegmentation = movetk::segmentation::ModelBasedSegmentation<Kernel, LogLikelihood>;
+
+		ModelBasedSegmentation segmentation(penalty_factor);
+
+		std::vector<BridgeIterator> segments;
+
+		segmentation(std::cbegin(bridges),
+		             std::cend(bridges),
+		             std::cbegin(selected_coeffs),
+		             std::cend(selected_coeffs),
+		             std::back_inserter(segments));
+
+
+		std::reverse(std::begin(segments), std::end(segments));
+
+		movetk::utils::SegmentIdGenerator make_segment(std::begin(segments), std::end(segments));
+
+
+		std::size_t id = 0;
+		for (auto bit = std::begin(bridges); bit != std::end(bridges); ++bit) {
+			auto first = std::get<ParameterTraits::ParameterColumns::BEGIN>(*bit);
+			auto beyond = std::get<ParameterTraits::ParameterColumns::END>(*bit);
+
+			for (auto it = first; it != beyond; ++it) {
+				std::cout << std::get<1>(*it) << "," << std::get<0>(*it) << "," << std::get<2>(*it) << "," << id << "\n";
+			}
+			id = make_segment.getSegmentID(bit);
+		}
+		make_segment.reset();
 	}
 };
-
-using MovetkGeometryKernel = typename GeometryKernel::MovetkGeometryKernel;
-
-struct ProbeTraits {
-	enum ProbeColumns { LAT, LON, SAMPLE_DATE };
-};
-
 
 int main(int argc, char** argv) {
-#if CGAL_BACKEND_ENABLED
-	std::cerr << "Using CGAL Backend for Geometry\n";
-#else
-	std::cerr << "Using Boost Backend for Geometry\n";
-#endif
-
-	ParseInput parse;
-	if (!parse(argc, argv))
-		return 0;
-
-	std::cerr << "Has Header?: " << parse.has_header() << "\n";
-
-	std::ios_base::sync_with_stdio(false);
-	std::cout.setf(std::ios::fixed);
-
-	std::vector<string> tokens;
-	std::string key = "-idx";
-	string line;
-	line = parse.get_parameter(key);
-	movetk::utils::split(line, std::back_inserter(tokens));
-	assert(tokens.size() == 3);
-
-	std::vector<std::size_t> col_idx;
-	std::transform(std::cbegin(tokens), std::cend(tokens), std::back_insert_iterator(col_idx), [](auto i) {
-		return static_cast<std::size_t>(std::stoul(i)) - 1;
-	});
-
-
-	key = "-s";
-	MovetkGeometryKernel::NT num_coefficients = static_cast<std::size_t>(std::stold(parse.get_parameter(key)));
-	std::cerr << "Number of coefficients: " << num_coefficients << "\n";
-	assert(num_coefficients > 0);
-
-	key = "-p";
-	MovetkGeometryKernel::NT penalty_factor = std::stold(parse.get_parameter(key));
-
-
-	std::size_t line_count = 0;
-
-	MovetkGeometryKernel::NT lat, lon;
-	std::size_t ts;
-	using ProbePoint = std::tuple<long double, long double, std::size_t>;
-	std::vector<ProbePoint> trajectory;
-
-	if (parse.is_stream()) {
-		while (getline(cin, line)) {
-			tokens.clear();
-			if (line_count == 0) {
-				if (parse.has_header()) {
-					line_count++;
-					continue;
-				}
-			}
-			movetk::utils::split(line, std::back_inserter(tokens));
-			lon = std::stold(tokens[col_idx[0]]);
-			lat = std::stold(tokens[col_idx[1]]);
-			ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
-			trajectory.push_back(make_tuple(lat, lon, ts));
-			line_count++;
-		}
-
-	} else {
-		key = "-tr";
-		std::string trajfile = parse.get_parameter(key);
-		ifstream infile;
-		infile.open(trajfile);
-		while (getline(infile, line)) {
-			tokens.clear();
-			if (line_count == 0) {
-				if (parse.has_header()) {
-					line_count++;
-					continue;
-				}
-			}
-			movetk::utils::split(line, std::back_inserter(tokens));
-			lon = std::stold(tokens[col_idx[0]]);
-			lat = std::stold(tokens[col_idx[1]]);
-			ts = static_cast<std::size_t>(std::stoul(tokens[col_idx[2]]));
-			trajectory.push_back(make_tuple(lat, lon, ts));
-			line_count++;
-		}
-	}
-
-	typedef movetk::segmentation::brownian_bridge::ParameterTraits<MovetkGeometryKernel, decltype(trajectory.begin())>
-	    ParameterTraits;
-	typedef std::vector<typename ParameterTraits::Parameters>::const_iterator BridgeIterator;
-	typedef movetk::geo::LocalCoordinateReference<typename MovetkGeometryKernel::NT> Projection;
-	std::vector<typename ParameterTraits::Parameters> bridges;
-
-	typedef movetk::segmentation::brownian_bridge::
-	    Model<MovetkGeometryKernel, ProbeTraits, ParameterTraits, GeometryKernel::Norm, Projection>
-	        BBMM;
-
-	BBMM bb(trajectory.begin(), trajectory.end(), std::back_inserter(bridges));
-
-	std::vector<typename MovetkGeometryKernel::NT> selected_coeffs;
-
-	movetk::segmentation::brownian_bridge::
-	    MLE<MovetkGeometryKernel, ParameterTraits, GeometryKernel::Norm, BridgeIterator, 1000>
-	        mle(std::cbegin(bridges), std::cend(bridges));
-
-	auto bit = begin(bridges);
-	while (bit != end(bridges)) {
-		movetk::segmentation::brownian_bridge::
-		    MLE<MovetkGeometryKernel, ParameterTraits, GeometryKernel::Norm, BridgeIterator, 1000>
-		        mle(bit, bit + 1);
-		std::get<ParameterTraits::ParameterColumns::SIGMA_SQUARED>(*bit) = mle();
-		bit++;
-	}
-
-
-	movetk::segmentation::brownian_bridge::ParameterSelector<MovetkGeometryKernel, ParameterTraits> selector(
-	    num_coefficients);
-
-	selector(std::cbegin(bridges), std::cend(bridges), std::back_inserter(selected_coeffs));
-
-
-	typedef movetk::segmentation::brownian_bridge::
-	    LogLikelihood<MovetkGeometryKernel, ParameterTraits, GeometryKernel::Norm>
-	    LogLikelihood;
-
-	typedef movetk::segmentation::ModelBasedSegmentation<MovetkGeometryKernel, LogLikelihood> ModelBasedSegmentation;
-
-	ModelBasedSegmentation segmentation(penalty_factor);
-
-	std::vector<BridgeIterator> segments;
-
-	segmentation(std::cbegin(bridges),
-	             std::cend(bridges),
-	             std::cbegin(selected_coeffs),
-	             std::cend(selected_coeffs),
-	             std::back_inserter(segments));
-
-
-	std::reverse(std::begin(segments), std::end(segments));
-
-	movetk::utils::SegmentIdGenerator make_segment(std::begin(segments), std::end(segments));
-
-	bit = std::begin(bridges);
-	std::size_t id = 0;
-	while (bit != std::end(bridges)) {
-		auto first = std::get<ParameterTraits::ParameterColumns::BEGIN>(*bit);
-		auto beyond = std::get<ParameterTraits::ParameterColumns::END>(*bit);
-		auto it = first;
-		while (it != beyond) {
-			std::cout << std::get<1>(*it) << "," << std::get<0>(*it) << "," << std::get<2>(*it) << "," << id << "\n";
-			it++;
-		}
-		id = make_segment.getSegmentID(bit);
-		bit++;
-	}
-	make_segment.reset();
-
-	return 0;
+	return movetk::examples::ExampleRunner().run_example<Example>(argc, argv);
 }

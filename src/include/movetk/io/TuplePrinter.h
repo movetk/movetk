@@ -64,6 +64,17 @@ void print_tuple(std::ostream& os, const Tuple& t, int precision = 8) {
 	detail::write_separated_tuple(os, ',', t, std::make_index_sequence<std::tuple_size_v<Tuple>>{});
 }
 
+template<typename TUPLE>
+struct TuplePrinter {
+	TuplePrinter(const TUPLE& tuple) : m_tuple(tuple) {}
+	const TUPLE& m_tuple;
+
+	friend std::ostream& operator<<(std::ostream& out_stream, const TuplePrinter<TUPLE>& printer) {
+		print_tuple(out_stream, printer.m_tuple);
+		return out_stream;
+	}
+};
+
 /**
  * Print arguments to os enclosed by square braces, for example, for printing coordinates in GeoJSON.
  */

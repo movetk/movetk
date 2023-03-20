@@ -21,49 +21,57 @@
 // Created by Mitra, Aniket on 2019-02-21.
 //
 
+#include "ExampleSetup.h"
 #include "movetk/Simplification.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Iterators.h"
 
-int main(int argc, char **argv) {
-#if CGAL_BACKEND_ENABLED
-	std::cerr << "Using CGAL Backend for Geometry\n";
-#else
-	std::cerr << "Using Boost Backend for Geometry\n";
-#endif
-	using MovetkGeometryKernel = typename GeometryKernel::MovetkGeometryKernel;
+struct Example {
+	static constexpr const char* NAME = "douglas_peucker_simplification";
+	static constexpr const char* DESCRIPTION = "Computes statistics on a trajectory";
 
-	movetk::geom::MakePoint<MovetkGeometryKernel> make_point;
-	using PolyLine = std::vector<MovetkGeometryKernel::MovetkPoint>;
-	PolyLine polyline({make_point({-6.19, -3.46}),
-	                   make_point({-4.99, 1.16}),
-	                   make_point({-2.79, -2.22}),
-	                   make_point({-1.87, 0.58}),
-	                   make_point({0.77, 0.22}),
-	                   make_point({-1.15, 3.06}),
-	                   make_point({5.33, -1.12})});
-
-	std::cout << "Polyline to be simplified: ";
-	std::cout << "{";
-	for (auto vertex : polyline) {
-		std::cout << vertex;
-		std::cout << ";";
+	void add_options(cxxopts::OptionAdder& adder) {
+		adder("e,epsilon",
+		      "Maximum allowed distance before requiring a more detailed simplification",
+		      cxxopts::value<long double>()->default_value("10.0"));
 	}
-	std::cout << "}\n";
 
-	std::vector<PolyLine::const_iterator> result;
-	using FindFarthest = movetk::simplification::FindFarthest<MovetkGeometryKernel, GeometryKernel::Norm>;
-	movetk::simplification::DouglasPeucker<MovetkGeometryKernel, FindFarthest> DouglasPeucker(10);
-	DouglasPeucker(std::begin(polyline), std::end(polyline), std::back_inserter(result));
+	template <typename Kernel>
+	void run(cxxopts::ParseResult& arguments) {
+		movetk::geom::MakePoint<Kernel> make_point;
+		using PolyLine = std::vector<typename Kernel::MovetkPoint>;
+		PolyLine polyline({make_point({-6.19, -3.46}),
+		                   make_point({-4.99, 1.16}),
+		                   make_point({-2.79, -2.22}),
+		                   make_point({-1.87, 0.58}),
+		                   make_point({0.77, 0.22}),
+		                   make_point({-1.15, 3.06}),
+		                   make_point({5.33, -1.12})});
+
+		std::cout << "Polyline to be simplified: \n";
+		std::cout << "{\n";
+		for (auto vertex : polyline) {
+			std::cout << vertex << ";\n";
+		}
+		std::cout << "}\n";
+
+		std::vector<typename PolyLine::const_iterator> result;
+		using Norm = movetk::metric::L2Norm<Kernel>;
+		using FindFarthest = movetk::simplification::FindFarthest<Kernel, Norm>;
+		const auto epsilon = static_cast<typename Kernel::NT>(arguments["epsilon"].as<long double>());
+		movetk::simplification::DouglasPeucker<Kernel, FindFarthest> douglas_peucker(epsilon);
+		douglas_peucker(std::begin(polyline), std::end(polyline), std::back_inserter(result));
 
 
-	std::cout << "Simplified polyline has: " << result.size() << " vertices\n";
-	std::cout << "Simplified Polyline: ";
-	std::cout << "{";
-	for (auto reference : result) {
-		std::cout << *reference;
-		std::cout << ";";
+		std::cout << "Simplified polyline has: " << result.size() << " vertices\n";
+		std::cout << "Simplified Polyline: {\n";
+		for (auto reference : result) {
+			std::cout << *reference << ";\n";
+		}
+		std::cout << "}\n";
 	}
-	std::cout << "}\n";
-	return 0;
+};
+
+int main(int argc, char** argv) {
+	return movetk::examples::ExampleRunner().run_example<Example>(argc, argv);
 }

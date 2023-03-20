@@ -81,6 +81,10 @@ public:
 private:
 	std::vector<ProbePoint> buffered_probe;
 };
-
+template <int SortByFieldIndex, typename ProbeInputIterator>
+SortedProbeReader<ProbeInputIterator, SortByFieldIndex> create_sorted_probe_reader(ProbeInputIterator begin,
+                                                                                   ProbeInputIterator end) {
+	return SortedProbeReader<ProbeInputIterator, SortByFieldIndex>(begin, end);
+}
 }  // namespace movetk::io
 #endif  // MOVETK_SORTEDPROBEREADER_H

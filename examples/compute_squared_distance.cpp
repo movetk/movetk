@@ -21,25 +21,34 @@
 // Created by Mitra, Aniket on 2019-02-19.
 //
 
+#include <cxxopts.hpp>
+
+#include "ExampleSetup.h"
 #include "movetk/metric/DistanceInterface.h"
 #include "movetk/utils/GeometryBackendTraits.h"
+#include "movetk/utils/Meta.h"
 
-int main(int argc, char **argv) {
-#if CGAL_BACKEND_ENABLED
-	std::cerr << "Using CGAL Backend for Geometry\n";
-#else
-	std::cerr << "Using Boost Backend for Geometry\n";
-#endif
+struct Example {
+	static constexpr const char* NAME = "compute_squared_distance";
+	static constexpr const char* DESCRIPTION =
+	    "Example for computing squared distance between points and a point and segment";
 
-	movetk::geom::MakePoint<GeometryKernel::MovetkGeometryKernel> make_point;
-	auto pt1 = make_point({3, 3});
+	template <typename Kernel>
+	void run(cxxopts::ParseResult& arguments) {
+		movetk::geom::MakePoint<Kernel> make_point;
+		auto pt1 = make_point({3, 3});
 
-	auto pt2 = make_point({3, 1});
-	auto pt3 = make_point({5, 3});
-	movetk::geom::MakeSegment<GeometryKernel::MovetkGeometryKernel> make_segment;
-	auto seg = make_segment(pt2, pt3);
+		auto pt2 = make_point({3, 1});
+		auto pt3 = make_point({5, 3});
+		movetk::geom::MakeSegment<Kernel> make_segment;
+		auto seg = make_segment(pt2, pt3);
 
-	movetk::metric::ComputeSquaredDistance<GeometryKernel::MovetkGeometryKernel, GeometryKernel::Norm> squared_dist;
-	std::cout << "Squared Distance from Point to Segment: " << squared_dist(pt1, seg) << std::endl;
-	return 0;
+		// Compute squared distance using Euclidean norm
+		using Norm = movetk::metric::FiniteNorm<Kernel,2>;
+		movetk::metric::ComputeSquaredDistance<Kernel, Norm> squared_dist;
+		std::cout << "Squared Distance from Point to Segment: " << squared_dist(pt1, seg) << std::endl;
+	}
+};
+int main(int argc, char** argv) {
+	return movetk::examples::ExampleRunner().run_example<Example>(argc, argv);
 }

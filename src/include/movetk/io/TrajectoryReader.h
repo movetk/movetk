@@ -156,10 +156,10 @@ public:
 	/**
 	 * @brief Returns a trajectory on dereference
 	 * @return The trajectory
-	*/
+	 */
 	TrajectoryReader::value_type &operator*() { return _trajectory; }
 	/**
-	 * @brief Returns a pointer to the trajectory 
+	 * @brief Returns a pointer to the trajectory
 	 * @return Pointer to the trajectory
 	 */
 	TrajectoryReader::value_type *operator->() { return &_trajectory; }
@@ -169,5 +169,13 @@ public:
 	}
 	bool operator!=(iterator const &other) { return !(*this == other); }
 };
+
+template <class TrajectoryTraits, class ProbeInputIterator, bool SortTrajectory = true, bool RemoveDuplicates = true>
+TrajectoryReader<TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates> create_trajectory_reader(
+    ProbeInputIterator begin,
+    ProbeInputIterator end) {
+	return TrajectoryReader<TrajectoryTraits, ProbeInputIterator, SortTrajectory, RemoveDuplicates>(begin, end);
+}
+
 }  // namespace movetk::io
 #endif  // MOVETK_TRAJECTORYREADER_H

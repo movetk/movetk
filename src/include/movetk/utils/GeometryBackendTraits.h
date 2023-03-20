@@ -40,11 +40,12 @@ namespace movetk::backends {
 /**
  * @brief Base 2D CGAL kernel using long double as number type
  */
-struct CGALBackend {
+struct CGALBackend : public movetk::backends::cgal::KernelFor<long double, 2> {
 	using NT = long double;
 	static constexpr size_t dimensions = 2;
 	// Define the kernel
-	using MovetkGeometryKernel = movetk::backends::cgal::KernelFor<NT, dimensions>;
+	using MovetkGeometryKernel = CGALBackend;
+	using Norm = movetk::metric::L2Norm<MovetkGeometryKernel>;
 	static constexpr const char* name = "CGAL";
 };
 static_assert(movetk::geom::concepts::BaseKernel<CGALBackend::MovetkGeometryKernel>);
@@ -62,6 +63,7 @@ struct BoostBackend : public movetk::backends::boost::KernelFor<long double, 2> 
 	static constexpr size_t dimensions = 2;
 	// Define the Geometry Backend
 	using MovetkGeometryKernel = BoostBackend;
+	using Norm = movetk::metric::L2Norm<MovetkGeometryKernel>;
 	static constexpr const char* name = "Boost";
 };
 static_assert(movetk::geom::concepts::BaseKernel<BoostBackend::MovetkGeometryKernel>);

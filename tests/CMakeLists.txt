@@ -68,11 +68,10 @@ add_custom_command(TARGET movetk_tests PRE_BUILD
         -P ${PROJECT_SOURCE_DIR}/cmake/update_directory.cmake
 )
 
-if(MSVC)
-    target_precompile_headers(movetk_tests
-      PRIVATE test_includes.h
-    )
-endif()
+target_precompile_headers(movetk_tests
+    PRIVATE test_includes.h
+)
+# Make sure we can run via Visual Studio (need the test data to be reachable)
 if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
     set_target_properties(movetk_tests PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:movetk_tests>)
 endif()

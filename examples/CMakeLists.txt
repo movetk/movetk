@@ -12,6 +12,11 @@ else ()
   set(CGAL_BACKEND_ENABLED 0)
 endif ()
 
+find_package(cxxopts REQUIRED GLOBAL)
+if(NOT TARGET cxxopts::cxxopts)
+    message(FATAL_ERROR "cxxopts::cxxopts not a target")
+endif()
+
 # Enable folders
 if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
     set_property( GLOBAL PROPERTY USE_FOLDERS ON)
@@ -23,16 +28,32 @@ function(CreateExample name)
         if(${ARGC} GREATER 1)
                 set(SRC_NAME ${ARGV1})
         endif()
+        file(GLOB _HEADERS CONFIGURE_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/include/*.h)
         MOVETK_LOG(VERBOSE "Created example ${name}")
-        add_executable(${name} ${SRC_NAME})
+        add_executable(${name} ${SRC_NAME} ${_HEADERS})
         target_compile_definitions(${name} PRIVATE -DCGAL_BACKEND_ENABLED=${CGAL_BACKEND_ENABLED})
         target_include_directories(${name} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include)
         target_link_libraries(${name}
                 PRIVATE
                 c2d::movetk
+                PUBLIC 
+                cxxopts::cxxopts
                 )
         if(CMAKE_GENERATOR MATCHES ".*Visual Studio.*")
                 set_target_properties(${name} PROPERTIES FOLDER "Examples")
+        endif()
+        
+        if(NOT "${name}" MATCHES "rawprobe2trajectories")
+            target_precompile_headers(${name}
+                REUSE_FROM rawprobe2trajectories
+            )
+        else()
+            target_precompile_headers(${name}
+                PRIVATE include/ExampleSetup.h
+                include/GeolifeTrajectoryTraits.h
+                include/HereTrajectoryTraits.h
+                include/test_data.h
+            )
         endif()
 endfunction()
 
@@ -45,19 +66,11 @@ CreateExample(read_trajectories)
 CreateExample(write_geojson)
 
 # Segmentation examples
-CreateExample(TrajectorySegmentationLocation segment_by_meb.cpp)
-CreateExample(TrajectorySegmentationSpeed segment_by_speed.cpp)
-CreateExample(TrajectorySegmentationHeading segment_by_heading.cpp)
-CreateExample(TrajectorySegmentationVelocity segment_by_velocity.cpp)
+CreateExample(trajectory_segmentation)
 CreateExample(MonotoneSegmentation monotone_segmentation.cpp)
 
 # Creation examples
-CreateExample(make_point)
-CreateExample(make_min_sphere)
-CreateExample(make_segment)
-CreateExample(make_line)
-CreateExample(make_polygon)
-CreateExample(make_sphere)
+CreateExample(creating_geometry)
 
 # Computations
 CreateExample(compute_squared_distance)
@@ -66,7 +79,6 @@ CreateExample(compute_squared_distance)
 CreateExample(douglas_peucker_simplification)
 CreateExample(simplification)
 
-CreateExample(directed_graph)
 CreateExample(model_based_segmentation)
 CreateExample(outlier_detection)
 CreateExample(trajectory_sampler)
@@ -81,6 +93,5 @@ CreateExample(compute_statistics)
 
 
 if (MOVETK_WITH_CGAL_BACKEND)
-    CreateExample(TrajectoriesPolygonIntersection trajectories_polygon_intersection.cpp)
     CreateExample(curves_intersections)
 endif()
