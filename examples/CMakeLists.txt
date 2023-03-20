@@ -66,6 +66,7 @@ CreateExample(read_trajectories)
 CreateExample(write_geojson)
 
 # Segmentation examples
+CreateExample(trajectory_segmentation)
 CreateExample(TrajectorySegmentationLocation segment_by_meb.cpp)
 CreateExample(TrajectorySegmentationSpeed segment_by_speed.cpp)
 CreateExample(TrajectorySegmentationHeading segment_by_heading.cpp)
