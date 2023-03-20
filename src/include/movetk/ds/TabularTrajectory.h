@@ -181,6 +181,17 @@ public:
 	 * @return The end iterator
 	 */
 	TrajectoryIterator end() { return _points.end(); }
+	/**
+	 * @brief Returns the begin of the range of probes
+	 * @return The begin iterator
+	 */
+	ConstTrajectoryIterator begin() const { return _points.begin(); }
+
+	/**
+	 * @brief Returns the end of the range of probes
+	 * @return The end iterator
+	 */
+	ConstTrajectoryIterator end() const { return _points.end(); }
 
 	/**
 	 * @brief Returns the begin of the reverse range of probes
@@ -341,33 +352,35 @@ public:
 
 
 	// FieldIterator nested class
-	template <int field_idx>
+	template <int field_idx, bool is_const = false>
 	class FieldIterator {
 	private:
-		TabularTrajectory* _parent;
-		TrajectoryIterator _it;
+		using ParentTrajectory = std::conditional_t<is_const, const TabularTrajectory*, TabularTrajectory*>;
+		ParentTrajectory _parent;
+		using Iterator = std::conditional_t<is_const, ConstTrajectoryIterator,TrajectoryIterator>;
+		Iterator _it;
 
 	public:
 		using iterator_category = std::input_iterator_tag;
 		using value_type = std::tuple_element_t<field_idx, std::tuple<FIELDS...>>;
 		using difference_type = long long;
 		using pointer = value_type*;
-		using reference = value_type&;
+		using reference = std::conditional_t<is_const, const value_type&, value_type&>;
 
 		FieldIterator() : _parent(nullptr), _it({}) {}
 
 		/// Construct an iterator at the beginning of the @p parent object.
-		FieldIterator(TabularTrajectory& parent) : _parent(&parent) { _it = _parent->begin(); }
+		FieldIterator(ParentTrajectory parent) : _parent(parent) { _it = _parent->begin(); }
 
-		static FieldIterator end_it(TabularTrajectory& parent) {
+		static FieldIterator end_it(ParentTrajectory parent) {
 			FieldIterator iterator(parent);
-			iterator._it = parent.end();
+			iterator._it = parent->end();
 			return iterator;
 		}
 
-		TrajectoryIterator& underlying_iterator() { return _it; }
+		Iterator& underlying_iterator() { return _it; }
 
-		const TrajectoryIterator& underlying_iterator() const { return _it; }
+		const Iterator& underlying_iterator() const { return _it; }
 
 		FieldIterator& operator++() {
 			if (_parent != nullptr) {
@@ -408,12 +421,21 @@ public:
 
 	template <int field_idx>
 	FieldIterator<field_idx> begin() {
-		return FieldIterator<field_idx>(*this);
+		return FieldIterator<field_idx>(this);
 	}
 
 	template <int field_idx>
 	FieldIterator<field_idx> end() {
-		return FieldIterator<field_idx>::end_it(*this);
+		return FieldIterator<field_idx>::end_it(this);
+	}
+	template <int field_idx>
+	FieldIterator<field_idx, true> begin() const {
+		return FieldIterator<field_idx, true>(this);
+	}
+
+	template <int field_idx>
+	FieldIterator<field_idx,true> end() const {
+		return FieldIterator<field_idx, true>::end_it(this);
 	}
 
 private:
