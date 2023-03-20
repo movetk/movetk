@@ -45,6 +45,18 @@ struct tuple_contains_type {
 template <typename TUPLE_LIKE_TYPE, template <typename...> typename TARGET_CONTAINER, typename... FRONT_TYPES>
 using transfer_types = typename detail::transfer_types_impl<TUPLE_LIKE_TYPE, TARGET_CONTAINER, FRONT_TYPES...>::type;
 
+namespace detail {
+template <typename CALLABLE, int... INDICES>
+constexpr void for_each_c_impl(CALLABLE&& function, std::integer_sequence<int, INDICES...>) {
+	(function(std::integral_constant<int, INDICES>{}), ...);
+}
+template <int offset, typename T>
+struct offset_index_sequence {};
+template <int offset, int... INDICES>
+struct offset_index_sequence<offset, std::integer_sequence<int, INDICES...>> {
+	using type = std::integer_sequence<int, (offset + INDICES)...>;
+};
+}  // namespace detail
 /**
  * @brief Execute a callable for each compile time index
  * @tparam start Start of the range
@@ -54,12 +66,24 @@ using transfer_types = typename detail::transfer_types_impl<TUPLE_LIKE_TYPE, TAR
  * @param function The function  to call
  */
 template <int start, int end, typename CALLABLE>
-void for_each_c(CALLABLE&& function) {
-	if constexpr (start < end) {
-		function(std::integral_constant<int, start>{});
-		for_each_c<start + 1, end>(std::forward<CALLABLE>(function));
-	}
+constexpr void for_each_c(CALLABLE&& function) {
+	using index_sequence = std::make_integer_sequence<int, end - start>;
+	using offset_sequence = typename detail::offset_index_sequence<start, index_sequence>::type;
+	detail::for_each_c_impl(std::forward<CALLABLE>(function), offset_sequence{});
 }
+
+namespace detail {
+template <size_t... INDICES>
+struct subtuple_constructor {
+	template <typename TUPLE>
+	constexpr auto operator()(TUPLE&& tuple) const {
+		return std::make_tuple(std::get<INDICES>(std::forward<TUPLE>(tuple))...);
+	}
+};
+}  // namespace detail
+
+template <size_t... INDICES>
+constexpr auto sub_tuple = detail::subtuple_constructor<INDICES...>{};
 
 }  // namespace movetk::utils
 #endif
