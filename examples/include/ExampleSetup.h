@@ -31,6 +31,7 @@
 #include <tuple>
 #include <vector>
 
+#include "movetk/io/ProbeReader.h"
 #include "movetk/utils/GeometryBackendTraits.h"
 #include "movetk/utils/Meta.h"
 
@@ -87,6 +88,35 @@ concept ExampleWithOptionsAndPositionals = Example<T> &&
 	t.add_options(option_adder, positionals);
 };
 }  // namespace concepts
+
+/**
+ * @brief Base class with some commonly used functionality
+ */
+struct BaseExample {
+	template <typename T, typename... VALUES>
+	static inline void assign_values(const std::vector<T>& data, VALUES&... values) {
+		assign_values_impl(data, std::make_index_sequence<sizeof...(VALUES)>{}, values...);
+	}
+
+	template <typename ProbeTraits>
+	static std::unique_ptr<movetk::io::ProbeReader<ProbeTraits>> get_probe_reader(cxxopts::ParseResult& arguments,
+	                                                                              const std::string& file_key,
+	                                                                              const char* alternative) {
+		if (!arguments.count(file_key)) {
+			// Use built-in test data if a file is not specified
+			return movetk::io::ProbeReaderFactory::create_from_string<ProbeTraits>(alternative);
+		} else {
+			// Example: Process trajectories from a (zipped) CSV file (e.g., probe_data_lametro.20180918.wayne.csv.gz)
+			return movetk::io::ProbeReaderFactory::create<ProbeTraits>(arguments[file_key].as<std::string>());
+		}
+	}
+
+private:
+	template <typename T, typename... VALUES, size_t... IS>
+	static inline void assign_values_impl(const std::vector<T>& data, std::index_sequence<IS...>, VALUES&... values) {
+		((values = data[IS]), ...);
+	}
+};
 
 /**
  * @brief Runner object capable of running examples that follow the concepts::Example concept.

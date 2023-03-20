@@ -52,7 +52,7 @@ namespace movetk::utils {
  * @param lon The longitude
  * @param georef Projection object
  * @return The constructed point after projection
-*/
+ */
 template <class Traits>
 typename Traits::MovetkPoint get_point(typename Traits::NT lat,
                                        typename Traits::NT lon,
@@ -68,7 +68,7 @@ typename Traits::MovetkPoint get_point(typename Traits::NT lat,
  * @tparam GeometryTraits Kernel to use
  * @param v The vector
  * @return The first coordinate
-*/
+ */
 template <class GeometryTraits>
 typename GeometryTraits::NT get_x(const typename GeometryTraits::MovetkVector& v) {
 	return v * v.basis(0);
@@ -230,7 +230,7 @@ void get_distances(InputIterator first, InputIterator beyond, OutputIterator ite
  * @tparam DistIdx Index to store the distance in in the probe
  * @param first Start of the probe range
  * @param beyond End of the probe range
-*/
+ */
 template <class Traits, class InputIterator, std::size_t LatIdx, std::size_t LonIdx, std::size_t DistIdx>
 void get_distances(InputIterator first, InputIterator beyond) {
 	InputIterator pit = first;
@@ -468,54 +468,62 @@ auto point_iterators_from_coordinates(
 
 
 /*!
- *
+ * Segment ID generator for a range of elements
  * @tparam PolyLineIdxIterator
  */
 template <std::random_access_iterator PolyLineIdxIterator>
 class SegmentIdGenerator {
 private:
-	size_t SegmentId = 0;
-	PolyLineIdxIterator it;
-	PolyLineIdxIterator __first, __beyond;
+	size_t m_segment_id = 0;
+	PolyLineIdxIterator m_it;
+	PolyLineIdxIterator m_begin, m_end;
 
 public:
 	/*!
-	 *
-	 * @param first
-	 * @param beyond
+	 * Construct the ID generator from a range of ID elements.
+	 * The range of ID elements are the elements that delineat segments, with all elements following an ID
+	 * element being part of that particular segment.
+	 * @param begin Start of the ID elements range
+	 * @param end End of the ID elements range
 	 */
-	SegmentIdGenerator(PolyLineIdxIterator first, PolyLineIdxIterator beyond)
-	    : it(first)
-	    , __first(first)
-	    , __beyond(beyond){};
+	SegmentIdGenerator(PolyLineIdxIterator begin, PolyLineIdxIterator end) : m_it(begin), m_begin(begin), m_end(end){};
 
 
 	/*!
+	 * Returns the segment ID for an element.
 	 *
-	 * @tparam PolyLineIteratorType
-	 * @param iter
-	 * @return
+	 * The elements are assumed to be part of some range, where the range is divided into segments according to the
+	 * ID element range that was used to initialize the generator.
+	 *
+	 * Whenever getSegmentID is called with an ID element, the following elements receive a new segment ID. Any
+	 * element that is not an ID element receive the ID of the last seen ID element (or 0 if the first element that
+	 * getSegmentID was called with is not an ID element).
+	 * @tparam ELEMENT_TYPE
+	 * @param element The element to get the ID for
+	 * @return The segment ID.
 	 */
-	template <class PolyLineIteratorType>
-	/*typename = movetk::utils::requires_equality<typename PolyLineIteratorType::value_type,
-	typename PolyLineIdxIterator::value_type::value_type>>*/
-	size_t getSegmentID(PolyLineIteratorType iter) {
-		if (it == __beyond) {
-			return SegmentId;
+	template <class ELEMENT_TYPE>
+	size_t getSegmentID(ELEMENT_TYPE elem) {
+		if (m_it == m_end) {
+			return m_segment_id;
 		}
-		if (iter == *it) {
-			SegmentId++;
-			if (it != __beyond)
-				it++;
-			return SegmentId;
+		if (elem == *m_it) {
+			m_segment_id++;
+			if (m_it != m_end) {
+				m_it++;
+			}
+			return m_segment_id;
 		} else {
-			return SegmentId;
+			return m_segment_id;
 		}
 	}
 
+	/**
+	 * @brief Resets the generator
+	*/
 	void reset() {
-		it = __first;
-		SegmentId = 0;
+		m_it = m_begin;
+		m_segment_id = 0;
 	}
 
 	SegmentIdGenerator() = default;
@@ -579,7 +587,7 @@ InputIterator merge_intervals(InputIterator first, InputIterator beyond, bool so
  * @param first Start of the curve
  * @param beyond End of the curve
  * @param result Output iterator to write the result to
-*/
+ */
 template <class GeometryTraits, class Norm, class InputIterator, class OutputIterator>
 void compute_curve_squared_length(InputIterator first, InputIterator beyond, OutputIterator result) {
 	Norm norm;

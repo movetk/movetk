@@ -93,6 +93,5 @@ CreateExample(compute_statistics)
 
 
 if (MOVETK_WITH_CGAL_BACKEND)
-    CreateExample(TrajectoriesPolygonIntersection trajectories_polygon_intersection.cpp)
     CreateExample(curves_intersections)
 endif()
