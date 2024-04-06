@@ -15,7 +15,8 @@ class MovetkDependencies(ConanFile):
     requires = ("gsl/2.7",
                 "rapidjson/1.1.0",
                 "boost/1.77.0",
-                "zlib/1.2.12"
+                "zlib/1.2.12",
+                "geographiclib/1.52"
                 )
     generators = "CMakeToolchain", "CMakeDeps"
     # Provide options such that different dependency sets can be installed
