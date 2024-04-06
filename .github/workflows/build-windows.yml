@@ -9,7 +9,8 @@ on:
 jobs:
   build-windows:
     runs-on: windows-2019
-
+    env:
+      CONAN_INSTALL_ARGS: -o movetk-dependencies:testing=True -o movetk-dependencies:examples=True
     steps:
       # Checkout repository
       - name: Checking out MoveTk
@@ -40,7 +41,7 @@ jobs:
       - name: Install conan
         run: pip install conan==1.59.0
       - name: Install dependencies via conan
-        run: conan install ${{github.workspace}}/movetk/conanfile.txt -if ${{github.workspace}}/conan-deps --build=missing 
+        run: conan install ${{github.workspace}}/movetk/conanfile.txt -if ${{github.workspace}}/conan-deps --build=missing ${{env.CONAN_INSTALL_ARGS}}
       - name: Save Conan packages
         uses: actions/cache/save@v3
         env:

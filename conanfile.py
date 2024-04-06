@@ -12,8 +12,7 @@ class MovetkDependencies(ConanFile):
     name = "movetk-dependencies"
     version = "0.1"
     settings = "os", "compiler", "build_type", "arch"
-    requires = ("gdal/3.4.1",
-                "gsl/2.7",
+    requires = ("gsl/2.7",
                 "rapidjson/1.1.0",
                 "boost/1.77.0",
                 "zlib/1.2.12"
@@ -32,7 +31,6 @@ class MovetkDependencies(ConanFile):
                        "testing": False,
                        "docs": False,
                        "examples": False,
-                       "gdal:shared": True,
                        "boost:without_context": True,
                        "boost:without_contract": True,
                        "boost:without_coroutine": True,
@@ -48,6 +46,7 @@ class MovetkDependencies(ConanFile):
                        "boost:without_timer": True,
                        "boost:without_type_erasure": True,
                        "boost:without_wave": True}
+    
 
     def requirements(self):
         if self.options.testing:
