@@ -19,13 +19,20 @@ jobs:
             repository: movetk/movetk
             submodules: recursive
             path: movetk   
+      - name: Install conan
+        run: pip install conan==1.59.0
      
       # Get the ninja generator
       - uses: seanmiddleditch/gha-setup-ninja@v3
+      
       - name: Setup VS dev environment
         uses: seanmiddleditch/gha-setup-vsdevenv@master
 
-      # Install dependencies
+      # Create lock file for Conan to check dependencies are up-to-date
+      - name: Create Conan lock file
+        run: conan lock create ${{github.workspace}}/movetk/conanfile.py --lockfile-out=${{github.workspace}}/movetk/conan.lock --build=missing ${{env.CONAN_INSTALL_ARGS}}
+
+      # Restore/install dependencies
       - name: Restore Conan packages from cache
         uses: actions/cache/restore@v3
         id: conan-restore-cache
@@ -35,13 +42,13 @@ jobs:
           path: |
             ~/.conan
             C:/.conan
-          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
+          key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conan.lock') }}
           restore-keys: |
             win:msvc-build:${{ env.cache-name }}:
-      - name: Install conan
-        run: pip install conan==1.59.0
+
       - name: Install dependencies via conan
-        run: conan install ${{github.workspace}}/movetk/conanfile.txt -if ${{github.workspace}}/conan-deps --build=missing ${{env.CONAN_INSTALL_ARGS}}
+        run: conan install ${{github.workspace}}/movetk/conanfile.py -if ${{github.workspace}}/conan-deps --build=missing ${{env.CONAN_INSTALL_ARGS}}
+      
       - name: Save Conan packages
         uses: actions/cache/save@v3
         env:
@@ -52,6 +59,7 @@ jobs:
             C:/.conan
           key: win:msvc-build:${{ env.cache-name }}:${{ hashFiles('movetk/conanfile.txt') }}
         if: steps.conan-restore-cache.outputs.cache-hit != 'true'
+
       - name: Add dependencies binary folder to PATH
         env:
           bin_folder: ${{github.workspace}}/conan-deps/bin
